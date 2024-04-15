@@ -36,7 +36,7 @@ module.exports.InsertarCupoConfirmado = async function (carrera,datosCupo,datosD
       }
   
   }
-  module.exports.InsertarCupoConfirmadoTrasnsaccion = async function (carrera,datosCupo,datosDetalle) {
+  module.exports.InsertarCupoConfirmadoTrasnsaccion = async function (carrera,datosCupo,datosDetalle,strperiodo) {
     try {
         var sentencia="";
         var sentenciasecuencial=""
@@ -49,11 +49,8 @@ module.exports.InsertarCupoConfirmado = async function (carrera,datosCupo,datosD
         await transaction.begin()
             .then(async () => {
 
-                consultabase="SELECT * FROM [" + carrera + "].[dbo].[homologacioncarreras] WHERE hmbdbaseinsc='" + datosCupo.acu_id + "' "
-              
-                console.log(consultabase)
+                consultabase="SELECT * FROM [" + carrera + "].[dbo].[homologacioncarreras] WHERE hmbdbaseinsc='" + datosCupo.carCusId + "' and  periodo='" + strperiodo + "' "
                     const sqlconsultabase = await execDinamicoTransaccion(transaction,carrera,consultabase, "OK","OK");
-                    console.log(sqlconsultabase)
                     if(sqlconsultabase.count>0){
                     sentencia = "INSERT INTO [" + carrera + "].[dbo].[Cupo]([acu_id],[identificacion],[per_id],[tipoinsc],[per_niv],[per_carrera],[carrera],[fechacreacion],[cup_estado])"
                     + "VALUES('" + datosCupo.acu_id + "','" + datosCupo.identificacion + "','" + datosCupo.per_id + "','" + datosCupo.tipoinsc + "','" + datosCupo.per_niv + "','" + datosCupo.per_carrera + "','" + sqlconsultabase.data[0].hmbdbaseniv + "','" + datosCupo.fechacreacion + "', '" + datosCupo.cup_estado + "');";
@@ -103,7 +100,22 @@ module.exports.ListadoEstudianteConfirmados = async function (carrera,periodo) {
 
 module.exports.ObenterEstudianteIncripcion = async function (carrera,cedula,periodo) {
   var sentencia="";
-  sentencia=" SELECT* FROM [" + carrera + "].[dbo].[Inscripciones]  AS i INNER JOIN [" + carrera + "].[dbo].[Carreras] AS c on c.strCodigo=i.strCodCarrera INNER JOIN [" + carrera + "].[dbo].[homologacioncarreras] AS h on h.hmbdbaseniv=c.strBaseDatos where i.strCedEstud='" + cedula + "' and i.strCodPeriodo='" + periodo + "' "
+  sentencia=" SELECT* FROM [" + carrera + "].[dbo].[Inscripciones]  AS i INNER JOIN [" + carrera + "].[dbo].[Carreras] AS c on c.strCodigo=i.strCodCarrera INNER JOIN [" + carrera + "].[dbo].[homologacioncarreras] AS h on h.hmbdbaseniv=c.strBaseDatos where i.strCedEstud='" + cedula + "' and i.strCodPeriodo='" + periodo + "' and  h.periodo='" + periodo + "' "
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+module.exports.ObenterEstudianteIncripcionMaster = async function (carrera,cedula,periodo) {
+  var sentencia="";
+  sentencia=" SELECT* FROM [" + carrera + "].[dbo].[Inscripciones]  AS i INNER JOIN [" + carrera + "].[dbo].[Carreras] AS c on c.strCodigo=i.strCodCarrera  where i.strCedEstud='" + cedula + "' and i.strCodPeriodo='" + periodo + "' "
 try {
   if (sentencia != "") {
     const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
@@ -244,6 +256,22 @@ module.exports.AsignaturasRetiroEstudiante = async function (carrera,periodo,ced
 }
 
 
+module.exports.ObtenerEstudianteCupo = async function (cedula,periodo,carrera) {
+  var sentencia="";
+  sentencia="SELECT * FROM [OAS_Master].[dbo].[Cupo] WHERE identificacion='" + cedula + "' and per_carrera= '" + periodo + "' and cup_estado=1"
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
 
 module.exports.ObtenerCusIdBaseNivelacion = async function (carrera,periodo) {
   var sentencia="";

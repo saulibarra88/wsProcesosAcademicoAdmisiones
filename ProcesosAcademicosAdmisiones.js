@@ -43,7 +43,6 @@ app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));//
 app.use(url+'/rutaadmision',procesosAdmisiones);
 
 
-
 //Index Router
 app.get('/', (req, res) => {
     res.send('Invalid Endpoint');
@@ -65,7 +64,7 @@ app.use(function (req, resp, next) {
 
 https.createServer(options, app).listen(port,()=>{
     console.log("Servicios Procesos Academicos levantados exitosamente: ",port)
-  //  procesoMigracion.ProcesoMigracionCupos();
+ //  procesoMigracion.ProcesoMigracionCupos();
 
  // ProcesoAcademico.ProcesoAcademicoCalificaciones();
    

@@ -1,27 +1,5 @@
 
 //SERVIDOR DE PRODUCCION
-/*
-module.exports = {
-    user: "sa",
-     password: "BDSqlAdmin111",
-    server: "172.17.102.218",    
-    database: "SistemaAcademico",
-    portNumber: "1435",
-    pool: {
-      max: 10000,
-      min: 0,
-      idleTimeoutMillis: 60000,
-      idleTimeoutMillis: 30000,  // Reducir el tiempo de espera en milisegundos
-      acquireTimeoutMillis: 30000  // Agregar tiempo de espera para adquirir una conexión
-    },
-    options: {
-      encrypt: false, // for azure
-      trustServerCertificate: false // change to true for local dev / self-signed certs
-    }
-};
-*/
-
-//SERVIDOR DE PRUEBA
 
 
 module.exports = {

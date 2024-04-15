@@ -1,8 +1,6 @@
 require('dotenv').config()
 
 
-
-
 //SERVIDOR DE PRODUCCION
 module.exports = {
   "user":process.env.DB_USER,

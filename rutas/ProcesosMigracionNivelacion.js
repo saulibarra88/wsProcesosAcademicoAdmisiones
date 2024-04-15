@@ -14,19 +14,19 @@ module.exports.ProcesoMigracionCupos = async function  () {
 // var resultado=   await ProcesoVerificacionConfirmacionCupoInscripcionP0039('P0039'); //Periodo a bucar //Servicio Web Sistema Incripciones Caso Especiales no hay cuidcarrera
 
 //Proceso para insertar el cupo en confirmado cuando han aceptado la postulacion de la carrera
-var resultado=   await ProcesoVerificacionConfirmacionCupoInscripcion('P0040'); //Periodo a bucar //Servicio Web Sistema Incripciones
+var resultado=   await ProcesoVerificacionConfirmacionCupoInscripcion('P0041'); //Periodo a bucar //Servicio Web Sistema Incripciones
 
 //Procesos para insertar el cupo en activo o perdida cuando se han matriculado en el periodo
- var resultado=   await ProcesodeVerificarMatriculadoConfirmados('P0039');//Periodo a bucar 
+ //var resultado=   await ProcesodeVerificarMatriculadoConfirmados('P0040');//Periodo a bucar 
 
  //Proceso para insertar el cupo en retiro parcial cuando se han retirado de las materias
-   var resultado=   await ProcesodeVerificarRetirosMatriculadoNivelacion('P0039',0); //Periodo a Bucar y Nivel 
+  // var resultado=   await ProcesodeVerificarRetirosMatriculadoNivelacion('P0040',0); //Periodo a Bucar y Nivel 
 
    //Proceso para realizar el calculo de perdida de cupo por periodos acumulados
- var resultado=   await ProcesodeCalcularPerdidaPeriodoCupo(2,4);//Numero de periodos a restas , estado de cupo a buscar
+// var resultado=   await ProcesodeCalcularPerdidaPeriodoCupo(2,4);//Numero de periodos a restas , estado de cupo a buscar
 
  //Proceso para activar los cupos cuando se han realizado un retiro parcial en la carrera y en el siguiente periodo se matricula
- var resultado=   await ProcesodeActivarCupodeRetiros(4);//Estado de cupo a buscar para insertar
+ //var resultado=   await ProcesodeActivarCupodeRetiros(4);//Estado de cupo a buscar para insertar
     } catch (error) {
         console.log(error);
     }
@@ -60,9 +60,9 @@ async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
         var contador=1;
         if(ListadoEstudiantes.data.length>0){
             for (var obj of ListadoEstudiantes.data) {
-            
                 var dataCupo={
-                   acu_id:obj.AspirantePostulacion.Carrera.carCusId,
+                    carCusId:obj.AspirantePostulacion.Carrera.carCusId,
+                   acu_id:obj.acuId,
                    identificacion:tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula),
                    per_id:obj.AspirantePostulacion.Persona.perId,
                    tipoinsc:"NIVELACION",
@@ -79,7 +79,13 @@ async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
                    dcupobservacion:"ACEPTACION CUPO PROCESO MIGRACION"
                }
                    if(obj.Estado.estDescripcion=='ACEPTADO'){
-                       var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccion("OAS_Master",dataCupo,dataDetalle);
+                    var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula),periodo,obj.AspirantePostulacion.Periodo.perNomenclatura);
+                    if(VerificarEstudianteCupo.count==0){
+                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccion("OAS_Master",dataCupo,dataDetalle,periodo);
+                    }else{
+                        console.log("Ya se encuentra registrado el estuainte :"+tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula)+" //Carrera: "+obj.AspirantePostulacion.Carrera.carNombre+" //Periodo: "+obj.AspirantePostulacion.Periodo.perNomenclatura)
+                    }
+                      
                    }
                
                contador =contador+1;
@@ -189,8 +195,11 @@ async function ProcesodeVerificarMatriculadoConfirmados(periodo) {
             var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados("OAS_Master",periodo);
             if(ListadoEstudiantes.data.length>0){
                 for (var obj of ListadoEstudiantes.data) {
-       
-                        var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(obj.carrera,obj.per_carrera,obj.identificacion);
+                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionMaster("OAS_Master",obj.identificacion,periodo);
+                       console.log("DatosIncripcion Nueva MAster")
+                       console.log(DatosIncripcion)
+                       if(DatosIncripcion.count>0){
+                        var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(DatosIncripcion.data[0].strBaseDatos,obj.per_carrera,obj.identificacion);
                         if(ObjEstudianteMatriculado.count>0){
                             var dataDetalle={
                                 cup_id:obj.cup_id ,
@@ -213,6 +222,11 @@ async function ProcesodeVerificarMatriculadoConfirmados(periodo) {
                         var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master",dataDetalle);
                         }
                    
+
+                       }else{
+                        console.log("El estudiante: "+obj.identificacion+"no tiene inscripcion en el periodo: "+periodo);
+                       }
+                 
                 }
             }
            
@@ -249,7 +263,9 @@ async function ProcesodeVerificarRetirosMatriculadoNivelacion(periodo,nivel) {
             var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados("OAS_Master",periodo);
             if(ListadoEstudiantes.data.length>0){
                 for (var obj of ListadoEstudiantes.data) {
-                    if(obj.carrera=='OAS_NivSoftware'){
+
+                 
+
                         var ListadoAsignaturasCurso = await procesoCupo.ObenterDictadoMateriasNivel(obj.carrera,obj.per_carrera,nivel);
                         if(ListadoAsignaturasCurso.data.length>0){
                             var listadoasignaturasMatriculado= await procesoCupo.AsignaturasMatriculadaEstudiante(obj.carrera,obj.per_carrera,obj.identificacion);
@@ -276,7 +292,7 @@ async function ProcesodeVerificarRetirosMatriculadoNivelacion(periodo,nivel) {
                             }
                         }
                        
-                    }
+                    
                 }
             }
           

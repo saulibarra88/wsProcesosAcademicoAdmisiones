@@ -93,6 +93,7 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
 const execDinamicoTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
   try {
     // Ejecuta el SQL personalizado con los parámetros
+    console.log(SQL)
     const request = new sql.Request(transaction);
     var res=  await request.query(SQL);
     return buildResponse(res, OK, msgVacio, msgError);
