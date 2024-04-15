@@ -1,17 +1,17 @@
 {
-  "name": "sistema-sai",
+  "name": "procesosacademicosadmisiones",
   "version": "1.0.0",
   "description": "This is a demo for node.je Express (ejs) with mssql",
-  "main": "ProcesosAcademicos.js",
+  "main": "ProcesosAcademicosAdmisiones.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2 start ./bin/www",
     "stop": "pm2 stop ./bin/www",
-    "dev": "nodemon ProcesosAcademicos.js",
-    "pro": "npm i --prod && pm2 restar ProcesosAcademicos.js",
-    "prod": "git pull origin main && npm i --prod && sudo pm2 stop ProcesosAcademicos.js && sudo pm2 start ProcesosAcademicos.js --name ProcesosAcademicos && sudo pm2 save",
-    "prodinit": "git pull origin main && npm i --prod && sudo pm2 start ProcesosAcademicos.js --name ProcesosAcademicos && sudo pm2 save",
-    "debug": "node ProcesosAcademicos.js"
+    "dev": "nodemon ProcesosAcademicosAdmisiones.js",
+    "pro": "npm i --prod && pm2 restar ProcesosAcademicosAdmisiones.js",
+    "prod": "git pull origin main && npm i --prod && sudo pm2 stop ProcesosAcademicosAdmisiones.js && sudo pm2 start ProcesosAcademicosAdmisiones.js --name ProcesosAcademicosAdmisiones && sudo pm2 save",
+    "prodinit": "git pull origin main && npm i --prod && sudo pm2 start ProcesosAcademicosAdmisiones.js --name ProcesosAcademicosAdmisiones && sudo pm2 save",
+    "debug": "node ProcesosAcademicosAdmisiones.js"
   },
   "dependencies": {
     "axios": "^1.4.0",
