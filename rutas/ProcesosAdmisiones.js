@@ -40,6 +40,7 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
                         } else {
                             obj.habilitarMatricula = false;
                             obj.minsFecha = "";
+                            obj.minsCarrera = DatosMatriculas.data.minsCarrera;
                             obj.minsId = null;
                             ListadoEstudiantesProceso.push(obj);
                         }
