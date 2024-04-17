@@ -27,22 +27,34 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
                     cusId: DatosBaseHomologacion.data[0].hmbdbaseinsc,
                     estId: idestado,
                 }
+                console.log(content)
                 ListadoEstudiantes = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/list_carrera_cusid_estado", content, { httpsAgent: agent });
                 if (ListadoEstudiantes.data.length > 0) {
                     for (var obj of ListadoEstudiantes.data) {
                      var   DatosMatriculas = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/matricula_inscripcion/asignacion_cupo/" + obj.acuId, { httpsAgent: agent });
+                     var   Exoneracion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/exoneracion/asignacion_cupo/" + obj.acuId, { httpsAgent: agent });
+               
+                     var contador=0;
+                   
                         if (DatosMatriculas.data) {
                             obj.habilitarMatricula = true;
                             obj.minsFecha = DatosMatriculas.data.minsFecha;
-                            obj.minsCarrera = DatosMatriculas.data.minsCarrera;
                             obj.minsId = DatosMatriculas.data.minsId;
-                            ListadoEstudiantesProceso.push(obj);
+                         
                         } else {
                             obj.habilitarMatricula = false;
                             obj.minsFecha = "";
                             obj.minsId = null;
-                            ListadoEstudiantesProceso.push(obj);
+                         
                         }
+                        if(Exoneracion.data){
+                            obj.minsCarrera=true  
+                           
+                        }else{
+                            obj.minsCarrera=false
+                        }
+                        ListadoEstudiantesProceso.push(obj);
+                   
                     }
                 }
               

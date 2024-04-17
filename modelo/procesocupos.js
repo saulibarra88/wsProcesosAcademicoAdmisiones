@@ -272,6 +272,25 @@ try {
 }
 
 }
+module.exports.InsertarCupoProceso = async function (idTipo,nombre,periodo) {
+  var sentencia="";
+  sentencia="SELECT * FROM [OAS_Master].[dbo].[Cupo] WHERE identificacion='" + cedula + "' and per_carrera= '" + periodo + "' and cup_estado=1"
+
+  sentencia = "INSERT INTO [OAS_Master].[dbo].[Cupo]([acu_id],[identificacion],[per_id],[tipoinsc],[per_niv],[per_carrera],[carrera],[fechacreacion],[cup_estado])"
+      + "VALUES('" + datosCupo.acu_id + "','" + datosCupo.identificacion + "','" + datosCupo.per_id + "','" + datosCupo.tipoinsc + "','" + datosCupo.per_niv + "','" + datosCupo.per_carrera + "','" + datosCupo.carrera + "','" + datosCupo.fechacreacion + "', '" + datosCupo.cup_estado + "');";
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
 
 module.exports.ObtenerCusIdBaseNivelacion = async function (carrera,periodo) {
   var sentencia="";
