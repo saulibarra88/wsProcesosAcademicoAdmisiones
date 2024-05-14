@@ -92,7 +92,6 @@ router.post('/ReportepdfListadoEstudiantesAdmisiones/',async (req, res) => {
     const listado = req.body.listado;
     const dbBaseCarrera = req.body.dbBaseCarrera;
     const cedulaUsuario = req.body.cedulaUsuario;
-    console.log(cedulaUsuario)
     try {
         var respuesta=await  ReportesAdmisiones.PdfListadosEstudiantesAdmisiones(listado,dbBaseCarrera,cedulaUsuario);
      
@@ -123,7 +122,6 @@ router.post('/ReportepdfListadoAspiranteAdmisiones/',async (req, res) => {
     const listado = req.body.listado;
     const dbBaseCarrera = req.body.dbBaseCarrera;
     const cedulaUsuario = req.body.cedulaUsuario;
-    console.log(cedulaUsuario)
     try {
         var respuesta=await  ReportesAdmisiones.PdfListadosaspiranteAdmisiones(listado,dbBaseCarrera,cedulaUsuario);
      
@@ -154,7 +152,6 @@ router.post('/ReporteexcelListadoEstudiantesAdmisiones/',async (req, res) => {
     const listado = req.body.listado;
     const dbBaseCarrera = req.body.dbBaseCarrera;
     const cedulaUsuario = req.body.cedulaUsuario;
-    console.log(cedulaUsuario)
     try {
         var respuesta=await  ReportesAdmisiones.ExcelListadosEstudiantesAdmisiones(listado,dbBaseCarrera,cedulaUsuario);
      
@@ -185,7 +182,6 @@ router.post('/ReporteexcelListadoAspiranteAdmisiones/',async (req, res) => {
     const listado = req.body.listado;
     const dbBaseCarrera = req.body.dbBaseCarrera;
     const cedulaUsuario = req.body.cedulaUsuario;
-    console.log(cedulaUsuario)
     try {
         var respuesta=await  ReportesAdmisiones.ExcelListadosAspiranteAdmisiones(listado,dbBaseCarrera,cedulaUsuario);
      

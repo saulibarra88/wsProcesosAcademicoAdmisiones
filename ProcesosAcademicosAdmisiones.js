@@ -66,8 +66,4 @@ app.use(function (req, resp, next) {
 
 https.createServer(options, app).listen(port,()=>{
     console.log("Servicios Procesos Academicos levantados exitosamente: ",port)
- //  procesoMigracion.ProcesoMigracionCupos();
-
- // ProcesoAcademico.ProcesoAcademicoCalificaciones();
-   
 });

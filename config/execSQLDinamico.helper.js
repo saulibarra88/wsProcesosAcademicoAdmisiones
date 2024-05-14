@@ -7,10 +7,9 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
 
   var conex = CONFIGACADEMICO;
   conex.database = carrera;
-  console.log("*********************************************************************")
-  console.log("conexxion Dinamica:", conex.database)
-  console.log("SQL:", SQL)
-
+ // console.log("*********************************************************************")
+ // console.log("conexxion Dinamica:", conex.database)
+ // console.log("SQL:", SQL)
   let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
   //let conn;
 
@@ -39,7 +38,7 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
 const execDinamicoTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
   try {
     // Ejecuta el SQL personalizado con los parámetros
-    console.log(SQL)
+  //  console.log(SQL)
     const request = new sql.Request(transaction);
     var res=  await request.query(SQL);
     return buildResponse(res, OK, msgVacio, msgError);

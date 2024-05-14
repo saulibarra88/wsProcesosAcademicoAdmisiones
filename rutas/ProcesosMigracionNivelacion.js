@@ -444,7 +444,7 @@ async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
 
                 }
             }
-            console.log("POSTULANTES ADMISIONES TOTAL" + ListadoEstudiantes.data.length)
+          
             console.log("***********PROCESO FINALIZADO CUPO INSCRIPCION**********")
             return 'OK';
         } catch (error) {
@@ -854,14 +854,8 @@ async function ProcesoImpedimentoAcademicoNivelacionn(periodo) {
                         }
                         if (verificarperdida) {
                             var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(matricula.strCedula, periodo, carrera.strBaseDatos);
-                            console.log("VerificarEstudianteCupo")
-                            console.log(VerificarEstudianteCupo.data)
                             if (VerificarEstudianteCupo.count == 0) {
-                                console.log("Impedimento Academico")
-                                console.log(matricula.strCedula)
                                 var DatosCentralizada = await centralizada.obtenerdocumento(tools.CedulaSinGuion(matricula.strCedula));
-                                console.log("DatosCentralizada")
-                                console.log(DatosCentralizada.data)
                                 var dataCupo = {
                                     acu_id: DatosCentralizada.data.per_id,
                                     identificacion: matricula.strCedula,
@@ -879,11 +873,6 @@ async function ProcesoImpedimentoAcademicoNivelacionn(periodo) {
                                     dcupfechacreacion: tools.FechaActualCupo(),
                                     dcupobservacion: "IMPEDIMENTO ACADEMICO PROCESO MIEGRACION // PERDIDA SEGUNDA MATRICULA NIVELACION"
                                 }
-                                console.log("dataCupo")
-                                console.log(dataCupo)
-                                console.log("dataDetalle")
-                                console.log(dataDetalle)
-
                                 var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral("OAS_Master", dataCupo, dataDetalle, periodo);
                                 var agregardatos = {
                                     cedula: matricula.strCedula,
@@ -937,14 +926,8 @@ async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
                 var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(carrera.strBaseDatos, periodo);
                 for (var matricula of ListadosMatriculas.data) {
                     var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(matricula.strCedula, periodo, carrera.strBaseDatos);
-                    console.log("VerificarEstudianteCupo")
-                    console.log(VerificarEstudianteCupo.data)
                     if (VerificarEstudianteCupo.count == 0) {
-                        console.log("Insercion Cupo")
-                        console.log(matricula.strCedula)
                         var DatosCentralizada = await centralizada.obtenerdocumento(tools.CedulaSinGuion(matricula.strCedula));
-                        console.log("DatosCentralizada")
-                        console.log(DatosCentralizada.data)
                         var dataCupo = {
                             acu_id: DatosCentralizada.data.per_id,
                             identificacion: matricula.strCedula,
@@ -962,11 +945,6 @@ async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
                             dcupfechacreacion: tools.FechaActualCupo(),
                             dcupobservacion: "INSERCION CUPO MATRICULADO PROCESO MIGRACION // SIN PROCESO DE ADMISION "
                         }
-                        console.log("dataCupo")
-                        console.log(dataCupo)
-                        console.log("dataDetalle")
-                        console.log(dataDetalle)
-
                         var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral("OAS_Master", dataCupo, dataDetalle, periodo);
                         var agregardatos = {
                             cedula: matricula.strCedula,
@@ -976,7 +954,6 @@ async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
                     } else {
                         var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado("OAS_Master", matricula.strCedula);
 
-                        console.log(ObtenerCupoUltimo)
                         if (ObtenerCupoUltimo.count > 0) {
                             if (ObtenerCupoUltimo.data[0].estcup_id == VariablesGlobales.ESTADOACTIVO) {
                                 console.log("No registra Cupo ya esta con cupo activo")
@@ -1028,14 +1005,8 @@ async function ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo) {
                 var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(carrera.strBaseDatos, periodo);
                 for (var matricula of ListadosMatriculas.data) {
                     var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(matricula.strCedula, periodo, carrera.strBaseDatos);
-                    console.log("VerificarEstudianteCupo")
-                    console.log(VerificarEstudianteCupo.data)
                     if (VerificarEstudianteCupo.count == 0) {
-                        console.log("Insercion Cupo")
-                        console.log(matricula.strCedula)
                         var DatosCentralizada = await centralizada.obtenerdocumento(tools.CedulaSinGuion(matricula.strCedula));
-                        console.log("DatosCentralizada")
-                        console.log(DatosCentralizada.data)
                         var dataCupo = {
                             acu_id: DatosCentralizada.data.per_id,
                             identificacion: matricula.strCedula,
@@ -1053,11 +1024,6 @@ async function ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo) {
                             dcupfechacreacion: tools.FechaActualCupo(),
                             dcupobservacion: "INSERCION CUPO MATRICULADO PROCESO MIGRACION // SIN PROCESO DE ADMISION "
                         }
-                        console.log("dataCupo")
-                        console.log(dataCupo)
-                        console.log("dataDetalle")
-                        console.log(dataDetalle)
-
                         var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral("OAS_Master", dataCupo, dataDetalle, periodo);
                         var agregardatos = {
                             cedula: matricula.strCedula,
@@ -1066,8 +1032,6 @@ async function ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo) {
                         ListadoEstudiantes.push(agregardatos)
                     } else {
                         var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado("OAS_Master", matricula.strCedula);
-
-                        console.log(ObtenerCupoUltimo)
                         if (ObtenerCupoUltimo.count > 0) {
                             if (ObtenerCupoUltimo.data[0].estcup_id == VariablesGlobales.ESTADOACTIVO) {
                                 console.log("No registra Cupo ya esta con cupo activo")

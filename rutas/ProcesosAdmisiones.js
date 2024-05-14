@@ -27,7 +27,6 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
                     cusId: DatosBaseHomologacion.data[0].hmbdbaseinsc,
                     estId: idestado,
                 }
-                console.log(content)
                 ListadoEstudiantes = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/list_carrera_cusid_estado", content, { httpsAgent: agent });
                 if (ListadoEstudiantes.data.length > 0) {
                     for (var obj of ListadoEstudiantes.data) {
@@ -100,7 +99,6 @@ module.exports.ListadoAspiranteAdmisiones = async function (strBaseCarrera, peri
         try {
             var ListadoEstados = [];
             var DatosBaseCarrera = await procesoCupo.ObtenerDatosBase(strBaseCarrera);
-            console.log(DatosBaseCarrera)
             if (DatosBaseCarrera.count > 0) {
                 var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/aspirante_sede/list_periodo/"+ periodoAdmisiones,{ httpsAgent: agent });
                 if (informacion.data.length > 0) {
