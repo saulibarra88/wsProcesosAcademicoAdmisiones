@@ -1,11 +1,11 @@
 
 require('dotenv').config()
 module.exports = {
-  user: process.env.DB_USER,
-   password:process.env.DB_PASSWORD,
-  server:process.env.DB_SERVER, 
+  user: process.env.DB_USERSISTEMAACADEMICO,
+   password:process.env.DB_PASSWORDSISTEMAACADEMICO,
+  server:process.env.DB_SERVERSISTEMAACADEMICO, 
   database:process.env.DB_NAMESISTEMAACADEMICO,
-  portNumber:process.env.DB_PORT,
+  portNumber:process.env.DB_PORTSISTEMAACADEMICO,
   pool: {
     max: 100000,
     min: 0,
@@ -18,5 +18,4 @@ module.exports = {
     requestTimeout: 60000, // Reducir el tiempo de espera de la consulta
   }
 };
-
 

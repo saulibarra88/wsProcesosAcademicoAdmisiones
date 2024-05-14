@@ -26,7 +26,23 @@ function FechaActual(){
   return currentDate;
 }
 
-    
+module.exports.FechaActualCupo = function () {
+  var date = new Date();
+  var hour = date.getHours();
+  hour = (hour < 10 ? "0" : "") + hour;
+  var min = date.getMinutes();
+  min = (min < 10 ? "0" : "") + min;
+  var sec = date.getSeconds();
+  sec = (sec < 10 ? "0" : "") + sec;
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  month = (month < 10 ? "0" : "") + month;
+  var day = date.getDate();
+  day = (day < 10 ? "0" : "") + day;
+
+  var fechaformato = year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec
+  return fechaformato
+}  
     module.exports.convertirfechaformato = function (fecha) {
     let day = fecha.getDate()
     let month = fecha.getMonth() + 1
@@ -82,6 +98,24 @@ function FechaActual(){
     }
     return strcedula;
   }
+  module.exports.CedulaSinGuion=function (strcedula){
+    if ((strcedula.length > 10) && (strcedula.indexOf("-") >= 0)) {
+      var strcedula1 = strcedula.substring(0, 9) + strcedula.substring(10);
+    }
+    return strcedula1;
+  }
+  module.exports.palabraIncluidaEnFrase=function(frase, palabra) {
+    // Convertimos ambas la frase y la palabra a minúsculas para hacer la comparación sin distinguir mayúsculas de minúsculas
+    const fraseMinusculas = frase.toUpperCase();
+    const palabraMinusculas = palabra.toUpperCase();
+    
+    // Verificamos si la palabra se encuentra incluida en la frase
+    if (fraseMinusculas.includes(palabraMinusculas)) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
   module.exports.convertirFormatoFecha=function (fechaStr) {
     // Parsear la cadena de fecha con moment.js

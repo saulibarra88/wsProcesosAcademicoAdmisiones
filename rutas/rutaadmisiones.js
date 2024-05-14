@@ -119,6 +119,37 @@ router.post('/ReportepdfListadoEstudiantesAdmisiones/',async (req, res) => {
     }
  
 });
+router.post('/ReportepdfListadoAspiranteAdmisiones/',async (req, res) => {
+    const listado = req.body.listado;
+    const dbBaseCarrera = req.body.dbBaseCarrera;
+    const cedulaUsuario = req.body.cedulaUsuario;
+    console.log(cedulaUsuario)
+    try {
+        var respuesta=await  ReportesAdmisiones.PdfListadosaspiranteAdmisiones(listado,dbBaseCarrera,cedulaUsuario);
+     
+        if (respuesta !=" ") {
+            return res.json({
+                success: true,
+                informacion: respuesta
+            });
+        } else {
+            
+            res.json({
+                success: true,
+                informacion:null
+            });
+        }
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 router.post('/ReporteexcelListadoEstudiantesAdmisiones/',async (req, res) => {
     const listado = req.body.listado;
     const dbBaseCarrera = req.body.dbBaseCarrera;
@@ -150,4 +181,92 @@ router.post('/ReporteexcelListadoEstudiantesAdmisiones/',async (req, res) => {
     }
  
 });
-module.exports = router;
+router.post('/ReporteexcelListadoAspiranteAdmisiones/',async (req, res) => {
+    const listado = req.body.listado;
+    const dbBaseCarrera = req.body.dbBaseCarrera;
+    const cedulaUsuario = req.body.cedulaUsuario;
+    console.log(cedulaUsuario)
+    try {
+        var respuesta=await  ReportesAdmisiones.ExcelListadosAspiranteAdmisiones(listado,dbBaseCarrera,cedulaUsuario);
+     
+        if (respuesta !=" ") {
+            return res.json({
+                success: true,
+                informacion: respuesta
+            });
+        } else {
+            
+            res.json({
+                success: true,
+                informacion:null
+            });
+        }
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ObtenerListadoAspiranteAdmisiones/:dbBaseCarrera/:periodo',async (req, res) => {
+    const dbBaseCarrera = req.params.dbBaseCarrera;
+    const periodo = req.params.periodo;
+    try {
+        var respuesta=await  ProcesosAdmisiones.ListadoAspiranteAdmisiones(dbBaseCarrera,periodo);
+     
+        if (respuesta.length>0) {
+            return res.json({
+                success: true,
+                informacion: respuesta
+            });
+        } else {
+            
+            res.json({
+                success: true,
+                informacion:[]
+            });
+        }
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ObtenerPeriodoVigenteAdmisiones/',async (req, res) => {
+
+    try {
+        var respuesta=await  ProcesosAdmisiones.ObtenerPeriodoVigenteAdmisiones();
+     
+        if (respuesta.length>0) {
+            return res.json({
+                success: true,
+                informacion: respuesta
+            });
+        } else {
+            
+            res.json({
+                success: true,
+                informacion:[]
+            });
+        }
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+module.exports = router; 

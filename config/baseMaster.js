@@ -1,13 +1,14 @@
 require('dotenv').config()
 
 
+
 //SERVIDOR DE PRODUCCION
 module.exports = {
-  "user":process.env.DB_USER,
-  "password": process.env.DB_PASSWORD,
-  "server": process.env.DB_SERVER,
+  "user":process.env.DB_USERMASTER,
+  "password": process.env.DB_PASSWORDMASTER,
+  "server": process.env.DB_SERVERMASTER,
   "database":process.env.DB_NAMEMASTER,
-  "portNumber": process.env.DB_PORT,
+  "portNumber": process.env.DB_PORTMASTER,
   pool: {
     max: 100000,
     min: 0,

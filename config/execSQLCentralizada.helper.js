@@ -11,9 +11,6 @@ const execCentralizada = async (SQL, OK = "", msgVacio = "", msgError = null) =>
         client.connect();
       //  const client = await Client.connect(CONFIGCENTRALIZADA);
         const result = await client.query(SQL);
-        console.log("result")
-        console.log(result.rows[0])
-        console.log("-----------")
       return buildResponse(result, OK, msgVacio, msgError);
     } catch (err) {
       console.log("Error conexion Base Centralizada:" + err);

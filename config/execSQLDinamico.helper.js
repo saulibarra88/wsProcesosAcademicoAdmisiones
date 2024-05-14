@@ -34,61 +34,7 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
     }
   }
 
-  /*
-      try {
-        // Crea una nueva instancia de la conexión a la base de datos
-        const pool = await sql.connect(conex);
-    
-        // Inicia una transacción
-        const transaction = new sql.Transaction(pool);
-    
-        // Inicia la transacción
-        await transaction.begin();
-    
-        try {
-          // Ejecuta el SQL personalizado con los parámetros
-          const request = new sql.Request(transaction);
-    
-          var res=  await request.query(SQL);
-        
-          // Confirma la transacción
-          await transaction.commit();
-    
-          console.log('Transacción exitosa');
-          return buildResponse(res, OK, msgVacio, msgError);
-        } catch (error) {
-          // Si ocurre un error, deshace la transacción
-          await transaction.rollback();
-          return handleDatabaseError(error, msgError);
-          throw error;
-        }
-      } catch (error) {
-        console.error('Error de conexión:', error);
-    
-      } finally {
-        // Cierra la conexión
-        await sql.close();
-      }
-  */
-  /*   let conn;
-
-     try {
-       await sql.close();
-       if (conn) {
-         await conn.close();
-       }
-       conn = await sql.connect(conex);
-       const req = await conn.request();
-       const res = await req.query(SQL);
-       return buildResponse(res, OK, msgVacio, msgError);
-     } catch (err) {
-       console.log("Error conexion Base Academico:" + err);
-       return handleDatabaseError(err, msgError);
-     } finally {
-       if (conn) {
-         await conn.close();
-       }
-     }*/
+ 
 };
 const execDinamicoTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
   try {
