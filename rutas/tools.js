@@ -92,6 +92,17 @@ module.exports.FechaActualCupo = function () {
     return footerHtml2
   }
 
+
+  module.exports.PromedioCalcular = function (num1, num2) {
+    if (typeof num1 !== 'number' || typeof num2 !== 'number') {
+      throw new Error('Ambos argumentos deben ser números');
+  }
+
+  const promedio = (num1 + num2) / 2;
+    const redondeado = Math.ceil(promedio);
+
+    return redondeado;
+  }
   module.exports.CedulaConGuion=function (strcedula) {
     if ((strcedula.length > 9) && (strcedula.indexOf("-") < 0)) {
       strcedula = strcedula.substring(0, 9) + "-" + strcedula.substring(9);

@@ -4,7 +4,7 @@ const sql = require('pg')
 var os = require('os');
 const { Console } = require('console');
 const { Client } = require('pg');
-const { execCentralizada } = require('./../config/execSQLCentralizada.helper');
+const { execCentralizada,execCentralizadaTransaccion } = require('./../config/execSQLCentralizada.helper');
 
 
 

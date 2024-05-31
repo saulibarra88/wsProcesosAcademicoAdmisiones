@@ -22,6 +22,20 @@ const execCentralizada = async (SQL, OK = "", msgVacio = "", msgError = null) =>
     }
 
   };
+
+  const execCentralizadaTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
+    try {
+      // Ejecuta el SQL personalizado con los parámetros
+     // console.log(SQL)
+      var res=  await transaction.request().query(SQL);
+      return buildResponse(res, OK, msgVacio, msgError);
+    } catch (error) {
+      await transaction.rollback();
+      return handleDatabaseError(error, msgError);
+      throw error;
+    
+    }
+    }
   
   const buildResponse = (res, OK, msgVacio, msgError) => {
     const count = res.rowCount ==undefined?0:res.rowCount.length;
@@ -47,5 +61,5 @@ const execCentralizada = async (SQL, OK = "", msgVacio = "", msgError = null) =>
     }
   };
   
-  module.exports = { execCentralizada };
+  module.exports = { execCentralizada,execCentralizadaTransaccion };
   

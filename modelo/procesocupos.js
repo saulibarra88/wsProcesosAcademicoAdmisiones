@@ -38,100 +38,58 @@ module.exports.InsertarCupoConfirmado = async function (carrera,datosCupo,datosD
       }
   
   }
-  module.exports.InsertarCupoConfirmadoTrasnsaccion = async function (carrera,datosCupo,datosDetalle,strperiodo) {
+  module.exports.InsertarCupoConfirmadoTrasnsaccion = async function (transaction,carrera,datosCupo,datosDetalle,strperiodo) {
     try {
         var sentencia="";
         var sentenciasecuencial=""
         var sentenciadetalle="";
-        var conex = CONFIGMASTER;
-        conex.database = carrera;
-        let dbConn = new sql.ConnectionPool(conex);
-        await dbConn.connect();
-        let transaction = new sql.Transaction(dbConn);
-        await transaction.begin()
-            .then(async () => {
+        consultabase="SELECT * FROM [" + carrera + "].[dbo].[homologacioncarreras] WHERE hmbdbaseinsc='" + datosCupo.carCusId + "' and  periodo='" + strperiodo + "' "
+        const sqlconsultabase = await execMasterTransaccion(transaction,carrera,consultabase, "OK","OK");
+        if(sqlconsultabase.count>0){
+        sentencia = "INSERT INTO [" + carrera + "].[dbo].[Cupo]([acu_id],[identificacion],[per_id],[tipoinsc],[per_niv],[per_carrera],[carrera],[fechacreacion],[cup_estado])"
+        + "VALUES('" + datosCupo.acu_id + "','" + datosCupo.identificacion + "','" + datosCupo.per_id + "','" + datosCupo.tipoinsc + "','" + datosCupo.per_niv + "','" + datosCupo.per_carrera + "','" + sqlconsultabase.data[0].hmbdbaseniv + "','" + datosCupo.fechacreacion + "', '" + datosCupo.cup_estado + "');";
 
-                consultabase="SELECT * FROM [" + carrera + "].[dbo].[homologacioncarreras] WHERE hmbdbaseinsc='" + datosCupo.carCusId + "' and  periodo='" + strperiodo + "' "
-                    const sqlconsultabase = await execMasterTransaccion(transaction,carrera,consultabase, "OK","OK");
-                    if(sqlconsultabase.count>0){
-                    sentencia = "INSERT INTO [" + carrera + "].[dbo].[Cupo]([acu_id],[identificacion],[per_id],[tipoinsc],[per_niv],[per_carrera],[carrera],[fechacreacion],[cup_estado])"
-                    + "VALUES('" + datosCupo.acu_id + "','" + datosCupo.identificacion + "','" + datosCupo.per_id + "','" + datosCupo.tipoinsc + "','" + datosCupo.per_niv + "','" + datosCupo.per_carrera + "','" + sqlconsultabase.data[0].hmbdbaseniv + "','" + datosCupo.fechacreacion + "', '" + datosCupo.cup_estado + "');";
-        
-                    sentenciasecuencial="SELECT TOP 1 * FROM [" + carrera + "].[dbo].[Cupo] ORDER BY cup_id DESC"
-                    let ingresoCupo = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
-                    let SecuencialCupo = await execMasterTransaccion(transaction,carrera,sentenciasecuencial, "OK","OK");
-                    sentenciadetalle = "INSERT INTO [" + carrera + "].[dbo].[Detallecupo]([cup_id],[estcup_id],[per_carrera],[dcupfechacreacion],[dcupobservacion])"
-                    + "VALUES('" + SecuencialCupo.data[0].cup_id + "','" + datosDetalle.estcup_id + "','" + datosDetalle.per_carrera + "','" + datosDetalle.dcupfechacreacion + "','" + datosDetalle.dcupobservacion + "');";
-                    const IngresoDetalle = await execMasterTransaccion(transaction,carrera,sentenciadetalle, "OK","OK");
-                    let resultado = await Promise.all([ingresoCupo, SecuencialCupo,IngresoDetalle]);
-                    await transaction.commit();
-                    dbConn.close();
-                    return (null, "OK");
-
-                }
-         
-            })
-            .catch(async (err) => {
-                await transaction.rollback();
-                dbConn.close();
-                console.log(err);
-                return {data:"Error: "+ error}
-                throw err;
-            });
+        sentenciasecuencial="SELECT TOP 1 * FROM [" + carrera + "].[dbo].[Cupo] ORDER BY cup_id DESC"
+        let ingresoCupo = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
+        let SecuencialCupo = await execMasterTransaccion(transaction,carrera,sentenciasecuencial, "OK","OK");
+        sentenciadetalle = "INSERT INTO [" + carrera + "].[dbo].[Detallecupo]([cup_id],[estcup_id],[per_carrera],[dcupfechacreacion],[dcupobservacion])"
+        + "VALUES('" + SecuencialCupo.data[0].cup_id + "','" + datosDetalle.estcup_id + "','" + datosDetalle.per_carrera + "','" + datosDetalle.dcupfechacreacion + "','" + datosDetalle.dcupobservacion + "');";
+        const IngresoDetalle = await execMasterTransaccion(transaction,carrera,sentenciadetalle, "OK","OK");
+      
+      }
+        return (null, "OK");
+       
     } catch (error) {
         return {data:"Error: "+ error}
         throw error;
     }
 }
-module.exports.InsertarCupoConfirmadoTrasnsaccionGeneral = async function (carrera,datosCupo,datosDetalle,strperiodo) {
+module.exports.InsertarCupoConfirmadoTrasnsaccionGeneral = async function (transaction,carrera,datosCupo,datosDetalle,strperiodo) {
   try {
-      var sentencia="";
-      var sentenciasecuencial=""
-      var sentenciadetalle="";
-      var conex = CONFIGMASTER;
-      conex.database = carrera;
-      let dbConn = new sql.ConnectionPool(conex);
-      await dbConn.connect();
-      let transaction = new sql.Transaction(dbConn);
-      await transaction.begin()
-          .then(async () => {
+    var sentencia="";
+    var sentenciasecuencial=""
+    var sentenciadetalle="";
+    sentencia = "INSERT INTO [" + carrera + "].[dbo].[Cupo]([acu_id],[identificacion],[per_id],[tipoinsc],[per_niv],[per_carrera],[carrera],[fechacreacion],[cup_estado])"
+    + "VALUES('" + datosCupo.acu_id + "','" + datosCupo.identificacion + "','" + datosCupo.per_id + "','" + datosCupo.tipoinsc + "','" + datosCupo.per_niv + "','" + datosCupo.per_carrera + "','" + datosCupo.carrera + "','" + datosCupo.fechacreacion + "', '" + datosCupo.cup_estado + "');";
 
-         
-                  sentencia = "INSERT INTO [" + carrera + "].[dbo].[Cupo]([acu_id],[identificacion],[per_id],[tipoinsc],[per_niv],[per_carrera],[carrera],[fechacreacion],[cup_estado])"
-                  + "VALUES('" + datosCupo.acu_id + "','" + datosCupo.identificacion + "','" + datosCupo.per_id + "','" + datosCupo.tipoinsc + "','" + datosCupo.per_niv + "','" + datosCupo.per_carrera + "','" + datosCupo.carrera + "','" + datosCupo.fechacreacion + "', '" + datosCupo.cup_estado + "');";
-      
-                  sentenciasecuencial="SELECT TOP 1 * FROM [" + carrera + "].[dbo].[Cupo] ORDER BY cup_id DESC"
-                  let ingresoCupo = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
-                  let SecuencialCupo = await execMasterTransaccion(transaction,carrera,sentenciasecuencial, "OK","OK");
-                  sentenciadetalle = "INSERT INTO [" + carrera + "].[dbo].[Detallecupo]([cup_id],[estcup_id],[per_carrera],[dcupfechacreacion],[dcupobservacion])"
-                  + "VALUES('" + SecuencialCupo.data[0].cup_id + "','" + datosDetalle.estcup_id + "','" + datosDetalle.per_carrera + "','" + datosDetalle.dcupfechacreacion + "','" + datosDetalle.dcupobservacion + "');";
-                  const IngresoDetalle = await execMasterTransaccion(transaction,carrera,sentenciadetalle, "OK","OK");
-                  let resultado = await Promise.all([ingresoCupo, SecuencialCupo,IngresoDetalle]);
-                  await transaction.commit();
-                  dbConn.close();
-                  return (null, "OK");
-
-              
-       
-          })
-          .catch(async (err) => {
-              await transaction.rollback();
-              dbConn.close();
-              console.log(err);
-              return {data:"Error: "+ error}
-              throw err;
-          });
+    sentenciasecuencial="SELECT TOP 1 * FROM [" + carrera + "].[dbo].[Cupo] ORDER BY cup_id DESC"
+    let ingresoCupo = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
+    let SecuencialCupo = await execMasterTransaccion(transaction,carrera,sentenciasecuencial, "OK","OK");
+    sentenciadetalle = "INSERT INTO [" + carrera + "].[dbo].[Detallecupo]([cup_id],[estcup_id],[per_carrera],[dcupfechacreacion],[dcupobservacion])"
+    + "VALUES('" + SecuencialCupo.data[0].cup_id + "','" + datosDetalle.estcup_id + "','" + datosDetalle.per_carrera + "','" + datosDetalle.dcupfechacreacion + "','" + datosDetalle.dcupobservacion + "');";
+    const IngresoDetalle = await execMasterTransaccion(transaction,carrera,sentenciadetalle, "OK","OK");
+    return (null,"OK")
   } catch (error) {
       return {data:"Error: "+ error}
       throw error;
   }
 }
-module.exports.ListadoEstudianteConfirmados = async function (carrera,periodo) {
+module.exports.ListadoEstudianteConfirmados = async function (transaction,carrera,periodo) {
     var sentencia="";
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[Cupo] WHERE per_carrera='" + periodo + "' and NOT (carrera LIKE '%DES%') "
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -174,12 +132,12 @@ try {
 
 }
 
-module.exports.ObenterEstudianteIncripcionP0039 = async function (carrera,cedula,periodo) {
+module.exports.ObenterEstudianteIncripcionP0039 = async function (transaction,carrera,cedula,periodo) {
   var sentencia="";
   sentencia="SELECT* FROM [" + carrera + "].[dbo].[Inscripciones]  AS i INNER JOIN [" + carrera + "].[dbo].[Carreras] AS c on c.strCodigo=i.strCodCarrera  where i.strCedEstud='" + cedula + "' and i.strCodPeriodo='" + periodo + "'  "
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -204,12 +162,12 @@ try {
 }
 
 }
-module.exports.ObenterEstudianteIncripcionMaster = async function (carrera,cedula,periodo) {
+module.exports.ObenterEstudianteIncripcionMaster = async function (transaction,carrera,cedula,periodo) {
   var sentencia="";
   sentencia=" SELECT * FROM [" + carrera + "].[dbo].[Inscripciones]  AS i INNER JOIN [" + carrera + "].[dbo].[Carreras] AS c on c.strCodigo=i.strCodCarrera  where i.strCedEstud='" + cedula + "' and i.strCodPeriodo='" + periodo + "' "
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -220,12 +178,12 @@ try {
 
 }
 
-module.exports.ObtenerUltimoDetalleCupoRegistrado = async function (carrera,cedula) {
+module.exports.ObtenerUltimoDetalleCupoRegistrado = async function (transaction,carrera,cedula) {
   var sentencia="";
   sentencia="SELECT  dc.cup_id as cup_iddetalle,ec.estcup_id as idEstadoCupo ,*  FROM  [" + carrera + "].[dbo].[Detallecupo] dc  INNER JOIN (SELECT cup_id, MAX(dcup_id) AS ultimo FROM [" + carrera + "].[dbo].[Detallecupo] GROUP BY cup_id) ultimos_detalles ON dc.cup_id = ultimos_detalles.cup_id AND dc.dcup_id = ultimos_detalles.ultimo INNER JOIN [OAS_Master].[dbo].[Estadocupos] ec ON ec.estcup_id=dc.estcup_id INNER JOIN [" + carrera + "].[dbo].[Cupo] c ON dc.cup_id = c.cup_id INNER JOIN [" + carrera + "].[dbo].[Estudiantes] e ON e.strCedula=c.identificacion where c.identificacion  in ('" + cedula + "');"
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -235,12 +193,12 @@ try {
 }
 
 }
-module.exports.ListadoEstudiantesRetiroParcial = async function (carrera,estado) {
+module.exports.ListadoEstudiantesRetiroParcial = async function (transaction,carrera,estado) {
     var sentencia="";
   sentencia="SELECT c.acu_id,c.cup_id,c.per_carrera,c.per_id,c.identificacion,c.carrera,c.cup_estado,dc.per_carrera as per_detalle,dc.estcup_id FROM [" + carrera + "].[dbo].[Cupo] as c INNER JOIN [" + carrera + "].[dbo].[Detallecupo] as dc on dc.cup_id =c.cup_id WHERE dc.dcup_id in (SELECT MAX(dc.dcup_id) FROM [" + carrera + "].[dbo].[Cupo] as c INNER JOIN [" + carrera + "].[dbo].[Detallecupo] as dc on dc.cup_id =c.cup_id group by identificacion, dc.per_carrera)  and estcup_id='" + estado + "'"
       try {
     if (sentencia != "") {
-      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -280,12 +238,12 @@ try {
 }
 
 }
-module.exports.EncontrarEstudianteMatriculado = async function (carrera,periodo,cedula) {
+module.exports.EncontrarEstudianteMatriculado = async function (transaction,carrera,periodo,cedula) {
     var sentencia="";
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE e.strCedula='" + cedula + "' and  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' "
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -295,12 +253,12 @@ module.exports.EncontrarEstudianteMatriculado = async function (carrera,periodo,
   }
 
 }
-module.exports.EncontrarEstudianteMatriculaTodas = async function (carrera,cedula) {
+module.exports.EncontrarEstudianteMatriculaTodas = async function (transaction,carrera,cedula) {
   var sentencia="";
   sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE e.strCedula='" + cedula + "' and  m.strCodEstado='DEF' "
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -311,6 +269,21 @@ try {
 
 }
 
+module.exports.ObtenerConvalidacionesEstudiante = async function (transaction,carrera,matricula,periodo) {
+  var sentencia="";
+  sentencia="select * from [" + carrera + "].[dbo].[Convalidaciones] as c inner join [" + carrera + "].[dbo].[Materias]  as mt on mt.strCodigo=c.strCodMateria inner join [" + carrera + "].[dbo].[Formas_Convalidacion] as fc on fc.strCodigo=c.strCodForma where sintCodMatricula='" + matricula + "' and strCodPeriodo='" + periodo + "'"
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
 module.exports.EncontrarEstudianteMatriculadoAsignaturas = async function (carrera,periodo,cedula) {
     var sentencia="";
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE e.strCedula='" + cedula + "' and  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' "
@@ -327,13 +300,13 @@ module.exports.EncontrarEstudianteMatriculadoAsignaturas = async function (carre
 
 }
 
-module.exports.InsertarDetalleCupo = async function (carrera,datosDetalle) {
+module.exports.InsertarDetalleCupo = async function (transaction,carrera,datosDetalle) {
     var sentenciadetalle="";
     sentenciadetalle = "INSERT INTO [" + carrera + "].[dbo].[Detallecupo]([cup_id],[estcup_id],[per_carrera],[dcupfechacreacion],[dcupobservacion])"
     + "VALUES('" + datosDetalle.cup_id + "','" + datosDetalle.estcup_id + "','" + datosDetalle.per_carrera + "','" + datosDetalle.dcupfechacreacion + "','" + datosDetalle.dcupobservacion + "');";
   try {
     if (sentenciadetalle != "") {
-      const sqlConsulta = await execMaster(carrera,sentenciadetalle, "OK","OK");
+      const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentenciadetalle, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -344,12 +317,12 @@ module.exports.InsertarDetalleCupo = async function (carrera,datosDetalle) {
 
 }
 
-module.exports.ObenterDictadoMateriasNivel = async function (carrera,periodo,nivel) {
+module.exports.ObenterDictadoMateriasNivel = async function (transaction,carrera,periodo,nivel) {
     var sentencia="";
     sentencia="SELECT DISTINCT dm.strCodMateria,m.strNombre,dm.strCodNivel FROM  [" + carrera + "].[dbo].[Dictado_Materias] as dm INNER JOIN [" + carrera + "].[dbo].[Materias] as m on dm.strCodMateria=m.strCodigo WHERE strCodNivel='" + nivel + "' and strCodPeriodo='" + periodo + "'"
       try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -360,12 +333,12 @@ module.exports.ObenterDictadoMateriasNivel = async function (carrera,periodo,niv
 
 }
 
-module.exports.AsignaturasMatriculadaEstudiante = async function (carrera,periodo,cedula) {
+module.exports.AsignaturasMatriculadaEstudiante = async function (transaction,carrera,periodo,cedula) {
     var sentencia="";
-    sentencia="SELECT m.strCodPeriodo as strCodPeriodoMatricula, m.strCodNivel as strCodNivelMatricula, m.strObservaciones as strObservacionesMatricula,ma.strObservaciones as strObservacionesAsignatura,ma.strCodNivel as strCodNivelAsignatura , * FROM [" + carrera + "].[dbo].[Matriculas] as m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] as ma on m.sintCodigo= ma.sintCodMatricula WHERE e.strCedula='" + cedula + "' and m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' and ma.strCodPeriodo='" + periodo + "'"
+    sentencia="SELECT m.strCodPeriodo as strCodPeriodoMatricula, m.strCodNivel as strCodNivelMatricula, m.strObservaciones as strObservacionesMatricula,ma.strObservaciones as strObservacionesAsignatura,ma.strCodNivel as strCodNivelAsignatura , * FROM [" + carrera + "].[dbo].[Matriculas] as m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] as ma on m.sintCodigo= ma.sintCodMatricula INNER JOIN [" + carrera + "].[dbo].[Materias] as mat on mat.strCodigo= ma.strCodMateria WHERE e.strCedula='" + cedula + "' and m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' and ma.strCodPeriodo='" + periodo + "'"
       try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -376,12 +349,12 @@ module.exports.AsignaturasMatriculadaEstudiante = async function (carrera,period
 
 }
 
-module.exports.MatriculasCarrerasPeriodo = async function (carrera,periodo) {
+module.exports.MatriculasCarrerasPeriodo = async function (transaction,carrera,periodo) {
   var sentencia="";
   sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' "
     try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -408,12 +381,12 @@ module.exports.MatriculasCarrerasValidacionConocimiento = async function (carrer
 
 }
 
-module.exports.AsignaturasRetiroEstudiante = async function (carrera,periodo,cedula) {
+module.exports.AsignaturasRetiroEstudiante = async function (transaction,carrera,periodo,cedula) {
     var sentencia="";
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo INNER JOIN [" + carrera + "].[dbo].[Retiros] as r on r.sintCodMatricula=m.sintCodigo  INNER JOIN [" + carrera + "].[dbo].[Materias] as ma on ma.strCodigo=r.strCodMateria  WHERE m.strCodPeriodo='" + periodo + "' and r.strCodPeriodo='" + periodo + "' and e.strCedula='" + cedula + "'"
         try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -425,13 +398,13 @@ module.exports.AsignaturasRetiroEstudiante = async function (carrera,periodo,ced
 }
 
 
-module.exports.ObtenerEstudianteCupo = async function (cedula,periodo,carrera) {
+module.exports.ObtenerEstudianteCupo = async function (transaction,cedula,periodo,carrera) {
   var sentencia="";
   sentencia="SELECT * FROM [OAS_Master].[dbo].[Cupo] WHERE identificacion='" + cedula + "' and carrera= '" + carrera + "' and cup_estado=1"
  
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execMaster("OAS_Master",sentencia, "OK","OK");
+    const sqlConsulta = await execMasterTransaccion(transaction,"OAS_Master",sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -478,13 +451,13 @@ try {
 
 }
 
-module.exports.ObtenerBaseNivelacionDadoCusidPeriodo = async function (cusid,periodo) {
+module.exports.ObtenerBaseNivelacionDadoCusidPeriodo = async function (transaction,carrera,cusid,periodo) {
   var sentencia="";
-  sentencia="SELECT * FROM [OAS_Master].[dbo].[homologacioncarreras] WHERE hmbdbaseinsc='" + cusid + "' and periodo= '" + periodo + "' "
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[homologacioncarreras] WHERE hmbdbaseinsc='" + cusid + "' and periodo= '" + periodo + "' "
  
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+    const sqlConsulta = await execDinamicoTransaccion(transaction,"OAS_Master",sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -592,13 +565,13 @@ module.exports.ObtenerPeriodoDadoCodigo = async function (strPeriodo) {
 }
 }
 
-module.exports.ListadoCarreraNivelacion = async function (strCodfigoFacultad) {
+module.exports.ListadoCarreraNivelacion = async function (transaction,carrera,strCodfigoFacultad) {
   var sentencia="";
-  sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [OAS_Master].[dbo].Facultades AS F INNER JOIN [OAS_Master].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [OAS_Master].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo  WHERE F.strCodigo='" + strCodfigoFacultad + "' "
+  sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + carrera + "].[dbo].Facultades AS F INNER JOIN [OAS_Master].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [OAS_Master].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo  WHERE F.strCodigo='" + strCodfigoFacultad + "' "
  
   try {
   if (sentencia != "") {
-    const sqlConsulta = await execMaster("OAS_Master",sentencia, "OK","OK");
+    const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -607,13 +580,13 @@ module.exports.ListadoCarreraNivelacion = async function (strCodfigoFacultad) {
   return {data:"Error: "+ error}
 }
 }
-module.exports.ListadoCarreraTodas = async function () {
+module.exports.ListadoCarreraTodas = async function (transaction,carrera) {
   var sentencia="";
-  sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [OAS_Master].[dbo].Facultades AS F INNER JOIN [OAS_Master].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [OAS_Master].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo "
+  sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + carrera + "].[dbo].Facultades AS F INNER JOIN [OAS_Master].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [OAS_Master].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo "
  
   try {
   if (sentencia != "") {
-    const sqlConsulta = await execMaster("OAS_Master",sentencia, "OK","OK");
+    const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -623,12 +596,12 @@ module.exports.ListadoCarreraTodas = async function () {
 }
 }
 
-module.exports.NotasExamenesEstudianteDadoMateria = async function (carrera,periodo,intMatricula,strCodmteria) {
+module.exports.NotasExamenesEstudianteDadoMateria = async function (transaction,carrera,periodo,intMatricula,strCodmteria) {
   var sentencia="";
   sentencia="SELECT * FROM [" + carrera + "].[dbo].[Notas_Examenes]  WHERE  strCodPeriodo='" + periodo + "' and sintCodMatricula=" + intMatricula + " and strCodMateria='" + strCodmteria + "' "
     try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}

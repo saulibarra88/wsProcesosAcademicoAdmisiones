@@ -8,6 +8,8 @@ const centralizada = require('../modelo/centralizada');
 const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
+const {  iniciarDinamicoPool,iniciarDinamicoTransaccion} = require("./../config/execSQLDinamico.helper");
+const {  iniciarMasterTransaccion,iniciarMasterPool} = require("./../config/execSQLMaster.helper");
 
 module.exports.ProcesoVerificarRegistroIncripcionesEstudiantesAdmisiones = async function (periodo, cedula) {
     try {
@@ -204,18 +206,10 @@ module.exports.ListadoPeriodosEjecutados = async function (periodo, cedula) {
 }
 
 module.exports.InscripcionEstudianteNoregistradoCasoEspecialP0039 = async function (periodo, cedula) {
-    var date = new Date();
-    var hour = date.getHours();
-    hour = (hour < 10 ? "0" : "") + hour;
-    var min = date.getMinutes();
-    min = (min < 10 ? "0" : "") + min;
-    var sec = date.getSeconds();
-    sec = (sec < 10 ? "0" : "") + sec;
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    month = (month < 10 ? "0" : "") + month;
-    var day = date.getDate();
-    day = (day < 10 ? "0" : "") + day;
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
         //Proceso para verificar los estudiantes que no estan inscripto pero si matriculados en nivelacion 
         var ListadoEstudiantes = [];
@@ -224,9 +218,10 @@ module.exports.InscripcionEstudianteNoregistradoCasoEspecialP0039 = async functi
             var VerifiacionIncripcion = await procesoCupo.ObenterTodasEstudianteIncripcion("OAS_Master", estudiantes.identificacion);
             if (VerifiacionIncripcion.count == 0) {
                 var listadoMatriculas = [];
-                var ListadoCarreras = await procesoCupo.ListadoCarreraTodas();
+                
+                var ListadoCarreras = await procesoCupo.ListadoCarreraTodas(transaction,"OAS_Master");
                 for (var carreras of ListadoCarreras.data) {
-                    var MatriculasEstudiante = await procesoCupo.EncontrarEstudianteMatriculaTodas(carreras.strBaseDatos, estudiantes.identificacion);
+                    var MatriculasEstudiante = await procesoCupo.EncontrarEstudianteMatriculaTodas(transaction,carreras.strBaseDatos, estudiantes.identificacion);
                     if (MatriculasEstudiante.count > 0) {
                         listadoMatriculas.push(MatriculasEstudiante.data)
                     }
@@ -237,10 +232,10 @@ module.exports.InscripcionEstudianteNoregistradoCasoEspecialP0039 = async functi
                         cup_id: estudiantes.cup_id,
                         estcup_id: VariablesGlobales.ESTADOPERDIDO,
                         per_carrera: estudiantes.per_carrera,
-                        dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                        dcupfechacreacion: tools.FechaActualCupo(),
                         dcupobservacion: "PERDIDA DE CUPO PROCESO MIGRACION CASO ESPECIAL NO MATRICULADO//SIN INSCRIPCION"
                     }
-                    var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                    var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                 }
             }
             else {
@@ -256,19 +251,19 @@ module.exports.InscripcionEstudianteNoregistradoCasoEspecialP0039 = async functi
                         cup_id: estudiantes.cup_id,
                         estcup_id: VariablesGlobales.ESTADOPERDIDO,
                         per_carrera: estudiantes.per_carrera,
-                        dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                        dcupfechacreacion: tools.FechaActualCupo(),
                         dcupobservacion: "PERDIDA DE CUPO PROCESO MIGRACION CASO ESPECIAL NO MATRICULADO//SIN INSCRIPCION"
                     }
-                    var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                    var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                 } else {
                     var dataDetalle = {
                         cup_id: estudiantes.cup_id,
                         estcup_id: VariablesGlobales.ESTADOACTIVO,
                         per_carrera: estudiantes.per_carrera,
-                        dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                        dcupfechacreacion:tools.FechaActualCupo(),
                         dcupobservacion: "MATRICULACION NIVELACION PROCESO MIGRACION CASO ESPECIAL MATRICULADO//SIN INSCRIPCION"
                     }
-                    var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                    var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                 }
 
             }
@@ -277,9 +272,13 @@ module.exports.InscripcionEstudianteNoregistradoCasoEspecialP0039 = async functi
 
         return { blProceso: true, Informacion: listadoMatriculas }
 
-    } catch (error) {
-        return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+    } catch (err) {
+        await transaction.rollback();
+        console.error(err);
+        return 'ERROR';
+    } finally {
+        await transaction.commit();
+        await pool.close();
     }
 } 
 
@@ -356,9 +355,8 @@ module.exports.ProcesoEstudianteMatriculadosNivelCupos = async function (periodo
                         Nivel:matricula.strCodNivel,
                         Celular:matricula.strCedulaMil,
                         Periodo:periodo
-                    }
-                    
-                    console.log(ObtenerCupoUltimo)
+                    }                   
+                 
                     if (ObtenerCupoUltimo.count > 0) {
                         datos.CupoId=ObtenerCupoUltimo.data[0].cup_iddetalle,
                         datos.CupoDescripcion=ObtenerCupoUltimo.data[0].dcupobservacion
@@ -391,22 +389,14 @@ const agent = new https.Agent({
 });
 
 async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
         console.log("***********PROCESO INICIALIZADO CUPO INSCRIPCION**********")
-        var date = new Date();
-        var hour = date.getHours();
-        hour = (hour < 10 ? "0" : "") + hour;
-        var min = date.getMinutes();
-        min = (min < 10 ? "0" : "") + min;
-        var sec = date.getSeconds();
-        sec = (sec < 10 ? "0" : "") + sec;
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        month = (month < 10 ? "0" : "") + month;
-        var day = date.getDate();
-        day = (day < 10 ? "0" : "") + day;
 
-        try {
+        
             var ListadoEstudiantes = [];
             const content = {
                 perNomenclatura: periodo
@@ -423,23 +413,22 @@ async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
                         per_niv: obj.AspirantePostulacion.Periodo.perCodigo,
                         per_carrera: obj.AspirantePostulacion.Periodo.perNomenclatura,
                         carrera: obj.AspirantePostulacion.Carrera.carNombre,
-                        fechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                        fechacreacion: tools.FechaActualCupo(),
                         cup_estado: 1
                     }
                     var dataDetalle = {
                         estcup_id: VariablesGlobales.ESTADOCONFIRMADO,
                         per_carrera: obj.AspirantePostulacion.Periodo.perNomenclatura,
-                        dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                        dcupfechacreacion:tools.FechaActualCupo(),
                         dcupobservacion: "ACEPTACION CUPO PROCESO MIGRACION"
                     }
                     if (obj.Estado.estDescripcion == 'ACEPTADO') {
-                        var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula), periodo, obj.AspirantePostulacion.Carrera.carNombre);
+                        var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(transaction,tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula), periodo, obj.AspirantePostulacion.Carrera.carNombre);
                         if (VerificarEstudianteCupo.count == 0) {
-                            var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccion("OAS_Master", dataCupo, dataDetalle, periodo);
+                            var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccion(transaction,"OAS_Master", dataCupo, dataDetalle, periodo);
                         } else {
                             console.log("Ya se encuentra registrado el estudiainte :" + tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula) + " //Carrera: " + obj.AspirantePostulacion.Carrera.carNombre + " //Periodo: " + obj.AspirantePostulacion.Periodo.perNomenclatura)
                         }
-
                     }
 
                 }
@@ -447,45 +436,33 @@ async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
           
             console.log("***********PROCESO FINALIZADO CUPO INSCRIPCION**********")
             return 'OK';
-        } catch (error) {
-            console.error(error);
-            return 'ERROR: ' + error;
+       
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
+            return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-    } catch (err) {
-        console.log(error);
-        return 'ERROR';
-    }
 }
 
 async function ProcesoVerificacionConfirmacionCupoInscripcionP0039(periodo) {
+    console.log("***********PROCESO INICIALIZADO CUPO INSCRIPCION**********")
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
-        console.log("***********PROCESO INICIALIZADO CUPO INSCRIPCION**********")
-        var date = new Date();
-        var hour = date.getHours();
-        hour = (hour < 10 ? "0" : "") + hour;
-        var min = date.getMinutes();
-        min = (min < 10 ? "0" : "") + min;
-        var sec = date.getSeconds();
-        sec = (sec < 10 ? "0" : "") + sec;
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        month = (month < 10 ? "0" : "") + month;
-        var day = date.getDate();
-        day = (day < 10 ? "0" : "") + day;
-
-        try {
             var ListadoEstudiantes = [];
             const content = {
                 perNomenclatura: periodo
             }
             var ListadoEstudiantes = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/aceptados_periodo_cusofa", content, { httpsAgent: agent });
-
             if (ListadoEstudiantes.data.length > 0) {
                 for (var obj of ListadoEstudiantes.data) {
-                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionP0039("OAS_Master", tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula), periodo);
-
+                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionP0039(transaction,"OAS_Master", tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula), periodo);
                     if (DatosIncripcion.count > 0) {
-
                         var dataCupo = {
                             acu_id: obj.acuId,
                             identificacion: tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula),
@@ -494,19 +471,19 @@ async function ProcesoVerificacionConfirmacionCupoInscripcionP0039(periodo) {
                             per_niv: obj.AspirantePostulacion.Periodo.perCodigo,
                             per_carrera: obj.AspirantePostulacion.Periodo.perNomenclatura,
                             carrera: DatosIncripcion.data[0].strBaseDatos,
-                            fechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                            fechacreacion: tools.FechaActualCupo(),
                             cup_estado: 1
                         }
                         var dataDetalle = {
                             estcup_id: VariablesGlobales.ESTADOCONFIRMADO,
                             per_carrera: obj.AspirantePostulacion.Periodo.perNomenclatura,
-                            dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                            dcupfechacreacion:tools.FechaActualCupo(),
                             dcupobservacion: "ACEPTACION CUPO SENECYT PROCESO MIGRACION"
                         }
-                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral("OAS_Master", dataCupo, dataDetalle);
+                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral(transaction,"OAS_Master", dataCupo, dataDetalle);
                     } else {
 
-                        var DatosCarrera = await procesoCupo.ObtenerBaseNivelacionDadoCusidPeriodo(obj.AspirantePostulacion.Carrera.carCusId, periodo);
+                        var DatosCarrera = await procesoCupo.ObtenerBaseNivelacionDadoCusidPeriodo(transaction,"OAS_Master",obj.AspirantePostulacion.Carrera.carCusId, periodo);
                         var basedatoCarrera = "BASE DESCONOCIDA EN HOMOLOGACIONES " + periodo
                         if (DatosCarrera.count > 0) {
                             basedatoCarrera = DatosCarrera.data[0].hmbdbaseniv
@@ -519,85 +496,75 @@ async function ProcesoVerificacionConfirmacionCupoInscripcionP0039(periodo) {
                             per_niv: obj.AspirantePostulacion.Periodo.perCodigo,
                             per_carrera: obj.AspirantePostulacion.Periodo.perNomenclatura,
                             carrera: basedatoCarrera,
-                            fechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                            fechacreacion: tools.FechaActualCupo(),
                             cup_estado: 1
                         }
                         var dataDetalle = {
                             estcup_id: VariablesGlobales.ESTADOIMPEDIMENTOACADEMICO,
                             per_carrera: obj.AspirantePostulacion.Periodo.perNomenclatura,
-                            dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                            dcupfechacreacion: tools.FechaActualCupo(),
                             dcupobservacion: "IMPEDIMENTO ACADEMICO PROCESO MIGRACION"
                         }
-                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral("OAS_Master", dataCupo, dataDetalle);
-
+                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral(transaction,"OAS_Master", dataCupo, dataDetalle);
                     }
                 }
             }
             console.log("POSTULANTES ADMISIONES TOTAL" + ListadoEstudiantes.data.length)
-
             console.log("***********PROCESO FINALIZADO CUPO INSCRIPCION**********")
             return ListadoEstudiantes;
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
             return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-    } catch (err) {
-        console.log(error);
-        return 'ERROR';
-    }
 }
 
 async function ProcesodeVerificarMatriculadoConfirmados(periodo) {
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
         console.log("***********PROCESO INICIALIZADO MATRICULACION CUPO**********")
-        var date = new Date();
-        var hour = date.getHours();
-        hour = (hour < 10 ? "0" : "") + hour;
-        var min = date.getMinutes();
-        min = (min < 10 ? "0" : "") + min;
-        var sec = date.getSeconds();
-        sec = (sec < 10 ? "0" : "") + sec;
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        month = (month < 10 ? "0" : "") + month;
-        var day = date.getDate();
-        day = (day < 10 ? "0" : "") + day;
-        try {
+  
             var ListadoEstudiantes = [];
-            var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados("OAS_Master", periodo);
+            var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados(transaction,"OAS_Master", periodo);
             if (ListadoEstudiantes.data.length > 0) {
                 for (var obj of ListadoEstudiantes.data) {
-                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionMaster("OAS_Master", obj.identificacion, periodo);
+                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionMaster(transaction,"OAS_Master", obj.identificacion, periodo);
                     if (DatosIncripcion.count > 0) {
-                        var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
+                        var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(transaction,DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
                         if (ObjEstudianteMatriculado.count > 0) {
                             var dataDetalle = {
                                 cup_id: obj.cup_id,
                                 estcup_id: VariablesGlobales.ESTADOACTIVO,
                                 per_carrera: obj.per_carrera,
-                                dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                                dcupfechacreacion:  tools.FechaActualCupo(),
                                 dcupobservacion: "MATRICULACION NIVELACION PROCESO MIGRACION // MATRICULADO EN NIVELACION"
                             }
-                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                         } else {
                             var dataDetalle = {
                                 cup_id: obj.cup_id,
                                 estcup_id: VariablesGlobales.ESTADOPERDIDO,
                                 per_carrera: obj.per_carrera,
-                                dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                                dcupfechacreacion:  tools.FechaActualCupo(),
                                 dcupobservacion: "PERDIDA DE CUPO PROCESO MIGRACION// NO MATRICULADO EN NIVELACION"
                             }
-                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                         }
                     } else {
                         var dataDetalle = {
                             cup_id: obj.cup_id,
                             estcup_id: VariablesGlobales.ESTADOIMPEDIMENTOACADEMICO,
                             per_carrera: obj.per_carrera,
-                            dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                            dcupfechacreacion:  tools.FechaActualCupo(),
                             dcupobservacion: "IMPEDIMENTO ACADEMICO PROCESO MIGRACION"
                         }
-                        var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                        var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                         console.log("El estudiante: " + obj.identificacion + "no tiene inscripcion en el periodo: " + periodo);
                     }
 
@@ -605,45 +572,34 @@ async function ProcesodeVerificarMatriculadoConfirmados(periodo) {
             }
             console.log("***********PROCESO FINALIZADO MATRICULACION CUPO**********")
             return ListadoEstudiantes;
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
             return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-
-
-    } catch (err) {
-        console.error(err);
-        return 'ERROR';
-    }
 }
 async function ProcesodeVerificarRetirosMatriculadoNivelacion(periodo, nivel) {
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
         console.log("***********PROCESO INICIALIZADO RETIRO CUPO**********")
-        var date = new Date();
-        var hour = date.getHours();
-        hour = (hour < 10 ? "0" : "") + hour;
-        var min = date.getMinutes();
-        min = (min < 10 ? "0" : "") + min;
-        var sec = date.getSeconds();
-        sec = (sec < 10 ? "0" : "") + sec;
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        month = (month < 10 ? "0" : "") + month;
-        var day = date.getDate();
-        day = (day < 10 ? "0" : "") + day;
-        try {
             var ListadoEstudiantes = [];
-            var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados("OAS_Master", periodo);
+            var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados(transaction,"OAS_Master", periodo);
             if (ListadoEstudiantes.data.length > 0) {
                 for (var obj of ListadoEstudiantes.data) {
-                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionMaster("OAS_Master", obj.identificacion, periodo);
+                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionMaster(transaction,"OAS_Master", obj.identificacion, periodo);
                     if (DatosIncripcion.count > 0) {
-                        var ListadoAsignaturasCurso = await procesoCupo.ObenterDictadoMateriasNivel(DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, nivel);
+                        var ListadoAsignaturasCurso = await procesoCupo.ObenterDictadoMateriasNivel(transaction,DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, nivel);
                         if (ListadoAsignaturasCurso.data.length > 0) {
-                            var listadoasignaturasMatriculado = await procesoCupo.AsignaturasMatriculadaEstudiante(DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
+                            var listadoasignaturasMatriculado = await procesoCupo.AsignaturasMatriculadaEstudiante(transaction,DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
                             if (listadoasignaturasMatriculado.data.length > 0) {
                                 if (ListadoAsignaturasCurso.data.length == listadoasignaturasMatriculado.data.length) {
-                                    var VerificarRetiros = await procesoCupo.AsignaturasRetiroEstudiante(DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
+                                    var VerificarRetiros = await procesoCupo.AsignaturasRetiroEstudiante(transaction,DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
                                     if (VerificarRetiros.data.length > 0) {
                                         if (VerificarRetiros.count == ListadoAsignaturasCurso.count) {
 
@@ -651,10 +607,10 @@ async function ProcesodeVerificarRetirosMatriculadoNivelacion(periodo, nivel) {
                                                 cup_id: obj.cup_id,
                                                 estcup_id: VariablesGlobales.ESTADORETIROPARCIAL,
                                                 per_carrera: obj.per_carrera,
-                                                dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                                                dcupfechacreacion:  tools.FechaActualCupo(),
                                                 dcupobservacion: "RETIRO PARCIAL CARRERA PROCESO MIGRACION"
                                             }
-                                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                                         }
                                     }
 
@@ -668,44 +624,32 @@ async function ProcesodeVerificarRetirosMatriculadoNivelacion(periodo, nivel) {
             }
             console.log("***********PROCESO FINALIZADO RETIRO CUPO**********")
             return ListadoEstudiantes;
-        } catch (error) {
-            console.error(error);
+      
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
             return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-
-
-    } catch (err) {
-        console.error(err);
-        return 'ERROR';
-    }
 }
 
 async function ProcesodeCalcularPerdidaPeriodoCupo(numeroPeriodo, estadoperdida) {
     console.log("***********PROCESO INICIALIZADO CALCULO PERDIDA POR PERIODO**********")
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
-
-        var date = new Date();
-        var hour = date.getHours();
-        hour = (hour < 10 ? "0" : "") + hour;
-        var min = date.getMinutes();
-        min = (min < 10 ? "0" : "") + min;
-        var sec = date.getSeconds();
-        sec = (sec < 10 ? "0" : "") + sec;
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        month = (month < 10 ? "0" : "") + month;
-        var day = date.getDate();
-        day = (day < 10 ? "0" : "") + day;
-        try {
             var ListadoEstudiantes = [];
-
             var PeriodoActual = await procesoCupo.ObtenerPeriodoVigenteMaster("OAS_Master");
             if (PeriodoActual.data.length > 0) {
                 var numeroPeriodoActual = obtenerNumeroDesdeParametro(PeriodoActual.data[0].strCodigo);
                 if (numeroPeriodoActual > 0) {
                     var perdidaperiodo = Number(numeroPeriodoActual) - Number(numeroPeriodo);
                     var numeroPeriodoPerdidoString = obtenerParametroDesdeNumero(Number(perdidaperiodo));
-                    var ListadoEstudiantes = await procesoCupo.ListadoEstudiantesRetiroParcial("OAS_Master", estadoperdida);
+                    var ListadoEstudiantes = await procesoCupo.ListadoEstudiantesRetiroParcial(transaction,"OAS_Master", estadoperdida);
                     if (ListadoEstudiantes.data.length > 0) {
                         for (var obj of ListadoEstudiantes.data) {
                             if (obj.per_detalle == numeroPeriodoPerdidoString) {
@@ -713,89 +657,70 @@ async function ProcesodeCalcularPerdidaPeriodoCupo(numeroPeriodo, estadoperdida)
                                     cup_id: obj.cup_id,
                                     estcup_id: VariablesGlobales.ESTADOPERDIDO,
                                     per_carrera: PeriodoActual.data[0].strCodigo,
-                                    dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                                    dcupfechacreacion: tools.FechaActualCupo(),
                                     dcupobservacion: "PERDIDA DE CUPO POR MAXIMO DE PERIODOS PROCESO MIGRACION"
                                 }
-                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                             }
                         }
-
                     }
-
                 } else {
                     console.log("El periodo actual no cumple con el formato correspondiente" + PeriodoActual.data[0].strCodigo)
                 }
-
             } else {
                 console.log("No exite periodo vigente en la master")
             }
-
-
             console.log("***********PROCESO FINALIZADO CALCULO PERDIDA POR PERIODO**********")
             return ListadoEstudiantes;
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
             return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-
-
-    } catch (err) {
-        console.error(err);
-        return 'ERROR';
-    }
 }
 
 async function ProcesodeActivarCupodeRetiros(estadoperdida) {
     console.log("***********PROCESO ACTIVAR CUPO POR RETIRO PARCIAL**********")
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
-
-        var date = new Date();
-        var hour = date.getHours();
-        hour = (hour < 10 ? "0" : "") + hour;
-        var min = date.getMinutes();
-        min = (min < 10 ? "0" : "") + min;
-        var sec = date.getSeconds();
-        sec = (sec < 10 ? "0" : "") + sec;
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        month = (month < 10 ? "0" : "") + month;
-        var day = date.getDate();
-        day = (day < 10 ? "0" : "") + day;
-        try {
             var ListadoEstudiantes = [];
-            var ListadoEstudiantes = await procesoCupo.ListadoEstudiantesRetiroParcial("OAS_Master", estadoperdida);
+            var ListadoEstudiantes = await procesoCupo.ListadoEstudiantesRetiroParcial(transaction,"OAS_Master", estadoperdida);
             if (ListadoEstudiantes.data.length > 0) {
                 for (var obj of ListadoEstudiantes.data) {
                     var numeroPeriodoActual = obtenerNumeroDesdeParametro(obj.per_carrera);
                     var periodoMatricula = Number(numeroPeriodoActual) + 1;
                     var periodoMatriculaString = obtenerParametroDesdeNumero(Number(periodoMatricula));
-                    var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(obj.carrera, periodoMatriculaString, obj.identificacion);
+                    var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(transaction,obj.carrera, periodoMatriculaString, obj.identificacion);
                     if (ObjEstudianteMatriculado.count > 0) {
                         var dataDetalle = {
                             cup_id: obj.cup_id,
                             estcup_id: VariablesGlobales.ESTADOACTIVO,
                             per_carrera: obj.per_carrera,
-                            dcupfechacreacion: year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec,
+                            dcupfechacreacion:tools.FechaActualCupo(),
                             dcupobservacion: "MATRICULACION NIVELACION PROCESO MIGRACION REIGRESO"
                         }
 
-                        var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                        var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
                     }
                 }
             }
-
             console.log("***********PROCESO ACTIVAR CUPO POR RETIRO PARCIAL**********")
             return ListadoEstudiantes;
-        } catch (error) {
-            console.error(error);
+ 
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
             return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-
-
-    } catch (err) {
-        console.error(err);
-        return 'ERROR';
-    }
 }
 function obtenerNumeroDesdeParametro(parametro) {
     // Verificar si el parámetro comienza con 'P'
@@ -825,20 +750,23 @@ function obtenerParametroDesdeNumero(numero) {
 }
 
 async function ProcesoImpedimentoAcademicoNivelacionn(periodo) {
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
-        try {
             var ListadoEstudiantes = [];
-            var ListadoCarrera = await procesoCupo.ListadoCarreraNivelacion("UNA");
+            var ListadoCarrera = await procesoCupo.ListadoCarreraNivelacion(transaction,"OAS_Master","UNA");
             for (var carrera of ListadoCarrera.data) {
                 // if (carrera.strBaseDatos == 'OAS_NivArtes') {
-                var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(carrera.strBaseDatos, periodo);
+                var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(transaction,carrera.strBaseDatos, periodo);
                 for (var matricula of ListadosMatriculas.data) {
-                    var DatosAsignaturas = await procesoCupo.AsignaturasMatriculadaEstudiante(carrera.strBaseDatos, periodo, matricula.strCedula);
+                    var DatosAsignaturas = await procesoCupo.AsignaturasMatriculadaEstudiante(transaction,carrera.strBaseDatos, periodo, matricula.strCedula);
                     var verificarperdida = false;
                     if (DatosAsignaturas.count > 0) {
                         for (var asignatura of DatosAsignaturas.data) {
                             if (Number(asignatura.bytNumMat) >= VariablesGlobales.REPETICIONESaSIGNATURAS) {
-                                var DatosExamenes = await procesoCupo.NotasExamenesEstudianteDadoMateria(carrera.strBaseDatos, periodo, matricula.sintCodigo, asignatura.strCodMateria);
+                                var DatosExamenes = await procesoCupo.NotasExamenesEstudianteDadoMateria(transaction,carrera.strBaseDatos, periodo, matricula.sintCodigo, asignatura.strCodMateria);
 
                                 if (DatosExamenes.count > 0) {
                                     for (var notas of DatosExamenes.data) {
@@ -853,7 +781,7 @@ async function ProcesoImpedimentoAcademicoNivelacionn(periodo) {
                             }
                         }
                         if (verificarperdida) {
-                            var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(matricula.strCedula, periodo, carrera.strBaseDatos);
+                            var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(transaction,matricula.strCedula, periodo, carrera.strBaseDatos);
                             if (VerificarEstudianteCupo.count == 0) {
                                 var DatosCentralizada = await centralizada.obtenerdocumento(tools.CedulaSinGuion(matricula.strCedula));
                                 var dataCupo = {
@@ -873,7 +801,7 @@ async function ProcesoImpedimentoAcademicoNivelacionn(periodo) {
                                     dcupfechacreacion: tools.FechaActualCupo(),
                                     dcupobservacion: "IMPEDIMENTO ACADEMICO PROCESO MIEGRACION // PERDIDA SEGUNDA MATRICULA NIVELACION"
                                 }
-                                var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral("OAS_Master", dataCupo, dataDetalle, periodo);
+                                var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral(transaction,"OAS_Master", dataCupo, dataDetalle, periodo);
                                 var agregardatos = {
                                     cedula: matricula.strCedula,
                                     carrera: carrera.strBaseDatos
@@ -888,7 +816,7 @@ async function ProcesoImpedimentoAcademicoNivelacionn(periodo) {
                                     dcupfechacreacion: tools.FechaActualCupo(),
                                     dcupobservacion: "IMPEDIMENTO ACADEMICO PROCESO MIEGRACION // PERDIDA SEGUNDA MATRICULA NIVELACION"
                                 }
-                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
 
                                 var agregardatos = {
                                     cedula: matricula.strCedula,
@@ -896,36 +824,36 @@ async function ProcesoImpedimentoAcademicoNivelacionn(periodo) {
                                 }
                                 ListadoEstudiantes.push(agregardatos)
                             }
-
-
                         }
                     }
                 }
                 //  }
             }
             return ListadoEstudiantes;
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
             return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-
-
-    } catch (err) {
-        console.error(err);
-        return 'ERROR';
-    }
 }
 async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
-        try {
+        
             var ListadoEstudiantes = [];
-            var ListadoCarrera = await procesoCupo.ListadoCarreraTodas();
+            var ListadoCarrera = await procesoCupo.ListadoCarreraTodas(transaction,"OAS_Master");
             //var ListadoCarrera = await procesoCupo.ListadoCarreraNivelacion("UNA");
             for (var carrera of ListadoCarrera.data) {
                 // if (carrera.strBaseDatos == 'OAS_NivArtes') {
-                var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(carrera.strBaseDatos, periodo);
+                var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(transaction,carrera.strBaseDatos, periodo);
                 for (var matricula of ListadosMatriculas.data) {
-                    var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(matricula.strCedula, periodo, carrera.strBaseDatos);
+                    var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(transaction,matricula.strCedula, periodo, carrera.strBaseDatos);
                     if (VerificarEstudianteCupo.count == 0) {
                         var DatosCentralizada = await centralizada.obtenerdocumento(tools.CedulaSinGuion(matricula.strCedula));
                         var dataCupo = {
@@ -945,14 +873,14 @@ async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
                             dcupfechacreacion: tools.FechaActualCupo(),
                             dcupobservacion: "INSERCION CUPO MATRICULADO PROCESO MIGRACION // SIN PROCESO DE ADMISION "
                         }
-                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral("OAS_Master", dataCupo, dataDetalle, periodo);
+                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral(transaction,"OAS_Master", dataCupo, dataDetalle, periodo);
                         var agregardatos = {
                             cedula: matricula.strCedula,
                             carrera: carrera.strBaseDatos
                         }
                         ListadoEstudiantes.push(agregardatos)
                     } else {
-                        var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado("OAS_Master", matricula.strCedula);
+                        var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado(transaction,"OAS_Master", matricula.strCedula);
 
                         if (ObtenerCupoUltimo.count > 0) {
                             if (ObtenerCupoUltimo.data[0].estcup_id == VariablesGlobales.ESTADOACTIVO) {
@@ -965,7 +893,7 @@ async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
                                     dcupfechacreacion: tools.FechaActualCupo(),
                                     dcupobservacion: "INSERCION CUPO MATRICULADO PROCESO MIGRACION // SIN PROCESO DE ADMISION"
                                 }
-                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
 
                                 var agregardatos = {
                                     cedula: matricula.strCedula,
@@ -983,28 +911,29 @@ async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
             }
             console.log("******************PROCESO FINALIZADO******************")
             return ListadoEstudiantes;
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
             return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-
-
-    } catch (err) {
-        console.error(err);
-        return 'ERROR';
-    }
 }
 async function ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo) {
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
-        try {
             var ListadoEstudiantes = [];
-           // var ListadoCarrera = await procesoCupo.ListadoCarreraTodas();
-            var ListadoCarrera = await procesoCupo.ListadoCarreraNivelacion("UNA");
+         //var ListadoCarrera = await procesoCupo.ListadoCarreraTodas(transaction,"OAS_Master");
+            var ListadoCarrera = await procesoCupo.ListadoCarreraNivelacion(transaction,"OAS_Master","UNA");
             for (var carrera of ListadoCarrera.data) {
                 // if (carrera.strBaseDatos == 'OAS_NivArtes') {
-                var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(carrera.strBaseDatos, periodo);
+                var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(transaction,carrera.strBaseDatos, periodo);
                 for (var matricula of ListadosMatriculas.data) {
-                    var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(matricula.strCedula, periodo, carrera.strBaseDatos);
+                    var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(transaction,matricula.strCedula, periodo, carrera.strBaseDatos);
                     if (VerificarEstudianteCupo.count == 0) {
                         var DatosCentralizada = await centralizada.obtenerdocumento(tools.CedulaSinGuion(matricula.strCedula));
                         var dataCupo = {
@@ -1024,14 +953,14 @@ async function ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo) {
                             dcupfechacreacion: tools.FechaActualCupo(),
                             dcupobservacion: "INSERCION CUPO MATRICULADO PROCESO MIGRACION // SIN PROCESO DE ADMISION "
                         }
-                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral("OAS_Master", dataCupo, dataDetalle, periodo);
+                        var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral(transaction,"OAS_Master", dataCupo, dataDetalle, periodo);
                         var agregardatos = {
                             cedula: matricula.strCedula,
                             carrera: carrera.strBaseDatos
                         }
                         ListadoEstudiantes.push(agregardatos)
                     } else {
-                        var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado("OAS_Master", matricula.strCedula);
+                        var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado(transaction,"OAS_Master", matricula.strCedula);
                         if (ObtenerCupoUltimo.count > 0) {
                             if (ObtenerCupoUltimo.data[0].estcup_id == VariablesGlobales.ESTADOACTIVO) {
                                 console.log("No registra Cupo ya esta con cupo activo")
@@ -1043,7 +972,7 @@ async function ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo) {
                                     dcupfechacreacion: tools.FechaActualCupo(),
                                     dcupobservacion: "INSERCION CUPO MATRICULADO PROCESO MIGRACION // SIN PROCESO DE ADMISION"
                                 }
-                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
 
                                 var agregardatos = {
                                     cedula: matricula.strCedula,
@@ -1061,14 +990,12 @@ async function ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo) {
             }
             console.log("******************PROCESO FINALIZADO******************")
             return ListadoEstudiantes;
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            await transaction.rollback();
+            console.error(err);
             return 'ERROR';
+        } finally {
+            await transaction.commit();
+            await pool.close();
         }
-
-
-    } catch (err) {
-        console.error(err);
-        return 'ERROR';
-    }
 }

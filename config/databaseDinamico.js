@@ -7,15 +7,13 @@ module.exports = {
   database:process.env.DB_NAMESISTEMAACADEMICO,
   portNumber:process.env.DB_PORTSISTEMAACADEMICO,
   pool: {
-    max: 100000,
+    max: 9000000,
     min: 0,
-    idleTimeoutMillis: 30000,  // Reducir el tiempo de espera en milisegundos
-    acquireTimeoutMillis: 30000,  // Agregar tiempo de espera para adquirir una conexión
+    idleTimeoutMillis: 600,  // Reducir el tiempo de espera en milisegundos
   },
   options: {
     encrypt: false, // for azure
-    trustServerCertificate: false,
-    requestTimeout: 60000, // Reducir el tiempo de espera de la consulta
+    trustServerCertificate: false
   }
 };
 

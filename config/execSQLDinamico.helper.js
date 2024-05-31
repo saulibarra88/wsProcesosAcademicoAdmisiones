@@ -7,7 +7,7 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
 
   var conex = CONFIGACADEMICO;
   conex.database = carrera;
- // console.log("*********************************************************************")
+  //console.log("*********************************************************************")
  // console.log("conexxion Dinamica:", conex.database)
  // console.log("SQL:", SQL)
   let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
@@ -35,31 +35,20 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
 
  
 };
+
+
 const execDinamicoTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
   try {
     // Ejecuta el SQL personalizado con los parámetros
-  //  console.log(SQL)
-    const request = new sql.Request(transaction);
-    var res=  await request.query(SQL);
+   // console.log(SQL)
+    var res=  await transaction.request().query(SQL);
     return buildResponse(res, OK, msgVacio, msgError);
   } catch (error) {
-    // Si ocurre un error, deshace la transacción
     await transaction.rollback();
     return handleDatabaseError(error, msgError);
     throw error;
   
   }
-
-
-
-
-
-
-
-
-
-
-
 
   let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
   //let conn;
@@ -108,5 +97,30 @@ const handleDatabaseError = (err, msgError) => {
     };
   }
 };
+  // Función para iniciar una transacción
+  const iniciarDinamicoTransaccion = async  (poolejcucion) =>{
+    try {
+        const sql = require("mssql");
+        const transaction = new sql.Transaction(poolejcucion);
+        return transaction;
+  
+    } catch (error) {
+        throw error;
+    }
+  }
 
-module.exports = { execDinamico,execDinamicoTransaccion };
+    // Función para iniciar una transacción
+    const iniciarDinamicoPool = async  (carrera) =>{
+      try {
+        const sql = require("mssql");
+        var conex = CONFIGACADEMICO;
+        var resultado = false;
+        conex.database = carrera;
+        const pool = new sql.ConnectionPool(conex);
+        return pool;
+      } catch (error) {
+          throw error;
+      }
+    }
+
+module.exports = { execDinamico,execDinamicoTransaccion,iniciarDinamicoTransaccion,iniciarDinamicoPool };

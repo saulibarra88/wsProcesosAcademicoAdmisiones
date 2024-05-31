@@ -1,6 +1,7 @@
 
 const CONFIGMASTER = require('./../config/baseMaster');
 const sql = require('mssql');
+const { Connection, Request } = require('mssql');
 const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
 
   var conex = CONFIGMASTER;
@@ -35,17 +36,16 @@ const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null)
  
 };
   const execMasterTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
-    try {
-      // Ejecuta el SQL personalizado con los parámetros
-     // console.log(SQL)
-      const request = new sql.Request(transaction);
-      var res=  await request.query(SQL);
-      return buildResponse(res, OK, msgVacio, msgError);
-    } catch (error) {
-      // Si ocurre un error, deshace la transacción
-      await transaction.rollback();
-      return handleDatabaseError(error, msgError);
-      throw error;
+    
+      try {
+        // Ejecuta el SQL personalizado con los parámetros
+      //  console.log(SQL)
+        var res=  await transaction.request().query(SQL);
+        return buildResponse(res, OK, msgVacio, msgError);
+      } catch (error) {
+        await transaction.rollback();
+        return handleDatabaseError(error, msgError);
+        throw error;
     
     }
     let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
@@ -96,6 +96,30 @@ const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null)
       };
     }
   };
+   // Función para iniciar una transacción
+   const iniciarMasterTransaccion = async  (poolejcucion) =>{
+    try {
+        const sql = require("mssql");
+        const transaction = new sql.Transaction(poolejcucion);
+        return transaction;
   
-  module.exports = { execMaster,execMasterTransaccion };
+    } catch (error) {
+        throw error;
+    }
+  }
+
+    // Función para iniciar una transacción
+    const iniciarMasterPool = async  (carrera) =>{
+      try {
+        const sql = require("mssql");
+        var conex = CONFIGMASTER;
+        var resultado = false;
+        conex.database = carrera;
+        const pool = new sql.ConnectionPool(conex);
+        return pool;
+      } catch (error) {
+          throw error;
+      }
+    }
+  module.exports = { execMaster,execMasterTransaccion,iniciarMasterTransaccion,iniciarMasterPool };
   

@@ -12,6 +12,7 @@ var https = require('https');
 const procesoMigracion = require('./rutas/ProcesosMigracionNivelacion');
 const ProcesoAcademico = require('./rutas/ProcesoNotasAcademico');
 const procesosAdmisiones = require('./rutas/rutaadmisiones');
+const rutaAcademicoNotas = require('./rutas/rutaAcademicoNotas');
 const rutaprocesos = require('./rutas/rutaprocesos');
 
 const url='/wsprocesosadmisiones'
@@ -43,6 +44,7 @@ app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));//
 //Rutas de Servicios Web
 app.use(url+'/rutaadmision',procesosAdmisiones);
 app.use(url+'/rutaprocesos',rutaprocesos);
+app.use(url+'/rutaacademiconotas',rutaAcademicoNotas);
 
 
 //Index Router

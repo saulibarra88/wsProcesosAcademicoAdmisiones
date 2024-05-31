@@ -9,16 +9,14 @@ const sqlConfig = {
   database:CONFIGACADEMICO.database,
   server: CONFIGACADEMICO.server,
   pool: {
-    max: Number(98000),
+    max: Number(9000000),
     min: 0,
-    idleTimeoutMillis: Number(70000),
+    idleTimeoutMillis: Number(600),
   },
   options: {
     encrypt: false, // for azure
-    trustServerCertificate: true, // change to true for local dev / self-signed certs
-    requestTimeout: 720000
-  },
-  arrarrayRowMode: true,
+    trustServerCertificate: true
+  }
 };
 
 class DatabaseSingleton {
