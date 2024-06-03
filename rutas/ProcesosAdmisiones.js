@@ -100,14 +100,30 @@ module.exports.ListadoAspiranteAdmisiones = async function (strBaseCarrera, peri
             var ListadoEstados = [];
             var DatosBaseCarrera = await procesoCupo.ObtenerDatosBase(strBaseCarrera);
             if (DatosBaseCarrera.count > 0) {
-                var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/aspirante_sede/list_periodo/"+ periodoAdmisiones,{ httpsAgent: agent });
+                var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/aspirante_sede/list_periodo/" + periodoAdmisiones, { httpsAgent: agent });
                 if (informacion.data.length > 0) {
-                      var DatosPeriodoAcademico = await procesoCupo.ObtenerPeriodoDadoCodigo(informacion.data[0].Periodo.perNomenclatura);
-                          var PeriodoAcademico=DatosPeriodoAcademico.data[0]
+                    var DatosPeriodoAcademico = await procesoCupo.ObtenerPeriodoDadoCodigo(informacion.data[0].Periodo.perNomenclatura);
+
+                    if (DatosPeriodoAcademico.count > 0) {
+                        var PeriodoAcademico = DatosPeriodoAcademico.data[0]
+                    } else {
+                        let datos = {
+                            strCodigo: "NINGUNO",
+                            strDescripcion: "NINGUNO",
+                            dtFechaInic: "NINGUNO",
+                            dtFechaFin: "NINGUNO",
+                            dtFechaTopeMatOrd: "NINGUNO",
+                            dtFechaTopeMatExt:"NINGUNO",
+                            dtFechaTopeMatPro: "NINGUNO",
+                            dtFechaTopeRetMat: "NINGUNO",
+                            strCodReglamento: "NINGUNO",
+                        }
+                        PeriodoAcademico = datos;
+                    }
                     for (var objAspirante of informacion.data) {
                         var verificarsede = tools.palabraIncluidaEnFrase(objAspirante.Sede.sedDescripcion, DatosBaseCarrera.data[0].strSede);
                         if (verificarsede) {
-                            objAspirante.PeriodoAcademico=PeriodoAcademico
+                            objAspirante.PeriodoAcademico = PeriodoAcademico
                             ListadoEstados.push(objAspirante)
                         }
                     }
@@ -127,16 +143,16 @@ module.exports.ObtenerPeriodoVigenteAdmisiones = async function () {
     try {
         try {
             var ListadoEstados = [];
-                var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos",{ httpsAgent: agent });
-                if (informacion.data.length > 0) {
-                    for (var objPeriodo of informacion.data) {
-    
-                        if (objPeriodo.perVigente) {
-                            ListadoEstados.push(objPeriodo)
-                        }
+            var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos", { httpsAgent: agent });
+            if (informacion.data.length > 0) {
+                for (var objPeriodo of informacion.data) {
+
+                    if (objPeriodo.perVigente) {
+                        ListadoEstados.push(objPeriodo)
                     }
                 }
-            
+            }
+
             return ListadoEstados;
         } catch (error) {
             console.error(error);
