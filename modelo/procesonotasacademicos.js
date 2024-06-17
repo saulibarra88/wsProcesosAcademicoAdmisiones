@@ -84,7 +84,23 @@ module.exports.ObtenerParametroCalificacionPorCodEquivalencia = async function (
 
 
 }
+module.exports.ListadoEquivalenciaRendimentodadoReglamento = async function (carrera,idreglemanto) {
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[equivalenciarendimiento] AS eqv WHERE  eqv.eqrenregid= " + idreglemanto + " and eqrenestado=1;"
 
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return (sqlConsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+
+
+}
 module.exports.VerificacionEstudianteProcesosMatriculas = async function (transaction,carrera, periodo, idmatricula, CodMateria, codEstudiante) {
   try {
     var consultaconvalidacion = "";
@@ -180,7 +196,7 @@ module.exports.ListadoNominaEstudianteDadoCedulaDocente = async function (transa
 }
 module.exports.ObtenerLinkActasCalificaciones = async function (transaction,carrera, periodo ,nivel,paralelo,CodMateria, codDocente,idTipoActa) {
   var sentencia="";
- sentencia ="SELECT * FROM [" + carrera + "].[dbo].[bandejaactas] AS ma WHERE ma.strCodParalelo= '" + paralelo + "' and ma.strCodPeriodo= '" + periodo + "' and ma.strCodNivel= '" + nivel + "'and ma.strCodMateria= '" + CodMateria + "' and ma.strCodDocente= '" + codDocente + "' and ma.tipoacta= " + idTipoActa + " and estado=2 and estadoeliminar=1"
+ sentencia ="SELECT * FROM [" + carrera + "].[dbo].[bandejaactas] AS ma WHERE ma.strCodParalelo= '" + paralelo + "' and ma.strCodPeriodo= '" + periodo + "' and ma.strCodNivel= '" + nivel + "'and ma.strCodMateria= '" + CodMateria + "' and ma.strCodDocente= '" + codDocente + "' and ma.tipoacta= " + idTipoActa + " and estado=3 and estadoeliminar=1"
   try {
     if (sentencia != "") {
       const sqlconsulta = await execDinamicoTransaccion(transaction, carrera, sentencia, "OK", "OK");

@@ -21,7 +21,8 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
         try {
             var ListadoEstudiantes = [];
             var ListadoEstudiantesProceso = [];
-            var DatosBaseHomologacion = await procesoCupo.ObtenerCusIdBaseNivelacion(strBaseCarrera, periodo);
+            var periodoactivoadmision = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos/activos" , { httpsAgent: agent });
+            var DatosBaseHomologacion = await procesoCupo.ObtenerCusIdBaseNivelacion(strBaseCarrera, periodoactivoadmision.data[0].perNomenclatura);
             if (DatosBaseHomologacion.count > 0) {
                 const content = {
                     cusId: DatosBaseHomologacion.data[0].hmbdbaseinsc,
@@ -32,9 +33,7 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
                     for (var obj of ListadoEstudiantes.data) {
                         var DatosMatriculas = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/matricula_inscripcion/asignacion_cupo/" + obj.acuId, { httpsAgent: agent });
                         var Exoneracion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/exoneracion/asignacion_cupo/" + obj.acuId, { httpsAgent: agent });
-
                         var contador = 0;
-
                         if (DatosMatriculas.data) {
                             obj.habilitarMatricula = true;
                             obj.minsFecha = DatosMatriculas.data.minsFecha;

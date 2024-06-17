@@ -308,4 +308,6 @@ router.get('/ListadoEstudianteMatriculadoDadoNivelCupos/:periodo/:nivel',async (
     }
  
 });
+
+
 module.exports = router;

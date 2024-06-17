@@ -73,6 +73,32 @@ module.exports.FechaActualCupo = function () {
     return headerHtml
   }
 
+  module.exports.headerOcultoHtmlCarreras = function (datos) {
+    var imagenheader = pathimage.join(__dirname, '../public/imagenes/espoch.png');
+    const headerHtml2 =  `<div style="text-align: left;display:none">
+    <img src="data:image/jpeg;base64,${imageToBase64(imagenheader)}" alt="Header Image" style="width: 50px;float: left;">
+    </div>
+    <div style="text-align: center;display:none">
+    <p style='font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong>  </p>
+    <p style='font-size: 10px;margin-top: -9px;'> <strong>FACULTAD: ${datos.strNombreFacultad}</strong> </p>
+    <p style='font-size: 10px;margin-top: -9px;'><strong>CARRERA: ${datos.strNombreCarrera}</strong> </p>
+    </div>`;
+    return headerHtml2
+  }
+
+  module.exports.headerHtmlCarreras = function (datos) {
+    var imagenheader = pathimage.join(__dirname, '../public/imagenes/espoch.png');
+    const headerHtml = `<div style="text-align: left;">
+    <img src="data:image/jpeg;base64,${imageToBase64(imagenheader)}" alt="Header Image" style="width: 50px;float: left;">
+    </div>
+    <div style="text-align: center;">
+    <p style='font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong>  </p>
+    <p style='font-size: 10px;margin-top: -9px;'> <strong>FACULTAD: ${datos.strNombreFacultad}</strong> </p>
+    <p style='font-size: 10px;margin-top: -9px;'><strong>CARRERA: ${datos.strNombreCarrera}</strong> </p>
+    </div>`;
+    return headerHtml
+  }
+
   module.exports.footerHtml = function () {
     var imagenfooter = pathimage.join(__dirname, '../public/imagenes/matriz.png');
     const footerHtml = `<div style="text-align: center;">

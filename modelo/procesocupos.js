@@ -253,6 +253,21 @@ module.exports.EncontrarEstudianteMatriculado = async function (transaction,carr
   }
 
 }
+module.exports.EncontrarEstudianteMatriculadodadoCodigo = async function (transaction,carrera,periodo,codigo) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE m.strCodEstud='" + codigo + "' and  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' ORDER BY m.strCodNivel,e.strApellidos"
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
 module.exports.EncontrarEstudianteMatriculaTodas = async function (transaction,carrera,cedula) {
   var sentencia="";
   sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE e.strCedula='" + cedula + "' and  m.strCodEstado='DEF' "
@@ -351,7 +366,7 @@ module.exports.AsignaturasMatriculadaEstudiante = async function (transaction,ca
 
 module.exports.MatriculasCarrerasPeriodo = async function (transaction,carrera,periodo) {
   var sentencia="";
-  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' "
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' ORDER BY m.strCodNivel,e.strApellidos"
     try {
   if (sentencia != "") {
     const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");

@@ -53,6 +53,14 @@ module.exports.ListadoConvalidacionesEstudiantes = async function (carrera, cedu
         console.log(error);
     }
 }
+module.exports.ListadoEquivalenciaRelamentos = async function ( idReglamento) {
+    try {
+        var Equivalencias = await ListadoEquivalenciaRendimientoss( idReglamento);
+        return { Equivalencias }
+    } catch (error) {
+        console.log(error);
+    }
+}
 async function ActualizarNotaExonerados(periodo, estado) {
     console.log("***********PROCESO INICIALIZADO ACTUALIZACION NOTA EXONERADOS**********")
     try {
@@ -111,7 +119,7 @@ async function ObtenerListadoCalificacionesEstudiantes(carrera, periodo, cedula,
     await transaction.begin();
     try {
         var listadoAsignaturas = [];
-        var matriculaEstudiantesAsiganturas = await procesoCupo.AsignaturasMatriculadaEstudiante(carrera, periodo, cedula);
+        var matriculaEstudiantesAsiganturas = await procesoCupo.AsignaturasMatriculadaEstudiante(transaction,carrera, periodo, cedula);
         if (matriculaEstudiantesAsiganturas.count > 0) {
             for (var asignaturas of matriculaEstudiantesAsiganturas.data) {
                 var DatosConvalidaciones = await procesonotasacademicos.ObtenerConvalidacionesEstudiante(transaction, carrera, asignaturas.strCodPeriodoMatricula, asignaturas.sintCodMatricula, asignaturas.strCodMateria);
@@ -260,5 +268,23 @@ async function ListadosEstudianteConvalidaciones(carrera, cedula) {
         await transaction.commit();
         // Cerrar la conexión
         await pool.close();
+    }
+}
+async function ListadoEquivalenciaRendimientoss(idReglamento) {
+   
+    try {
+        var listadoNomina = [];
+        var listado = await procesonotasacademicos.ListadoEquivalenciaRendimentodadoReglamento("SistemaAcademico", idReglamento);
+        if (listado.count > 0) {
+            listadoNomina=listado.data
+            return listadoNomina;
+
+        } else {
+            return listadoNomina;
+        }
+    } catch (err) {
+      
+        console.error(err);
+        return 'ERROR';
     }
 }

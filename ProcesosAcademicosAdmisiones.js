@@ -14,6 +14,7 @@ const ProcesoAcademico = require('./rutas/ProcesoNotasAcademico');
 const procesosAdmisiones = require('./rutas/rutaadmisiones');
 const rutaAcademicoNotas = require('./rutas/rutaAcademicoNotas');
 const rutaprocesos = require('./rutas/rutaprocesos');
+const rutagraficos = require('./rutas/rutaGraficos');
 
 const url='/wsprocesosadmisiones'
 //Port Number
@@ -45,6 +46,7 @@ app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));//
 app.use(url+'/rutaadmision',procesosAdmisiones);
 app.use(url+'/rutaprocesos',rutaprocesos);
 app.use(url+'/rutaacademiconotas',rutaAcademicoNotas);
+app.use(url+'/rutagraficos',rutagraficos);
 
 
 //Index Router

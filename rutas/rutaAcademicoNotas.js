@@ -101,4 +101,25 @@ router.get('/ListadoConvalidacionesEstudiantes/:carrera/:cedula',async (req, res
     }
  
 });
+
+router.get('/ListadoEquivalenciaRendimento/:idReglamento',async (req, res) => {
+    const idReglamento = req.params.idReglamento;
+    try {
+        var respuesta=await  procesoAcadeicoNotas.ListadoEquivalenciaRelamentos(idReglamento);
+        res.json({
+            success: true,
+            Informacion:  respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
 module.exports = router; 
