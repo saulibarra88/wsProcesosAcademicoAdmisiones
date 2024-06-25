@@ -9,7 +9,7 @@
     "stop": "pm2 stop ./bin/www",
     "dev": "nodemon ProcesosAcademicosAdmisiones.js",
     "pro": "npm i --prod && pm2 restar ProcesosAcademicosAdmisiones.js",
-    "prod": "git pull origin main && npm i --prod && sudo pm2 stop ProcesosAcademicosAdmisiones.js && sudo pm2 start ProcesosAcademicosAdmisiones.js --name ProcesosAcademicosAdmisiones && sudo pm2 save",
+    "prod": "git pull origin main && npm i --prod --force --legacy-peer-deps  && sudo pm2 stop ProcesosAcademicosAdmisiones.js && sudo pm2 start ProcesosAcademicosAdmisiones.js --name ProcesosAcademicosAdmisiones && sudo pm2 save",
     "prodinit": "git pull origin main && npm i --prod && sudo pm2 start ProcesosAcademicosAdmisiones.js --name ProcesosAcademicosAdmisiones && sudo pm2 save",
     "debug": "node ProcesosAcademicosAdmisiones.js"
   },
