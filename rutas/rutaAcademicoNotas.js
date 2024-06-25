@@ -122,4 +122,44 @@ router.get('/ListadoEquivalenciaRendimento/:idReglamento',async (req, res) => {
  
 });
 
+router.get('/ActualizarActaGeneradaCambioFecha/:periodo/:acta',async (req, res) => {
+    const periodo = req.params.periodo;
+    const acta = req.params.acta;
+    try {
+        var respuesta=await  procesoAcadeicoNotas.ProcesoAcademicoCalificaciones(periodo,acta);
+        res.json({
+            success: true,
+            Informacion:  respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ObtenerPeriodoDadoCodigo/:periodo/',async (req, res) => {
+    const periodo = req.params.periodo;
+    try {
+        var respuesta=await  procesoAcadeicoNotas.ProcesoObtenerPeriodoDadoCodigo(periodo);
+        res.json({
+            success: true,
+            Informacion:  respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
 module.exports = router; 

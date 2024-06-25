@@ -273,6 +273,7 @@ module.exports.EncontrarEstudianteMatriculaTodas = async function (transaction,c
   sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE e.strCedula='" + cedula + "' and  m.strCodEstado='DEF' "
 try {
   if (sentencia != "") {
+    console.log(sentencia)
     const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {

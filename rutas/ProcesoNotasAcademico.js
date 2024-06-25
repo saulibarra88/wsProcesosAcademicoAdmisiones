@@ -11,11 +11,26 @@ const CONFIGACADEMICO = require('./../config/databaseDinamico');
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 
 
-module.exports.ProcesoAcademicoCalificaciones = async function () {
+module.exports.ProcesoObtenerPeriodoDadoCodigo = async function (periodo) {
+    try {
+       
+       
+        var resultado = await  procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
+        if(resultado.count>0){
+            return resultado.data[0]
+        }else{
+            return []
+        }
+       
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports.ProcesoAcademicoCalificaciones = async function (periodo,acta) {
     try {
 
         // var resultado=   await ActualizarNotaExonerados("P0040","ABI");//Numero de periodos a restas , estado de carrera
-        var resultado = await ActualizarActasParcialesCambiosFechas("P0040", 2);//Numero de periodos a restas , tipo de acta a actualizar
+        var resultado = await ActualizarActasParcialesCambiosFechas(periodo, acta);//Numero de periodos a restas , tipo de acta a actualizar
     } catch (error) {
         console.log(error);
     }
@@ -244,6 +259,7 @@ async function ListadosEstudianteConvalidaciones(carrera, cedula) {
     try {
         var listadoNomina = [];
         var matriculaEstudiantesNomina = await procesoCupo.EncontrarEstudianteMatriculaTodas(transaction, carrera, cedula);
+     
         if (matriculaEstudiantesNomina.count > 0) {
             for (var estudiante of matriculaEstudiantesNomina.data) {
                 var Convalidaciones = await procesoCupo.ObtenerConvalidacionesEstudiante(transaction, carrera, estudiante.sintCodigo, estudiante.strCodPeriodo);
