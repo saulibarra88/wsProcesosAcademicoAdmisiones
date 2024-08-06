@@ -5,6 +5,7 @@ const Request = require("request");
 const procesoMigracion = require('../rutas/ProcesosMigracionNivelacion');
 const procesoCupo = require('../modelo/procesocupos');
 const reportes = require('../rutas/reportesadmisiones');
+const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
 
 router.get('/ProcesoConfirmacionCupoInscripcion/:periodo/:cedula/',async (req, res) => {
     const periodo = req.params.periodo;
@@ -345,6 +346,25 @@ router.get('/ListadoEstudianteMatriculadoDadoNivelCupos/:periodo/:nivel',async (
             success: true,
             informacion:respuesta.Informacion,
             Base:respuesta2
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
+router.get('/ListadoHomologacionCarreraAdminisiones/',async (req, res) => {
+    try {
+        var Informacion = await procesosadmisiones.ListadoHomologacionesCarreras();
+        res.json({
+            success: true,
+            Informacion
         });
     }catch (err) {
         console.log('Error: ' + err);

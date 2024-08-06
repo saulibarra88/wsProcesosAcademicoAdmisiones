@@ -196,3 +196,40 @@ module.exports.pdfComprobanteCupo = async function (acuId) {
     }
 }
 
+module.exports.ListadoHomologacionesCarreras = async function () {
+    try {
+        try {
+            var ListadoEstudiantes = [];
+            var ListadoEstudiantesProceso = [];
+            var periodoactivoadmision = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos/activos" , { httpsAgent: agent });
+            var ofertaAcademica = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo/" + periodoactivoadmision.data[0].perCodigo, { httpsAgent: agent });
+   
+            var objCarreraOferta='';
+       
+            if (ofertaAcademica.data.length > 0) {
+            for (var oferta of ofertaAcademica.data) {
+
+
+              var carreraNivelacion= await procesoCupo.ObtenerDatosBase(oferta.cupDbNivelacion)
+              var carrera=await procesoCupo.ObtenerDatosBase(oferta.cupDbCarrera)
+              oferta.cupNombreCarrera=carrera.data[0].strNombreCarrera
+              oferta.cupNombreNivelacion=carreraNivelacion.data[0].strNombreCarrera
+              oferta.blactiva=false,
+              ListadoEstudiantesProceso.push(oferta)
+            }
+           
+            }
+         
+         
+         
+            return ListadoEstudiantesProceso;
+        } catch (error) {
+            console.error(error);
+            return 'ERROR';
+        }
+    } catch (err) {
+        console.log(error);
+        return 'ERROR';
+    }
+}
+
