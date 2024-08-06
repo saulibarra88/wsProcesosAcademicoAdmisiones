@@ -22,41 +22,49 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
             var ListadoEstudiantes = [];
             var ListadoEstudiantesProceso = [];
             var periodoactivoadmision = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos/activos" , { httpsAgent: agent });
-            var DatosBaseHomologacion = await procesoCupo.ObtenerCusIdBaseNivelacion(strBaseCarrera, periodoactivoadmision.data[0].perNomenclatura);
-            if (DatosBaseHomologacion.count > 0) {
-                const content = {
-                    cusId: DatosBaseHomologacion.data[0].hmbdbaseinsc,
-                    estId: idestado,
+            var ofertaAcademica = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo/" + periodoactivoadmision.data[0].perCodigo, { httpsAgent: agent });
+   
+            var objCarreraOferta='';
+       
+            if (ofertaAcademica.data.length > 0) {
+            for (var oferta of ofertaAcademica.data) {
+                if(strBaseCarrera===oferta.cupDbNivelacion){
+                    objCarreraOferta=oferta
                 }
-                ListadoEstudiantes = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/list_carrera_cusid_estado", content, { httpsAgent: agent });
-                if (ListadoEstudiantes.data.length > 0) {
-                    for (var obj of ListadoEstudiantes.data) {
-                        var DatosMatriculas = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/matricula_inscripcion/asignacion_cupo/" + obj.acuId, { httpsAgent: agent });
-                        var Exoneracion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/exoneracion/asignacion_cupo/" + obj.acuId, { httpsAgent: agent });
-                        var contador = 0;
-                        if (DatosMatriculas.data) {
-                            obj.habilitarMatricula = true;
-                            obj.minsFecha = DatosMatriculas.data.minsFecha;
-                            obj.minsId = DatosMatriculas.data.minsId;
+            }
+            const content = {
+                cusId: objCarreraOferta.cupCusId,
+                estId: idestado,
+            }
+            ListadoEstudiantes = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/list_carrera_cusid_estado", content, { httpsAgent: agent });
+            if (ListadoEstudiantes.data.length > 0) {
+                for (var obj of ListadoEstudiantes.data) {
+                    var DatosMatriculas = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/matricula_inscripcion/asignacion_cupo/" + obj.acuId, { httpsAgent: agent });
+                    var Exoneracion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/exoneracion/asignacion_cupo/" + obj.acuId, { httpsAgent: agent });
+                    var contador = 0;
+                    if (DatosMatriculas.data) {
+                        obj.habilitarMatricula = true;
+                        obj.minsFecha = DatosMatriculas.data.minsFecha;
+                        obj.minsId = DatosMatriculas.data.minsId;
 
-                        } else {
-                            obj.habilitarMatricula = false;
-                            obj.minsFecha = "";
-                            obj.minsId = null;
-
-                        }
-                        if (Exoneracion.data) {
-                            obj.minsCarrera = true
-
-                        } else {
-                            obj.minsCarrera = false
-                        }
-                        ListadoEstudiantesProceso.push(obj);
+                    } else {
+                        obj.habilitarMatricula = false;
+                        obj.minsFecha = "";
+                        obj.minsId = null;
 
                     }
-                }
+                    if (Exoneracion.data) {
+                        obj.minsCarrera = true
 
+                    } else {
+                        obj.minsCarrera = false
+                    }
+                    ListadoEstudiantesProceso.push(obj);
+
+                }
             }
+            }
+         
             return ListadoEstudiantesProceso;
         } catch (error) {
             console.error(error);
@@ -72,17 +80,26 @@ module.exports.ListadoEstadosAdmisiones = async function (strBaseCarrera, period
     try {
         try {
             var ListadoEstados = [];
-            var DatosBaseHomologacion = await procesoCupo.ObtenerCusIdBaseNivelacion(strBaseCarrera, periodo);
-            if (DatosBaseHomologacion.count > 0) {
-                const content = {
-                    cusId: DatosBaseHomologacion.data[0].hmbdbaseinsc
+            
+            var periodoactivoadmision = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos/activos" , { httpsAgent: agent });
+            var ofertaAcademica = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo/" + periodoactivoadmision.data[0].perCodigo, { httpsAgent: agent });
+            var objCarreraOferta='';
+       
+            if (ofertaAcademica.data.length > 0) {
+            for (var oferta of ofertaAcademica.data) {
+                if(strBaseCarrera===oferta.cupDbNivelacion){
+                    objCarreraOferta=oferta
                 }
-                var informacion = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/estados_carrera_cusid", content, { httpsAgent: agent });
-                if (informacion.data.length > 0) {
-                    ListadoEstados = informacion.data;
-                }
-
             }
+            const content = {
+                cusId: objCarreraOferta.cupCusId,
+            }
+            var informacion = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/estados_carrera_cusid", content, { httpsAgent: agent });
+            if (informacion.data.length > 0) {
+                ListadoEstados = informacion.data;
+            }
+            }
+
             return ListadoEstados;
         } catch (error) {
             console.error(error);
@@ -148,13 +165,11 @@ module.exports.ObtenerPeriodoVigenteAdmisiones = async function () {
             var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos", { httpsAgent: agent });
             if (informacion.data.length > 0) {
                 for (var objPeriodo of informacion.data) {
-
                     if (objPeriodo.perVigente) {
                         ListadoEstados.push(objPeriodo)
                     }
                 }
             }
-
             return ListadoEstados;
         } catch (error) {
             console.error(error);
