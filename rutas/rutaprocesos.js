@@ -371,7 +371,7 @@ router.get('/ListadoHomologacionCarreraAdminisiones/',async (req, res) => {
         return res.json(
              {
                 success: false,
-                mensaje:'Error en el registro' + err
+                mensaje:'Error en la consulta' + err
             }
         );
     }

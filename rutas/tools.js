@@ -128,9 +128,7 @@ module.exports.FechaActualCupo = function () {
   }
 
   const promedio = (num1 + num2) / 2;
-    const redondeado = Math.ceil(promedio);
-
-    return redondeado;
+  return parseFloat(promedio.toFixed(2));
   }
   module.exports.CedulaConGuion=function (strcedula) {
     if ((strcedula.length > 9) && (strcedula.indexOf("-") < 0)) {

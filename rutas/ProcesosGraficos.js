@@ -367,11 +367,11 @@ async function generatePDF1(listado, carrera, nombres, asignatura, nivel, parale
     for (let estudiantes of listado) {
         contadot = contadot + 1;
         bodylistado += `<tr >
-            <td style="font-size: 10px; text-align: center"> ${contadot} </td>
-            <td style="font-size: 11px; text-align: center"> ${estudiantes.Descripcion} </td>
-            <td style="font-size: 11px; text-align: center"> ${estudiantes.Rango} </td>
-            <td style="font-size: 11px; text-align: center"> ${estudiantes.value} </td>
-            <td style="font-size: 11px; text-align: center"> ${estudiantes.ValorPorcentaje} % </td>
+            <td style="font-size: 9px; text-align: center"> ${contadot} </td>
+            <td style="font-size: 9px; text-align: center"> ${estudiantes.Descripcion} </td>
+            <td style="font-size: 9px; text-align: center"> ${estudiantes.Rango} </td>
+            <td style="font-size: 9px; text-align: center"> ${estudiantes.value} </td>
+            <td style="font-size: 9px; text-align: center"> ${estudiantes.ValorPorcentaje} % </td>
             </tr>`
     }
 
@@ -379,27 +379,26 @@ async function generatePDF1(listado, carrera, nombres, asignatura, nivel, parale
                     <!DOCTYPE html>
                     <html lang="es">
                     <head>
-                <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
+                <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 5px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
                     </head>
                     <body>
                     <p style='text-align: center;font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong>  </p><p style='text-align: center;font-size: 10px'> <strong>FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</strong> </p><p style='text-align: center;font-size: 10px'><strong>CARRERA: ${datosCarrera.data[0].strNombreCarrera}</strong> </p>
-                <p style='font-size: 10px'> <strong>PAO :</strong> ${nivel}</p>
-                <p style='font-size: 10px'> <strong>PARALELO :</strong> ${paralelo}</p>
-                <p style='font-size: 10px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
-                <p style='font-size: 10px'> <strong>DOCENTE :</strong>${nombres} </p>
-                <p style='font-size: 10px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
-                <p>CICLO 1 </p>
+                <p style='font-size: 9px'> <strong>PAO :</strong> ${nivel}</p>
+                <p style='font-size: 9px'> <strong>PARALELO :</strong> ${paralelo}</p>
+                <p style='font-size: 9px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
+                <p style='font-size: 9px'> <strong>PROFESOR :</strong>${nombres} </p>
+                <p style='font-size: 9px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
                     <table border=2>
                     <thead>
                     <tr>
-                            <th colspan="12" style="text-align: center; font-size: 10px"> INFORMACIÓN CICLO 1. </th>
+                            <th colspan="12" style="text-align: center; font-size: 9px"> INFORMACIÓN CICLO 1. </th>
                         </tr>
                         <tr>
-                        <th style="font-size: 10px;text-align: center;">N°</th>
-                        <th style="font-size: 10px;text-align: center;">DESCRIPCION</th>
-                        <th  style="font-size: 10px;text-align: center;">RANGO</th>
-                        <th  style="font-size: 10px;text-align: center;">CANTIDAD</th>
-                        <th style="font-size: 10px;text-align: center;">PORCENTAJE</th>
+                        <th style="font-size: 9px;text-align: center;">N°</th>
+                        <th style="font-size: 9px;text-align: center;">DESCRIPCION</th>
+                        <th  style="font-size: 9px;text-align: center;">RANGO</th>
+                        <th  style="font-size: 9px;text-align: center;">CANTIDAD</th>
+                        <th style="font-size: 9px;text-align: center;">PORCENTAJE</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -408,11 +407,11 @@ async function generatePDF1(listado, carrera, nombres, asignatura, nivel, parale
                     </table>
                     <br/><br/>
                     <div style="font-size: 11px; text-align: center">
-                    <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 450px;"/> <br/><br/>
+                    <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 300px;"/> <br/><br/><br/>
                 </div>
-                <br/>
+              
                     <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-                    <p style="text-align: center;font-size: 11px;"> ${nombres}:</p>
+                    <p style="text-align: center;font-size: 9px;"> ${nombres}</p>
                     </body>
                     </html>
                     `;
@@ -450,11 +449,11 @@ async function generatePDF2(listado, carrera, nombres, asignatura, nivel, parale
     for (let estudiantes of listado) {
         contadot = contadot + 1;
         bodylistado += `<tr >
-            <td style="font-size: 10px; text-align: center"> ${contadot} </td>
-            <td style="font-size: 11px; text-align: center"> ${estudiantes.Descripcion} </td>
-            <td style="font-size: 11px; text-align: center"> ${estudiantes.Rango} </td>
-            <td style="font-size: 11px; text-align: center"> ${estudiantes.value} </td>
-            <td style="font-size: 11px; text-align: center"> ${estudiantes.ValorPorcentaje} % </td>
+            <td style="font-size: 9px; text-align: center"> ${contadot} </td>
+            <td style="font-size: 9px; text-align: center"> ${estudiantes.Descripcion} </td>
+            <td style="font-size: 9px; text-align: center"> ${estudiantes.Rango} </td>
+            <td style="font-size: 9px; text-align: center"> ${estudiantes.value} </td>
+            <td style="font-size: 9px; text-align: center"> ${estudiantes.ValorPorcentaje} % </td>
             </tr>`
                 }
 
@@ -462,27 +461,27 @@ async function generatePDF2(listado, carrera, nombres, asignatura, nivel, parale
                 <!DOCTYPE html>
                 <html lang="es">
                 <head>
-            <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
+            <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 5px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
                 </head>
                 <body>
                 <p style='text-align: center;font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong>  </p><p style='text-align: center;font-size: 10px'> <strong>FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</strong> </p><p style='text-align: center;font-size: 10px'><strong>CARRERA: ${datosCarrera.data[0].strNombreCarrera}</strong> </p>
-            <p style='font-size: 10px'> <strong>PAO :</strong> ${nivel}</p>
-            <p style='font-size: 10px'> <strong>PARALELO :</strong> ${paralelo}</p>
-            <p style='font-size: 10px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
-            <p style='font-size: 10px'> <strong>DOCENTE :</strong>${nombres} </p>
-            <p style='font-size: 10px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
-            <p>CICLO 2 </p>
+            <p style='font-size: 9px'> <strong>PAO :</strong> ${nivel}</p>
+            <p style='font-size: 9px'> <strong>PARALELO :</strong> ${paralelo}</p>
+            <p style='font-size: 9px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
+            <p style='font-size: 9px'> <strong>PROFESOR :</strong>${nombres} </p>
+            <p style='font-size: 9px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
+        
                 <table border=2>
                 <thead>
                 <tr>
-                        <th colspan="12" style="text-align: center; font-size: 10px"> INFORMACIÓN CICLO 1. </th>
+                        <th colspan="12" style="text-align: center; font-size: 9px"> INFORMACIÓN CICLO 2. </th>
                     </tr>
                     <tr>
-                    <th style="font-size: 10px;text-align: center;">N°</th>
-                    <th style="font-size: 10px;text-align: center;">DESCRIPCION</th>
-                    <th  style="font-size: 10px;text-align: center;">RANGO</th>
-                    <th  style="font-size: 10px;text-align: center;">CANTIDAD</th>
-                    <th style="font-size: 10px;text-align: center;">PORCENTAJE</th>
+                    <th style="font-size: 9px;text-align: center;">N°</th>
+                    <th style="font-size: 9px;text-align: center;">DESCRIPCION</th>
+                    <th  style="font-size: 9px;text-align: center;">RANGO</th>
+                    <th  style="font-size: 9px;text-align: center;">CANTIDAD</th>
+                    <th style="font-size: 9px;text-align: center;">PORCENTAJE</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -490,12 +489,12 @@ async function generatePDF2(listado, carrera, nombres, asignatura, nivel, parale
                     </tbody>
                 </table>
                 <br/><br/>
-                <div style="font-size: 11px; text-align: center">
-                <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 450px;"/> <br/><br/>
+                <div style="font-size: 9px; text-align: center">
+                <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 300px;"/> <br/><br/><br/>
             </div>
             <br/>
                 <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-                <p style="text-align: center;font-size: 11px;"> ${nombres}:</p>
+                <p style="text-align: center;font-size: 9px;"> ${nombres}</p>
                 </body>
                 </html>
                 `;
@@ -543,27 +542,27 @@ async function generatePDFR(listado, carrera, nombres, asignatura, nivel, parale
                 <!DOCTYPE html>
                 <html lang="es">
                 <head>
-            <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
+            <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 5px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
                 </head>
                 <body>
                 <p style='text-align: center;font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong>  </p><p style='text-align: center;font-size: 10px'> <strong>FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</strong> </p><p style='text-align: center;font-size: 10px'><strong>CARRERA: ${datosCarrera.data[0].strNombreCarrera}</strong> </p>
-            <p style='font-size: 10px'> <strong>PAO :</strong> ${nivel}</p>
-            <p style='font-size: 10px'> <strong>PARALELO :</strong> ${paralelo}</p>
-            <p style='font-size: 10px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
-            <p style='font-size: 10px'> <strong>DOCENTE :</strong>${nombres} </p>
-            <p style='font-size: 10px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
+            <p style='font-size: 9px'> <strong>PAO :</strong> ${nivel}</p>
+            <p style='font-size: 9px'> <strong>PARALELO :</strong> ${paralelo}</p>
+            <p style='font-size: 9px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
+            <p style='font-size: 9px'> <strong>PROFESOR :</strong>${nombres} </p>
+            <p style='font-size: 9px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
             <p>CICLO 2 </p>
                 <table border=2>
                 <thead>
                 <tr>
-                        <th colspan="12" style="text-align: center; font-size: 10px"> INFORMACIÓN RECUPERACIÓN. </th>
+                        <th colspan="12" style="text-align: center; font-size: 9px"> INFORMACIÓN RECUPERACIÓN. </th>
                     </tr>
                     <tr>
-                    <th style="font-size: 10px;text-align: center;">N°</th>
-                    <th style="font-size: 10px;text-align: center;">DESCRIPCION</th>
-                    <th  style="font-size: 10px;text-align: center;">RANGO</th>
-                    <th  style="font-size: 10px;text-align: center;">CANTIDAD</th>
-                    <th style="font-size: 10px;text-align: center;">PORCENTAJE</th>
+                    <th style="font-size: 9px;text-align: center;">N°</th>
+                    <th style="font-size: 9px;text-align: center;">DESCRIPCION</th>
+                    <th  style="font-size: 9px;text-align: center;">RANGO</th>
+                    <th  style="font-size: 9px;text-align: center;">CANTIDAD</th>
+                    <th style="font-size: 9px;text-align: center;">PORCENTAJE</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -571,12 +570,12 @@ async function generatePDFR(listado, carrera, nombres, asignatura, nivel, parale
                     </tbody>
                 </table>
                 <br/><br/>
-                <div style="font-size: 11px; text-align: center">
-                <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 450px;"/> <br/><br/>
+                <div style="font-size: 9px; text-align: center">
+                <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 300px;"/> <br/><br/><br/>
             </div>
             <br/>
                 <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-                <p style="text-align: center;font-size: 11px;"> ${nombres}:</p>
+                <p style="text-align: center;font-size: 9px;"> ${nombres}</p>
                 </body>
                 </html>
                 `;
@@ -631,13 +630,13 @@ async function generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedu
         periodolistado="";
         contadot = contadot + 1;
         for (let perrio of estudiantes.Periodos) {
-            periodolistado += `<td style="font-size: 11px; text-align: center"> <strong>MATRICULA:</strong> ${perrio.matricula == true ? 'SI' : 'NO'} </br><strong>PERIODO:</strong> ${perrio.periodo} </br><strong>PAO:</strong> ${perrio.Nivel} </br> </td>`
+            periodolistado += `<td style="font-size: 9px; text-align: center"> <strong>MATRICULA:</strong> ${perrio.matricula == true ? 'SI' : 'NO'} </br><strong>PERIODO:</strong> ${perrio.periodo} </br><strong>PAO:</strong> ${perrio.Nivel} </br> </td>`
         }
         bodylistado += `<tr >
-        <td style="font-size: 10px; text-align: center;color:black"> ${contadot} </td>
-        <td style="font-size: 10px; text-align: center;color:black"> ${estudiantes.strCodigo} </td>
-        <td style="font-size: 11px; text-align: center;color:black"> ${estudiantes.strApellidos}  ${estudiantes.strNombres}</td>
-        <td style="font-size: 11px; text-align: center;color:black"> ${estudiantes.strCedula} </td>
+        <td style="font-size: 9px; text-align: center;color:black"> ${contadot} </td>
+        <td style="font-size: 9px; text-align: center;color:black"> ${estudiantes.strCodigo} </td>
+        <td style="font-size: 9px; text-align: center;color:black"> ${estudiantes.strApellidos}  ${estudiantes.strNombres}</td>
+        <td style="font-size: 9px; text-align: center;color:black"> ${estudiantes.strCedula} </td>
         ${periodolistado}
         </tr>`
     }
@@ -658,7 +657,7 @@ const htmlContent = `
         </tbody>
       </table>
       <br/><br/>
-      <div style="font-size: 11px; text-align: center">
+      <div style="font-size: 9px; text-align: center">
 </div>
 <br/>
       <p style="text-align: center;"> <strong>--------------------------------</strong></p>

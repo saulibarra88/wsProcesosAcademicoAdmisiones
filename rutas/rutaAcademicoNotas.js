@@ -55,7 +55,32 @@ router.get('/ListadosCalificacionesEstudiantedadoDocente/:carrera/:periodo/:nive
     }
  
 });
-
+router.get('/ProcesoReporteListadoCalificacionesEstudiantedadoDocente/:carrera/:periodo/:nivel/:paralelo/:CodMateria/:cedula/:idreglamento/:cedulaUsuario',async (req, res) => {
+    const periodo = req.params.periodo;
+    const nivel = req.params.nivel;
+    const paralelo = req.params.paralelo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    const cedulaUsuario = req.params.cedulaUsuario;
+    const CodMateria = req.params.CodMateria;
+    const idreglamento = req.params.idreglamento;
+    try {
+        var respuesta=await  procesoAcadeicoNotas.ProcesoReporteListadoCalificacionesEstudiantedadoDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula, idreglamento,cedulaUsuario);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 router.get('/ObtenerlinkActaCalificaciones/:carrera/:periodo/:nivel/:paralelo/:CodMateria/:codDocente/:idtipoacta',async (req, res) => {
     const periodo = req.params.periodo;
     const nivel = req.params.nivel;

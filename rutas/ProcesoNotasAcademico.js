@@ -7,30 +7,32 @@ const procesonotasacademicos = require('../modelo/procesonotasacademicos');
 const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
+const crypto = require("crypto");
+const pdf = require('html-pdf');
 const CONFIGACADEMICO = require('./../config/databaseDinamico');
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 
 
 module.exports.ProcesoObtenerPeriodoDadoCodigo = async function (periodo) {
     try {
-       
-       
-        var resultado = await  procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
-        if(resultado.count>0){
+
+
+        var resultado = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
+        if (resultado.count > 0) {
             return resultado.data[0]
-        }else{
+        } else {
             return null
         }
-       
+
     } catch (error) {
         console.log(error);
     }
 }
-module.exports.ProcesoAcademicoCalificaciones = async function (periodo,acta) {
+module.exports.ProcesoAcademicoCalificaciones = async function (periodo, acta) {
     try {
 
-         var resultado=   await ActualizarNotaExonerados(periodo,"ABI");//Numero de periodos a restas , estado de carrera
-       // var resultado = await ActualizarActasParcialesCambiosFechas(periodo, acta);//Numero de periodos a restas , tipo de acta a actualizar
+        var resultado = await ActualizarNotaExonerados(periodo, "ABI");//Numero de periodos a restas , estado de carrera
+        // var resultado = await ActualizarActasParcialesCambiosFechas(periodo, acta);//Numero de periodos a restas , tipo de acta a actualizar
     } catch (error) {
         console.log(error);
     }
@@ -47,6 +49,16 @@ module.exports.ProcesoListadoCalificacionesEstudiantedadoDocente = async functio
     try {
         var Asignaturas = await ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento);
         return { Asignaturas }
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports.ProcesoReporteListadoCalificacionesEstudiantedadoDocente = async function (carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento, cedulaUsuario) {
+    try {
+        var Asignaturas = await ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento);
+        var base64 = await generarReporteNotasCalificaciones(Asignaturas, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario);
+
+        return { base64 }
     } catch (error) {
         console.log(error);
     }
@@ -86,9 +98,9 @@ module.exports.ListadoConvalidacionesEstudiantes = async function (carrera, cedu
         console.log(error);
     }
 }
-module.exports.ListadoEquivalenciaRelamentos = async function ( idReglamento) {
+module.exports.ListadoEquivalenciaRelamentos = async function (idReglamento) {
     try {
-        var Equivalencias = await ListadoEquivalenciaRendimientoss( idReglamento);
+        var Equivalencias = await ListadoEquivalenciaRendimientoss(idReglamento);
         return { Equivalencias }
     } catch (error) {
         console.log(error);
@@ -152,7 +164,7 @@ async function ObtenerListadoCalificacionesEstudiantes(carrera, periodo, cedula,
     await transaction.begin();
     try {
         var listadoAsignaturas = [];
-        var matriculaEstudiantesAsiganturas = await procesoCupo.AsignaturasMatriculadaEstudiante(transaction,carrera, periodo, cedula);
+        var matriculaEstudiantesAsiganturas = await procesoCupo.AsignaturasMatriculadaEstudiante(transaction, carrera, periodo, cedula);
         if (matriculaEstudiantesAsiganturas.count > 0) {
             for (var asignaturas of matriculaEstudiantesAsiganturas.data) {
                 var DatosConvalidaciones = await procesonotasacademicos.ObtenerConvalidacionesEstudiante(transaction, carrera, asignaturas.strCodPeriodoMatricula, asignaturas.sintCodMatricula, asignaturas.strCodMateria);
@@ -211,15 +223,25 @@ async function ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, period
                         if (DatosSinAporbar.count == 0) {
                             var datosNotas = await procesonotasacademicos.ObtenerNotaPacialAsignatura(transaction, carrera, estudiante.sintCodigo, estudiante.strCodPeriodoMateria, estudiante.strCodMateria);
                             estudiante.cantidadNota = datosNotas.count;
+
                             if (datosNotas.count > 0) {
                                 var listadoCalificaciones = [];
                                 for (var objNotas of datosNotas.data) {
-                                    var EquivalenciaDatos = await procesonotasacademicos.ObtenerParametroCalificacionPorCodEquivalencia(transaction, "SistemaAcademico", objNotas.strCodEquiv, idreglamento);
                                     var valor1 = objNotas.dcParcial1 == null ? 0 : objNotas.dcParcial1;
                                     var valor2 = objNotas.dcParcial2 == null ? 0 : objNotas.dcParcial2;
                                     objNotas.promedio = tools.PromedioCalcular(valor1, valor2);
-                                    objNotas.Equivalencia = EquivalenciaDatos.data[0];
+                                    var EquivalenciaDatos = await procesonotasacademicos.ObtenerParametroCalificacionPromedioEquivalencia(transaction, "SistemaAcademico", objNotas.promedio, idreglamento);
+                                    if (EquivalenciaDatos.count > 0) {
+                                        objNotas.Equivalencia = EquivalenciaDatos.data[0];
+                                    } else {
+                                        var EquivalenciaAsistencia = await procesonotasacademicos.ObtenerParametroEquivalenciaAsistencia(transaction, "SistemaAcademico", objNotas.bytAsistencia, idreglamento);
+                                        if (EquivalenciaAsistencia.count > 0) {
+                                            objNotas.Equivalencia = EquivalenciaAsistencia.data[0];
+                                        }
+                                    }
                                     listadoCalificaciones.push(objNotas)
+
+
                                 }
                                 estudiante.Calificacion = listadoCalificaciones;
                             } else {
@@ -230,7 +252,7 @@ async function ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, period
                     }
                 }
             }
-            console.log("Cantida: " + listadoNomina.length)
+            console.log("Cantidad: " + listadoNomina.length)
             return listadoNomina;
         }
     } catch (err) {
@@ -277,14 +299,14 @@ async function ListadosEstudianteConvalidaciones(carrera, cedula) {
     try {
         var listadoNomina = [];
         var matriculaEstudiantesNomina = await procesoCupo.EncontrarEstudianteMatriculaTodas(transaction, carrera, cedula);
-     
+
         if (matriculaEstudiantesNomina.count > 0) {
             for (var estudiante of matriculaEstudiantesNomina.data) {
                 var Convalidaciones = await procesoCupo.ObtenerConvalidacionesEstudiante(transaction, carrera, estudiante.sintCodigo, estudiante.strCodPeriodo);
                 if (Convalidaciones.count > 0) {
                     for (var convalidad of Convalidaciones.data) {
                         var periodoobetner = await procesoCupo.ObtenerPeriodoDadoCodigo(convalidad.strCodPeriodo);
-                        convalidad.periodo=periodoobetner.data[0];
+                        convalidad.periodo = periodoobetner.data[0];
                         listadoNomina.push(convalidad)
                     }
                 }
@@ -305,39 +327,39 @@ async function ListadosEstudianteConvalidaciones(carrera, cedula) {
     }
 }
 async function ListadoEquivalenciaRendimientoss(idReglamento) {
-   
+
     try {
         var listadoNomina = [];
         var listado = await procesonotasacademicos.ListadoEquivalenciaRendimentodadoReglamento("SistemaAcademico", idReglamento);
         if (listado.count > 0) {
-            listadoNomina=listado.data
+            listadoNomina = listado.data
             return listadoNomina;
 
         } else {
             return listadoNomina;
         }
     } catch (err) {
-      
+
         console.error(err);
         return 'ERROR';
     }
 }
 async function ObtenerMatriculasInternados(carrera, cedula) {
-  
+
     try {
         var listado = [];
         var matriculaEstudiantesCarrera = await procesonotasacademicos.ObtenerMatriculaInternado(carrera, cedula);
         if (matriculaEstudiantesCarrera.count > 0) {
             for (var matriculas of matriculaEstudiantesCarrera.data) {
                 var AsignaturasListado = [];
-                var AsignaturasInternado = await procesonotasacademicos.ObtenerMatriculaInternadoAsignaturas(carrera, matriculas.strCodCoherte,matriculas.sintCodigo,matriculas.strCodEstud);
+                var AsignaturasInternado = await procesonotasacademicos.ObtenerMatriculaInternadoAsignaturas(carrera, matriculas.strCodCoherte, matriculas.sintCodigo, matriculas.strCodEstud);
                 for (var asignaturas of AsignaturasInternado.data) {
-                    var Retirado = await procesonotasacademicos.ObtenerAsignaturasRetiroInternado(carrera, matriculas.strCodCoherte,matriculas.sintCodigo,asignaturas.strCodMateria);
-                    if(Retirado.count==0){
+                    var Retirado = await procesonotasacademicos.ObtenerAsignaturasRetiroInternado(carrera, matriculas.strCodCoherte, matriculas.sintCodigo, asignaturas.strCodMateria);
+                    if (Retirado.count == 0) {
                         AsignaturasListado.push(asignaturas)
                     }
                 }
-                matriculas.ListadoAsignaturas=AsignaturasListado;
+                matriculas.ListadoAsignaturas = AsignaturasListado;
                 listado.push(matriculas)
             }
             return listado;
@@ -345,40 +367,225 @@ async function ObtenerMatriculasInternados(carrera, cedula) {
             return listado;
         }
     } catch (err) {
-       
+
         console.error(err);
         return 'ERROR';
-    } 
+    }
 }
 
 async function ListadoRetirosInternados(carrera, cedula) {
-  
+
     try {
         var listado = [];
         var matriculaEstudiantesCarrera = await procesonotasacademicos.ObtenerMatriculaInternado(carrera, cedula);
         if (matriculaEstudiantesCarrera.count > 0) {
             for (var matriculas of matriculaEstudiantesCarrera.data) {
                 var AsignaturasListado = [];
-              
-                
-                    var Retirado = await procesonotasacademicos.ObtenerAsignaturasRetiroTodas(carrera, matriculas.strCodCoherte,matriculas.sintCodigo);
-                    if(Retirado.count>0){
-                        for (var retiros of Retirado.data) {
-                            listado.push(retiros)
-                        }
-                        AsignaturasListado.push(Retirado.data)
+
+
+                var Retirado = await procesonotasacademicos.ObtenerAsignaturasRetiroTodas(carrera, matriculas.strCodCoherte, matriculas.sintCodigo);
+                if (Retirado.count > 0) {
+                    for (var retiros of Retirado.data) {
+                        listado.push(retiros)
                     }
-                
-             
+                    AsignaturasListado.push(Retirado.data)
+                }
+
+
             }
             return listado;
         } else {
             return listado;
         }
     } catch (err) {
-       
+
         console.error(err);
         return 'ERROR';
-    } 
+    }
+}
+const agent = new https.Agent({
+    rejectUnauthorized: false,
+    // other options if needed
+    secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
+});
+
+async function generarReporteNotasCalificaciones(listado, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario) {
+
+    var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+    var datosAsignatura = await procesoCupo.AsignaturasDatos(carrera, CodMateria);
+    var datosDocentes = await procesoCupo.DocentesDatos(carrera, cedula);
+    var datosPeriodo = await procesoCupo.PeriodoDatos(carrera, periodo);
+    var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedulaUsuario, { httpsAgent: agent });
+    var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+    var cabeceralistado = "";
+    var bodylistado = "";
+    var contadot = 0;
+
+    var bodylistado = "";
+    var contadot = 0;
+    for (let asignaturas of listado) {
+
+        contadot = contadot + 1;
+        bodylistado += `<tr >
+<td style="font-size: 8px; text-align: center">
+${contadot}
+</td>
+<td style="font-size: 8px; text-align: left;color:black">
+${asignaturas.strApellidos} ${asignaturas.strNombres}
+</td>
+<td style="font-size: 8px; text-align: center">
+${asignaturas.bytNumMat}<br/>
+</td>
+
+<td style="font-size: 8px; text-align: center">
+${asignaturas.Calificacion == null ? 'SIN REGISTRO' : asignaturas.Calificacion[0].dcParcial1} <br/>
+</td>
+<td style="font-size: 8px; text-align: center">
+${asignaturas.Calificacion == null ? 'SIN REGISTRO' : asignaturas.Calificacion[0].dcParcial2 == null ? 'SIN REGISTRO' : asignaturas.Calificacion[0].dcParcial2} <br/>
+</td>
+<td style="font-size: 8px; text-align: center">
+${asignaturas.bytAsistencia == null ? 'SIN REGISTRO' : asignaturas.bytAsistencia} % <br/>
+</td>
+<td style="font-size: 8px; text-align: center">
+${asignaturas.Calificacion == null ? 'SIN REGISTRO' : asignaturas.Calificacion[0].promedio} <br/>
+</td>
+<td style="font-size: 8px; text-align: center">
+
+${asignaturas.Calificacion == null ? 'SIN REGISTRO' : asignaturas.Calificacion[0].Equivalencia.eqrennombre} <br/>
+</td>
+<td style="font-size: 8px; text-align: center">
+${asignaturas.Calificacion == null ? 'SIN REGISTRO' : asignaturas.cantidadNota > 1 ? asignaturas.Calificacion[1].dcParcial2 == null ? 'SIN REGISTRO' : asignaturas.Calificacion[1].dcParcial2 : 'SIN REGISTRO'} <br/>
+</td>
+<td style="font-size: 8px; text-align: center">
+${asignaturas.Calificacion == null ? 'SIN REGISTRO' : asignaturas.cantidadNota > 1 ? asignaturas.Calificacion[1].dcParcial2 == null ? 'SIN REGISTRO' : asignaturas.Calificacion[1].promedio : 'SIN REGISTRO'} <br/>
+</td>
+
+</tr>`
+
+    }
+    const htmlContent = `
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+   
+    <style>
+  
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th, td {
+  
+        padding: 5px;
+        text-align: left;
+      }
+     
+      .nombre {
+        margin-top: 7em;
+        text-align: center;
+        width: 100%;
+      }
+      hr{
+        width: 60%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+    <br/>
+      <h6 style=" padding: 2px;margin:2px"> <strong> PAO: </strong>${nivel} </h6>
+      <h6 style=" padding: 2px;margin:2px"><strong> PARALELO:</strong> ${paralelo}</h6>
+       <h6 style=" padding: 2px;margin:2px"><strong> ASIGNATURA: </strong>${datosAsignatura.data[0].strNombre}</h6>
+      <h6 style=" padding: 2px;margin:2px"><strong> PROFESOR: </strong>${datosDocentes.data[0].strNombres} ${datosDocentes.data[0].strApellidos}</h6>
+      <h6 style=" padding: 2px;margin:2px"><strong> PERIODO: </strong>${datosPeriodo.data[0].strDescripcion} (${periodo})</h6>
+       <br/>
+      
+    </div>
+    <table border=2>
+    <thead>
+    <tr>
+                 <th colspan="3" style="font-size: 8px; text-align: center"> INFORMACIÓN </th>
+                  <th colspan="5" style="font-size: 8px; text-align: center" > MEDIO Y FIN CICLO </th>
+                  <th colspan="3" style="font-size: 8px; text-align: center" > EVALUACIÓN RECUPERACIÓN </th>
+       </tr>
+      <tr>
+                 <th style="font-size: 10px">#</th>
+                <th  style="font-size: 8px; text-align: center">ESTUDIANTES</th>
+                <th  style="font-size: 8px; text-align: center">MAT.</th>
+                <th  style="font-size: 8px; text-align: center">1</th>
+                <th  style="font-size: 8px; text-align: center">2</th>
+                <th  style="font-size: 8px; text-align: center">ASIST.</th>
+                <th  style="font-size: 8px; text-align: center">PROME.</th>
+                <th  style="font-size: 8px; text-align: center">EQUIV.</th>
+                <th  style="font-size: 8px; text-align: center">EVA.</th>
+                <th  style="font-size: 8px; text-align: center">PROME.</th>
+      </tr>
+    </thead>
+
+    <tbody>
+       ${bodylistado}
+      </tbody>
+    </table>
+    <br/><br/>
+            <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
+            <p style="text-align: center;font-size: 11px;"> GENERADO POR:</p>
+            <p style="text-align: center;font-size: 11px;"><strong>${strNombres}</strong> </p>
+  </body>
+  </html>
+  `;
+
+
+    const options = {
+        format: 'A4',
+        //orientation: 'landscape',
+        timeout: 60000,
+        border: {
+            top: '1.0cm', // Margen superior
+            right: '1.5cm', // Margen derecho
+            bottom: '2.0cm', // Margen inferior
+            left: '1.5cm' // Margen izquierdo
+        },
+        header: {
+            height: '60px',
+            contents: tools.headerHtmlCarreras(datosCarrera.data[0])
+        },
+        footer: {
+            height: '30px',
+            contents: tools.footerHtml()
+        },
+
+    };
+    var htmlCompleto = tools.headerOcultoHtmlCarreras(datosCarrera.data[0]) + htmlContent + tools.footerOcultoHtml();
+    var base64 = await FunciongenerarPDF(htmlCompleto, options)
+    return base64
+
+}
+function FunciongenerarPDF(htmlCompleto, options) {
+    return new Promise((resolve, reject) => {
+        pdf.create(htmlCompleto, options).toFile("NominaGenerada.pdf", function (err, res) {
+            if (err) {
+                reject(err);
+            } else {
+                fs.readFile(res.filename, (err, data) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const base64Data = Buffer.from(data).toString('base64');
+                        // Eliminar el archivo PDF generado (opcional)
+                        fs.unlink(res.filename, (err) => {
+                            if (err) {
+                                console.error('Error al eliminar el archivo PDF:', err);
+                            } else {
+                                console.log('Archivo PDF eliminado.');
+                            }
+                        });
+
+                        // Resolver la promesa con base64Data
+                        resolve(base64Data);
+                    }
+                });
+            }
+        });
+    });
 }
 

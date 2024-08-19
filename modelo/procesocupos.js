@@ -84,12 +84,12 @@ module.exports.InsertarCupoConfirmadoTrasnsaccionGeneral = async function (trans
       throw error;
   }
 }
-module.exports.ListadoEstudianteConfirmados = async function (transaction,carrera,periodo) {
+module.exports.ListadoEstudianteConfirmados = async function (carrera,periodo) {
     var sentencia="";
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[Cupo] WHERE per_carrera='" + periodo + "' and NOT (carrera LIKE '%DES%')  and cup_estado=1"
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -162,12 +162,12 @@ try {
 }
 
 }
-module.exports.ObenterEstudianteIncripcionMaster = async function (transaction,carrera,cedula,periodo) {
+module.exports.ObenterEstudianteIncripcionMaster = async function (carrera,cedula,periodo) {
   var sentencia="";
   sentencia=" SELECT * FROM [" + carrera + "].[dbo].[Inscripciones]  AS i INNER JOIN [" + carrera + "].[dbo].[Carreras] AS c on c.strCodigo=i.strCodCarrera  where i.strCedEstud='" + cedula + "' and i.strCodPeriodo='" + periodo + "' "
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -178,12 +178,12 @@ try {
 
 }
 
-module.exports.ObtenerUltimoDetalleCupoRegistrado = async function (transaction,carrera,cedula) {
+module.exports.ObtenerUltimoDetalleCupoRegistrado = async function (carrera,cedula) {
   var sentencia="";
   sentencia="SELECT  dc.cup_id as cup_iddetalle,ec.estcup_id as idEstadoCupo ,*  FROM  [" + carrera + "].[dbo].[Detallecupo] dc  INNER JOIN (SELECT cup_id, MAX(dcup_id) AS ultimo FROM [" + carrera + "].[dbo].[Detallecupo] GROUP BY cup_id) ultimos_detalles ON dc.cup_id = ultimos_detalles.cup_id AND dc.dcup_id = ultimos_detalles.ultimo INNER JOIN [OAS_Master].[dbo].[Estadocupos] ec ON ec.estcup_id=dc.estcup_id INNER JOIN [" + carrera + "].[dbo].[Cupo] c ON dc.cup_id = c.cup_id INNER JOIN [" + carrera + "].[dbo].[Estudiantes] e ON e.strCedula=c.identificacion where c.identificacion  in ('" + cedula + "');"
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -253,12 +253,12 @@ try {
 }
 
 }
-module.exports.EncontrarEstudianteMatriculado = async function (transaction,carrera,periodo,cedula) {
+module.exports.EncontrarEstudianteMatriculado = async function (carrera,periodo,cedula) {
     var sentencia="";
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE e.strCedula='" + cedula + "' and  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' "
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -331,13 +331,13 @@ module.exports.EncontrarEstudianteMatriculadoAsignaturas = async function (carre
 
 }
 
-module.exports.InsertarDetalleCupo = async function (transaction,carrera,datosDetalle) {
+module.exports.InsertarDetalleCupo = async function (carrera,datosDetalle) {
     var sentenciadetalle="";
     sentenciadetalle = "INSERT INTO [" + carrera + "].[dbo].[Detallecupo]([cup_id],[estcup_id],[per_carrera],[dcupfechacreacion],[dcupobservacion])"
     + "VALUES('" + datosDetalle.cup_id + "','" + datosDetalle.estcup_id + "','" + datosDetalle.per_carrera + "','" + datosDetalle.dcupfechacreacion + "','" + datosDetalle.dcupobservacion + "');";
   try {
     if (sentenciadetalle != "") {
-      const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentenciadetalle, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentenciadetalle, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -548,6 +548,23 @@ try {
 
 }
 
+module.exports.ObtenerVerificacionHomologacionCarreraIngreso = async function (periodo,bsCarrera) {
+  var sentencia="";
+  sentencia="SELECT * FROM  [OAS_Master].[dbo].[Homologacioncarreras] WHERE periodo= '" + periodo + "' AND hmbdbasecar= '" + bsCarrera + "' AND homestado= 1"
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+
 module.exports.InsertarCupoProcesoTabla = async function (idTipo,strNombre,strPeriodo,cedula) {
   var sentencia="";
  
@@ -680,6 +697,51 @@ module.exports.NotasExamenesEstudianteDadoMateria = async function (transaction,
     try {
   if (sentencia != "") {
     const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+module.exports.AsignaturasDatos = async function (carrera,codMateria) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].dbo.Materias WHERE strCodigo='" + codMateria + "' "
+    try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+module.exports.DocentesDatos = async function (carrera,cedula) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].dbo.Docentes WHERE strCedula='" + cedula + "' "
+    try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+module.exports.PeriodoDatos = async function (carrera,periodo) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].dbo.Periodos WHERE strCodigo='" + periodo + "' "
+    try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}

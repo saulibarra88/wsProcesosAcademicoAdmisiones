@@ -82,8 +82,34 @@ module.exports.ObtenerParametroCalificacionPorCodEquivalencia = async function (
   } catch (error) {
     return { data: "Error: " + error }
   }
-
-
+}
+module.exports.ObtenerParametroCalificacionPromedioEquivalencia = async function (transaction, carrera, promedio, idreglemanto) {
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[equivalenciarendimiento] AS eqv WHERE (" + promedio + " BETWEEN eqv.eqrenminimo AND eqv.eqrenmaximo )and eqv.eqrenregid= " + idreglemanto + " and eqv.eqrencualitativa not in ('S','R')"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamicoTransaccion(transaction, carrera, sentencia, "OK", "OK");
+      return (sqlConsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}
+module.exports.ObtenerParametroEquivalenciaAsistencia = async function (transaction, carrera, promedio, idreglemanto) {
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[equivalenciarendimiento] AS eqv WHERE (" + promedio + " BETWEEN eqv.eqrenminimo AND eqv.eqrenmaximo )and eqv.eqrenregid= " + idreglemanto + " and eqv.eqrencualitativa in ('S')"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamicoTransaccion(transaction, carrera, sentencia, "OK", "OK");
+      return (sqlConsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
 }
 module.exports.ListadoEquivalenciaRendimentodadoReglamento = async function (carrera, idreglemanto) {
   var sentencia = "";
@@ -183,7 +209,8 @@ module.exports.ObtenerMateriaNoAprobarEstudiante = async function (transaction, 
 
 module.exports.ListadoNominaEstudianteDadoCedulaDocente = async function (transaction, carrera, periodo, nivel, paralelo, CodMateria, cedula) {
   var sentencia = "";
-  sentencia = "SELECT m.sintCodigo,m.strCodEstado,m.dtFechaCreada,m.dtFechaAutorizada,m.strCodNivel as NivelMatricula,m.strCodEstud, e.strCedula,e.strApellidos,e.strNombres,e.strEmail,d.strApellidos as strApellidoDocente,d.strNombres as strNombreDocente, d.strCodigo as strCodigoDocente,ma.strCodMateria,ma.strCodNivel as strNivelMateria, ma.strCodParalelo,ma.strCodPeriodo as strCodPeriodoMateria,ma.bytNumMat,ma.bytAsistencia,ma.strObservaciones as strObservacionesMateria  FROM [" + carrera + "].[dbo].[Dictado_MateriasDocentes]  as md INNER JOIN [" + carrera + "].[dbo].[Docentes]  AS d on d.strCodigo=md.strCodDocente INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas]  AS ma on ma.strCodMateria=md.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=ma.sintCodMatricula  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS e on e.strCodigo=m.strCodEstud where md.strCodNivel='" + nivel + "' and md.strCodMateria='" + CodMateria + "' and md.strCodParalelo='" + paralelo + "' and md.strCodPeriodo='" + periodo + "' and ma.strCodPeriodo='" + periodo + "' and ma.strCodNivel='" + nivel + "' and ma.strCodParalelo='" + paralelo + "' and ma.strCodMateria='" + CodMateria + "' and  m.strCodPeriodo='" + periodo + "' and d.strCedula='" + cedula + "' and m.strCodEstado='DEF'  "
+  sentencia = "SELECT m.sintCodigo,m.strCodEstado,m.dtFechaCreada,m.dtFechaAutorizada,m.strCodNivel as NivelMatricula,m.strCodEstud, e.strCedula,e.strApellidos,e.strNombres,e.strEmail,d.strApellidos as strApellidoDocente,d.strNombres as strNombreDocente, d.strCodigo as strCodigoDocente,ma.strCodMateria,ma.strCodNivel as strNivelMateria, ma.strCodParalelo,ma.strCodPeriodo as strCodPeriodoMateria,ma.bytNumMat,ma.bytAsistencia,ma.strObservaciones as strObservacionesMateria  FROM [" + carrera + "].[dbo].[Dictado_MateriasDocentes]  as md INNER JOIN [" + carrera + "].[dbo].[Docentes]  AS d on d.strCodigo=md.strCodDocente INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas]  AS ma on ma.strCodMateria=md.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=ma.sintCodMatricula  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS e on e.strCodigo=m.strCodEstud where md.strCodNivel='" + nivel + "' and md.strCodMateria='" + CodMateria + "' and md.strCodParalelo='" + paralelo + "' and md.strCodPeriodo='" + periodo + "' and ma.strCodPeriodo='" + periodo + "' and ma.strCodNivel='" + nivel + "' and ma.strCodParalelo='" + paralelo + "' and ma.strCodMateria='" + CodMateria + "' and  m.strCodPeriodo='" + periodo + "' and d.strCedula='" + cedula + "' and m.strCodEstado='DEF' Order by  e.strApellidos"
+
   try {
     if (sentencia != "") {
       const sqlconsulta = await execDinamicoTransaccion(transaction, carrera, sentencia, "OK", "OK");
@@ -195,6 +222,7 @@ module.exports.ListadoNominaEstudianteDadoCedulaDocente = async function (transa
     return { data: "Error: " + error }
   }
 }
+
 module.exports.ObtenerLinkActasCalificaciones = async function (transaction, carrera, periodo, nivel, paralelo, CodMateria, codDocente, idTipoActa) {
   var sentencia = "";
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[bandejaactas] AS ma WHERE ma.strCodParalelo= '" + paralelo + "' and ma.strCodPeriodo= '" + periodo + "' and ma.strCodNivel= '" + nivel + "'and ma.strCodMateria= '" + CodMateria + "' and ma.strCodDocente= '" + codDocente + "' and ma.tipoacta= " + idTipoActa + " and estado=3 and estadoeliminar=1"

@@ -607,27 +607,23 @@ async function ProcesodeVerificarMatriculadoConfirmados(periodo) {
         }
 }
 async function ProcesodeVerificarMatriculadoConfirmadosCasoRuben(periodo) {
-    const pool = await iniciarMasterPool("OAS_Master");
-    await pool.connect();
-    const transaction = await iniciarMasterTransaccion(pool);
-    await transaction.begin();
+
     try {
         console.log("***********PROCESO INICIALIZADO MATRICULACION CUPO**********")
   
             var ListadoEstudiantes = [];
-            var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados(transaction,"OAS_Master", periodo);
+            var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados("OAS_Master", periodo);
             if (ListadoEstudiantes.data.length > 0) {
                 for (var obj of ListadoEstudiantes.data) {
-                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionMaster(transaction,"OAS_Master", obj.identificacion, periodo);
+                    var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionMaster("OAS_Master", obj.identificacion, periodo);
                     if (DatosIncripcion.count > 0) {
-                        var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(transaction,DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
+                        var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
                         if (ObjEstudianteMatriculado.count > 0) {
 
-                            var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado(transaction,"OAS_Master", obj.identificacion);
+                            var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado("OAS_Master", obj.identificacion);
                         
                             if (ObtenerCupoUltimo.count > 0) {
-                                console.log(ObtenerCupoUltimo.data[0])
-                                console.log(ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO)
+                           
                                 if (ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO) {
                                     var dataDetalle = {
                                         cup_id: obj.cup_id,
@@ -638,7 +634,7 @@ async function ProcesodeVerificarMatriculadoConfirmadosCasoRuben(periodo) {
                                     }
                                     console.log("dataDetalle: "+ obj.identificacion)
                                     console.log(dataDetalle)
-                                    var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
+                                    var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
 
                                 }
 
@@ -651,7 +647,7 @@ async function ProcesodeVerificarMatriculadoConfirmadosCasoRuben(periodo) {
                                 dcupfechacreacion:  tools.FechaActualCupo(),
                                 dcupobservacion: "PERDIDA DE CUPO PROCESO MIGRACION// NO MATRICULADO EN NIVELACION"
                             }
-                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo(transaction,"OAS_Master", dataDetalle);
+                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
                         }
                     } else{
 
@@ -662,13 +658,10 @@ async function ProcesodeVerificarMatriculadoConfirmadosCasoRuben(periodo) {
             console.log("***********PROCESO FINALIZADO MATRICULACION CUPO**********")
             return ListadoEstudiantes;
         } catch (err) {
-            await transaction.rollback();
+            
             console.error(err);
             return 'ERROR';
-        } finally {
-            await transaction.commit();
-            await pool.close();
-        }
+        } 
 }
 async function ProcesodeVerificarRetirosMatriculadoNivelacion(periodo, nivel) {
     const pool = await iniciarMasterPool("OAS_Master");
