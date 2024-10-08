@@ -231,5 +231,27 @@ router.get('/ListadoRetirosInternadosDadoEstudiante/:carrera/:cedula',async (req
  
 });
 
+router.get('/ListadoEstudiantesPeriodo/:carrera/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    try {
+        var respuesta=await  procesoAcadeicoNotas.ListadoEstudiantesPeriodosCarrera(carrera,periodo);
+        
+        res.json({
+            success: true,
+            Informacion:  respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
 
 module.exports = router; 

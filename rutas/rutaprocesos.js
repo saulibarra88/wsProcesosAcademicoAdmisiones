@@ -6,6 +6,7 @@ const procesoMigracion = require('../rutas/ProcesosMigracionNivelacion');
 const procesoCupo = require('../modelo/procesocupos');
 const reportes = require('../rutas/reportesadmisiones');
 const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
+const procesosCarreras = require('../rutas/procesoscarreras');
 
 router.get('/ProcesoConfirmacionCupoInscripcion/:periodo/:cedula/',async (req, res) => {
     const periodo = req.params.periodo;
@@ -378,5 +379,25 @@ router.get('/ListadoHomologacionCarreraAdminisiones/',async (req, res) => {
  
 });
 
+router.get('/DocumentosMatriculasPeriodos/:BaseCarrera/:periodo',async (req, res) => {
+    const periodo = req.params.periodo;
+    const BaseCarrera = req.params.BaseCarrera;
+    try {
+        var Informacion = await procesosCarreras.DocumentosMatriculasPeriosdos(BaseCarrera,periodo);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
 
 module.exports = router;

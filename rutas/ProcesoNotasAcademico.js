@@ -106,6 +106,14 @@ module.exports.ListadoEquivalenciaRelamentos = async function (idReglamento) {
         console.log(error);
     }
 }
+module.exports.ListadoEstudiantesPeriodosCarrera = async function (carrera,periodo) {
+    try {
+        var Datos = await FuncionListadoEstudiantePeriodos(carrera,periodo);
+        return { Datos }
+    } catch (error) {
+        console.log(error);
+    }
+}
 async function ActualizarNotaExonerados(periodo, estado) {
     console.log("***********PROCESO INICIALIZADO ACTUALIZACION NOTA EXONERADOS**********")
     try {
@@ -372,7 +380,73 @@ async function ObtenerMatriculasInternados(carrera, cedula) {
         return 'ERROR';
     }
 }
+async function FuncionListadoEstudiantePeriodos(carrera,periodo) {
+    const pool = await iniciarDinamicoPool(carrera);
+    await pool.connect();
+    const transaction = await iniciarDinamicoTransaccion(pool);
+    await transaction.begin();
+    try {
+        var listado = [];
+        var DatosPeriodo = await procesonotasacademicos.PeriodoDatosCarrera(transaction,carrera, periodo);
+        var matriculaEstudiantesCarrera = await procesonotasacademicos.ListadoEstudiantePeriodoMatricula(transaction,carrera, periodo,'DEF');
+        var numero=0;
+        if (matriculaEstudiantesCarrera.count > 0) {
+           
+            for (var matriculas of matriculaEstudiantesCarrera.data) {
+                numero =numero+1;
+              var  ListadoAsignaturas=[];
+                var AsignaturasMatricula = await procesonotasacademicos.ListadoAsignaturasEstudiante(transaction,carrera, matriculas.strCodPeriodo,matriculas.sintCodigo);
 
+                if (AsignaturasMatricula.count > 0) {
+                    for (var asignatura of AsignaturasMatricula.data) {
+                     
+                        var DatosConvalidaciones = await procesonotasacademicos.ObtenerConvalidacionesEstudiante(transaction, carrera, matriculas.strCodPeriodo, matriculas.sintCodigo, asignatura.strCodigo);
+                       var DatosRetiros = await procesonotasacademicos.ObtenerRetirosEstudiante(transaction, carrera, matriculas.strCodPeriodo, matriculas.sintCodigo, asignatura.strCodigo);
+                       var DatosSinAporbar = await procesonotasacademicos.ObtenerMateriaNoAprobarEstudiante(transaction, carrera, asignatura.strCodigo, Number(matriculas.strCodEstud));
+                        if (DatosConvalidaciones.count == 0) {
+                            if (DatosRetiros.count == 0) {
+                                if (DatosSinAporbar.count == 0) {
+                                    var datosNotas = await procesonotasacademicos.ObtenerNotaPacialAsignatura(transaction, carrera, matriculas.sintCodigo, matriculas.strCodPeriodo, asignatura.strCodigo);
+                                    asignatura.cantidadNota = datosNotas.count;
+                                    if (datosNotas.count > 0) {
+                                        var listadoCalificaciones = [];
+                                        for (var objNotas of datosNotas.data) {
+                                            var EquivalenciaDatos = await procesonotasacademicos.ObtenerParametroCalificacionPorCodEquivalencia(transaction, "SistemaAcademico", objNotas.strCodEquiv, DatosPeriodo.data[0].idreglamento);
+                                            var valor1 = objNotas.dcParcial1 == null ? 0 : objNotas.dcParcial1;
+                                            var valor2 = objNotas.dcParcial2 == null ? 0 : objNotas.dcParcial2;
+                                            objNotas.promedio = tools.PromedioCalcular(valor1, valor2);
+                                            objNotas.Equivalencia = EquivalenciaDatos.data[0];
+                                            listadoCalificaciones.push(objNotas)
+                                        }
+                                        asignatura.Calificacion = listadoCalificaciones;
+                                    } else {
+                                        asignatura.Calificacion = null
+                                    }
+                                    ListadoAsignaturas.push(asignatura)
+                                }
+                            }
+                        }
+                   
+                    }
+                    matriculas.selectColor=false,
+                    matriculas.contar=numero,
+                    matriculas.Asignaturas=ListadoAsignaturas;
+                    listado.push(matriculas)
+                }
+
+               
+            }
+            return listado;
+        }
+    } catch (err) {
+        await transaction.rollback();
+        console.error(err);
+        return 'ERROR';
+    } finally {
+        await transaction.commit();
+        await pool.close();
+    }
+}
 async function ListadoRetirosInternados(carrera, cedula) {
 
     try {

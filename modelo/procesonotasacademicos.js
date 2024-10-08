@@ -296,3 +296,49 @@ module.exports.ObtenerAsignaturasRetiroTodas = async function ( carrera, cohorte
     return { data: "Error: " + error }
   }
 }
+
+module.exports.ListadoEstudiantePeriodoMatricula = async function (transaction, carrera,periodo,estado) {
+  var sentencia = "";
+  sentencia = " select * from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo where m.strCodPeriodo='" + periodo + "' and m.strCodEstado='" + estado + "' order by m.strCodNivel"
+  console.log(sentencia)
+  try {
+    if (sentencia != "") {
+      const sqlconsulta = await execDinamicoTransaccion(transaction, carrera, sentencia, "OK", "OK");
+      return (sqlconsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}
+
+module.exports.ListadoAsignaturasEstudiante = async function ( transaction,carrera,periodo,intMatricula) {
+  var sentencia = "";
+  sentencia = " select * from [" + carrera + "].[dbo].[Materias_Asignadas] as ma inner join [" + carrera + "].[dbo].[Materias] as m on ma.strCodMateria=m.strCodigo where  ma.strCodPeriodo='" + periodo + "' and ma.sintCodMatricula='" + intMatricula + "'"
+  try {
+    if (sentencia != "") {
+      const sqlconsulta = await execDinamicoTransaccion( transaction,carrera, sentencia, "OK", "OK");
+      return (sqlconsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}
+module.exports.PeriodoDatosCarrera = async function (transaction,carrera,periodo) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].dbo.Periodos WHERE strCodigo='" + periodo + "' "
+    try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
