@@ -142,6 +142,26 @@ module.exports.FechaActualCupo = function () {
     }
     return strcedula1;
   }
+  module.exports.ordenarPorCarrera=function (arr) {
+    return arr.sort((a, b) => {
+        const carreraA = a.Carrera.trim().toLowerCase();
+        const carreraB = b.Carrera.trim().toLowerCase();
+        
+        if (carreraA < carreraB) return -1;
+        if (carreraA > carreraB) return 1;
+        return 0;
+    });
+}
+module.exports.ordenarPorApellidos=function (arr) {
+  return arr.sort((a, b) => {
+      const carreraA = a.strApellidos.trim().toLowerCase();
+      const carreraB = b.strApellidos.trim().toLowerCase();
+      
+      if (carreraA < carreraB) return -1;
+      if (carreraA > carreraB) return 1;
+      return 0;
+  });
+}
   module.exports.palabraIncluidaEnFrase=function(frase, palabra) {
     // Convertimos ambas la frase y la palabra a minúsculas para hacer la comparación sin distinguir mayúsculas de minúsculas
     const fraseMinusculas = frase.toUpperCase();

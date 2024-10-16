@@ -677,7 +677,7 @@ module.exports.ListadoCarreraTodas = async function (transaction,carrera) {
 }
 module.exports.ListadoCarreraTodasSinTransaccion = async function (carrera) {
   var sentencia="";
-  sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + carrera + "].[dbo].Facultades AS F INNER JOIN [OAS_Master].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [OAS_Master].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo "
+  sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera,C.strCodEstado  as estadoCarrera,C.strCodTipoEntidad as strCodTipoCarrera,* FROM [" + carrera + "].[dbo].Facultades AS F INNER JOIN [OAS_Master].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [OAS_Master].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo "
  
   try {
   if (sentencia != "") {

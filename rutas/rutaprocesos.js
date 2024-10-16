@@ -399,5 +399,65 @@ router.get('/DocumentosMatriculasPeriodos/:BaseCarrera/:periodo',async (req, res
     }
  
 });
-
+router.get('/RevisionDoumentosNoGeneradosMatriculasCarreras/:periodo',async (req, res) => {
+    const periodo = req.params.periodo;
+    try {
+        var Informacion = await procesosCarreras.RevisionDocumentosInvenientesCarreras(periodo);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
+router.get('/PDFListadoDocumentosCarreras/:periodo/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion = await procesosCarreras.pdfCarerasDocumentosMatriculas(periodo,cedula);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
+router.get('/PDFListadoEstudianteMatriculasTerceraSegunda/:carrera/:periodo/:tipo/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    const tipo = req.params.tipo;
+    try {
+        var Informacion = await procesosCarreras.pdfListadoEstudianteTerceraSegundaMatricula(carrera,periodo,cedula,tipo);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

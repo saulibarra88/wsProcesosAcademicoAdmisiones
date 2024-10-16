@@ -1162,6 +1162,7 @@ return fileData;
       return 'ERROR';
   }
 }
+
 function generarPDF(htmlCompleto, options) {
     return new Promise((resolve, reject) => {
         pdf.create(htmlCompleto, options).toFile("reportes.pdf", function (err, res) {
