@@ -42,7 +42,14 @@ module.exports.PdfListadoDocumentosCarreras = async function (listado,cedulaUsua
         console.log(error);
     }
   }
-
+  module.exports.PdfListadoEstudiantesAsignaturaAprueban = async function (listado,carrera,cedulaUsuario,periodo) {
+    try {
+        var resultado = await ProcesoPdfEstudianteAsignaturaAprueban(listado,carrera,cedulaUsuario,periodo);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+  }
 async function ProcesoPdfListadoDocumentosCarreras(listado, cedula,periodo) {
     try {
         try {
@@ -367,7 +374,120 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
         return 'ERROR';
     }
   }
+  async function ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera,cedula,periodo) {
+    try {
+        try {
+      console.log(listado, carrera,cedula,periodo)
+            var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+            var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+            var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+            var Cedula = ObtenerPersona.data.listado[0].pid_valor
+            var periodoinfo =await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
+            var bodylistado = "";
+            var contadot = 0;
+            var titulo=''
+           
+            for (let carreras of listado) {
+                contadot = contadot + 1;
+                                          bodylistado += `<tr >
+                              <td style="font-size: 10px; text-align: center">
+                              ${contadot}
+                            </td>
+                            <td style="font-size: 11px; text-align: left">
+                              ${carreras.strCodMateria}   
+                              
+                            </td>
+                             <td style="font-size: 11px; text-align: left">
+                              ${carreras.strNombre}
+                              
+                            </td>
+                            <td style="font-size: 11px; text-align: center">
+                              ${carreras.strCodNivel}  
+                            </td>
+                          
 
+                               <td style="font-size: 11px; text-align: center">
+                              ${carreras.totalAprobados}  
+                            </td>
+                              <td style="font-size: 11px; text-align: center">
+                              ${carreras.totalReprobados}  
+                            </td>
+                             <td style="font-size: 11px; text-align: center">
+                              ${carreras.total}  
+                            </td>
+                           </tr>`
+            }
+            const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+              <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
+            </head>
+            <body>
+            
+            <p style='text-align: center;font-size: 11px'> <strong>LISTADO DE ESTUDIANTE APROBADOS Y REPROBADOS </strong> </p>
+            <p style='text-align: center;font-size: 11px'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
+  
+              <table border=2>
+              <thead>
+              <tr>
+                     <th colspan="12" style="text-align: center; font-size: 10px">
+                         INFORMACIÓN ASIGNATURAS.
+                     </th>
+                 </tr>
+                <tr>
+                  <th style="font-size: 10px;text-align: center;">N°</th>
+                  <th style="font-size: 10px;text-align: center;">CODIGO</th>
+                  <th style="font-size: 10px;text-align: center;">ASIGNATURA</th>
+                  <th style="font-size: 10px;text-align: center;">NIVEL</th>
+                  <th  style="font-size: 10px;text-align: center;">APRUEBAN </th>
+                  <th  style="font-size: 10px;text-align: center;">REPRUEBAN </th>
+                  <th  style="font-size: 10px;text-align: center;">TOTAL</th>
+                </tr>
+              </thead>
+  
+              <tbody>
+                 ${bodylistado}
+                </tbody>
+              </table>
+              <br/><br/>
+              <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
+              <p style="text-align: center;font-size: 11px;"> GENERADO POR:</p>
+              <p style="text-align: center;font-size: 11px;">${strNombres}</p>
+            </body>
+            </html>
+            `;
+  
+            var htmlCompleto = tools.headerOcultoHtmlCarreras(datosCarrera.data[0]) + htmlContent + tools.footerOcultoHtml();
+            const options = {
+                format: 'A4',
+                border: {
+                    top: '1.0cm', // Margen superior
+                    right: '1.5cm', // Margen derecho
+                    bottom: '2.0cm', // Margen inferior
+                    left: '1.5cm' // Margen izquierdo
+                },
+                header: {
+                    height: '60px',
+                    contents: tools.headerHtmlCarreras(datosCarrera.data[0])
+                },
+                footer: {
+                    height: '30px',
+                    contents: tools.footerHtml()
+                },
+  
+            };
+            var base64 = await generarPDF(htmlCompleto, options)
+            return base64
+        } catch (error) {
+            console.error(error);
+            return 'ERROR';
+        }
+    } catch (err) {
+        console.log(error);
+        return 'ERROR';
+    }
+  }
   function generarPDF(htmlCompleto, options) {
     return new Promise((resolve, reject) => {
         pdf.create(htmlCompleto, options).toFile("CarrerasReportes.pdf", function (err, res) {
@@ -382,13 +502,13 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
                         const base64Data = Buffer.from(data).toString('base64');
 
                        // Eliminar el archivo PDF generado (opcional)
-                       fs.unlink(res.filename, (err) => {
+                   /*    fs.unlink(res.filename, (err) => {
                             if (err) {
                                 console.error('Error al eliminar el archivo PDF:', err);
                             } else {
                                 console.log('Archivo PDF eliminado.');
                             }
-                        });
+                        });*/
 
                         // Resolver la promesa con base64Data
                         resolve(base64Data);

@@ -195,8 +195,45 @@ router.get('/ProcesoAprobacionNivelacionpasoCarrera/:periodo/',async (req, res) 
  
 });
 
+router.get('/ProcesoAdmisionesVerificacionRegistroCupo/:periodo/',async (req, res) => {
+    const periodo = req.params.periodo;
+    try {
+        var respuesta=await  procesoMigracion.ProcesoAdmisionesVerificacionRegistroCupo(periodo);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 
-
+router.get('/ListadoEstudiantesNoRegistradoADmisionesPeridaCupo/:periodo/',async (req, res) => {
+    const periodo = req.params.periodo;
+    try {
+        var respuesta=await  procesoMigracion.ProcesoAdmisionesEstudiantesPerdidaCupo(periodo);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 
 //////Servicios Web /////////////////
 router.get('/VerificarRegistroIncripcionEstudiantesAdmisiones/:periodo/:cedula/',async (req, res) => {
@@ -445,6 +482,28 @@ router.get('/PDFListadoEstudianteMatriculasTerceraSegunda/:carrera/:periodo/:tip
     const tipo = req.params.tipo;
     try {
         var Informacion = await procesosCarreras.pdfListadoEstudianteTerceraSegundaMatricula(carrera,periodo,cedula,tipo);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
+router.get('/PDFPerdidasAsignaturasEstudiantes/:carrera/:periodo/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        
+        var Informacion = await procesosCarreras.pdfPerdidaAsignaturasEstudiantes(carrera,periodo,cedula);
         res.json({
             success: true,
             Informacion

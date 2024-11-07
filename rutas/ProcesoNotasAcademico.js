@@ -260,7 +260,6 @@ async function ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, period
                     }
                 }
             }
-            console.log("Cantidad: " + listadoNomina.length)
             return listadoNomina;
         }
     } catch (err) {

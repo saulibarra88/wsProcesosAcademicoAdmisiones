@@ -153,3 +153,36 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
       return { data: "Error: " + error }
     }
   }
+  module.exports.AsignaturasDictadosMateriasCarreras = async function ( carrera, periodo) {
+    var sentencia = "";
+    sentencia = "SELECT DISTINCT(dm.strCodMateria),dm.strCodNivel,m.strNombre FROM [" + carrera + "].[dbo].[Dictado_Materias]  as dm INNER JOIN [" + carrera + "].[dbo].[Materias]  as m on m.strCodigo=dm.strCodMateria WHERE strCodPeriodo='" + periodo + "' ORDER BY dm.strCodNivel,dm.strCodMateria"
+                try {
+          
+      if (sentencia != "") {
+       
+        const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
+        return (sqlconsulta)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }
+
+  module.exports.CalculosEstuidantesPorAsignaturas = async function ( carrera, periodo,materia) {
+    var sentencia = "";
+   // sentencia = "WITH UltimosRegistros AS (SELECT sintCodMatricula,strCodPeriodo,strCodMateria,strCodTipoExamen,dcParcial1,dcParcial2,strCodEquiv FROM ( SELECT sintCodMatricula,strCodPeriodo, strCodMateria,strCodTipoExamen,dcParcial1, dcParcial2, strCodEquiv, ROW_NUMBER() OVER ( PARTITION BY sintCodMatricula ORDER BY CASE WHEN strCodTipoExamen = 'REC' THEN 1 ELSE 2 END, strCodTipoExamen DESC ) AS rn FROM Notas_Parciales ) AS UltimosRegistros WHERE rn = 1) select SUM(CASE WHEN (strCodEquiv='A' and strCodTipoExamen='PAR') THEN 1 ELSE 0 END) AS ApruebanDirecto, SUM(CASE WHEN (strCodEquiv='A' and strCodTipoExamen='REC' ) THEN 1 ELSE 0 END) AS ApruebanExamen, SUM(CASE WHEN (strCodEquiv='R' and strCodTipoExamen='PAR' ) THEN 1 ELSE 0 END) AS RepruebaDirecta, SUM(CASE WHEN (strCodEquiv='R' and strCodTipoExamen='REC' )THEN 1 ELSE 0 END) AS RepruebanExamen, COUNT(DISTINCT np.sintCodMatricula) as total from UltimosRegistros  as np where strCodPeriodo='" + periodo + "' and strCodMateria='" + materia + "' "
+    sentencia = " SELECT SUM(CASE WHEN (strCodEquiv = 'A' AND strCodTipoExamen = 'PAR') THEN 1 ELSE 0 END) AS ApruebanDirecto, SUM(CASE WHEN (strCodEquiv = 'A' AND strCodTipoExamen = 'REC') THEN 1 ELSE 0 END) AS ApruebanExamen, SUM(CASE WHEN (strCodEquiv = 'R' AND strCodTipoExamen = 'PAR') THEN 1 ELSE 0 END) AS RepruebaDirecta, SUM(CASE WHEN (strCodEquiv = 'R' AND strCodTipoExamen = 'REC') THEN 1 ELSE 0 END) AS RepruebanExamen, COUNT(DISTINCT np.sintCodMatricula) AS total FROM ( SELECT np.sintCodMatricula, np.strCodPeriodo, np.strCodMateria, np.strCodTipoExamen, np.dcParcial1, np.dcParcial2, np.strCodEquiv FROM Notas_Parciales np WHERE np.strCodTipoExamen = ( SELECT TOP 1 np2.strCodTipoExamen FROM Notas_Parciales np2 WHERE np2.sintCodMatricula = np.sintCodMatricula ORDER BY CASE WHEN np2.strCodTipoExamen = 'REC' THEN 1 ELSE 2 END, np2.strCodTipoExamen DESC )) AS np WHERE strCodPeriodo = '" + periodo + "' AND strCodMateria ='" + materia + "';"
+                try {
+      if (sentencia != "") {
+       
+        const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
+        return (sqlconsulta)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }

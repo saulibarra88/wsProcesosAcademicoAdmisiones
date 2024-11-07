@@ -172,5 +172,40 @@ module.exports.pdfListadoEstudianteTerceraSegundaMatricula = async function ( ca
         return 'ERROR';
     }
 }
+module.exports.pdfPerdidaAsignaturasEstudiantes = async function ( carrera,periodo,cedula) {
+    try {
+        
+            var ListadoDocumentos = [];
+            var ListadoEstudiantesProceso = [];
+
+            var ListadoAsignaturas = await procesocarreras.AsignaturasDictadosMateriasCarreras(carrera,periodo);
+            if(ListadoAsignaturas.count>0){
+                for (var asignaturas of ListadoAsignaturas.data) {
+
+                    var datos = await procesocarreras.CalculosEstuidantesPorAsignaturas(carrera,periodo,asignaturas.strCodMateria);
+                    var resultado={
+                        strCodMateria:asignaturas.strCodMateria,
+                        strCodNivel:asignaturas.strCodNivel,
+                        strNombre:asignaturas.strNombre,
+                        ApruebanDirecto:datos.data[0].ApruebanDirecto==null?0:datos.data[0].ApruebanDirecto,
+                        ApruebanExamen:datos.data[0].ApruebanExamen==null?0:datos.data[0].ApruebanExamen,
+                        RepruebaDirecta:datos.data[0].RepruebaDirecta==null?0:datos.data[0].RepruebaDirecta,
+                        RepruebanExamen:datos.data[0].RepruebanExamen==null?0:datos.data[0].RepruebanExamen,
+                        totalAprobados:Number(datos.data[0].ApruebanDirecto==null?0:datos.data[0].ApruebanDirecto)+Number(datos.data[0].ApruebanExamen==null?0:datos.data[0].ApruebanExamen),
+                        totalReprobados:Number(datos.data[0].RepruebaDirecta==null?0:datos.data[0].RepruebaDirecta)+Number(datos.data[0].RepruebanExamen==null?0:datos.data[0].RepruebanExamen),
+                        total:datos.data[0].total==null?0:datos.data[0].total
+                    }
+                    ListadoDocumentos.push(resultado)
+                }
+            }
+            var base64=  await  reportescarreras.PdfListadoEstudiantesAsignaturaAprueban(ListadoDocumentos,carrera,cedula,periodo)
+         
+    return ListadoDocumentos
+
+    } catch (err) {
+        console.log(error);
+        return 'ERROR';
+    }
+}
 
 
