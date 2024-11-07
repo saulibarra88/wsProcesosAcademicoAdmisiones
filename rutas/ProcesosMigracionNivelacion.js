@@ -1255,41 +1255,19 @@ async function ProcesoEstudiantesPerdidaCupoAdmisiones(periodo) {
         }
         var ListadoEstudiantes = await procesoCupo.ListadoEstudiantesPerdidaCupodesdeAdmisiones("OAS_Master",periodo); 
        if (ListadoEstudiantes.data.length > 0) {
-            for (var estudiantes of ListadoEstudiantes.data) {
-                var VerificacionCupo = await procesoCupo.ObtnerEstudianteCupoPeriodo(transaction, "OAS_Master",periodo, tools.CedulaConGuion(estudiantes.AspirantePostulacion.Persona.perCedula));
-          
-                if (VerificacionCupo.count == 0) {
-                   
-                    ListadoEstudiantesResultado.push(estudiantes)
-                    var dataCupo = {
-                        acu_id: estudiantes.acuId,
-                        identificacion: tools.CedulaConGuion(estudiantes.AspirantePostulacion.Persona.perCedula),
-                        per_id: estudiantes.AspirantePostulacion.Persona.perId,
-                        tipoinsc: "ADMISIONES",
-                        per_niv: estudiantes.AspirantePostulacion.Periodo.perCodigo,
-                        per_carrera: estudiantes.AspirantePostulacion.Periodo.perNomenclatura,
-                        carrera: 'DESCONOCIDA',
-                        fechacreacion: tools.FechaActualCupo(),
-                        cup_estado: 1
-                    }
-                    var dataDetalle = {
-                        cup_id: 0,
-                        estcup_id: VariablesGlobales.ESTADOPERDIDO,
-                        per_carrera:  estudiantes.AspirantePostulacion.Periodo.perNomenclatura,
-                        dcupfechacreacion: tools.FechaActualCupo(),
-                        dcupobservacion: "PERDIDA DE CUPO PROCESO MIGRACION DESDE ADMISIONES // TUVO CUPO EN ADMISIONES PERO NO REGISTRA PROCESO // NO MATRICULADO"
-                    }
-                    console.log(dataCupo,dataDetalle)
-                    var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral(transaction, "OAS_Master", dataCupo, dataDetalle);
-
-                }
-            }
+        
             var Informacion={
-                Total:ListadoEstudiantesResultado.length,
-                Listado:ListadoEstudiantesResultado
+                Total:ListadoEstudiantes.count,
+                Listado:ListadoEstudiantes.data
             }
-            return Informacion;
+           
+        }else{
+            var Informacion={
+                Total:0,
+                Listado:[]
+            } 
         }
+        return Informacion;
     } catch (err) {
         await transaction.rollback();
         console.error(err);
