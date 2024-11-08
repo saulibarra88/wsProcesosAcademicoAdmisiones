@@ -235,6 +235,67 @@ router.get('/ListadoEstudiantesNoRegistradoADmisionesPeridaCupo/:periodo/',async
  
 });
 
+router.get('/ListadoEstudianntesCupoPorEstado/:periodo/:idEstado/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const idEstado = req.params.idEstado;
+    const cedula = req.params.cedula;
+    try {
+        var respuesta=await  procesoMigracion.ProcesoListadoEstudianteCuposPorEstados(periodo,idEstado,cedula);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ExcelListadoEstudianntesCupoPorEstado/:periodo/:idEstado/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const idEstado = req.params.idEstado;
+    const cedula = req.params.cedula;
+    try {
+        var respuesta=await  procesoMigracion.ProcesoExcelListadoEstudianteCuposPorEstados(periodo,idEstado,cedula);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ListadoEstadoCupo/',async (req, res) => {
+
+    try {
+        var respuesta=await  procesoMigracion.ListadoeEtadoCupos();
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 //////Servicios Web /////////////////
 router.get('/VerificarRegistroIncripcionEstudiantesAdmisiones/:periodo/:cedula/',async (req, res) => {
     const periodo = req.params.periodo;
@@ -514,6 +575,28 @@ router.get('/PDFPerdidasAsignaturasEstudiantes/:carrera/:periodo/:cedula',async 
              {
                 success: false,
                 mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
+
+router.get('/ProcesosPruebas/:periodo/',async (req, res) => {
+    const periodo = req.params.periodo;
+
+    try {
+        
+        var respuesta=await  procesoMigracion.ProcesoPruebas(periodo);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
             }
         );
     }

@@ -4,6 +4,7 @@ const pathimage = require('path');
 const nomenclatura = require('../config/nomenclatura');
 const VariablesGlobales = require('../rutas/VariablesGlobales');
 const procesoCupo = require('../modelo/procesocupos');
+const reportescarreras = require('../rutas/reportesCarreras');
 const centralizada = require('../modelo/centralizada');
 const tools = require('./tools');
 const fs = require("fs");
@@ -66,7 +67,7 @@ module.exports.ProcesoVerificarRegistroIncripcionesEstudiantesAdmisiones = async
 module.exports.ProcesoConfirmacionCupoInscripcion = async function (periodo, cedula) {
     try {
         //Proceso para insertar el cupo en confirmado cuando han aceptado la postulacion de la carrera
-        var obtenerDatos = await procesoCupo.ObtenerDatosCupoProcesoTabla(periodo, 1);
+    /*    var obtenerDatos = await procesoCupo.ObtenerDatosCupoProcesoTabla(periodo, 1);
         if (obtenerDatos.count > 0) {
             return { blProceso: true, mensaje: "El proceso CONFIRMACION CUPO INSCRIPCION ya se encuetra ejecutado en el periodo:  " + periodo }
         } else {
@@ -79,7 +80,11 @@ module.exports.ProcesoConfirmacionCupoInscripcion = async function (periodo, ced
 
             var ingresoProceso = await procesoCupo.InsertarCupoProcesoTabla(1, "CONFIRMACION CUPO INSCRIPCION", periodo, cedula);
             return { blProceso: true, mensaje: "Se ejecuto el proceso CONFIRMACION CUPO INSCRIPCION con éxito en el " + periodo }
-        }
+        }*/
+
+            var resultado = await ProcesoVerificacionConfirmacionCupoInscripcion(periodo);
+
+            return { blProceso: true, mensaje: "Se ejecuto el proceso CONFIRMACION CUPO INSCRIPCION con éxito en el " + periodo }
     } catch (error) {
         return { blProceso: false, mensaje: "Error :" + error }
         console.log(error);
@@ -118,7 +123,20 @@ module.exports.ProcesoCasosEspecialRube = async function (periodo) {
         console.log(error);
     }
 }
+module.exports.ProcesoPruebas = async function (periodo) {
+    try {
+        //Procesos para insertar el cupo en activo o perdida cuando se han matriculado en el periodo
 
+
+        var resultado = await ProcesodePruebas(periodo);//Periodo a bucar 
+
+        return { blProceso: true, mensaje: "Se ejecuto el proceso MATRICULACION ACEPTACION CUPO con éxito en el " + periodo }
+
+    } catch (error) {
+        return { blProceso: false, mensaje: "Error :" + error }
+        console.log(error);
+    }
+}
 module.exports.ProcesoRetirosParciales = async function (periodo, cedula) {
     try {
         //Proceso para insertar el cupo en retiro parcial cuando se han retirado de las materias
@@ -418,8 +436,9 @@ module.exports.ProcesoAdmisionesVerificacionRegistroCupo = async function (perio
         return obtenerDatos;
 
     } catch (error) {
-        return { blProceso: false, mensaje: "Error :" + error }
         console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+       
     }
 }
 module.exports.ProcesoAdmisionesEstudiantesPerdidaCupo = async function (periodo,) {
@@ -430,8 +449,47 @@ module.exports.ProcesoAdmisionesEstudiantesPerdidaCupo = async function (periodo
         return obtenerDatos;
 
     } catch (error) {
-        return { blProceso: false, mensaje: "Error :" + error }
         console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+       
+    }
+}
+module.exports.ProcesoListadoEstudianteCuposPorEstados = async function (periodo,idEstado,cedula) {
+    try {
+
+        var obtenerDatos = await ProcesoEstudiantesListadoCuposPorEstados(periodo,idEstado,cedula);
+
+        return obtenerDatos;
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+        
+    }
+}
+module.exports.ProcesoExcelListadoEstudianteCuposPorEstados = async function (periodo,idEstado,cedula) {
+    try {
+
+        var obtenerDatos = await ProcesoExcelEstudiantesListadoCuposPorEstados(periodo,idEstado,cedula);
+
+        return obtenerDatos;
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+        
+    }
+}
+module.exports.ListadoeEtadoCupos = async function () {
+    try {
+        var obtenerDatos = await procesoCupo.ListadoEstadosCupos(); 
+
+        return obtenerDatos.data;
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+        
     }
 }
 const agent = new https.Agent({
@@ -445,8 +503,6 @@ async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
     await transaction.begin();
     try {
         console.log("***********PROCESO INICIALIZADO CUPO INSCRIPCION**********")
-
-
         var ListadoEstudiantes = [];
         const content = {
             perNomenclatura: periodo
@@ -473,7 +529,9 @@ async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
                     dcupobservacion: "ACEPTACION CUPO PROCESO MIGRACION"
                 }
 
-                var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupo(transaction, tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula), periodo, obj.AspirantePostulacion.Carrera.carNombre);
+                var VerificarEstudianteCupo = await procesoCupo.ObtenerEstudianteCupoPeriodo(transaction, tools.CedulaConGuion(obj.AspirantePostulacion.Persona.perCedula), periodo);
+
+               
                 if (VerificarEstudianteCupo.count == 0) {
                     var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccion(transaction, "OAS_Master", dataCupo, dataDetalle, periodo);
                 } else {
@@ -632,6 +690,90 @@ async function ProcesodeVerificarMatriculadoConfirmados(periodo) {
     }
 }
 async function ProcesodeVerificarMatriculadoConfirmadosCasoRuben(periodo) {
+    try {
+        console.log("***********PROCESO INICIALIZADO MATRICULACION CUPO**********")
+        var ListadoEstudiantes = [];
+        var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados("OAS_Master", periodo);
+        if (ListadoEstudiantes.data.length > 0) {
+            for (var obj of ListadoEstudiantes.data) {
+                if(obj.carrera.includes("OAS_Niv")){
+                    console.log("Nivelacion")
+                    var BasesHomologacion = await procesoCupo.ObenterHomologacionCarreraNivelacion("OAS_Master", obj.carrera, periodo);
+                }else{
+                    console.log("Carrera")
+                    var BasesHomologacion = await procesoCupo.ObenterHomologacionCarrera("OAS_Master", obj.carrera, periodo);
+                }
+                    var ObjEstudianteMatriculadoNivelacion = await procesoCupo.EncontrarEstudianteMatriculado(BasesHomologacion.data[0].hmbdbaseniv, obj.per_carrera, obj.identificacion);
+                    var ObjEstudianteMatriculadoCarrera = await procesoCupo.EncontrarEstudianteMatriculado(BasesHomologacion.data[0].hmbdbasecar, obj.per_carrera, obj.identificacion);
+                        if(ObjEstudianteMatriculadoCarrera.count>0){
+                    var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistradoRuben("OAS_Master", obj.identificacion,periodo);
+                    if (ObtenerCupoUltimo.count > 0) {
+                        if (ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO) {
+                            var dataDetalle = {
+                                cup_id: obj.cup_id,
+                                estcup_id: VariablesGlobales.ESTADOACTIVO,
+                                per_carrera: obj.per_carrera,
+                                dcupfechacreacion: tools.FechaActualCupo(),
+                                dcupobservacion: "PROCESO MIGRACION // MATRICULADO EN CARRERA//"+BasesHomologacion.data[0].hmbdbasecar
+                            }
+                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+
+                        }
+
+                    }
+                   }
+                  if(ObjEstudianteMatriculadoNivelacion.count>0){
+                    var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistradoRuben("OAS_Master", obj.identificacion,periodo);
+                    if (ObtenerCupoUltimo.count > 0) {
+
+                        if (ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO) {
+                            var dataDetalle = {
+                                cup_id: obj.cup_id,
+                                estcup_id: VariablesGlobales.ESTADOACTIVO,
+                                per_carrera: obj.per_carrera,
+                                dcupfechacreacion: tools.FechaActualCupo(),
+                                dcupobservacion: "PROCESO MIGRACION // MATRICULADO EN NIVELACION//"+BasesHomologacion.data[0].hmbdbaseniv
+                            }
+                           var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+
+                        }
+
+                    }
+                   }
+                   if(ObjEstudianteMatriculadoNivelacion.count==0 && ObjEstudianteMatriculadoCarrera.count==0){
+                    
+                    var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistradoRuben("OAS_Master", obj.identificacion,periodo);
+                    if (ObtenerCupoUltimo.count > 0) {
+
+                        if (ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO) {
+                            var dataDetalle = {
+                                cup_id: obj.cup_id,
+                                estcup_id: VariablesGlobales.ESTADOPERDIDO,
+                                per_carrera: obj.per_carrera,
+                                dcupfechacreacion: tools.FechaActualCupo(),
+                                dcupobservacion: "PERDIDA DE CUPO PROCESO MIGRACION// NO MATRICULADO "
+                            }
+                            var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
+        
+                           }
+                        }
+                    
+                    }
+
+                 
+                
+        
+            }
+        }
+        console.log("***********PROCESO FINALIZADO MATRICULACION CUPO**********")
+        return ListadoEstudiantes;
+    } catch (err) {
+
+        console.error(err);
+        return 'ERROR';
+    }
+}
+async function ProcesodePruebas(periodo) {
 
     try {
         console.log("***********PROCESO INICIALIZADO MATRICULACION CUPO**********")
@@ -640,45 +782,16 @@ async function ProcesodeVerificarMatriculadoConfirmadosCasoRuben(periodo) {
         var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados("OAS_Master", periodo);
         if (ListadoEstudiantes.data.length > 0) {
             for (var obj of ListadoEstudiantes.data) {
-                var DatosIncripcion = await procesoCupo.ObenterEstudianteIncripcionMaster("OAS_Master", obj.identificacion, periodo);
-                if (DatosIncripcion.count > 0) {
-                    var ObjEstudianteMatriculado = await procesoCupo.EncontrarEstudianteMatriculado(DatosIncripcion.data[0].strBaseDatos, obj.per_carrera, obj.identificacion);
-                    if (ObjEstudianteMatriculado.count > 0) {
+                var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistradoRuben("OAS_Master", obj.identificacion,periodo)
+                if (ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO) {
+                  
+               console.log(obj)
 
-                        var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistrado("OAS_Master", obj.identificacion);
-
-                        if (ObtenerCupoUltimo.count > 0) {
-
-                            if (ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO) {
-                                var dataDetalle = {
-                                    cup_id: obj.cup_id,
-                                    estcup_id: VariablesGlobales.ESTADOACTIVO,
-                                    per_carrera: obj.per_carrera,
-                                    dcupfechacreacion: tools.FechaActualCupo(),
-                                    dcupobservacion: "MATRICULACION NIVELACION PROCESO MIGRACION // MATRICULADO EN NIVELACION"
-                                }
-                                console.log("dataDetalle: " + obj.identificacion)
-                                console.log(dataDetalle)
-                                var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
-
-                            }
-
-                        }
-                    } else {
-                        var dataDetalle = {
-                            cup_id: obj.cup_id,
-                            estcup_id: VariablesGlobales.ESTADOPERDIDO,
-                            per_carrera: obj.per_carrera,
-                            dcupfechacreacion: tools.FechaActualCupo(),
-                            dcupobservacion: "PERDIDA DE CUPO PROCESO MIGRACION// NO MATRICULADO EN NIVELACION"
-                        }
-                        var InsertarDetalleCupo = await procesoCupo.InsertarDetalleCupo("OAS_Master", dataDetalle);
-                    }
-                } else {
-
-                    console.log("No inscripcion:" + obj.identificacion)
-                }
+                
+        
             }
+            }
+         
         }
         console.log("***********PROCESO FINALIZADO MATRICULACION CUPO**********")
         return ListadoEstudiantes;
@@ -1276,4 +1389,66 @@ async function ProcesoEstudiantesPerdidaCupoAdmisiones(periodo) {
         await transaction.commit();
         await pool.close();
     }
+}
+
+async function ProcesoEstudiantesListadoCuposPorEstados(periodo,idEstado,cedula) {
+  
+    try {
+        var ListadoEstudiantes = [];
+        var ListadoEstudiantesResultado = [];
+        var content = {
+            "perNomenclatura": periodo
+        }
+        var EstadoCupo = await procesoCupo.ObtenerEstadoCupoDatos(idEstado); 
+        var ListadoEstudiantes = await procesoCupo.ListadoEstudianteCupoporEstados("OAS_Master",periodo,idEstado); 
+       if (ListadoEstudiantes.data.length > 0) {
+        for (var informacion of ListadoEstudiantes.data) {
+            var InformacionCarrera = await procesoCupo.ObtenerDatosBase(informacion.carrera);    
+            var InformacionEstudainte = await procesoCupo.ObtenerDatosEstudianteMaster(informacion.identificacion);    
+            informacion.Carrera=InformacionCarrera.data[0]
+            informacion.Estado=EstadoCupo.data[0]
+            informacion.Estudiante=InformacionEstudainte.data[0]
+            ListadoEstudiantesResultado.push(informacion)
+        }
+        var Base64 = await reportescarreras.PdfListadoEstudiantesEstadoCupo(ListadoEstudiantesResultado,cedula,periodo,EstadoCupo.data[0] )
+         
+        }
+        return Base64;
+    } catch (err) {
+       
+        console.error(err);
+        return 'ERROR';
+    } 
+}
+async function ProcesoExcelEstudiantesListadoCuposPorEstados(periodo,idEstado,cedula) {
+  
+    try {
+        var ListadoEstudiantes = [];
+        var ListadoEstudiantesResultado = [];
+        var content = {
+            "perNomenclatura": periodo
+        }
+        var EstadoCupo = await procesoCupo.ObtenerEstadoCupoDatos(idEstado); 
+        var ListadoEstudiantes = await procesoCupo.ListadoEstudianteCupoporEstados("OAS_Master",periodo,idEstado); 
+       if (ListadoEstudiantes.data.length > 0) {
+        for (var informacion of ListadoEstudiantes.data) {
+            var InformacionCarrera = await procesoCupo.ObtenerDatosBase(informacion.carrera);    
+            var cedula=tools.CedulaSinGuion(informacion.identificacion)
+            var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+
+            var InformacionEstudainte = await procesoCupo.ObtenerDatosEstudianteMaster(informacion.identificacion);    
+            informacion.Carrera=InformacionCarrera.data[0]
+            informacion.Estado=EstadoCupo.data[0]
+            informacion.Estudiante=ObtenerPersona.data.listado[0]
+            ListadoEstudiantesResultado.push(informacion)
+        }
+
+        var Base64 = await reportescarreras.ExcelListadoEstudiantesCuposEstados(ListadoEstudiantesResultado )
+        }
+        return Base64;
+    } catch (err) {
+       
+        console.error(err);
+        return 'ERROR';
+    } 
 }

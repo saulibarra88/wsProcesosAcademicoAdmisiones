@@ -145,6 +145,21 @@ try {
   return {data:"Error: "+ error}
 }
 }
+module.exports.ListadoEstudianteCupoporEstados = async function (carrera,periodo,idEstado) {
+  var sentencia="";
+  sentencia="WITH UltimosRegistros AS ( SELECT dc.cup_id, MAX(dc.dcup_id) AS ultimo_dcup_id,per_carrera,dcupobservacion FROM [" + carrera + "].[dbo].[Detallecupo]  dc WHERE dc.estcup_id=" + idEstado + " and dc.per_carrera = '" + periodo + "'  GROUP BY dc.cup_id,per_carrera,dcupobservacion ) SELECT * FROM UltimosRegistros AS ur INNER JOIN [" + carrera + "].[dbo].[Cupo] C ON c.cup_id = ur.cup_id "
+try {
+  console.log(sentencia)
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
 module.exports.ObenterEstudianteIncripcion = async function (carrera,cedula,periodo) {
   var sentencia="";
   sentencia=" SELECT* FROM [" + carrera + "].[dbo].[Inscripciones]  AS i INNER JOIN [" + carrera + "].[dbo].[Carreras] AS c on c.strCodigo=i.strCodCarrera INNER JOIN [" + carrera + "].[dbo].[homologacioncarreras] AS h on h.hmbdbaseniv=c.strBaseDatos where i.strCedEstud='" + cedula + "' and i.strCodPeriodo='" + periodo + "' and  h.periodo='" + periodo + "' "
@@ -206,10 +221,54 @@ try {
 }
 
 }
+module.exports.ObenterHomologacionCarreraNivelacion = async function (carrera,basenivelacion,periodo) {
+  var sentencia="";
+  sentencia=" select * from [dbo].[homologacioncarreras] where hmbdbaseniv='" + basenivelacion + "' and periodo='" + periodo + "' "
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
 
+}
+module.exports.ObenterHomologacionCarrera = async function (carrera,basenivelacion,periodo) {
+  var sentencia="";
+  sentencia=" select * from [dbo].[homologacioncarreras] where hmbdbasecar='" + basenivelacion + "' and periodo='" + periodo + "' "
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
 module.exports.ObtenerUltimoDetalleCupoRegistrado = async function (carrera,cedula) {
   var sentencia="";
   sentencia="SELECT  dc.cup_id as cup_iddetalle,ec.estcup_id as idEstadoCupo ,*  FROM  [" + carrera + "].[dbo].[Detallecupo] dc  INNER JOIN (SELECT cup_id, MAX(dcup_id) AS ultimo FROM [" + carrera + "].[dbo].[Detallecupo] GROUP BY cup_id) ultimos_detalles ON dc.cup_id = ultimos_detalles.cup_id AND dc.dcup_id = ultimos_detalles.ultimo INNER JOIN [OAS_Master].[dbo].[Estadocupos] ec ON ec.estcup_id=dc.estcup_id INNER JOIN [" + carrera + "].[dbo].[Cupo] c ON dc.cup_id = c.cup_id INNER JOIN [" + carrera + "].[dbo].[Estudiantes] e ON e.strCedula=c.identificacion where c.identificacion  in ('" + cedula + "');"
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+module.exports.ObtenerUltimoDetalleCupoRegistradoRuben = async function (carrera,cedula,periodo) {
+  var sentencia="";
+  sentencia="SELECT  dc.cup_id as cup_iddetalle,ec.estcup_id as idEstadoCupo ,*  FROM  [" + carrera + "].[dbo].[Detallecupo] dc  INNER JOIN (SELECT cup_id, MAX(dcup_id) AS ultimo FROM [" + carrera + "].[dbo].[Detallecupo] where  per_carrera='" + periodo + "' GROUP BY cup_id) ultimos_detalles ON dc.cup_id = ultimos_detalles.cup_id AND dc.dcup_id = ultimos_detalles.ultimo INNER JOIN [OAS_Master].[dbo].[Estadocupos] ec ON ec.estcup_id=dc.estcup_id INNER JOIN [" + carrera + "].[dbo].[Cupo] c ON dc.cup_id = c.cup_id  where c.identificacion  in ('" + cedula + "');"
 try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -493,7 +552,22 @@ module.exports.AsignaturasRetiroEstudiante = async function (transaction,carrera
 module.exports.ObtenerEstudianteCupo = async function (transaction,cedula,periodo,carrera) {
   var sentencia="";
   sentencia="SELECT * FROM [OAS_Master].[dbo].[Cupo] WHERE identificacion='" + cedula + "' and carrera= '" + carrera + "' and cup_estado=1"
- 
+ console.log(sentencia)
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMasterTransaccion(transaction,"OAS_Master",sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+module.exports.ObtenerEstudianteCupoPeriodo = async function (transaction,cedula,periodo) {
+  var sentencia="";
+  sentencia="SELECT * FROM [OAS_Master].[dbo].[Cupo] WHERE identificacion='" + cedula + "' and per_carrera= '" + periodo + "' and cup_estado=1"
 try {
   if (sentencia != "") {
     const sqlConsulta = await execMasterTransaccion(transaction,"OAS_Master",sentencia, "OK","OK");
@@ -574,9 +648,52 @@ try {
 } catch (error) {
   return {data:"Error: "+ error}
 }
-
 }
-
+module.exports.ObtenerDatosEstudianteMaster = async function (Cedula) {
+  var sentencia="";
+  sentencia="select * from [dbo].[Estudiantes] where [strCedula]='" + Cedula + "'"
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+module.exports.ObtenerEstadoCupoDatos = async function (idEstado) {
+  var sentencia="";
+  sentencia="select * from [dbo].[Estadocupos] where [estcup_id]=" + idEstado + ""
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+module.exports.ListadoEstadosCupos = async function () {
+  var sentencia="";
+  sentencia="select * from [dbo].[Estadocupos] "
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
 module.exports.ObtenerVerificacionHomologacionCarreraIngreso = async function (periodo,bsCarrera) {
   var sentencia="";
   sentencia="SELECT * FROM  [OAS_Master].[dbo].[Homologacioncarreras] WHERE periodo= '" + periodo + "' AND hmbdbasecar= '" + bsCarrera + "' AND homestado= 1"
@@ -766,6 +883,22 @@ module.exports.DocentesDatos = async function (carrera,cedula) {
 
 }
 module.exports.PeriodoDatos = async function (carrera,periodo) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].dbo.Periodos WHERE strCodigo='" + periodo + "' "
+    try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+
+module.exports.ListadoDetalleCuposporDescripcion = async function (carrera,periodo) {
   var sentencia="";
   sentencia=" SELECT * FROM [" + carrera + "].dbo.Periodos WHERE strCodigo='" + periodo + "' "
     try {
