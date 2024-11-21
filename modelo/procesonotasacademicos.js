@@ -342,3 +342,20 @@ module.exports.PeriodoDatosCarrera = async function (transaction,carrera,periodo
 }
 
 }
+
+
+module.exports.ObtenerSolicitudesRectifiaciones = async function (transaction,carrera,periodo) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].dbo.Periodos WHERE strCodigo='" + periodo + "' "
+    try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}

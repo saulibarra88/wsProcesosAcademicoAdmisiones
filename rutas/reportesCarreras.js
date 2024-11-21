@@ -9,7 +9,9 @@ const https = require('https');
 const tools = require('./tools');
 const crypto = require("crypto");
 const procesoCupo = require('../modelo/procesocupos');
+const procesoacademico = require('../rutas/ProcesoNotasAcademico');
 const xlsx = require('xlsx');
+const ExcelJS  = require('exceljs');
 const { JSDOM } = require('jsdom');
 const agent = new https.Agent({
     rejectUnauthorized: false,
@@ -60,6 +62,15 @@ module.exports.PdfListadoDocumentosCarreras = async function (listado,cedulaUsua
   module.exports.PdfListadoEstudiantesAsignaturaAprueban = async function (listado,carrera,cedulaUsuario,periodo) {
     try {
         var resultado = await ProcesoPdfEstudianteAsignaturaAprueban(listado,carrera,cedulaUsuario,periodo);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  module.exports.ExcelListadoEstudiantesAsignaturDocente = async function (carrera, periodo,nivel,paralelo,CodMateria, cedula) {
+    try {
+        var resultado = await ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula);
         return resultado
     } catch (error) {
         console.log(error);
@@ -760,7 +771,7 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
   const fileData = fs.readFileSync(tempFilePath, { encoding: 'base64' });
   
   // Eliminar el archivo temporal
-  //fs.unlinkSync(tempFilePath);
+  fs.unlinkSync(tempFilePath);
   return fileData;
             return null
         } catch (error) {
@@ -772,6 +783,8 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
         return 'ERROR';
     }
   }
+
+
   function generarPDF(htmlCompleto, options) {
     return new Promise((resolve, reject) => {
         pdf.create(htmlCompleto, options).toFile("ReporteEstadoCupo.pdf", function (err, res) {
@@ -802,3 +815,172 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
         });
     });
 }
+
+async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula) {
+  try {
+    var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + tools.CedulaSinGuion(cedula), { httpsAgent: agent });
+            var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+            var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+            var DatosAsignaturas =await procesoCupo.AsignaturasDatos(carrera,CodMateria)
+            var periodoinfo =await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
+            var respuesta=[]
+     respuesta= await procesoacademico.ListadoEstudiantesAsignaturaDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula)
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Listado de estudiantes');
+    // Crear un header superior que combine las primeras 18 columnas
+
+    worksheet.mergeCells('A1:G1');
+    const headerespoch = worksheet.getCell('A1');
+    headerespoch.value = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO'; // Texto del header
+    headerespoch.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
+    headerespoch.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+    worksheet.mergeCells('A2:G2');
+    const headerCell0 = worksheet.getCell('A2');
+    headerCell0.value = 'FACULTAD: '+ datosCarrera.data[0].strNombreFacultad; // Texto del header
+    headerCell0.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+    headerCell0.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+    worksheet.mergeCells('A3:G3');
+    const headercarrera = worksheet.getCell('A3');
+    headercarrera.value = 'CARRERA: '+ datosCarrera.data[0].strNombreCarrera; // Texto del header
+    headercarrera.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+    headercarrera.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+    // Crear un header superior que combine las primeras 18 columnas
+    worksheet.mergeCells('A4:G4'); // Combina de A1 a Q1 (18 columnas)
+    const headerCell = worksheet.getCell('A4');
+    headerCell.value = 'LISTADO DE ESTUDIANTES MATRICULADOS'; // Texto del header
+    headerCell.font = { name: 'Arial', size: 11, bold: false }; // Tamaño y fuente Arial
+    headerCell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+    headerCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: '9cccfc' }, // Color de fondo
+    };
+  
+    // PAO
+    worksheet.mergeCells('A5:B5'); 
+    const headerCell2 = worksheet.getCell('A5');
+    headerCell2.value = 'PAO:';
+    headerCell2.font = { name: 'Arial', size: 9, bold: true };
+    headerCell2.alignment = { vertical: 'middle', horizontal: 'left' };
+    worksheet.mergeCells('C5:F5'); 
+    const headerpao = worksheet.getCell('C5');
+    headerpao.value = nivel;
+    headerpao.font = { name: 'Arial', size: 9, bold: false };
+    headerpao.alignment = { vertical: 'middle', horizontal: 'left' };
+      
+    // NIVEL
+      worksheet.mergeCells('A6:B6'); 
+      const headerCellNivel = worksheet.getCell('A6');
+      headerCellNivel.value = 'PARALELO:';
+      headerCellNivel.font = { name: 'Arial', size: 9, bold: true };
+      headerCellNivel.alignment = { vertical: 'middle', horizontal: 'left' };
+      worksheet.mergeCells('C6:G6'); 
+      const headerNivel = worksheet.getCell('C6');
+      headerNivel.value =paralelo;
+      headerNivel.font = { name: 'Arial', size: 9, bold: false };
+      headerNivel.alignment = { vertical: 'middle', horizontal: 'left' };
+      // CEDULA
+      worksheet.mergeCells('A7:B7'); 
+      const headerCellCedula = worksheet.getCell('A7');
+      headerCellCedula.value = 'CÉDULA:';
+      headerCellCedula.font = { name: 'Arial', size: 9, bold: true };
+      headerCellCedula.alignment = { vertical: 'middle', horizontal: 'left' };
+      worksheet.mergeCells('C7:G7'); 
+      const headerCedula = worksheet.getCell('C7');
+      headerCedula.value = cedula;
+      headerCedula.font = { name: 'Arial', size: 9, bold: false };
+      headerCedula.alignment = { vertical: 'middle', horizontal: 'left' };
+      // ASIGNATURA
+          worksheet.mergeCells('A8:B8'); 
+          const headerCellAsignatura = worksheet.getCell('A8');
+          headerCellAsignatura.value = 'ASIGNATURA:';
+          headerCellAsignatura.font = { name: 'Arial', size: 9, bold: true };
+          headerCellAsignatura.alignment = { vertical: 'middle', horizontal: 'left' };
+          worksheet.mergeCells('C8:G8'); 
+          const headerAsig = worksheet.getCell('C8');
+          headerAsig.value = DatosAsignaturas.data[0].strNombre;
+          headerAsig.font = { name: 'Arial', size: 9, bold: false };
+          headerAsig.alignment = { vertical: 'middle', horizontal: 'left' };
+         // DOCENTE
+         worksheet.mergeCells('A9:B9'); 
+         const headerCellDocente = worksheet.getCell('A9');
+         headerCellDocente.value = 'DOCENTE:';
+         headerCellDocente.font = { name: 'Arial', size: 9, bold: true };
+         headerCellDocente.alignment = { vertical: 'middle', horizontal: 'left' };
+         worksheet.mergeCells('C9:G9'); 
+         const headerDocente = worksheet.getCell('C9');
+         headerDocente.value = strNombres;
+         headerDocente.font = { name: 'Arial', size: 9, bold: false };
+         headerDocente.alignment = { vertical: 'middle', horizontal: 'left' };
+            // PERIODO
+            worksheet.mergeCells('A10:B10'); 
+            const headerCellPeriodo = worksheet.getCell('A10');
+            headerCellPeriodo.value = 'PERIODO:';
+            headerCellPeriodo.font = { name: 'Arial', size: 9, bold: true };
+            headerCellPeriodo.alignment = { vertical: 'middle', horizontal: 'left' };
+            worksheet.mergeCells('C10:G10'); 
+            const headerPeriodo = worksheet.getCell('C10');
+            headerPeriodo.value = periodoinfo.data[0].strDescripcion + "("+periodo+")";
+            headerPeriodo.font = { name: 'Arial', size: 9, bold: false };
+            headerPeriodo.alignment = { vertical: 'middle', horizontal: 'left' };
+    // Obtener datos y agregar filas
+
+
+  // Encabezados de tabla
+  const headers = ['No', 'Código', 'Cédula', 'Apellidos','Nombres', 'Matrícula', 'No Matrícula'];
+  worksheet.addRow(headers).eachCell((cell) => {
+    cell.font = { bold: true };
+    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+  });
+
+  // Agregar datos y aplicar bordes a cada celda
+  respuesta.Datos.forEach((row, index) => {
+    const rowData = [
+      index + 1,
+      row.strCodEstud,
+      row.strCedula,
+      row.strApellidos,
+      row.strNombres,
+      row.sintCodigo,
+      row.bytNumMat,
+    ];
+    const excelRow = worksheet.addRow(rowData);
+
+    excelRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+  });
+
+
+  // Ajustar tamaño de las columnas
+  worksheet.columns.forEach((column) => {
+    column.width = 20;
+  });
+
+ // Guardar archivo Excel
+ const buffer = await workbook.xlsx.writeBuffer();
+ const base64 = buffer.toString('base64');
+
+ // Retornar la cadena Base64
+
+  //  const fs = require('fs');
+  //  fs.writeFileSync('ListadoEstudiantes.xlsx', buffer);
+  return base64;
+      
+      } catch (error) {
+          console.error(error);
+          return 'ERROR';
+      }
+  }
+

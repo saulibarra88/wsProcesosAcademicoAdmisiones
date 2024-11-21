@@ -114,6 +114,15 @@ module.exports.ListadoEstudiantesPeriodosCarrera = async function (carrera,perio
         console.log(error);
     }
 }
+
+module.exports.ListadoEstudiantesAsignaturaDocente = async function (carrera, periodo,nivel,paralelo,CodMateria, cedula) {
+    try {
+        var Datos = await ObtenerListadoEstudiantedadoDocenteAsignatura(carrera, periodo,nivel,paralelo,CodMateria, cedula);
+        return { Datos }
+    } catch (error) {
+        console.log(error);
+    }
+}
 async function ActualizarNotaExonerados(periodo, estado) {
     console.log("***********PROCESO INICIALIZADO ACTUALIZACION NOTA EXONERADOS**********")
     try {
@@ -660,5 +669,42 @@ function FunciongenerarPDF(htmlCompleto, options) {
             }
         });
     });
+}
+
+
+
+
+async function ObtenerListadoEstudiantedadoDocenteAsignatura(carrera, periodo,nivel,paralelo,CodMateria, cedula) {
+    const pool = await iniciarDinamicoPool(carrera);
+    await pool.connect();
+    const transaction = await iniciarDinamicoTransaccion(pool);
+    await transaction.begin();
+    try {
+        var listadoNomina = [];
+        var matriculaEstudiantesNomina = await procesonotasacademicos.ListadoNominaEstudianteDadoCedulaDocente(transaction, carrera, periodo, nivel, paralelo, CodMateria, cedula);
+        if (matriculaEstudiantesNomina.count > 0) {
+            for (var estudiante of matriculaEstudiantesNomina.data) {
+                var DatosConvalidaciones = await procesonotasacademicos.ObtenerConvalidacionesEstudiante(transaction, carrera, estudiante.strCodPeriodoMateria, estudiante.sintCodigo, estudiante.strCodMateria);
+                var DatosRetiros = await procesonotasacademicos.ObtenerRetirosEstudiante(transaction, carrera, estudiante.strCodPeriodoMateria, estudiante.sintCodigo, estudiante.strCodMateria);
+                var DatosSinAporbar = await procesonotasacademicos.ObtenerMateriaNoAprobarEstudiante(transaction, carrera, estudiante.strCodMateria, Number(estudiante.strCodEstud));
+                if (DatosConvalidaciones.count == 0) {
+                    if (DatosRetiros.count == 0) {
+                        if (DatosSinAporbar.count == 0) {
+                            listadoNomina.push(estudiante)
+                        }
+                    }
+                }
+            }
+            return listadoNomina;
+        }
+    } catch (err) {
+        await transaction.rollback();
+        console.error(err);
+        return 'ERROR';
+    } finally {
+        await transaction.commit();
+        // Cerrar la conexión
+        await pool.close();
+    }
 }
 

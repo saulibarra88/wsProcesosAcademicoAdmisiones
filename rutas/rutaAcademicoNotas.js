@@ -4,6 +4,7 @@ const Request = require("request");
 
 
 const procesoAcadeicoNotas = require('../rutas/ProcesoNotasAcademico');
+const procesoreportecarrera = require('../rutas/reportesCarreras');
 
 
 
@@ -40,6 +41,31 @@ router.get('/ListadosCalificacionesEstudiantedadoDocente/:carrera/:periodo/:nive
     const idreglamento = req.params.idreglamento;
     try {
         var respuesta=await  procesoAcadeicoNotas.ProcesoListadoCalificacionesEstudiantedadoDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula, idreglamento);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ListadosEstudiantesAsignaturasDocente/:carrera/:periodo/:nivel/:paralelo/:CodMateria/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const nivel = req.params.nivel;
+    const paralelo = req.params.paralelo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    const CodMateria = req.params.CodMateria;
+    try {
+        console.log(carrera, periodo,nivel,paralelo,CodMateria, cedula)
+        var respuesta=await  procesoreportecarrera.ExcelListadoEstudiantesAsignaturDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula);
         res.json({
             success: true,
             informacion:respuesta
