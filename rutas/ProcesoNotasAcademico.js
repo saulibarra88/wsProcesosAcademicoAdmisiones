@@ -235,36 +235,38 @@ async function ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, period
                 var DatosConvalidaciones = await procesonotasacademicos.ObtenerConvalidacionesEstudiante(transaction, carrera, estudiante.strCodPeriodoMateria, estudiante.sintCodigo, estudiante.strCodMateria);
                 var DatosRetiros = await procesonotasacademicos.ObtenerRetirosEstudiante(transaction, carrera, estudiante.strCodPeriodoMateria, estudiante.sintCodigo, estudiante.strCodMateria);
                 var DatosSinAporbar = await procesonotasacademicos.ObtenerMateriaNoAprobarEstudiante(transaction, carrera, estudiante.strCodMateria, Number(estudiante.strCodEstud));
+                var DatosValidacion = await procesonotasacademicos.ObtenerMateriaConvalidacionConocimiento(transaction, carrera, estudiante.strCodMateria, estudiante.sintCodigo,estudiante.strCodPeriodoMateria);
                 if (DatosConvalidaciones.count == 0) {
                     if (DatosRetiros.count == 0) {
                         if (DatosSinAporbar.count == 0) {
-                            var datosNotas = await procesonotasacademicos.ObtenerNotaPacialAsignatura(transaction, carrera, estudiante.sintCodigo, estudiante.strCodPeriodoMateria, estudiante.strCodMateria);
-                            estudiante.cantidadNota = datosNotas.count;
-
-                            if (datosNotas.count > 0) {
-                                var listadoCalificaciones = [];
-                                for (var objNotas of datosNotas.data) {
-                                    var valor1 = objNotas.dcParcial1 == null ? 0 : objNotas.dcParcial1;
-                                    var valor2 = objNotas.dcParcial2 == null ? 0 : objNotas.dcParcial2;
-                                    objNotas.promedio = tools.PromedioCalcular(valor1, valor2);
-                                    var EquivalenciaDatos = await procesonotasacademicos.ObtenerParametroCalificacionPromedioEquivalencia(transaction, "SistemaAcademico", objNotas.promedio, idreglamento);
-                                    if (EquivalenciaDatos.count > 0) {
-                                        objNotas.Equivalencia = EquivalenciaDatos.data[0];
-                                    } else {
-                                        var EquivalenciaAsistencia = await procesonotasacademicos.ObtenerParametroEquivalenciaAsistencia(transaction, "SistemaAcademico", objNotas.bytAsistencia, idreglamento);
-                                        if (EquivalenciaAsistencia.count > 0) {
-                                            objNotas.Equivalencia = EquivalenciaAsistencia.data[0];
+                            if(DatosValidacion.count==0){
+                                var datosNotas = await procesonotasacademicos.ObtenerNotaPacialAsignatura(transaction, carrera, estudiante.sintCodigo, estudiante.strCodPeriodoMateria, estudiante.strCodMateria);
+                                estudiante.cantidadNota = datosNotas.count;
+                                if (datosNotas.count > 0) {
+                                    var listadoCalificaciones = [];
+                                    for (var objNotas of datosNotas.data) {
+                                        var valor1 = objNotas.dcParcial1 == null ? 0 : objNotas.dcParcial1;
+                                        var valor2 = objNotas.dcParcial2 == null ? 0 : objNotas.dcParcial2;
+                                        objNotas.promedio = tools.PromedioCalcular(valor1, valor2);
+                                        var EquivalenciaDatos = await procesonotasacademicos.ObtenerParametroCalificacionPromedioEquivalencia(transaction, "SistemaAcademico", objNotas.promedio, idreglamento);
+                                        if (EquivalenciaDatos.count > 0) {
+                                            objNotas.Equivalencia = EquivalenciaDatos.data[0];
+                                        } else {
+                                            var EquivalenciaAsistencia = await procesonotasacademicos.ObtenerParametroEquivalenciaAsistencia(transaction, "SistemaAcademico", objNotas.bytAsistencia, idreglamento);
+                                            if (EquivalenciaAsistencia.count > 0) {
+                                                objNotas.Equivalencia = EquivalenciaAsistencia.data[0];
+                                            }
                                         }
+                                        listadoCalificaciones.push(objNotas)
                                     }
-                                    listadoCalificaciones.push(objNotas)
-
-
+                                    estudiante.Calificacion = listadoCalificaciones;
+                                } else {
+                                    estudiante.Calificacion = null
                                 }
-                                estudiante.Calificacion = listadoCalificaciones;
-                            } else {
-                                estudiante.Calificacion = null
+                                listadoNomina.push(estudiante)
+
                             }
-                            listadoNomina.push(estudiante)
+                         
                         }
                     }
                 }
@@ -687,10 +689,13 @@ async function ObtenerListadoEstudiantedadoDocenteAsignatura(carrera, periodo,ni
                 var DatosConvalidaciones = await procesonotasacademicos.ObtenerConvalidacionesEstudiante(transaction, carrera, estudiante.strCodPeriodoMateria, estudiante.sintCodigo, estudiante.strCodMateria);
                 var DatosRetiros = await procesonotasacademicos.ObtenerRetirosEstudiante(transaction, carrera, estudiante.strCodPeriodoMateria, estudiante.sintCodigo, estudiante.strCodMateria);
                 var DatosSinAporbar = await procesonotasacademicos.ObtenerMateriaNoAprobarEstudiante(transaction, carrera, estudiante.strCodMateria, Number(estudiante.strCodEstud));
+                var DatosValidacion = await procesonotasacademicos.ObtenerMateriaConvalidacionConocimiento(transaction, carrera, estudiante.strCodMateria, estudiante.sintCodigo,estudiante.strCodPeriodoMateria);
                 if (DatosConvalidaciones.count == 0) {
                     if (DatosRetiros.count == 0) {
                         if (DatosSinAporbar.count == 0) {
-                            listadoNomina.push(estudiante)
+                            if (DatosValidacion.count == 0) {
+                                listadoNomina.push(estudiante)
+                            }  
                         }
                     }
                 }

@@ -328,7 +328,7 @@ module.exports.ObtenerPeriodoVigenteMaster = async function (carrera) {
 }
 module.exports.ListadoPeriodoVigenteMaster = async function (carrera) {
   var sentencia="";
-  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Periodos] AS p "
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Periodos] AS p order by dtFechaInic desc"
 try {
   if (sentencia != "") {
     const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");

@@ -56,7 +56,7 @@ router.get('/ListadosCalificacionesEstudiantedadoDocente/:carrera/:periodo/:nive
     }
  
 });
-router.get('/ListadosEstudiantesAsignaturasDocente/:carrera/:periodo/:nivel/:paralelo/:CodMateria/:cedula',async (req, res) => {
+router.get('/ListadosEstudiantesAsignaturasDocenteExcel/:carrera/:periodo/:nivel/:paralelo/:CodMateria/:cedula',async (req, res) => {
     const periodo = req.params.periodo;
     const nivel = req.params.nivel;
     const paralelo = req.params.paralelo;

@@ -359,3 +359,18 @@ module.exports.ObtenerSolicitudesRectifiaciones = async function (transaction,ca
 }
 
 }
+
+module.exports.ObtenerMateriaConvalidacionConocimiento = async function (transaction, carrera, CodMateria, intMatricula,periodo) {
+  var sentencia = "";
+  sentencia = "select * from [" + carrera + "].[dbo].[solicitudvalidacion] as s inner join [dbo].[detallesolicitudval] as ds on ds.dsvidsolicitud=s.svalcod where s.svalidmatricula=" + intMatricula + " and ds.dsvcodmateria='" + CodMateria + "' and s.svalcodperiodo='" + periodo + "' and ds.dsvnota is not null"
+  try {
+    if (sentencia != "") {
+      const sqlconsulta = await execDinamicoTransaccion(transaction, carrera, sentencia, "OK", "OK");
+      return (sqlconsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}
