@@ -368,7 +368,7 @@ module.exports.ProcesoEstudianteMatriculadosNivel = async function (periodo, niv
                     listadoMatriculas.push(datos)
                 }
             }
-            console.log("Total Informacion: " + listadoMatriculas.length)
+          
 
         }
         return { blProceso: true, Informacion: listadoMatriculas }
@@ -418,7 +418,7 @@ module.exports.ProcesoEstudianteMatriculadosNivelCupos = async function (periodo
                     listadoMatriculas.push(datos)
                 }
             }
-            console.log("Total Informacion: " + listadoMatriculas.length)
+         
 
         }
         return { blProceso: true, Informacion: listadoMatriculas }
@@ -785,7 +785,7 @@ async function ProcesodePruebas(periodo) {
                 var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistradoRuben("OAS_Master", obj.identificacion,periodo)
                 if (ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO) {
                   
-               console.log(obj)
+
 
                 
         
@@ -1267,10 +1267,10 @@ async function ProcesoAprobacionNivelacionPasoCarrera(periodo, nivel) {
                             }
 
 
-                            console.log(carrera.strBaseDatos)
+                      
                             console.log("APRUEBA NIEVALCION " + matricula.strCodEstud)
                         } else {
-                            console.log(carrera.strBaseDatos)
+                           
                             console.log(" NO APRUEBA NIEVALCION " + matricula.strCodEstud)
                         }
 
@@ -1307,9 +1307,7 @@ async function ProcesoRevisionAdmisionesCuposNoRegistrado(periodo) {
             "perNomenclatura": periodo
         }
         var periodoactivoadmision = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos/activos" , { httpsAgent: agent });
-       var ListadoEstudiantes = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/list_aceptados_periodo/"+periodoactivoadmision.data[0].perCodigo, { httpsAgent: agent });
-      console.log(ListadoEstudiantes.data.length)
-      
+       var ListadoEstudiantes = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/list_aceptados_periodo/"+periodoactivoadmision.data[0].perCodigo, { httpsAgent: agent }); 
        if (ListadoEstudiantes.data.length > 0) {
             for (var estudiantes of ListadoEstudiantes.data) {
                 var VerificacionCupo = await procesoCupo.ObtnerEstudianteCupoPeriodo(transaction, "OAS_Master",periodo, tools.CedulaConGuion(estudiantes.AspirantePostulacion.Persona.perCedula));
@@ -1335,7 +1333,6 @@ async function ProcesoRevisionAdmisionesCuposNoRegistrado(periodo) {
                         dcupfechacreacion: tools.FechaActualCupo(),
                         dcupobservacion: "PERDIDA DE CUPO PROCESO MIGRACION DESDE ADMISIONES // TUVO CUPO EN ADMISIONES PERO NO REGISTRA PROCESO // NO MATRICULADO"
                     }
-                    console.log(dataCupo,dataDetalle)
                     var IngresoDatos = await procesoCupo.InsertarCupoConfirmadoTrasnsaccionGeneral(transaction, "OAS_Master", dataCupo, dataDetalle);
 
                 }

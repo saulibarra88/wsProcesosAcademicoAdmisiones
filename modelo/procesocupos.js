@@ -149,7 +149,6 @@ module.exports.ListadoEstudianteCupoporEstados = async function (carrera,periodo
   var sentencia="";
   sentencia="WITH UltimosRegistros AS ( SELECT dc.cup_id, MAX(dc.dcup_id) AS ultimo_dcup_id,per_carrera,dcupobservacion FROM [" + carrera + "].[dbo].[Detallecupo]  dc WHERE dc.estcup_id=" + idEstado + " and dc.per_carrera = '" + periodo + "'  GROUP BY dc.cup_id,per_carrera,dcupobservacion ) SELECT * FROM UltimosRegistros AS ur INNER JOIN [" + carrera + "].[dbo].[Cupo] C ON c.cup_id = ur.cup_id "
 try {
-  console.log(sentencia)
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
    return (sqlConsulta)
@@ -552,7 +551,6 @@ module.exports.AsignaturasRetiroEstudiante = async function (transaction,carrera
 module.exports.ObtenerEstudianteCupo = async function (transaction,cedula,periodo,carrera) {
   var sentencia="";
   sentencia="SELECT * FROM [OAS_Master].[dbo].[Cupo] WHERE identificacion='" + cedula + "' and carrera= '" + carrera + "' and cup_estado=1"
- console.log(sentencia)
 try {
   if (sentencia != "") {
     const sqlConsulta = await execMasterTransaccion(transaction,"OAS_Master",sentencia, "OK","OK");

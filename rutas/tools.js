@@ -26,7 +26,12 @@ function FechaActual(){
   return currentDate;
 }
 
-
+module.exports.EsVigente = function (fecha)  {
+  const fechaActual = moment();
+  const fechaEvaluar = moment(fecha, 'YYYY-MM-DD HH:mm:ss');
+  // Verifica si la fecha es mayor o igual a la fecha actual
+  return fechaEvaluar.isSameOrAfter(fechaActual);
+}
 
 
 module.exports.FechaActualCupo = function () {

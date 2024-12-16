@@ -742,8 +742,6 @@ function calcularValoresIntermedios(rangoInicio, rangoFin) {
 
 function verificarOAgregarObjeto(lista, objeto, claveUnica) {
     // Buscar el índice del objeto en la lista basado en la clave única
-    console.log("objeto", "claveUnica")
-    console.log(objeto, claveUnica)
     const indice = lista.findIndex(elemento => elemento[claveUnica] === objeto[claveUnica]);
     if (indice === -1) {
         return false;

@@ -64,7 +64,6 @@ router.get('/ListadosEstudiantesAsignaturasDocenteExcel/:carrera/:periodo/:nivel
     const cedula = req.params.cedula;
     const CodMateria = req.params.CodMateria;
     try {
-        console.log(carrera, periodo,nivel,paralelo,CodMateria, cedula)
         var respuesta=await  procesoreportecarrera.ExcelListadoEstudiantesAsignaturDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula);
         res.json({
             success: true,

@@ -403,7 +403,6 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
   async function ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera,cedula,periodo) {
     try {
         try {
-      console.log(listado, carrera,cedula,periodo)
             var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
             var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
             var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
