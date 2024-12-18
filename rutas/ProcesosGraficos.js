@@ -78,18 +78,25 @@ async function ProcesoGraficosParciales1(carrera, periodo, nivel, paralelo, CodM
                 var estudiantes = [];
                 for (var index1 = 0; index1 < calificaciones.Asignaturas.length; index1++) {
                     const element = calificaciones.Asignaturas[index1];
-                    for (var index2 = 0; index2 < element.Calificacion.length; index2++) {
-                        if (index2 == 0) {
-                            const datosNotas = element.Calificacion[0];
-                            datosNotas.dcParcial1 = datosNotas.dcParcial1 == null ? 0 : datosNotas.dcParcial1;
-                            if ((Number(datosNotas.dcParcial1) >= Number(equivalencia.eqrenminimo)) && (Number(datosNotas.dcParcial1) <= Number(equivalencia.eqrenmaximo))) {
-                                equivalencia.contador = equivalencia.contador + 1;
-                                element.notaparcial = datosNotas.dcParcial1;
-                                estudiantes.push(element);
-                            }
-                        }
 
-                    }
+                    if(element.Calificacion==null){
+                        element.notaparcial=0;
+                        estudiantes.push(element);
+                      }else{
+                        for (var index2 = 0; index2 < element.Calificacion.length; index2++) {
+                            if (index2 == 0) {
+                                const datosNotas = element.Calificacion[0];
+                                datosNotas.dcParcial1 = datosNotas.dcParcial1 == null ? 0 : datosNotas.dcParcial1;
+                                if ((Number(datosNotas.dcParcial1) >= Number(equivalencia.eqrenminimo)) && (Number(datosNotas.dcParcial1) <= Number(equivalencia.eqrenmaximo))) {
+                                    equivalencia.contador = equivalencia.contador + 1;
+                                    element.notaparcial = datosNotas.dcParcial1;
+                                    estudiantes.push(element);
+                                }
+                            }
+    
+                        }
+                      }
+                  
                 }
                 equivalencia.procentaje = ((equivalencia.contador * 100) / Number(calificaciones.Asignaturas.length)).toFixed(2);
                 equivalencia.estudiantes = estudiantes;
@@ -124,18 +131,24 @@ async function ProcesoGraficosParciales2(carrera, periodo, nivel, paralelo, CodM
                 var estudiantes = [];
                 for (var index1 = 0; index1 < calificaciones.Asignaturas.length; index1++) {
                     const element = calificaciones.Asignaturas[index1];
-                    for (var index2 = 0; index2 < element.Calificacion.length; index2++) {
-                        if (index2 == 0) {
-                            const datosNotas = element.Calificacion[0];
-                            datosNotas.dcParcial2 = datosNotas.dcParcial2 == null ? 0 : datosNotas.dcParcial2;
-                            if ((Number(datosNotas.dcParcial2) >= Number(equivalencia.eqrenminimo)) && (Number(datosNotas.dcParcial2) <= Number(equivalencia.eqrenmaximo))) {
-                                equivalencia.contador = equivalencia.contador + 1;
-                                element.notaparcial = datosNotas.dcParcial1;
-                                estudiantes.push(element);
+                    if(element.Calificacion==null){
+                        element.notaparcial=0;
+                        estudiantes.push(element);
+                      }else{
+                        for (var index2 = 0; index2 < element.Calificacion.length; index2++) {
+                            if (index2 == 0) {
+                                const datosNotas = element.Calificacion[0];
+                                datosNotas.dcParcial2 = datosNotas.dcParcial2 == null ? 0 : datosNotas.dcParcial2;
+                                if ((Number(datosNotas.dcParcial2) >= Number(equivalencia.eqrenminimo)) && (Number(datosNotas.dcParcial2) <= Number(equivalencia.eqrenmaximo))) {
+                                    equivalencia.contador = equivalencia.contador + 1;
+                                    element.notaparcial = datosNotas.dcParcial2;
+                                    estudiantes.push(element);
+                                }
                             }
+    
                         }
-
-                    }
+                      }
+                  
                 }
                 equivalencia.procentaje = ((equivalencia.contador * 100) / Number(calificaciones.Asignaturas.length)).toFixed(2);
                 equivalencia.estudiantes = estudiantes;
