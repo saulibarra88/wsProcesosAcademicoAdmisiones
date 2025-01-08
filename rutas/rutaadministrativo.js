@@ -8,6 +8,8 @@ const reportes = require('../rutas/reportesadmisiones');
 const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
 const procesosCarreras = require('../rutas/procesoscarreras');
 const procesosAdministrativo = require('../procesos/Procesosadministrativos');
+const reportesexcelcarreras = require('../procesos/reportesexcelcarreras');
+const procesosmatricula = require('../procesos/procesosmatricula');
 
 
 router.get('/ListadoConfigHomologacionesFechas/:periodo/',async (req, res) => {
@@ -49,6 +51,7 @@ router.get('/ListadoConfigHomologacionesCarreras/:dbcarrera/',async (req, res) =
     }
  
 });
+
 router.get('/ObtenerCarreraVigenteHomologacion/:dbcarrera/:periodo',async (req, res) => {
     const dbcarrera = req.params.dbcarrera;
     const periodo = req.params.periodo;
@@ -69,6 +72,27 @@ router.get('/ObtenerCarreraVigenteHomologacion/:dbcarrera/:periodo',async (req, 
     }
  
 });
+router.get('/ListadoRetirosInstitucionales/:periodo/:cedula',async (req, res) => {
+    const cedula = req.params.cedula;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  reportesexcelcarreras.ProcesoExcelListadoEstudiantesRetirosInstitucional(periodo,cedula);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
 
 router.post('/IngresoHomologacionFecha/',async (req, res) => {
     var datos={
@@ -110,5 +134,28 @@ router.post('/IngresoHomologacionFecha/',async (req, res) => {
     }
  
 });
+
+router.post('/RetiroestudianteSinMatricula/',async (req, res) => {
+
+    var datos=req.body
+    try {
+        var respuesta=await  procesosmatricula.ProcesoRegistroRetiroSinmatricula(datos);
+        res.json({
+            success: true,
+            respuesta
+        });
+    }catch (err) {
+
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
 
 module.exports = router;

@@ -7,6 +7,7 @@ const tools = require('../rutas/tools');
 const modeloNivelacion = require('../modelo/procesonivelacion');
 const procesoCupo = require('../modelo/procesocupos');
 const modeloadministrativo = require('../modelo/procesoadministrativo');
+const modelocerrera = require('../modelo/procesocarrera');
 const fs = require("fs");
 const https = require('https');
 
@@ -57,6 +58,7 @@ module.exports.InsertarHomologacionFechas = async function (CarrerasListado,dato
       
     }
 }
+
 async function FuncionListarConfiguracionesActivasPeriodo(periodo) {
     try {
         
@@ -133,3 +135,5 @@ async function FuncionoObtenerCarreraVigenteHomologacion(bdcarrera,periodo) {
             return 'ERROR';
         }
 }
+
+
