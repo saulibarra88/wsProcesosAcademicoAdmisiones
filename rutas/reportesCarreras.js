@@ -821,6 +821,7 @@ async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,n
             var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
             var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
             var DatosAsignaturas =await procesoCupo.AsignaturasDatos(carrera,CodMateria)
+            
             var periodoinfo =await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
             var respuesta=[]
      respuesta= await procesoacademico.ListadoEstudiantesAsignaturaDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula)

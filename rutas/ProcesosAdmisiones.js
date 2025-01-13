@@ -121,6 +121,7 @@ module.exports.ListadoAspiranteAdmisiones = async function (strBaseCarrera, peri
             if (DatosBaseCarrera.count > 0) {
                 var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/aspirante_sede/list_periodo/" + periodoAdmisiones, { httpsAgent: agent });
                 if (informacion.data.length > 0) {
+                    
                     var DatosPeriodoAcademico = await procesoCupo.ObtenerPeriodoDadoCodigo(informacion.data[0].Periodo.perNomenclatura);
 
                     if (DatosPeriodoAcademico.count > 0) {
@@ -202,7 +203,8 @@ module.exports.ListadoHomologacionesCarreras = async function () {
             var ListadoEstudiantes = [];
             var ListadoEstudiantesProceso = [];
             var periodoactivoadmision = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/periodos/activos" , { httpsAgent: agent });
-            var ofertaAcademica = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo/" + periodoactivoadmision.data[0].perCodigo, { httpsAgent: agent });
+            //var ofertaAcademica = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo/" + periodoactivoadmision.data[0].perCodigo, { httpsAgent: agent });
+            var ofertaAcademica = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo/" +9, { httpsAgent: agent });
             var objCarreraOferta='';
             if (ofertaAcademica.data.length > 0) {
             for (var oferta of ofertaAcademica.data) {
@@ -221,9 +223,6 @@ module.exports.ListadoHomologacionesCarreras = async function () {
             }
            
             }
-         
-         
-         
             return ListadoEstudiantesProceso;
         } catch (error) {
             console.error(error);
