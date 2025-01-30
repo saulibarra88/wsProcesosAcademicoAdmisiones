@@ -93,7 +93,67 @@ router.get('/ListadoRetirosInstitucionales/:periodo/:cedula',async (req, res) =>
  
 });
 
-
+router.get('/ListadoRetirosCarreras/:periodo/:dbCarrera',async (req, res) => {
+    const periodo = req.params.periodo;
+    const dbCarrera = req.params.dbCarrera;
+    try {
+        var Informacion=await  reportesexcelcarreras.ProcesoListadoEstudiantesRetirosCarrera(periodo,dbCarrera);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ListadoRetirosCarrerasPdf/:periodo/:dbCarrera/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const dbCarrera = req.params.dbCarrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion=await  reportesexcelcarreras.ProcesoListadoEstudiantesRetirosCarreraPdf(periodo,dbCarrera,cedula);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ListadoRetirosCarrerasExcel/:periodo/:dbCarrera',async (req, res) => {
+    const periodo = req.params.periodo;
+    const dbCarrera = req.params.dbCarrera;
+    try {
+        var Informacion=await  reportesexcelcarreras.ProcesoExcelListadoEstudiantesRetirosCarrerraExcel(periodo,dbCarrera);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 router.post('/IngresoHomologacionFecha/',async (req, res) => {
     var datos={
         chf_fechainicio:req.body.chf_fechainicio,

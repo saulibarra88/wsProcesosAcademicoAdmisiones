@@ -2,6 +2,9 @@ const pathimage = require('path');
 const fs = require("fs");
 const moment = require('moment');
 require('moment/locale/es');
+const https = require('https');
+const crypto = require("crypto");
+const pdf = require('html-pdf');
   
       // Función para convertir una imagen a base64
   function imageToBase64(imagePath) {
@@ -212,5 +215,36 @@ module.exports.ordenarPorApellidos=function (arr) {
     const fechaFormateada = `${nombreDiaSemana} ${diaMes} de ${nombreMes} del ${año} hora ${hora}:${minuto}${amPm}`;
 
     return fechaFormateada;
+}
+
+
+
+module.exports.FunciongenerarPDF=function (htmlCompleto, options) {
+    return new Promise((resolve, reject) => {
+        pdf.create(htmlCompleto, options).toFile("NominaGenerada.pdf", function (err, res) {
+            if (err) {
+                reject(err);
+            } else {
+                fs.readFile(res.filename, (err, data) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        const base64Data = Buffer.from(data).toString('base64');
+                        // Eliminar el archivo PDF generado (opcional)
+                       fs.unlink(res.filename, (err) => {
+                            if (err) {
+                                console.error('Error al eliminar el archivo PDF:', err);
+                            } else {
+                                console.log('Archivo PDF eliminado.');
+                            }
+                        });
+
+                        // Resolver la promesa con base64Data
+                        resolve(base64Data);
+                    }
+                });
+            }
+        });
+    });
 }
   

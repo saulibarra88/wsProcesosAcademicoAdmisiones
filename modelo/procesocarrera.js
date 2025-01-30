@@ -217,6 +217,21 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   
   }
+  module.exports.RetirosSinMatriculaEstudiantesCarrerasListado = async function (carrera,periodo) {
+    var sentencia="";
+    sentencia="SELECT * FROM [" + carrera + "].[dbo].[RetirosSinMatricula] AS RM INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=RM.rsm_strCodEstud WHERE RM.rsm_strCodPeriodo='" + periodo + "'"
+   
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
 
   module.exports.TiposRetirosEstudiantesCarrerasListado = async function (carrera,periodo) {
     var sentencia="";
