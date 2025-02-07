@@ -310,3 +310,18 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     return {data:"Error: "+ error}
   }
   }
+
+  module.exports.ListadoPensumCarrera = async function (carrera) {
+    var sentencia="";
+    sentencia = "select * from [" + carrera + "].[dbo].[Pensums] order by [dtFechaInic] desc";
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }

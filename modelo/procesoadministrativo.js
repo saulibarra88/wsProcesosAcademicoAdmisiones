@@ -94,3 +94,18 @@ module.exports.ListarConfigHomologacionesFecha = async function ( carrera, perio
       return { data: "Error: " + error }
     }
   }
+
+  module.exports.ObtenerDatosEstudianteApellidos = async function (carrera,apellidos) {
+    var sentencia = "";
+    sentencia = "select strCedula,strNombres,strApellidos,strClave,dtFechaNac,strLugarNac,strNacionalidad,strDir,strTel,strEmail from [" + carrera + "].[dbo].[Estudiantes] where strApellidos like '%" + apellidos+ "%'"
+    try {
+      if (sentencia != "") {
+        const sqlconsulta = await execMaster( carrera, sentencia, "OK", "OK");
+        return (sqlconsulta)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }

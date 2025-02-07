@@ -16,6 +16,7 @@ const rutaAcademicoNotas = require('./rutas/rutaAcademicoNotas');
 const rutaprocesos = require('./rutas/rutaprocesos');
 const rutagraficos = require('./rutas/rutaGraficos');
 const rutaadministrativa = require('./rutas/rutaadministrativo');
+const rutacarrera = require('./rutas/rutaCarreras');
 
 const url='/wsprocesosadmisiones'
 //Port Number
@@ -50,6 +51,7 @@ app.use(url+'/rutaprocesos',rutaprocesos);
 app.use(url+'/rutaacademiconotas',rutaAcademicoNotas);
 app.use(url+'/rutagraficos',rutagraficos);
 app.use(url+'/rutaadministrativa',rutaadministrativa);
+app.use(url+'/rutacarrera',rutacarrera);
 
 
 //Index Router

@@ -4,6 +4,7 @@ const pathimage = require('path');
 const nomenclatura = require('../config/nomenclatura');
 const procesoCupo = require('../modelo/procesocupos');
 const procesocarreras = require('../modelo/procesocarrera');
+const procesoadministrativo = require('../modelo/procesoadministrativo');
 const reportescarreras = require('../rutas/reportesCarreras');
 const tools = require('./tools');
 const fs = require("fs");
@@ -204,6 +205,42 @@ module.exports.pdfPerdidaAsignaturasEstudiantes = async function ( carrera,perio
 
     } catch (err) {
         console.log(error);
+        return 'ERROR';
+    }
+}
+
+module.exports.ProcesoListadoPensumCarreras = async function ( carrera) {
+    try {
+            var ListadoDocumentos = [];
+            var ListadoPensum = await procesocarreras.ListadoPensumCarrera(carrera);
+            if(ListadoPensum.count>0){
+                        
+                ListadoDocumentos= ListadoPensum.data
+            }else{
+                ListadoDocumentos=[]
+            }
+
+            return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
+
+module.exports.ProcesoListadoEstuidantesApellidosMaters = async function (apellidos) {
+    try {
+            var ListadoDocumentos = [];
+            var ListadoApellidos = await procesoadministrativo.ObtenerDatosEstudianteApellidos("OAS_Master",apellidos);
+            if(ListadoApellidos.count>0){
+                        
+                ListadoDocumentos= ListadoApellidos.data
+            }else{
+                ListadoDocumentos=[]
+            }
+
+            return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
         return 'ERROR';
     }
 }
