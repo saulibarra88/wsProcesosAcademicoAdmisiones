@@ -1082,14 +1082,14 @@ async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,n
       column.width = 20;
     });
   
-   // Guardar archivo Excel
-   const buffer = await workbook.xlsx.writeBuffer();
-   const base64 = buffer.toString('base64');
-  
    // Retornar la cadena Base64
+   const buffer = await workbook.xlsx.writeBuffer();
+  const base64 = buffer.toString('base64');
   
-     const fs = require('fs');
-     fs.writeFileSync('ListadoActaNoGeneradas.xlsx', buffer);
+  
+  // Guardar archivo Excel
+   //  const fs = require('fs');
+  //   fs.writeFileSync('ListadoActaNoGeneradas.xlsx', buffer);
     return base64;
         
         } catch (error) {
