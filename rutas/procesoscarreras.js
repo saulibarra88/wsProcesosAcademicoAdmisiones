@@ -5,7 +5,9 @@ const nomenclatura = require('../config/nomenclatura');
 const procesoCupo = require('../modelo/procesocupos');
 const procesocarreras = require('../modelo/procesocarrera');
 const procesoadministrativo = require('../modelo/procesoadministrativo');
+const procesoacademiconotas= require('../rutas/ProcesoNotasAcademico');
 const reportescarreras = require('../rutas/reportesCarreras');
+const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
@@ -245,4 +247,88 @@ module.exports.ProcesoListadoEstuidantesApellidosMaters = async function (apelli
     }
 }
 
+module.exports.ListadoActasFinCicloNoGenerada= async function (carrera,periodo) {
+    try {
+            var ListadoDocumentos = [];
+            var ListadoActas = await procesocarreras.ListadoDocenteActasNoGeneradas(carrera,2,periodo);
+            if(ListadoActas.count>0){
+                        
+                ListadoDocumentos= ListadoActas.data
+            }else{
+                ListadoDocumentos=[]
+            }
 
+            return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
+
+module.exports.ReporteExcelActasNoGenradas= async function (carrera,periodo) {
+    try {
+            var ListadoDocumentos = [];
+            var ListadoActas = await procesocarreras.ListadoDocenteActasNoGeneradas(carrera,2,periodo);
+            var ListadoActasRecuperacion = await ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo);
+            if(ListadoActas.count>0){
+                for (var elementos1 of ListadoActas.data) {
+                    ListadoDocumentos.push(elementos1)
+                }
+                for (var elementos of ListadoActasRecuperacion) {
+                    ListadoDocumentos.push(elementos)
+                }
+                var ReporteActaExcel = await reportescarreras.ExcelListadoActasNoGeneradasCarreras(carrera,periodo,ListadoDocumentos );    
+               return ReporteActaExcel
+            }else{
+                ListadoDocumentos=[]
+            }
+
+            return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
+
+async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
+ 
+    try {
+        var listadoNomina = [];
+        var ListadoDictadoMateriasCarrera = await procesocarreras.ListadoDictadoMateriasCarrera(carrera, periodo);
+        var ListadoActasGeneradasRecuperacion = await procesocarreras.ListadoActasGeneradasTipo( carrera, periodo,8);
+        if (ListadoDictadoMateriasCarrera.count > 0) {
+            for (var materia of ListadoDictadoMateriasCarrera.data) {
+                var DatosRecuperacion = await procesocarreras.ListadoEstudiantesRecuperacionAsignaturas( carrera, periodo,materia.strCodNivel,materia.strCodParalelo,materia.strCodMateria);
+                if (DatosRecuperacion.count > 0) {
+                    var blverificaracta=false;
+                    for (var actas of ListadoActasGeneradasRecuperacion.data) 
+                        {
+                            if (actas.strCodMateria== materia.strCodMateria && actas.strCodParalelo== materia.strCodParalelo && actas.strCodNivel== materia.strCodNivel && actas.strCodDocente== materia.strCodDocente) {
+                                blverificaracta=true 
+                            }
+                        }
+                        if(!blverificaracta){
+                            var elemento ={
+                                "strdescripcionacta": "ACTA DE RECUPERACION",
+                                "strCedula": materia.strCedula,
+                                "strApellidos": materia.strApellidos,
+                                "strNombres": materia.strNombres,
+                                "strTel":  materia.strTel,
+                                "strNombre": materia.strNombre,
+                                "strCodNivel": materia.strCodNivel,
+                                "strCodParalelo": materia.strCodParalelo,
+                                "strCodPeriodo":periodo
+                            }
+                            listadoNomina.push(elemento)
+                        }
+                 
+                }
+            }
+            return listadoNomina;
+        }
+    } catch (err) {
+      
+        console.error(err);
+        return 'ERROR';
+    }
+}

@@ -14,7 +14,7 @@ async function authenticateToken(req, res, next) {
   let now = new Date();
 
   if (date.getTime() > now.getTime()) {
-    console.log("consulta token")
+
     var tokenConsulta = await serviciosAcademicos.validartoken(token, decoded.userconsumo);
     if (tokenConsulta.data.length == 0) {
       return res.json({

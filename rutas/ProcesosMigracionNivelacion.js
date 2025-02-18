@@ -1233,14 +1233,14 @@ async function ProcesoAprobacionNivelacionPasoCarrera(periodo, nivel) {
         for (var carrera of ListadoCarrera.data) {
             if (carrera.strBaseDatos == 'OAS_NivTics') {
                 var ListadoAsignaturasCurso = await procesoCupo.ObenterDictadoMateriasNivel(transaction, carrera.strBaseDatos, periodo, nivel);
-                console.log(ListadoAsignaturasCurso.data)
+             
                 if (ListadoAsignaturasCurso.data.length > 0) {
                     var ListadosMatriculas = await procesoCupo.MatriculasCarrerasPeriodo(transaction, carrera.strBaseDatos, periodo);
-                    console.log("Total matriculados : " + ListadosMatriculas.count)
+               
                     for (var matricula of ListadosMatriculas.data) {
                         var contador = 0;
                         var ListadosAsignaturasAprobadas = await procesoCupo.AsignaturasAprobadaEstudiante(transaction, carrera.strBaseDatos, matricula.strCodEstud);
-                        console.log("Total materias Aprobadas : " + ListadosAsignaturasAprobadas.count)
+                     
                         for (var materiasCurso of ListadoAsignaturasCurso.data) {
                             for (var materiasaprobadas of ListadosAsignaturasAprobadas.data) {
                                 if (materiasCurso.strCodMateria == materiasaprobadas.strCodMateria) {

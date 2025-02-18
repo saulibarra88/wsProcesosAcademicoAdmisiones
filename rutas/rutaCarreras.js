@@ -51,4 +51,44 @@ router.get('/ListadoEstudiantesApellidos/:apellidos/',async (req, res) => {
  
 });
 
+router.get('/ListadoActasFinCicloNoGeneradas/:carrera/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  procesosCarreras.ListadoActasFinCicloNoGenerada(carrera,periodo);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ReporteExcelActasNoGeneradas/:carrera/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  procesosCarreras.ReporteExcelActasNoGenradas(carrera,periodo);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

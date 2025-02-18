@@ -300,7 +300,7 @@ module.exports.ObtenerAsignaturasRetiroTodas = async function ( carrera, cohorte
 module.exports.ListadoEstudiantePeriodoMatricula = async function (transaction, carrera,periodo,estado) {
   var sentencia = "";
   sentencia = " select * from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo where m.strCodPeriodo='" + periodo + "' and m.strCodEstado='" + estado + "' order by m.strCodNivel"
-  console.log(sentencia)
+
   try {
     if (sentencia != "") {
       const sqlconsulta = await execDinamicoTransaccion(transaction, carrera, sentencia, "OK", "OK");

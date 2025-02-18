@@ -120,7 +120,6 @@ async function FuncionoObtenerCarreraVigenteHomologacion(bdcarrera,periodo) {
             var Datos = await modeloadministrativo.ObtenerCarreraHomologacionVigente("SistemaAcademico",bdcarrera,periodo);
             if(Datos.count>0){
                 var fecha=Datos.data[0].chf_fechafin+ ' '+Datos.data[0].chf_horafin;
-                console.log(fecha)
                 if(tools.EsVigente(fecha)){
                     return {dato:Datos.data[0],vigencia:true};
                 }else{
