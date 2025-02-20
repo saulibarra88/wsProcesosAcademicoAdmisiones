@@ -130,14 +130,26 @@ module.exports.FechaActualCupo = function () {
   }
 
 
-  module.exports.PromedioCalcular = function (num1, num2) {
+  /*module.exports.PromedioCalcular = function (num1, num2) {
     if (typeof num1 !== 'number' || typeof num2 !== 'number') {
       throw new Error('Ambos argumentos deben ser números');
   }
-
   const promedio = (num1 + num2) / 2;
   return parseFloat(promedio.toFixed(2));
-  }
+  }*/
+  module.exports.PromedioCalcular = function (num1, num2) {
+    if (typeof num1 !== 'number' || typeof num2 !== 'number') {
+      throw new Error('Ambos argumentos deben ser números');
+    }
+    
+    const promedio = (num1 + num2) / 2;
+    const promedioStr = promedio.toFixed(3);
+    const decimalPart = promedioStr.split('.')[1];
+    
+    return decimalPart.length === 3 ? Math.ceil(promedio * 100) / 100 : Math.round(promedio * 100) / 100;
+  };
+  
+
   module.exports.CedulaConGuion=function (strcedula) {
     if ((strcedula.length > 9) && (strcedula.indexOf("-") < 0)) {
       strcedula = strcedula.substring(0, 9) + "-" + strcedula.substring(9);

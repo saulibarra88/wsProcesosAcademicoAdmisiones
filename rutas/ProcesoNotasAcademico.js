@@ -231,6 +231,7 @@ async function ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, period
     try {
         var listadoNomina = [];
         var matriculaEstudiantesNomina = await procesonotasacademicos.ListadoNominaEstudianteDadoCedulaDocente(transaction, carrera, periodo, nivel, paralelo, CodMateria, cedula);
+      console.log(matriculaEstudiantesNomina.data)
         if (matriculaEstudiantesNomina.count > 0) {
             for (var estudiante of matriculaEstudiantesNomina.data) {
                 var DatosConvalidaciones = await procesonotasacademicos.ObtenerConvalidacionesEstudiante(transaction, carrera, estudiante.strCodPeriodoMateria, estudiante.sintCodigo, estudiante.strCodMateria);
