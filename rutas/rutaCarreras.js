@@ -18,7 +18,7 @@ router.get('/ListadoPensumCarrera/:carrera/',async (req, res) => {
         var Informacion=await  procesosCarreras.ProcesoListadoPensumCarreras(carrera);
         res.json({
             success: true,
-            Informacion:Informacion,
+            listado:Informacion,
         });
     }catch (err) {
         console.log('Error: ' + err);
@@ -38,7 +38,7 @@ router.get('/ListadoPensumMateriasCarreras/:carrera/:pensum',async (req, res) =>
         var Informacion=await  procesosCarreras.ProcesoListadoPensumMateriasarreras(carrera,pensum);
         res.json({
             success: true,
-            Informacion:Informacion,
+            listado:Informacion,
         });
     }catch (err) {
         console.log('Error: ' + err);
