@@ -31,6 +31,26 @@ router.get('/ListadoPensumCarrera/:carrera/',async (req, res) => {
     }
  
 });
+router.get('/ListadoPensumMateriasCarreras/:carrera/:pensum',async (req, res) => {
+    const carrera = req.params.carrera;
+    const pensum = req.params.pensum;
+    try {
+        var Informacion=await  procesosCarreras.ProcesoListadoPensumMateriasarreras(carrera,pensum);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 router.get('/ListadoEstudiantesApellidos/:apellidos/',async (req, res) => {
     const apellidos = req.params.apellidos;
     try {

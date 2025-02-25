@@ -228,7 +228,23 @@ module.exports.ProcesoListadoPensumCarreras = async function ( carrera) {
         return 'ERROR';
     }
 }
+module.exports.ProcesoListadoPensumMateriasarreras = async function ( carrera,pensum) {
+    try {
+            var ListadoDocumentos = [];
+            var ListadoPensum = await procesocarreras.ListadoMateriasPensumCarrera(carrera,pensum);
+            if(ListadoPensum.count>0){
+                        
+                ListadoDocumentos= ListadoPensum.data
+            }else{
+                ListadoDocumentos=[]
+            }
 
+            return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
 module.exports.ProcesoListadoEstuidantesApellidosMaters = async function (apellidos) {
     try {
             var ListadoDocumentos = [];

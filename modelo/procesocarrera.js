@@ -326,6 +326,20 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   }
 
+  module.exports.ListadoMateriasPensumCarrera = async function (carrera,pensum) {
+    var sentencia="";
+    sentencia = "select * from [" + carrera + "].[dbo].[Materias_Pensum] where strCodPensum='" + pensum + "'";
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
   module.exports.ListadoDocenteActasNoGeneradas = async function (carrera,tipoActa,periodo) {
     var sentencia="";
     sentencia = "WITH DocentesConActa AS ( SELECT dm.strCodDocente,dm.strCodMateria,dm.strCodNivel,dm.strCodParalelo,dm.strCodPeriodo,a.strdescripcion FROM Acta AS a INNER JOIN Dictado_Materias AS dm ON dm.strCodMateria = a.strCodMateria AND dm.strCodNivel = a.strCodNivel AND dm.strCodParalelo = a.strCodParalelo INNER JOIN Docentes AS d ON d.strCodigo = dm.strCodDocente WHERE a.tipoactagenerado = 1 AND a.actestado = 1 AND a.tipcodigo = " + tipoActa + " AND a.strCodPeriodo = '" + periodo + "' AND dm.strCodPeriodo = '" + periodo + "' ) SELECT 'ACTA DE FIN DE CICLO 'AS strdescripcionacta,d.strCedula, d.strApellidos,d.strNombres,d.strTel,m.strNombre,dm.strCodNivel,dm.strCodParalelo,dm.strCodPeriodo FROM Dictado_Materias AS dm INNER JOIN Docentes AS d ON d.strCodigo = dm.strCodDocente INNER JOIN Materias AS m ON m.strCodigo=dm.strCodMateria LEFT JOIN DocentesConActa AS a ON a.strCodDocente = d.strCodigo and a.strCodMateria=dm.strCodMateria and a.strCodNivel=dm.strCodNivel and a.strCodParalelo=dm.strCodParalelo WHERE dm.strCodPeriodo = '" + periodo + "' AND a.strCodDocente IS NULL;";
