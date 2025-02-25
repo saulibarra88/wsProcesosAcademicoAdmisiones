@@ -328,7 +328,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
 
   module.exports.ListadoMateriasPensumCarrera = async function (carrera,pensum) {
     var sentencia="";
-    sentencia = "select * from [" + carrera + "].[dbo].[Materias_Pensum] where strCodPensum='" + pensum + "'";
+    sentencia = "select * from [" + carrera + "].[dbo].[Materias_Pensum] as mp inner join [" + carrera + "].[dbo].[Materias] as m on m.strCodigo=mp.strCodMateria where mp.strCodPensum='" + pensum + "' ";
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
