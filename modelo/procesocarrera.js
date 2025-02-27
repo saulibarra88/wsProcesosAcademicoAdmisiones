@@ -398,3 +398,38 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     return {data:"Error: "+ error}
   }
   }
+
+  module.exports.VerificacionPeriodoActivo = async function (carrera,periodo) {
+    var sentencia="";
+    sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Periodos] WHERE [strCodigo]='" + periodo + "' and blnVigente=0";
+    console.log(sentencia)
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+
+
+  module.exports.VerificacionPensumActivo = async function (carrera,pemsun) {
+    var sentencia="";
+    sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Pensums] WHERE [strCodigo]='" + pemsun + "' and  [blnActivo]=1";
+    console.log(sentencia)
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+
+  

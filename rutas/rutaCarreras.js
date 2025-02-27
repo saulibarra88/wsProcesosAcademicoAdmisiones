@@ -111,4 +111,26 @@ router.get('/ReporteExcelActasNoGeneradas/:carrera/:periodo',async (req, res) =>
     }
  
 });
+
+router.get('/ActivacionBotonCreacionPeriodo/:carrera/:periodo/:pemsun',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    const pemsun = req.params.pemsun;
+    try {
+        var Informacion=await  procesosCarreras.ProcesoActivacionBotonCreacionPerioodo(carrera,periodo,pemsun);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

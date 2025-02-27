@@ -305,7 +305,16 @@ module.exports.ReporteExcelActasNoGenradas= async function (carrera,periodo) {
         return 'ERROR';
     }
 }
+module.exports.ProcesoActivacionBotonCreacionPerioodo = async function ( carrera,periodo,pensum) {
+    try {
+            var resultado = await FuncionActivacionBotonCreacionPeriodo(carrera,periodo,pensum);
 
+            return resultado
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
 async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
  
     try {
@@ -342,6 +351,28 @@ async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
             }
             return listadoNomina;
         }
+    } catch (err) {
+      
+        console.error(err);
+        return 'ERROR';
+    }
+}
+
+async function FuncionActivacionBotonCreacionPeriodo(carrera,periodo,pemsum) {
+ 
+    try {
+        var listadoNomina = [];
+        var VerificacionPeriodo = await procesocarreras.VerificacionPeriodoActivo(carrera, periodo);
+        console.log(VerificacionPeriodo)
+        var VerificacionPensum = await procesocarreras.VerificacionPensumActivo( carrera, pemsum);
+        console.log(VerificacionPensum)
+        if (VerificacionPeriodo.count > 0 && VerificacionPensum.count > 0) {
+            return { blbotonActivacion: true, mensaje: "Activacion de Boton" }
+            }else{
+                return { blbotonActivacion: false, mensaje: "No Activacion de Boton" }
+            }
+          
+        
     } catch (err) {
       
         console.error(err);
