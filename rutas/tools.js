@@ -228,7 +228,34 @@ module.exports.ordenarPorApellidos=function (arr) {
 
     return fechaFormateada;
 }
+let validCount = 0;
+let invalidCount = 0;
 
+module.exports.FormatoCalificacionesRecuperacion=function (text) {
+  const regex = /Registro en la BD (?<database>\S+) la nota de (?<type>\S+)\s+(?<grade>null|\d+\.\d+) de la materia (?<subject>\S+) del periodo (?<period>\S+) de la matricula\s+(?<enrollment>\d+) desde (?<source>.+)/;
+    
+  const match = text.match(regex);
+  var contador=0;
+  var index=0;
+  if (!match || Object.values(match.groups).some(value => value === undefined)) {
+    invalidCount++;
+    console.error(`Registros no válidos procesados: ${invalidCount}`);
+     throw new Error("El texto no tiene el formato esperado o contiene valores nulos");
+  }
+  validCount++;
+  console.log(`Registros válidos procesados: ${validCount}`);
+ 
+  
+  return {
+      database: match.groups.database,
+      type: match.groups.type,
+      grade: match.groups.grade === "null" ? null : parseFloat(match.groups.grade),
+      subject: match.groups.subject,
+      period: match.groups.period,
+      enrollment: match.groups.enrollment,
+      source: match.groups.source.trim()
+  };
+}
 
 
 module.exports.FunciongenerarPDF=function (htmlCompleto, options) {

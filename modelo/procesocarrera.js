@@ -342,7 +342,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   module.exports.ListadoDocenteActasNoGeneradas = async function (carrera,tipoActa,periodo) {
     var sentencia="";
-    sentencia = "WITH DocentesConActa AS ( SELECT dm.strCodDocente,dm.strCodMateria,dm.strCodNivel,dm.strCodParalelo,dm.strCodPeriodo,a.strdescripcion FROM Acta AS a INNER JOIN Dictado_Materias AS dm ON dm.strCodMateria = a.strCodMateria AND dm.strCodNivel = a.strCodNivel AND dm.strCodParalelo = a.strCodParalelo INNER JOIN Docentes AS d ON d.strCodigo = dm.strCodDocente WHERE a.tipoactagenerado = 1 AND a.actestado = 1 AND a.tipcodigo = " + tipoActa + " AND a.strCodPeriodo = '" + periodo + "' AND dm.strCodPeriodo = '" + periodo + "' ) SELECT 'ACTA DE FIN DE CICLO 'AS strdescripcionacta,d.strCedula, d.strApellidos,d.strNombres,d.strTel,m.strNombre,dm.strCodNivel,dm.strCodParalelo,dm.strCodPeriodo FROM Dictado_Materias AS dm INNER JOIN Docentes AS d ON d.strCodigo = dm.strCodDocente INNER JOIN Materias AS m ON m.strCodigo=dm.strCodMateria LEFT JOIN DocentesConActa AS a ON a.strCodDocente = d.strCodigo and a.strCodMateria=dm.strCodMateria and a.strCodNivel=dm.strCodNivel and a.strCodParalelo=dm.strCodParalelo WHERE dm.strCodPeriodo = '" + periodo + "' AND a.strCodDocente IS NULL;";
+    sentencia = "WITH DocentesConActa AS ( SELECT dm.strCodDocente,dm.strCodMateria,dm.strCodNivel,dm.strCodParalelo,dm.strCodPeriodo,a.strdescripcion FROM Acta AS a INNER JOIN Dictado_Materias AS dm ON dm.strCodMateria = a.strCodMateria AND dm.strCodNivel = a.strCodNivel AND dm.strCodParalelo = a.strCodParalelo INNER JOIN Docentes AS d ON d.strCodigo = dm.strCodDocente INNER JOIN bandejaactas AS ba ON ba.strCodMateria=a.strCodMateria AND ba.strCodNivel = a.strCodNivel AND ba.strCodParalelo = a.strCodParalelo WHERE a.tipoactagenerado = 1 AND a.actestado = 1 AND a.tipcodigo = " + tipoActa + " AND a.strCodPeriodo = '" + periodo + "' AND dm.strCodPeriodo = '" + periodo + "' ) SELECT 'ACTA DE FIN DE CICLO 'AS strdescripcionacta,d.strCedula, d.strApellidos,d.strNombres,d.strTel,m.strNombre,dm.strCodNivel,dm.strCodParalelo,dm.strCodPeriodo FROM Dictado_Materias AS dm INNER JOIN Docentes AS d ON d.strCodigo = dm.strCodDocente INNER JOIN Materias AS m ON m.strCodigo=dm.strCodMateria LEFT JOIN DocentesConActa AS a ON a.strCodDocente = d.strCodigo and a.strCodMateria=dm.strCodMateria and a.strCodNivel=dm.strCodNivel and a.strCodParalelo=dm.strCodParalelo WHERE dm.strCodPeriodo = '" + periodo + "' AND a.strCodDocente IS NULL;";
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
@@ -386,7 +386,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   module.exports.ListadoActasGeneradasTipo = async function (carrera,periodo,tipo) {
     var sentencia="";
-    sentencia = "select * from [" + carrera + "].[dbo].[Acta] as a inner join [" + carrera + "].[dbo].[Dictado_Materias]  as dm on dm.strCodMateria=a.strCodMateria and dm.strCodNivel=a.strCodNivel and dm.strCodParalelo=a.strCodParalelo inner join [" + carrera + "].[dbo].[Docentes]  as d on d.strCodigo=dm.strCodDocente where a.tipoactagenerado=1 and a.actestado=1 and a.tipcodigo='" + tipo + "' and a.strCodPeriodo='" + periodo + "' and dm.strCodPeriodo='" + periodo + "'";
+    sentencia = "select * from [" + carrera + "].[dbo].[Acta] as a inner join [" + carrera + "].[dbo].[Dictado_Materias]  as dm on dm.strCodMateria=a.strCodMateria and dm.strCodNivel=a.strCodNivel and dm.strCodParalelo=a.strCodParalelo inner join [" + carrera + "].[dbo].[Docentes]  as d on d.strCodigo=dm.strCodDocente INNER JOIN [" + carrera + "].[dbo].[bandejaactas] AS ba ON ba.strCodMateria=a.strCodMateria AND ba.strCodNivel = a.strCodNivel AND ba.strCodParalelo = a.strCodParalelo where  a.actestado=1 and a.tipcodigo='" + tipo + "' and a.strCodPeriodo='" + periodo + "' and dm.strCodPeriodo='" + periodo + "'";
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
@@ -423,6 +423,54 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+
+  module.exports.SentenciaNotas1 = async function (carrera) {
+    var sentencia="";
+    sentencia = "SELECT * FROM   [" + carrera + "].[seguridad].[auditoria] WHERE  (autfecha >= '2025-02-19') AND (autdescripcionproceso LIKE '%P0042%') AND (autdescripcionproceso LIKE '%nota de REC %') ORDER BY 3,4";
+    console.log(sentencia)
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+
+  module.exports.ListadoLogRecuperacionTabla = async function (carrera) {
+    var sentencia="";
+    sentencia = "SELECT * FROM   [" + carrera + "].[dbo].[log] ORDER BY 2,3";
+    console.log(sentencia)
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+
+  module.exports.ActualizacionCalifacionRecuperacion = async function (carrera,matericula,nota,materia) {
+    var sentencia="";
+    sentencia = "update [" + carrera + "].[dbo].[Notas_Parciales]  set dcParcial2=" + nota + " where sintCodMatricula=" + matericula + " and strCodPeriodo='P0042' and strCodMateria='" + materia + "' and strCodTipoExamen='REC' ";
+    console.log(sentencia)
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}

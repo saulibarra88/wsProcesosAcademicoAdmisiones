@@ -4,6 +4,7 @@ const pathimage = require('path');
 const nomenclatura = require('../config/nomenclatura');
 const VariablesGlobales = require('../rutas/VariablesGlobales');
 const procesoCupo = require('../modelo/procesocupos');
+const procesoCarrera = require('../modelo/procesocarrera');
 const reportescarreras = require('../rutas/reportesCarreras');
 const centralizada = require('../modelo/centralizada');
 const tools = require('./tools');
@@ -1449,3 +1450,4 @@ async function ProcesoExcelEstudiantesListadoCuposPorEstados(periodo,idEstado,ce
         return 'ERROR';
     } 
 }
+
