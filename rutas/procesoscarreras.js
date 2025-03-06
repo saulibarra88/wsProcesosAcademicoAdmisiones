@@ -326,9 +326,8 @@ async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
                 var DatosRecuperacion = await procesocarreras.ListadoEstudiantesRecuperacionAsignaturas( carrera, periodo,materia.strCodNivel,materia.strCodParalelo,materia.strCodMateria);
                 if (DatosRecuperacion.count > 0) {
                     var blverificaracta=false;
-                    for (var actas of ListadoActasGeneradasRecuperacion.data) 
-                        {
-                            if (actas.strCodMateria== materia.strCodMateria && actas.strCodParalelo== materia.strCodParalelo && actas.strCodNivel== materia.strCodNivel && actas.strCodDocente== materia.strCodDocente) {
+                    for (var actas of ListadoActasGeneradasRecuperacion.data)  {
+                         if (actas.codigomateria== materia.strCodMateria && actas.codigoparalelo== materia.strCodParalelo && actas.codigonivel== materia.strCodNivel && actas.codigodocente== materia.strCodDocente) {
                                 blverificaracta=true 
                             }
                         }
