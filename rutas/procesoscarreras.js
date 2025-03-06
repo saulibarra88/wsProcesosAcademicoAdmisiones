@@ -320,7 +320,7 @@ async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
     try {
         var listadoNomina = [];
         var ListadoDictadoMateriasCarrera = await procesocarreras.ListadoDictadoMateriasCarrera(carrera, periodo);
-        var ListadoActasGeneradasRecuperacion = await procesocarreras.ListadoActasGeneradasTipo( carrera, periodo,8);
+        var ListadoActasGeneradasRecuperacion = await procesocarreras.ListadoActasGeneradasTipo( carrera, periodo,3);
         if (ListadoDictadoMateriasCarrera.count > 0) {
             for (var materia of ListadoDictadoMateriasCarrera.data) {
                 var DatosRecuperacion = await procesocarreras.ListadoEstudiantesRecuperacionAsignaturas( carrera, periodo,materia.strCodNivel,materia.strCodParalelo,materia.strCodMateria);
