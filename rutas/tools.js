@@ -142,10 +142,10 @@ module.exports.FechaActualCupo = function () {
       throw new Error('Ambos argumentos deben ser números');
     }
     
-    const promedio = (num1 + num2) / 2;
+    let promedio = (num1 + num2) / 2;
     const promedioStr = promedio.toFixed(3);
     const decimalPart = promedioStr.split('.')[1];
-   // promedio = Number(promedioStr); // Asegura que el valor sea redondeado a 3 decimales
+    promedio = Number(promedioStr); // Asegura que el valor sea redondeado a 3 decimales
 
     return decimalPart.length === 3 ? Math.ceil(promedio * 100) / 100 : Math.round(promedio * 100) / 100;
   };
