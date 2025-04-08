@@ -422,8 +422,8 @@ async function ProcesoRetirosInstitucionalExcel(periodo, cedula, lstResultado) {
 
         // Retornar la cadena Base64
         //Almacenar el archivo fisico
-        const fs = require('fs');
-        fs.writeFileSync('ReporteDatosRetiros.xlsx', buffer);
+       // const fs = require('fs');
+       // fs.writeFileSync('ReporteDatosRetiros.xlsx', buffer);
         return base64;
 
     } catch (error) {

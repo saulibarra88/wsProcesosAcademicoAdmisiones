@@ -807,13 +807,13 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
                         const base64Data = Buffer.from(data).toString('base64');
 
                        // Eliminar el archivo PDF generado (opcional)
-                   /*    fs.unlink(res.filename, (err) => {
+                       fs.unlink(res.filename, (err) => {
                             if (err) {
                                 console.error('Error al eliminar el archivo PDF:', err);
                             } else {
                                 console.log('Archivo PDF eliminado.');
                             }
-                        });*/
+                        });
 
                         // Resolver la promesa con base64Data
                         resolve(base64Data);
