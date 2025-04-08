@@ -441,13 +441,13 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
                           
 
                                <td style="font-size: 11px; text-align: center">
-                              ${carreras.totalAprobados}  
+                              ${carreras.Aprueban}  
                             </td>
                               <td style="font-size: 11px; text-align: center">
-                              ${carreras.totalReprobados}  
+                              ${carreras.Reprueban}  
                             </td>
                              <td style="font-size: 11px; text-align: center">
-                              ${carreras.total}  
+                              ${carreras.Total}  
                             </td>
                            </tr>`
             }

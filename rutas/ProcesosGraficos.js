@@ -632,10 +632,10 @@ async function generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedu
     <th colspan="12" style="text-align: center; font-size: 10px"> INFORMACIÓN ESTUDIANTES MATRICULADOS. </th>
     </tr>
     <tr>
-    <th  style="text-align: center; font-size: 10px"> # </th>
-    <th  style="text-align: center; font-size: 10px"> CÓDIGO</th>
-    <th  style="text-align: center; font-size: 10px">ESTUDIANTES </th>
-    <th  style="text-align: center; font-size: 10px">CÉDULA </th>
+    <th  style="text-align: center; font-size: 9px"> # </th>
+    <th  style="text-align: center; font-size: 9px"> CÓDIGO</th>
+    <th  style="text-align: center; font-size: 9px">ESTUDIANTES </th>
+    <th  style="text-align: center; font-size: 9px">CÉDULA </th>
     ${cabeceralistado}
     </tr>`
     cabecera = "<thead>" + cabecera + "</thead>"        
@@ -643,13 +643,13 @@ async function generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedu
         periodolistado="";
         contadot = contadot + 1;
         for (let perrio of estudiantes.Periodos) {
-            periodolistado += `<td style="font-size: 9px; text-align: center"> <strong>MATRICULA:</strong> ${perrio.matricula == true ? 'SI' : 'NO'} </br><strong>PERIODO:</strong> ${perrio.periodo} </br><strong>PAO:</strong> ${perrio.Nivel} </br> </td>`
+            periodolistado += `<td style="font-size: 8px; text-align: center"> <strong>MATRICULA:</strong> ${perrio.matricula == true ? 'SI' : 'NO'} </br><strong>PERIODO:</strong> ${perrio.periodo} </br><strong>PAO:</strong> ${perrio.Nivel} </br> </td>`
         }
         bodylistado += `<tr >
-        <td style="font-size: 9px; text-align: center;color:black"> ${contadot} </td>
-        <td style="font-size: 9px; text-align: center;color:black"> ${estudiantes.strCodigo} </td>
-        <td style="font-size: 9px; text-align: center;color:black"> ${estudiantes.strApellidos}  ${estudiantes.strNombres}</td>
-        <td style="font-size: 9px; text-align: center;color:black"> ${estudiantes.strCedula} </td>
+        <td style="font-size: 8px; text-align: center;color:black"> ${contadot} </td>
+        <td style="font-size: 8px; text-align: center;color:black"> ${estudiantes.strCodigo} </td>
+        <td style="font-size: 8px; text-align: left;color:black"> ${estudiantes.strApellidos}  ${estudiantes.strNombres}</td>
+        <td style="font-size: 8px; text-align: center;color:black"> ${estudiantes.strCedula} </td>
         ${periodolistado}
         </tr>`
     }
@@ -659,7 +659,7 @@ const htmlContent = `
     <html lang="es">
     <head>
    
- <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
+     <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
     </head>
     <body>
    
@@ -716,13 +716,13 @@ function FunciongenerarPDF(htmlCompleto, options) {
                     } else {
                         const base64Data = Buffer.from(data).toString('base64');
                         // Eliminar el archivo PDF generado (opcional)
-                          fs.unlink(res.filename, (err) => {
+                         /* fs.unlink(res.filename, (err) => {
                               if (err) {
                                   console.error('Error al eliminar el archivo PDF:', err);
                               } else {
                                   console.log('Archivo PDF eliminado.');
                               }
-                          });
+                          });*/
 
                         // Resolver la promesa con base64Data
                         resolve(base64Data);

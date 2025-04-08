@@ -223,7 +223,6 @@ async function ObtenerListadoCalificacionesEstudiantes(carrera, periodo, cedula,
     }
 }
 async function ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento) {
-    console.log(carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento)
     const pool = await iniciarDinamicoPool(carrera);
     await pool.connect();
     const transaction = await iniciarDinamicoTransaccion(pool);

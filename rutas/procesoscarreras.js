@@ -186,24 +186,23 @@ module.exports.pdfPerdidaAsignaturasEstudiantes = async function ( carrera,perio
                 for (var asignaturas of ListadoAsignaturas.data) {
 
                     var datos = await procesocarreras.CalculosEstuidantesPorAsignaturas(carrera,periodo,asignaturas.strCodMateria);
+                    console.log("datos")
+                    console.log(datos)
                     var resultado={
                         strCodMateria:asignaturas.strCodMateria,
                         strCodNivel:asignaturas.strCodNivel,
                         strNombre:asignaturas.strNombre,
-                        ApruebanDirecto:datos.data[0].ApruebanDirecto==null?0:datos.data[0].ApruebanDirecto,
-                        ApruebanExamen:datos.data[0].ApruebanExamen==null?0:datos.data[0].ApruebanExamen,
-                        RepruebaDirecta:datos.data[0].RepruebaDirecta==null?0:datos.data[0].RepruebaDirecta,
-                        RepruebanExamen:datos.data[0].RepruebanExamen==null?0:datos.data[0].RepruebanExamen,
-                        totalAprobados:Number(datos.data[0].ApruebanDirecto==null?0:datos.data[0].ApruebanDirecto)+Number(datos.data[0].ApruebanExamen==null?0:datos.data[0].ApruebanExamen),
-                        totalReprobados:Number(datos.data[0].RepruebaDirecta==null?0:datos.data[0].RepruebaDirecta)+Number(datos.data[0].RepruebanExamen==null?0:datos.data[0].RepruebanExamen),
-                        total:datos.data[0].total==null?0:datos.data[0].total
+                        Aprueban:datos.data[0].Aprueba==null?0:datos.data[0].Aprueba,
+                        Reprueban:datos.data[0].Reprueba==null?0:datos.data[0].Reprueba,
+                        Total:datos.data[0].Total==null?0:datos.data[0].Total
+                       
                     }
                     ListadoDocumentos.push(resultado)
                 }
             }
             var base64=  await  reportescarreras.PdfListadoEstudiantesAsignaturaAprueban(ListadoDocumentos,carrera,cedula,periodo)
          
-    return ListadoDocumentos
+    return base64
 
     } catch (err) {
         console.log(error);
@@ -362,9 +361,9 @@ async function FuncionActivacionBotonCreacionPeriodo(carrera,periodo,pemsum) {
     try {
         var listadoNomina = [];
         var VerificacionPeriodo = await procesocarreras.VerificacionPeriodoActivo(carrera, periodo);
-        console.log(VerificacionPeriodo)
+     
         var VerificacionPensum = await procesocarreras.VerificacionPensumActivo( carrera, pemsum);
-        console.log(VerificacionPensum)
+      
         if (VerificacionPeriodo.count > 0 && VerificacionPensum.count > 0) {
             return { blbotonActivacion: true, mensaje: "Activacion de Boton" }
             }else{

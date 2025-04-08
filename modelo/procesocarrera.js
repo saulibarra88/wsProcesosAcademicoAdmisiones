@@ -172,9 +172,11 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
 
   module.exports.CalculosEstuidantesPorAsignaturas = async function ( carrera, periodo,materia) {
     var sentencia = "";
-   // sentencia = "WITH UltimosRegistros AS (SELECT sintCodMatricula,strCodPeriodo,strCodMateria,strCodTipoExamen,dcParcial1,dcParcial2,strCodEquiv FROM ( SELECT sintCodMatricula,strCodPeriodo, strCodMateria,strCodTipoExamen,dcParcial1, dcParcial2, strCodEquiv, ROW_NUMBER() OVER ( PARTITION BY sintCodMatricula ORDER BY CASE WHEN strCodTipoExamen = 'REC' THEN 1 ELSE 2 END, strCodTipoExamen DESC ) AS rn FROM Notas_Parciales ) AS UltimosRegistros WHERE rn = 1) select SUM(CASE WHEN (strCodEquiv='A' and strCodTipoExamen='PAR') THEN 1 ELSE 0 END) AS ApruebanDirecto, SUM(CASE WHEN (strCodEquiv='A' and strCodTipoExamen='REC' ) THEN 1 ELSE 0 END) AS ApruebanExamen, SUM(CASE WHEN (strCodEquiv='R' and strCodTipoExamen='PAR' ) THEN 1 ELSE 0 END) AS RepruebaDirecta, SUM(CASE WHEN (strCodEquiv='R' and strCodTipoExamen='REC' )THEN 1 ELSE 0 END) AS RepruebanExamen, COUNT(DISTINCT np.sintCodMatricula) as total from UltimosRegistros  as np where strCodPeriodo='" + periodo + "' and strCodMateria='" + materia + "' "
-    sentencia = " SELECT SUM(CASE WHEN (strCodEquiv = 'A' AND strCodTipoExamen = 'PAR') THEN 1 ELSE 0 END) AS ApruebanDirecto, SUM(CASE WHEN (strCodEquiv = 'A' AND strCodTipoExamen = 'REC') THEN 1 ELSE 0 END) AS ApruebanExamen, SUM(CASE WHEN (strCodEquiv = 'R' AND strCodTipoExamen = 'PAR') THEN 1 ELSE 0 END) AS RepruebaDirecta, SUM(CASE WHEN (strCodEquiv = 'R' AND strCodTipoExamen = 'REC') THEN 1 ELSE 0 END) AS RepruebanExamen, COUNT(DISTINCT np.sintCodMatricula) AS total FROM ( SELECT np.sintCodMatricula, np.strCodPeriodo, np.strCodMateria, np.strCodTipoExamen, np.dcParcial1, np.dcParcial2, np.strCodEquiv FROM Notas_Parciales np WHERE np.strCodTipoExamen = ( SELECT TOP 1 np2.strCodTipoExamen FROM Notas_Parciales np2 WHERE np2.sintCodMatricula = np.sintCodMatricula ORDER BY CASE WHEN np2.strCodTipoExamen = 'REC' THEN 1 ELSE 2 END, np2.strCodTipoExamen DESC )) AS np WHERE strCodPeriodo = '" + periodo + "' AND strCodMateria ='" + materia + "';"
-                try {
+  // sentencia = "WITH UltimosRegistros AS (SELECT sintCodMatricula,strCodPeriodo,strCodMateria,strCodTipoExamen,dcParcial1,dcParcial2,strCodEquiv FROM ( SELECT sintCodMatricula,strCodPeriodo, strCodMateria,strCodTipoExamen,dcParcial1, dcParcial2, strCodEquiv, ROW_NUMBER() OVER ( PARTITION BY sintCodMatricula ORDER BY CASE WHEN strCodTipoExamen = 'REC' THEN 1 ELSE 2 END, strCodTipoExamen DESC ) AS rn FROM Notas_Parciales ) AS UltimosRegistros WHERE rn = 1) select SUM(CASE WHEN (strCodEquiv='A' and strCodTipoExamen='PAR') THEN 1 ELSE 0 END) AS ApruebanDirecto, SUM(CASE WHEN (strCodEquiv='A' and strCodTipoExamen='REC' ) THEN 1 ELSE 0 END) AS ApruebanExamen, SUM(CASE WHEN (strCodEquiv='R' and strCodTipoExamen='PAR' ) THEN 1 ELSE 0 END) AS RepruebaDirecta, SUM(CASE WHEN (strCodEquiv='R' and strCodTipoExamen='REC' )THEN 1 ELSE 0 END) AS RepruebanExamen, COUNT(DISTINCT np.sintCodMatricula) as total from UltimosRegistros  as np where strCodPeriodo='" + periodo + "' and strCodMateria='" + materia + "' "
+  //  sentencia = " SELECT SUM(CASE WHEN (strCodEquiv = 'A' AND strCodTipoExamen = 'PAR') THEN 1 ELSE 0 END) AS ApruebanDirecto, SUM(CASE WHEN (strCodEquiv = 'A' AND strCodTipoExamen = 'REC') THEN 1 ELSE 0 END) AS ApruebanExamen, SUM(CASE WHEN (strCodEquiv = 'R' AND strCodTipoExamen = 'PAR') THEN 1 ELSE 0 END) AS RepruebaDirecta, SUM(CASE WHEN (strCodEquiv = 'R' AND strCodTipoExamen = 'REC') THEN 1 ELSE 0 END) AS RepruebanExamen, COUNT(DISTINCT np.sintCodMatricula) AS total FROM ( SELECT np.sintCodMatricula, np.strCodPeriodo, np.strCodMateria, np.strCodTipoExamen, np.dcParcial1, np.dcParcial2, np.strCodEquiv FROM Notas_Parciales np WHERE np.strCodTipoExamen = ( SELECT TOP 1 np2.strCodTipoExamen FROM Notas_Parciales np2 WHERE np2.sintCodMatricula = np.sintCodMatricula ORDER BY CASE WHEN np2.strCodTipoExamen = 'REC' THEN 1 ELSE 2 END, np2.strCodTipoExamen DESC )) AS np WHERE strCodPeriodo = '" + periodo + "' AND strCodMateria ='" + materia + "';"
+  sentencia="SELECT SUM(CASE WHEN (np.Aprobado = 1 ) THEN 1 ELSE 0 END) AS Aprueba, SUM(CASE WHEN (np.Aprobado = 0 ) THEN 1 ELSE 0 END) AS Reprueba, COUNT(sintCodMatricula) AS Total FROM ( SELECT sintCodMatricula, strCodPeriodo, strCodMateria,MAX( CASE WHEN strCodEquiv = 'A' THEN 1 ELSE 0 END) AS Aprobado FROM Notas_Parciales WHERE strCodPeriodo = '" + periodo + "' AND strCodMateria ='" + materia + "' GROUP BY sintCodMatricula, strCodPeriodo, strCodMateria) AS np"
+  console.log(sentencia)
+    try {
       if (sentencia != "") {
        
         const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
@@ -405,7 +407,6 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   module.exports.VerificacionPeriodoActivo = async function (carrera,periodo) {
     var sentencia="";
     sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Periodos] WHERE [strCodigo]='" + periodo + "' and blnVigente=0";
-    console.log(sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
@@ -422,7 +423,6 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   module.exports.VerificacionPensumActivo = async function (carrera,pemsun) {
     var sentencia="";
     sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Pensums] WHERE [strCodigo]='" + pemsun + "' and  [blnActivo]=1";
-    console.log(sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
@@ -438,7 +438,6 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   module.exports.SentenciaNotas1 = async function (carrera) {
     var sentencia="";
     sentencia = "SELECT * FROM   [" + carrera + "].[seguridad].[auditoria] WHERE  (autfecha >= '2025-02-19') AND (autdescripcionproceso LIKE '%P0042%') AND (autdescripcionproceso LIKE '%nota de REC %') ORDER BY 3,4";
-    console.log(sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
@@ -454,7 +453,6 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   module.exports.ListadoLogRecuperacionTabla = async function (carrera) {
     var sentencia="";
     sentencia = "SELECT * FROM   [" + carrera + "].[dbo].[log] ORDER BY 2,3";
-    console.log(sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
@@ -470,7 +468,6 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   module.exports.ActualizacionCalifacionRecuperacion = async function (carrera,matericula,nota,materia) {
     var sentencia="";
     sentencia = "update [" + carrera + "].[dbo].[Notas_Parciales]  set dcParcial2=" + nota + " where sintCodMatricula=" + matericula + " and strCodPeriodo='P0042' and strCodMateria='" + materia + "' and strCodTipoExamen='REC' ";
-    console.log(sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
