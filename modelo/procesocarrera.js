@@ -234,6 +234,21 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     return {data:"Error: "+ error}
   }
   }
+  module.exports.RetirosSinMatriculaEstudiantesCarrerasCedula = async function (carrera,cedula) {
+    var sentencia="";
+    sentencia="SELECT * FROM [" + carrera + "].[dbo].[RetirosSinMatricula] AS RM INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=RM.rsm_strCodEstud INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=RM.rsm_strCodPeriodo WHERE E.strCedula='" + cedula + "'"
+   
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
 
   module.exports.TiposRetirosEstudiantesCarrerasListado = async function (carrera,periodo) {
     var sentencia="";
@@ -250,9 +265,40 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     return {data:"Error: "+ error}
   }
   }
+  module.exports.TiposRetirosEstudiantesCarrerasCedula = async function (carrera,cedula) {
+    var sentencia="";
+    sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matricula_Retiros] as r INNER JOIN [" + carrera + "].[dbo].[Tipo_Retiros] AS tr on tr.tipcodigo=r.tipcodigo INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=r.sintCodigo INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud WHERE e.strCedula='" + cedula + "'"
+   
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
   module.exports.RetirosEstudiantesNormalesCarrerasListado = async function (carrera,periodo) {
     var sentencia="";
     sentencia="select * from ( SELECT  r.sintCodMatricula,r.dtFechaAprob,r.dtFechaAsentado,r.strResolucion FROM [" + carrera + "].[dbo].[Retiros] as r WHERE r.strCodPeriodo='" + periodo + "' group by r.sintCodMatricula,r.dtFechaAprob,r.dtFechaAsentado,r.strResolucion) as ta INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=ta.sintCodMatricula INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud WHERE m.strCodPeriodo='" + periodo + "' "
+   
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+
+  module.exports.RetirosEstudiantesNormalesCarrerasCedula = async function (carrera,cedula) {
+    var sentencia="";
+    sentencia="select * from ( SELECT  r.sintCodMatricula,r.dtFechaAprob,r.dtFechaAsentado,r.strResolucion FROM [" + carrera + "].[dbo].[Retiros] as r INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=r.sintCodMatricula INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud WHERE e.strCedula='" + cedula + "' group by r.sintCodMatricula,r.dtFechaAprob,r.dtFechaAsentado,r.strResolucion ) as ta INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=ta.sintCodMatricula INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud WHERE e.strCedula='" + cedula + "'"
    
     try {
     if (sentencia != "") {

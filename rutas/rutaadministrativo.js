@@ -92,6 +92,26 @@ router.get('/ListadoRetirosInstitucionales/:periodo/:cedula',async (req, res) =>
     }
  
 });
+router.get('/RetirosEstudianteCarrerasCedula/:cedula/:dbCarrera',async (req, res) => {
+    const cedula = req.params.cedula;
+    const dbCarrera = req.params.dbCarrera;
+    try {
+        var Informacion=await  reportesexcelcarreras.ProcesoEstudiantesRetirosCarreraCedula(dbCarrera,cedula);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 
 router.get('/ListadoRetirosCarreras/:periodo/:dbCarrera',async (req, res) => {
     const periodo = req.params.periodo;

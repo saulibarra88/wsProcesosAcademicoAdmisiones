@@ -45,6 +45,14 @@ module.exports.ProcesoListadoEstudiantesRetirosCarreraPdf = async function (peri
         console.log(error);
     }
 }
+module.exports.ProcesoEstudiantesRetirosCarreraCedula = async function (dbCarrera,cedula) {
+    try {
+        var resultado = await FuncionEstudiantesRetirosCarreraCedula(dbCarrera,cedula);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
 module.exports.ProcesoExcelListadoEstudiantesRetirosCarrerraExcel = async function (periodo, dbCarrera) {
     try {
         var resultado = await FuncionExcelListadoEstudiantesRetirosCarreraExcel(periodo, dbCarrera);
@@ -671,4 +679,81 @@ function FunciongenerarPDF(htmlCompleto, options) {
             }
         });
     });
+}
+
+async function FuncionEstudiantesRetirosCarreraCedula(dbCarrera,cedula) {
+    try {
+        var lstResultado = []
+            var ListadoRetirosTipos = await procesocarreras.TiposRetirosEstudiantesCarrerasCedula(dbCarrera, cedula);
+            var ListadoRetirosNormales = await procesocarreras.RetirosEstudiantesNormalesCarrerasCedula(dbCarrera, cedula);
+            var ListadoRetirosSinMatriculas= await procesocarreras.RetirosSinMatriculaEstudiantesCarrerasCedula(dbCarrera, cedula);
+            if (ListadoRetirosTipos.count > 0) {
+                for (var retiros of ListadoRetirosTipos.data) {
+                    var datos = {
+                        sintCodMatricula: retiros.sintCodigo[0],
+                        strCodPeriodo: retiros.strCodPeriodo[0],
+                        strPeriodoDescripcion: retiros.strDescripcion[0],
+                        dtFechaAprob: retiros.dtFechaAprob,
+                        dtFechaAsentado: retiros.dtFechaAsentado,
+                        strdescripcion: retiros.strdescripcion,
+                        strnombreTipo: retiros.strnombre,
+                        strurl:retiros.strUrl,
+                        strCedula: retiros.strCedula,
+                        strNombres: retiros.strNombres,
+                        strApellidos: retiros.strApellidos,
+                        strNivel: retiros.strCodNivel,
+                        strtipo: "RETIROS TIPOS"
+                    }
+
+                    lstResultado.push(datos);
+                }
+            }
+            if (ListadoRetirosNormales.count > 0) {
+                for (var retirosnormales of ListadoRetirosNormales.data) {
+                    var datosNormales = {
+                        sintCodMatricula: retirosnormales.sintCodMatricula,
+                        strCodPeriodo: retirosnormales.strCodPeriodo,
+                        strPeriodoDescripcion: retirosnormales.strDescripcion,
+                        dtFechaAprob: retirosnormales.dtFechaAprob,
+                        dtFechaAsentado: retirosnormales.dtFechaAsentado,
+                        strdescripcion: retirosnormales.strResolucion,
+                        strnombreTipo: "",
+                        strurl:"",
+                        strCedula: retirosnormales.strCedula,
+                        strNombres: retirosnormales.strNombres,
+                        strApellidos: retirosnormales.strApellidos,
+                        strNivel: retirosnormales.strCodNivel,
+                        strtipo: "RETIROS ASIGNATURAS"
+                    }
+                    lstResultado.push(datosNormales);
+                }
+            }
+            if (ListadoRetirosSinMatriculas.count > 0) {
+                for (var retirossinmatricula of ListadoRetirosSinMatriculas.data) {
+                   
+                    var datosSinMatricula = {
+                        sintCodMatricula:0,
+                        strCodPeriodo: retirossinmatricula.rsm_strCodPeriodo,
+                        strPeriodoDescripcion: retirossinmatricula.strDescripcion,
+                        dtFechaAprob: retirossinmatricula.rsm_dtFechaAprob,
+                        dtFechaAsentado: retirossinmatricula.rsm_fecha_registro,
+                        strdescripcion: retirossinmatricula.rsm_strObservacion,
+                        strnombreTipo: "",
+                        strurl:retirossinmatricula.rsm_strRuta,
+                        strCedula: retirossinmatricula.strCedula,
+                        strNombres: retirossinmatricula.strNombres,
+                        strApellidos: retirossinmatricula.strApellidos,
+                        strNivel: 'NIGUNO',
+                        strtipo: "RETIRO SIN MATRICULA"
+                    }
+                    lstResultado.push(datosSinMatricula);
+                }
+            }
+        
+      
+        return lstResultado
+    } catch (error) {
+        console.log(error);
+    }
+
 }
