@@ -85,6 +85,14 @@ module.exports.PdfListadoDocumentosCarreras = async function (listado,cedulaUsua
         console.log(error);
     }
   }
+  module.exports.ExcelReporteMaticulasCarreras = async function (carrera, periodo,listado) {
+    try {
+        var resultado = await ProcesoExcelMatriculasCarreras(carrera, periodo,listado);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+  }
 async function ProcesoPdfListadoDocumentosCarreras(listado, cedula,periodo) {
     try {
         try {
@@ -1097,4 +1105,117 @@ async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,n
             return 'ERROR';
         }
     }
+    async function ProcesoExcelMatriculasCarreras(carrera, periodo,listado) {
+      try {
+                var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+                
+                var periodoinfo =await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
+                var respuesta=[]
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Listado_Matriculas');
+        // Crear un header superior que combine las primeras 18 columnas
+    
+        worksheet.mergeCells('A1:O1');
+        const headerespoch = worksheet.getCell('A1');
+        headerespoch.value = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO'; // Texto del header
+        headerespoch.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
+        headerespoch.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+        worksheet.mergeCells('A2:O2');
+        const headerCell0 = worksheet.getCell('A2');
+        headerCell0.value = 'FACULTAD: '+ datosCarrera.data[0].strNombreFacultad; // Texto del header
+        headerCell0.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+        headerCell0.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+        worksheet.mergeCells('A3:O3');
+        const headercarrera = worksheet.getCell('A3');
+        headercarrera.value = 'CARRERA: '+ datosCarrera.data[0].strNombreCarrera; // Texto del header
+        headercarrera.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+        headercarrera.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+        worksheet.mergeCells('A4:O4');
+        const headerperiodo = worksheet.getCell('A4');
+        headerperiodo.value = 'PERIODO: '+  periodoinfo.data[0].strDescripcion + "("+periodo+")" ; // Texto del header
+        headerperiodo.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+        headerperiodo.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+        // Crear un header superior que combine las primeras 18 columnas
+        worksheet.mergeCells('A5:O5'); // Combina de A1 a Q1 (18 columnas)
+        const headerCell = worksheet.getCell('A5');
+        headerCell.value = 'LISTADO DE ESTUDIANTES '; // Texto del header
+        headerCell.font = { name: 'Arial', size: 11, bold: false }; // Tamaño y fuente Arial
+        headerCell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+        headerCell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: '9cccfc' }, // Color de fondo
+        };
+      
+  
+  
+    
+    
+      // Encabezados de tabla
+      const headers = ['No', 'CEDULA', 'APELLIDO','NOMBRES', 'CODIGO', 'PAO','ESTADO','NACIONALIDAD','SEXO','INSCRIPCION','GRATUIDAD','VALOR','MAT_PRIMERA','MAT_SEGUNDA','MAT_TERCERA','REPETIDOR','ESTUDIANTE'];
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+    
+      // Agregar datos y aplicar bordes a cada celda
+      listado.forEach((row, index) => {
+        const rowData = [
+          index + 1,
+          row.strCedula,
+          row.strApellidos,
+          row.strNombres,
+          row.strCodEstud,
+          row.descripcionnivel,
+          row.descripcionestado,
+          row.strNacionalidad,
+          row.strNombre,
+          row.descripcioninscripcion,
+          row.gratuidad,
+          row.valorpago,
+          row.primera,
+          row.segunda,
+          row.tercera,
+          row.repetidor,
+          row.regular
+        ];
+        const excelRow = worksheet.addRow(rowData);
+    
+        excelRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+      });
+    
+    
+      // Ajustar tamaño de las columnas
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+      });
+    
+     // Retornar la cadena Base64
+     const buffer = await workbook.xlsx.writeBuffer();
+    const base64 = buffer.toString('base64');
+    
+    
+    // Guardar archivo Excel
+ //      const fs = require('fs');
+   //  fs.writeFileSync('ListadoMatriculasCarreras.xlsx', buffer);
+      return base64;
+          
+          } catch (error) {
+              console.error(error);
+              return 'ERROR';
+          }
+      }
 

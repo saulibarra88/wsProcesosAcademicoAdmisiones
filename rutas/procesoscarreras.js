@@ -314,6 +314,27 @@ module.exports.ProcesoActivacionBotonCreacionPerioodo = async function ( carrera
         return 'ERROR';
     }
 }
+
+module.exports.ProcesoListadoMatriculasFirmadasPorNivel = async function ( carrera,periodo,nivel) {
+    try {
+            var resultado = await procesocarreras.ListadoMatriculasFirmadasPorNivel(carrera,periodo,nivel);
+
+            return resultado.data
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
+module.exports.ProcesoReporteExcelMatriculasCarreras= async function ( carrera,periodo,estado) {
+    try {
+            var resultado = await FuncionReporteExcelMatriculasCarreras(carrera,periodo,estado);
+
+            return resultado
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
 async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
  
     try {
@@ -370,6 +391,46 @@ async function FuncionActivacionBotonCreacionPeriodo(carrera,periodo,pemsum) {
                 return { blbotonActivacion: false, mensaje: "No Activacion de Boton" }
             }
           
+        
+    } catch (err) {
+      
+        console.error(err);
+        return 'ERROR';
+    }
+}
+async function FuncionReporteExcelMatriculasCarreras(carrera,periodo,estado) {
+ 
+    try {
+        var listadoNomina = [];
+     var   datosMatriculas = await procesocarreras.ListadoMatriculasCarrerasPeriodos(carrera, periodo,estado);
+        if (datosMatriculas.count > 0) {
+            for (var matriculas of datosMatriculas.data) {
+                var PagoMatriculaestudiante = await procesocarreras.ObtenerPagoMatriculaEstudiante("pagosonline_db",periodo,tools.CedulaSinGuion(matriculas.strCedula));
+                var AsignaturasMatriculadas = await procesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidad(carrera,periodo,matriculas.sintCodigo);
+                var CalulosEstuidantesRegulares = await procesocarreras.CalculoEstudiantesRegulares60PorCiento(carrera,periodo,matriculas.sintCodigo);
+                if(AsignaturasMatriculadas.count){
+                      matriculas.primera=AsignaturasMatriculadas.data[0].Primera>0?'SI':'NO'
+                      matriculas.segunda=AsignaturasMatriculadas.data[0].Segunda>0?'SI':'NO'
+                      matriculas.repetidor=AsignaturasMatriculadas.data[0].Tercera>0?'SI':AsignaturasMatriculadas.data[0].Segunda>0?'SI':'NO'
+                      matriculas.tercera=AsignaturasMatriculadas.data[0].Tercera>0?'SI':'NO'
+                }
+                if(CalulosEstuidantesRegulares.count>0){
+matriculas.regular=CalulosEstuidantesRegulares.data[0].Estudiante
+                }
+                if(PagoMatriculaestudiante.count>0){
+                    matriculas.gratuidad='NO'
+                    matriculas.valorpago=PagoMatriculaestudiante.data[0].fltTotal
+               
+                }else{
+                    matriculas.gratuidad='SI'
+                    matriculas.valorpago=0
+                }
+                listadoNomina.push(matriculas)
+            }
+            var base64 = await reportescarreras.ExcelReporteMaticulasCarreras(carrera,periodo,listadoNomina);
+        }
+    
+          return base64
         
     } catch (err) {
       

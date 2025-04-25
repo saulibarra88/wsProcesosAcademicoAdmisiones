@@ -133,4 +133,48 @@ router.get('/ActivacionBotonCreacionPeriodo/:carrera/:periodo/:pemsun',async (re
     }
  
 });
+
+router.get('/ListadoMatriculasFirmadasPorNivel/:carrera/:periodo/:nivel',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    const nivel = req.params.nivel;
+    try {
+        var Informacion=await  procesosCarreras.ProcesoListadoMatriculasFirmadasPorNivel(carrera,periodo,nivel);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ReporteExcelMatriculasCarreras/:carrera/:periodo/:estado',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    const estado = req.params.estado;
+    try {
+        var Informacion=await  procesosCarreras.ProcesoReporteExcelMatriculasCarreras(carrera,periodo,estado);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
 module.exports = router;
