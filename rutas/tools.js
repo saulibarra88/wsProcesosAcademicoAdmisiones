@@ -150,7 +150,14 @@ module.exports.FechaActualCupo = function () {
     return decimalPart.length === 3 ? Math.ceil(promedio * 100) / 100 : Math.round(promedio * 100) / 100;
   };
   
-
+  module.exports.formatearFechaNacimiento = function (fechaISO) {
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getUTCDate()).padStart(2, '0');
+    const mes = String(fecha.getUTCMonth() + 1).padStart(2, '0'); // Meses van de 0 a 11
+    const anio = fecha.getUTCFullYear();
+  
+    return `${dia}/${mes}/${anio}`;
+  }
   module.exports.CedulaConGuion=function (strcedula) {
     if ((strcedula.length > 9) && (strcedula.indexOf("-") < 0)) {
       strcedula = strcedula.substring(0, 9) + "-" + strcedula.substring(9);
@@ -288,3 +295,39 @@ module.exports.FunciongenerarPDF=function (htmlCompleto, options) {
     });
 }
   
+
+module.exports.ConvertirFechaMatricula=function(isoDate) {
+  const date = new Date(isoDate);
+    
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    
+    return `${day}/${month}/${year}`;
+
+}
+
+module.exports.VerificacionPeriodoTresCalificaciones=async function(strCodigoPeriodo) {
+   var resultado= false;
+    var numeroperiodo = await obtenerNumeroDelPeriodo(strCodigoPeriodo);
+  
+    if (Number(numeroperiodo) >= 42) {
+      return true;
+    } else {
+      return false;
+    }
+  
+
+}
+
+
+async function obtenerNumeroDelPeriodo(parametro) {
+  if (typeof parametro !== 'string') return 0;
+
+  if (parametro.startsWith('P')) {
+    const numero = parseInt(parametro.slice(1), 10);
+    return isNaN(numero) ? 0 : numero;
+  }
+
+  return 0;
+}

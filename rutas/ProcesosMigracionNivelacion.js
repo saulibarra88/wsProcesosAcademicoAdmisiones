@@ -101,7 +101,7 @@ module.exports.ProcesoMatriculadosConfirmados = async function (periodo, cedula)
             return { blProceso: true, mensaje: "El proceso MATRICULACION ACEPTACION CUPO ya se encuetra ejecutado en el periodo:  " + periodo }
         } else {
             var resultado = await ProcesodeVerificarMatriculadoConfirmados(periodo);//Periodo a bucar 
-            var resultado2 = await ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo);//Matriculados sin proceso de admision
+          //  var resultado2 = await ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo);//Matriculados sin proceso de admision
             var ingresoProceso = await procesoCupo.InsertarCupoProcesoTabla(2, "MATRICULACION ACEPTACION CUPO", periodo, cedula);
             return { blProceso: true, mensaje: "Se ejecuto el proceso MATRICULACION ACEPTACION CUPO con éxito en el " + periodo }
         }

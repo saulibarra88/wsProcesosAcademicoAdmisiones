@@ -647,6 +647,21 @@ try {
   return {data:"Error: "+ error}
 }
 }
+module.exports.ObtenerDatosBaseTransaccion = async function (transaction,carrera,bdCarrera) {
+  var sentencia="";
+  sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + carrera + "].[dbo].Facultades AS F INNER JOIN [" + carrera + "].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [" + carrera + "].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo  WHERE C.strBaseDatos='" + bdCarrera + "' "
+
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
 module.exports.ObtenerDatosEstudianteMaster = async function (Cedula) {
   var sentencia="";
   sentencia="select * from [dbo].[Estudiantes] where [strCedula]='" + Cedula + "'"
@@ -695,7 +710,7 @@ try {
 module.exports.ObtenerVerificacionHomologacionCarreraIngreso = async function (periodo,bsCarrera) {
   var sentencia="";
   sentencia="SELECT * FROM  [OAS_Master].[dbo].[Homologacioncarreras] WHERE periodo= '" + periodo + "' AND hmbdbasecar= '" + bsCarrera + "' AND homestado= 1"
- 
+ console.log(sentencia)
 try {
   if (sentencia != "") {
     const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");

@@ -6,7 +6,8 @@ const procesoMigracion = require('../rutas/ProcesosMigracionNivelacion');
 const procesoCupo = require('../modelo/procesocupos');
 const reportes = require('../rutas/reportesadmisiones');
 const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
-const procesosCarreras = require('../rutas/procesoscarreras');
+const procesosCarrerasFunciones = require('./procesoscarrerasespoch');
+const pruebasInformacion = require('./procesosespochcarrera');
 
 router.get('/ProcesoConfirmacionCupoInscripcion/:periodo/:cedula/',async (req, res) => {
     const periodo = req.params.periodo;
@@ -281,6 +282,7 @@ router.get('/ListadoEstadoCupo/',async (req, res) => {
 
     try {
         var respuesta=await  procesoMigracion.ListadoeEtadoCupos();
+      
         res.json({
             success: true,
             informacion:respuesta
@@ -481,7 +483,7 @@ router.get('/DocumentosMatriculasPeriodos/:BaseCarrera/:periodo',async (req, res
     const periodo = req.params.periodo;
     const BaseCarrera = req.params.BaseCarrera;
     try {
-        var Informacion = await procesosCarreras.DocumentosMatriculasPeriosdos(BaseCarrera,periodo);
+        var Informacion = await procesosCarrerasFunciones.DocumentosMatriculasPeriosdos(BaseCarrera,periodo);
         res.json({
             success: true,
             Informacion
@@ -500,7 +502,7 @@ router.get('/DocumentosMatriculasPeriodos/:BaseCarrera/:periodo',async (req, res
 router.get('/RevisionDoumentosNoGeneradosMatriculasCarreras/:periodo',async (req, res) => {
     const periodo = req.params.periodo;
     try {
-        var Informacion = await procesosCarreras.RevisionDocumentosInvenientesCarreras(periodo);
+        var Informacion = await procesosCarrerasFunciones.RevisionDocumentosInvenientesCarreras(periodo);
         res.json({
             success: true,
             Informacion
@@ -520,7 +522,7 @@ router.get('/PDFListadoDocumentosCarreras/:periodo/:cedula',async (req, res) => 
     const periodo = req.params.periodo;
     const cedula = req.params.cedula;
     try {
-        var Informacion = await procesosCarreras.pdfCarerasDocumentosMatriculas(periodo,cedula);
+        var Informacion = await procesosCarrerasFunciones.pdfCarerasDocumentosMatriculas(periodo,cedula);
         res.json({
             success: true,
             Informacion
@@ -542,7 +544,7 @@ router.get('/PDFListadoEstudianteMatriculasTerceraSegunda/:carrera/:periodo/:tip
     const cedula = req.params.cedula;
     const tipo = req.params.tipo;
     try {
-        var Informacion = await procesosCarreras.pdfListadoEstudianteTerceraSegundaMatricula(carrera,periodo,cedula,tipo);
+        var Informacion = await procesosCarrerasFunciones.pdfListadoEstudianteTerceraSegundaMatricula(carrera,periodo,cedula,tipo);
         res.json({
             success: true,
             Informacion
@@ -564,7 +566,7 @@ router.get('/PDFPerdidasAsignaturasEstudiantes/:carrera/:periodo/:cedula',async 
     const cedula = req.params.cedula;
     try {
         
-        var Informacion = await procesosCarreras.pdfPerdidaAsignaturasEstudiantes(carrera,periodo,cedula);
+        var Informacion = await procesosCarrerasFunciones.pdfPerdidaAsignaturasEstudiantes(carrera,periodo,cedula);
         res.json({
             success: true,
             Informacion

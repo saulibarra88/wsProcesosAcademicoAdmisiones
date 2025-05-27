@@ -85,9 +85,33 @@ module.exports.PdfListadoDocumentosCarreras = async function (listado,cedulaUsua
         console.log(error);
     }
   }
-  module.exports.ExcelReporteMaticulasCarreras = async function (carrera, periodo,listado) {
+  module.exports.ExcelReporteMaticulasCarrerasIndividual = async function (carrera, periodo,listado) {
     try {
-        var resultado = await ProcesoExcelMatriculasCarreras(carrera, periodo,listado);
+        var resultado = await ProcesoExcelMatriculasCarrerasIndividual(carrera, periodo,listado);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+  }
+  module.exports.ExcelReporteMaticulasCarrerasInstitucional = async function ( periodo,listado) {
+    try {
+        var resultado = await ProcesoExcelMatriculasCarrerasInstitucional(periodo,listado);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+  }
+    module.exports.ExcelReporteMaticulasNivelacionInstitucional = async function ( periodo,listado) {
+    try {
+        var resultado = await ProcesoExcelMatriculasNivelacionInstitucional(periodo,listado);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+  }
+  module.exports.ExcelReporteMaticulasAdmisionesInstitucional = async function ( periodo,listado) {
+    try {
+        var resultado = await ProcesoExcelMatriculasAdminisionesInstitucional(periodo,listado);
         return resultado
     } catch (error) {
         console.log(error);
@@ -446,16 +470,30 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
                             <td style="font-size: 11px; text-align: center">
                               ${carreras.strCodNivel}  
                             </td>
-                          
-
+                            <td style="font-size: 11px; text-align: center">
+                              ${carreras.cantidadtotal}  
+                            </td>
+                            <td style="font-size: 11px; text-align: center">
+                              ${carreras.cantidadprimera}  
+                            </td>
+                               <td style="font-size: 11px; text-align: center">
+                              ${carreras.cantidadsegunda}  
+                            </td>
+                               <td style="font-size: 11px; text-align: center">
+                              ${carreras.cantidadtercera}  
+                            </td>
+                               <td style="font-size: 11px; text-align: center">
+                              ${carreras.repitencia}  
+                            </td>
                                <td style="font-size: 11px; text-align: center">
                               ${carreras.Aprueban}  
                             </td>
                               <td style="font-size: 11px; text-align: center">
                               ${carreras.Reprueban}  
                             </td>
-                             <td style="font-size: 11px; text-align: center">
-                              ${carreras.Total}  
+                              </td>
+                              <td style="font-size: 11px; text-align: center">
+                              ${carreras.retiros}  
                             </td>
                            </tr>`
             }
@@ -467,7 +505,7 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
             </head>
             <body>
             
-            <p style='text-align: center;font-size: 11px'> <strong>LISTADO DE ESTUDIANTE APROBADOS Y REPROBADOS </strong> </p>
+            <p style='text-align: center;font-size: 11px'> <strong>LISTADO DE ASIGNATURAS POR CARRERAS INFORMACIÓN MATRÍCULAS</strong> </p>
             <p style='text-align: center;font-size: 11px'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
   
               <table border=2>
@@ -482,9 +520,14 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
                   <th style="font-size: 10px;text-align: center;">CODIGO</th>
                   <th style="font-size: 10px;text-align: center;">ASIGNATURA</th>
                   <th style="font-size: 10px;text-align: center;">NIVEL</th>
+                  <th style="font-size: 10px;text-align: center;">MATRICULADOS</th>
+                  <th style="font-size: 10px;text-align: center;">PRIMERA</th>
+                  <th style="font-size: 10px;text-align: center;">SEGUNDA</th>
+                  <th style="font-size: 10px;text-align: center;">TERCERA</th>
+                  <th style="font-size: 10px;text-align: center;">REPITENCIA</th>
                   <th  style="font-size: 10px;text-align: center;">APRUEBAN </th>
                   <th  style="font-size: 10px;text-align: center;">REPRUEBAN </th>
-                  <th  style="font-size: 10px;text-align: center;">TOTAL</th>
+                  <th  style="font-size: 10px;text-align: center;">RETIROS </th>
                 </tr>
               </thead>
   
@@ -503,6 +546,7 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
             var htmlCompleto = tools.headerOcultoHtmlCarreras(datosCarrera.data[0]) + htmlContent + tools.footerOcultoHtml();
             const options = {
                 format: 'A4',
+                orientation: 'landscape', // Establecer orientación horizontal
                 border: {
                     top: '1.0cm', // Margen superior
                     right: '1.5cm', // Margen derecho
@@ -803,7 +847,7 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
 
   function generarPDF(htmlCompleto, options) {
     return new Promise((resolve, reject) => {
-        pdf.create(htmlCompleto, options).toFile("ReporteEstadoCupo.pdf", function (err, res) {
+        pdf.create(htmlCompleto, options).toFile("ReporteEstudiantesASignaturasPerdidas.pdf", function (err, res) {
             if (err) {
                 reject(err);
             } else {
@@ -1105,7 +1149,7 @@ async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,n
             return 'ERROR';
         }
     }
-    async function ProcesoExcelMatriculasCarreras(carrera, periodo,listado) {
+    async function ProcesoExcelMatriculasCarrerasIndividual(carrera, periodo,listado) {
       try {
                 var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
                 
@@ -1115,28 +1159,28 @@ async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,n
         const worksheet = workbook.addWorksheet('Listado_Matriculas');
         // Crear un header superior que combine las primeras 18 columnas
     
-        worksheet.mergeCells('A1:O1');
+        worksheet.mergeCells('A1:X1');
         const headerespoch = worksheet.getCell('A1');
         headerespoch.value = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO'; // Texto del header
         headerespoch.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
         headerespoch.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
-        worksheet.mergeCells('A2:O2');
+        worksheet.mergeCells('A2:X2');
         const headerCell0 = worksheet.getCell('A2');
         headerCell0.value = 'FACULTAD: '+ datosCarrera.data[0].strNombreFacultad; // Texto del header
         headerCell0.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
         headerCell0.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
-        worksheet.mergeCells('A3:O3');
+        worksheet.mergeCells('A3:X3');
         const headercarrera = worksheet.getCell('A3');
         headercarrera.value = 'CARRERA: '+ datosCarrera.data[0].strNombreCarrera; // Texto del header
         headercarrera.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
         headercarrera.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
-        worksheet.mergeCells('A4:O4');
+        worksheet.mergeCells('A4:X4');
         const headerperiodo = worksheet.getCell('A4');
         headerperiodo.value = 'PERIODO: '+  periodoinfo.data[0].strDescripcion + "("+periodo+")" ; // Texto del header
         headerperiodo.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
         headerperiodo.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
         // Crear un header superior que combine las primeras 18 columnas
-        worksheet.mergeCells('A5:O5'); // Combina de A1 a Q1 (18 columnas)
+        worksheet.mergeCells('A5:X5'); // Combina de A1 a Q1 (18 columnas)
         const headerCell = worksheet.getCell('A5');
         headerCell.value = 'LISTADO DE ESTUDIANTES '; // Texto del header
         headerCell.font = { name: 'Arial', size: 11, bold: false }; // Tamaño y fuente Arial
@@ -1149,41 +1193,167 @@ async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,n
       
   
   
+// FILA 1: Agrupaciones principales
+worksheet.mergeCells('A7:F8'); // DATOS ESTUDIANTES
+const headerdatos = worksheet.getCell('A7');
+headerdatos.value = 'DATOS ESTUDIANTES';
+headerdatos.alignment = { vertical: 'middle', horizontal: 'center' };
+
+worksheet.mergeCells('G7:K8'); // DATOS GEOGRAFICOS
+const headerdatosg = worksheet.getCell('G7');
+headerdatosg.value = 'DATOS GEOGRAFICOS';
+headerdatosg.alignment = { vertical: 'middle', horizontal: 'center' };
+
+worksheet.mergeCells('L7:T7'); // MATRÍCULA
+const headerdatosM = worksheet.getCell('L7');
+headerdatosM.value = 'MATRICULA';
+headerdatosM.alignment = { vertical: 'middle', horizontal: 'center' };
+
+worksheet.mergeCells('U7:V8'); // GRATUIDAD
+const headerdatosGR = worksheet.getCell('U7');
+headerdatosGR.value = 'GRATUIDAD';
+headerdatosGR.alignment = { vertical: 'middle', horizontal: 'center' };
+
+worksheet.mergeCells('W7:W9'); // REPETIDOR
+const headerdatosR = worksheet.getCell('W7');
+headerdatosR.value = 'REPETIDOR';
+headerdatosR.alignment = { vertical: 'middle', horizontal: 'center' };
+
+
+worksheet.mergeCells('X7:X9'); // TIPO_ESTUDIANTE
+const headerdatosTE= worksheet.getCell('X7');
+headerdatosTE.value = 'TIPO_ESTUDIANTE';
+headerdatosTE.alignment = { vertical: 'middle', horizontal: 'center' };
+
+worksheet.mergeCells('Y7:Y9'); // ESTADO_ESTUDIANTE
+const headerdatosAP= worksheet.getCell('Y7');
+headerdatosAP.value = 'ESTADO';
+headerdatosAP.alignment = { vertical: 'middle', horizontal: 'center' };
+worksheet.mergeCells('Z7:AB8'); // OTROS_DATOS
+const headerdatosOT= worksheet.getCell('Z7');
+headerdatosOT.value = 'OTROS DATOS';
+headerdatosOT.alignment = { vertical: 'middle', horizontal: 'center' };
+// FILA 2: Subniveles de MATRÍCULA
+worksheet.mergeCells('L8:L9');
+const headerdatosPAO= worksheet.getCell('L8');
+headerdatosPAO.value = 'PAO';
+worksheet.mergeCells('M8:M9');
+const headerdatosEM= worksheet.getCell('M8');
+worksheet.mergeCells('N8:N9');
+headerdatosEM.value = 'ESTADO_MATRICULA';
+const headerdatosINS= worksheet.getCell('N8');
+headerdatosINS.value = 'INSCRIPCION';
+worksheet.mergeCells('O8:P8');
+const headerdatosPRI= worksheet.getCell('O8');
+headerdatosPRI.value = 'PRIMERA';
+
+worksheet.mergeCells('Q8:R8');
+const headerdatosSE= worksheet.getCell('Q8');
+headerdatosSE.value = 'SEGUNDA';
+
+
+worksheet.mergeCells('S8:T8');
+const headerdatosTERC= worksheet.getCell('S8');
+headerdatosTERC.value = 'TERCERA';
+const headerdatosNu= worksheet.getCell('A9');
+headerdatosNu.value = 'N°';
+const headerdatosApe= worksheet.getCell('B9');
+headerdatosApe.value = 'APELLIDOS';
+const headerdatosNo= worksheet.getCell('C9');
+headerdatosNo.value = 'NOMBRES';
+const headerdatosCE= worksheet.getCell('D9');
+headerdatosCE.value = 'CEDULA';
+const headerdatosCO= worksheet.getCell('E9');
+headerdatosCO.value = 'CODIGO';
+const headerdatosSEX= worksheet.getCell('F9');
+headerdatosSEX.value = 'SEXO';
+const headerdatosNA= worksheet.getCell('G9');
+headerdatosNA.value = 'NACIONALIDAD';
+const headerdatosPRO= worksheet.getCell('H9');
+headerdatosPRO.value = 'PROVINCIA';
+const headerdatosCANT= worksheet.getCell('I9');
+headerdatosCANT.value = 'CANTON';
+const headerdatosPARR= worksheet.getCell('J9');
+headerdatosPARR.value = 'PARROQUIA';
+const headerdatosDIRE= worksheet.getCell('K9');
+headerdatosDIRE.value = 'DIRECCION';
+const headerdatosSI= worksheet.getCell('O9');
+headerdatosSI.value = 'SI/NO';
+const headerdatosCAN= worksheet.getCell('P9');
+headerdatosCAN.value = 'CANTIDAD';
+const headerdatosSIN= worksheet.getCell('Q9');
+headerdatosSIN.value = 'SI/NO';
+const headerdatosCA1= worksheet.getCell('R9');
+headerdatosCA1.value = 'CANTIDAD';
+const headerdatosSI1= worksheet.getCell('S9');
+headerdatosSI1.value = 'SI/NO';
+const headerdatosCA2= worksheet.getCell('T9');
+headerdatosCA2.value = 'CANTIDAD';
+const headerdatosGRATU= worksheet.getCell('U9');
+headerdatosGRATU.value = 'SI/NO';
+const headerdatosVAL= worksheet.getCell('V9');
+headerdatosVAL.value = 'VALOR';
+const headerdatosCORR= worksheet.getCell('Z9');
+headerdatosCORR.value = 'CORREO';
+const headerdatosTELR= worksheet.getCell('AA9');
+headerdatosTELR.value = 'CELULAR';
+const headerdatosNAC= worksheet.getCell('AB9');
+headerdatosNAC.value = 'FECHA_NACIMIENTO';
     
-    
-      // Encabezados de tabla
-      const headers = ['No', 'CEDULA', 'APELLIDO','NOMBRES', 'CODIGO', 'PAO','ESTADO','NACIONALIDAD','SEXO','INSCRIPCION','GRATUIDAD','VALOR','MAT_PRIMERA','MAT_SEGUNDA','MAT_TERCERA','REPETIDOR','ESTUDIANTE'];
-      worksheet.addRow(headers).eachCell((cell) => {
-        cell.font = { bold: true };
-        cell.alignment = { vertical: 'middle', horizontal: 'center' };
-        cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' },
-        };
-      });
+    // FILA 3: Encabezados base (N° - VALOR)
+const headers = [
+  'N°', 'APELLIDOS', 'NOMBRES', 'CEDULA', 'CODIGO', 'SEXO',
+  'NACIONALIDAD', 'PROVINCIA', 'CANTON', 'PARROQUIA', 'DIRECCION',
+  'PAO', 'ESTADO_MATRICULA', 'INSCRIPCION',
+  '', '', '', '', '', '', // espacios ocupados por combinación
+  'SI/NO', 'VALOR',
+  'REPETIDOR', 'TIPO_ESTUDIANTE'
+];
+// Estilos generales para las primeras 3 filas
+for (let row = 7; row <= 9; row++) {
+  worksheet.getRow(row).eachCell((cell) => {
+    cell.font = { bold: true };
+    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+  });
+}
     
       // Agregar datos y aplicar bordes a cada celda
       listado.forEach((row, index) => {
         const rowData = [
           index + 1,
+          row.per_primerApellido,
+          row.per_nombres,
           row.strCedula,
-          row.strApellidos,
-          row.strNombres,
           row.strCodEstud,
+          row.sexo,
+          row.nac_nombre,
+          row.provincia,
+          row.canton,
+          row.parroquia,
+          row.dir_callePrincipal,
           row.descripcionnivel,
           row.descripcionestado,
-          row.strNacionalidad,
-          row.strNombre,
           row.descripcioninscripcion,
+          row.primera,
+          row.cantidadprimera,
+          row.segunda,
+          row.cantidadsegunda,
+          row.tercera,
+          row.cantidadtercera,
           row.gratuidad,
           row.valorpago,
-          row.primera,
-          row.segunda,
-          row.tercera,
           row.repetidor,
-          row.regular
+          row.regular,
+          row.aprobacion,
+          row.per_email,
+          row.per_telefonoCelular,
+          row.per_fechaNacimiento,
         ];
         const excelRow = worksheet.addRow(rowData);
     
@@ -1209,8 +1379,8 @@ async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,n
     
     
     // Guardar archivo Excel
- //      const fs = require('fs');
-   //  fs.writeFileSync('ListadoMatriculasCarreras.xlsx', buffer);
+   // const fs = require('fs');
+   //  fs.writeFileSync('ListadoMatriculasCarreraIndividual'+periodo+'.xlsx', buffer);
       return base64;
           
           } catch (error) {
@@ -1218,4 +1388,786 @@ async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo,n
               return 'ERROR';
           }
       }
+
+
+      async function ProcesoExcelMatriculasCarrerasInstitucional(periodo,listado) {
+        try {
+               
+                  
+                  var periodoinfo =await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
+                  var respuesta=[]
+          const workbook = new ExcelJS.Workbook();
+          const worksheet = workbook.addWorksheet('Listado_Matriculas');
+          // Crear un header superior que combine las primeras 18 columnas
+      
+          worksheet.mergeCells('A1:X1');
+          const headerespoch = worksheet.getCell('A1');
+          headerespoch.value = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO'; // Texto del header
+          headerespoch.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
+          headerespoch.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+          worksheet.mergeCells('A2:X2');
+          const headerCell0 = worksheet.getCell('A2');
+          headerCell0.value = 'INFORMACIÓN ACADEMICA INSTITUCIONAL CARRERAS'; // Texto del header
+          headerCell0.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+          headerCell0.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+          worksheet.mergeCells('A3:X3');
+          const headerperiodo = worksheet.getCell('A3');
+          headerperiodo.value = 'PERIODO: '+  periodoinfo.data[0].strDescripcion + "("+periodo+")" ; // Texto del header
+          headerperiodo.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+          headerperiodo.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+          // Crear un header superior que combine las primeras 18 columnas
+          worksheet.mergeCells('A5:X5'); // Combina de A1 a Q1 (18 columnas)
+          const headerCell = worksheet.getCell('A5');
+          headerCell.value = 'LISTADO DE ESTUDIANTES MATRICULADOS'; // Texto del header
+          headerCell.font = { name: 'Arial', size: 11, bold: false }; // Tamaño y fuente Arial
+          headerCell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+          headerCell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: '9cccfc' }, // Color de fondo
+          };
+        
+    
+    
+  // FILA 1: Agrupaciones principales
+  worksheet.mergeCells('A7:C8'); // DATOS INSTITUCIONAL
+  const headerdatosINST = worksheet.getCell('A7');
+  headerdatosINST.value = 'DATOS INSTITUCIONALES';
+  headerdatosINST.alignment = { vertical: 'middle', horizontal: 'center' };
+
+
+  worksheet.mergeCells('D7:I8'); // DATOS ESTUDIANTES
+  const headerdatos = worksheet.getCell('D7');
+  headerdatos.value = 'DATOS ESTUDIANTES';
+  headerdatos.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('J7:N8'); // DATOS GEOGRAFICOS
+  const headerdatosg = worksheet.getCell('J7');
+  headerdatosg.value = 'DATOS GEOGRAFICOS';
+  headerdatosg.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('O7:W7'); // MATRÍCULA
+  const headerdatosM = worksheet.getCell('O7');
+  headerdatosM.value = 'MATRICULA';
+  headerdatosM.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('X7:Y8'); // GRATUIDAD
+  const headerdatosGR = worksheet.getCell('X7');
+  headerdatosGR.value = 'GRATUIDAD';
+  headerdatosGR.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('Z7:Z9'); // REPETIDOR
+  const headerdatosR = worksheet.getCell('Z7');
+  headerdatosR.value = 'REPETIDOR';
+  headerdatosR.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  
+  worksheet.mergeCells('AA7:AA9'); // TIPO_ESTUDIANTE
+  const headerdatosTE= worksheet.getCell('AA7');
+  headerdatosTE.value = 'TIPO_ESTUDIANTE';
+  headerdatosTE.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('AB7:AB9'); // ESTADO_ESTUDIANTE
+  const headerdatosAP= worksheet.getCell('AB7');
+  headerdatosAP.value = 'ESTADO';
+  headerdatosAP.alignment = { vertical: 'middle', horizontal: 'center' };
+  worksheet.mergeCells('AC7:AE8'); // OTROS_DATOS
+  const headerdatosOT= worksheet.getCell('AC7');
+  headerdatosOT.value = 'OTROS DATOS';
+  headerdatosOT.alignment = { vertical: 'middle', horizontal: 'center' };
+  // FILA 2: Subniveles de MATRÍCULA
+  worksheet.mergeCells('O8:O9');
+  const headerdatosPAO= worksheet.getCell('O8');
+  headerdatosPAO.value = 'PAO';
+
+  worksheet.mergeCells('P8:P9');
+  const headerdatosEM= worksheet.getCell('P8');
+  headerdatosEM.value = 'ESTADO_MATRICULA';
+
+  worksheet.mergeCells('Q8:Q9');
+  const headerdatosINS= worksheet.getCell('Q8');
+  headerdatosINS.value = 'INSCRIPCION';
+
+  worksheet.mergeCells('R8:S8');
+  const headerdatosPRI= worksheet.getCell('R8');
+  headerdatosPRI.value = 'PRIMERA';
+  
+  worksheet.mergeCells('T8:U8');
+  const headerdatosSE= worksheet.getCell('T8');
+  headerdatosSE.value = 'SEGUNDA';
+  
+  
+  worksheet.mergeCells('V8:W8');
+  const headerdatosTERC= worksheet.getCell('V8');
+  headerdatosTERC.value = 'TERCERA';
+  const headerdatosNu= worksheet.getCell('D9');
+  headerdatosNu.value = 'N°';
+  const headerdatosApe= worksheet.getCell('E9');
+  headerdatosApe.value = 'APELLIDOS';
+  const headerdatosNo= worksheet.getCell('F9');
+  headerdatosNo.value = 'NOMBRES';
+  const headerdatosCE= worksheet.getCell('G9');
+  headerdatosCE.value = 'CEDULA';
+  const headerdatosCO= worksheet.getCell('H9');
+  headerdatosCO.value = 'CODIGO';
+  const headerdatosSEX= worksheet.getCell('I9');
+  headerdatosSEX.value = 'SEXO';
+  const headerdatosNA= worksheet.getCell('J9');
+  headerdatosNA.value = 'NACIONALIDAD';
+  const headerdatosPRO= worksheet.getCell('K9');
+  headerdatosPRO.value = 'PROVINCIA';
+  const headerdatosCANT= worksheet.getCell('L9');
+  headerdatosCANT.value = 'CANTON';
+  const headerdatosPARR= worksheet.getCell('M9');
+  headerdatosPARR.value = 'PARROQUIA';
+  const headerdatosDIRE= worksheet.getCell('N9');
+  headerdatosDIRE.value = 'DIRECCION';
+  const headerdatosSI= worksheet.getCell('R9');
+  headerdatosSI.value = 'SI/NO';
+  const headerdatosCAN= worksheet.getCell('S9');
+  headerdatosCAN.value = 'CANTIDAD';
+  const headerdatosSIN= worksheet.getCell('T9');
+  headerdatosSIN.value = 'SI/NO';
+  const headerdatosCA1= worksheet.getCell('U9');
+  headerdatosCA1.value = 'CANTIDAD';
+  const headerdatosSI1= worksheet.getCell('V9');
+  headerdatosSI1.value = 'SI/NO';
+  const headerdatosCA2= worksheet.getCell('W9');
+  headerdatosCA2.value = 'CANTIDAD';
+  const headerdatosGRATU= worksheet.getCell('X9');
+  headerdatosGRATU.value = 'SI/NO';
+  const headerdatosVAL= worksheet.getCell('Y9');
+  headerdatosVAL.value = 'VALOR';
+  const headerdatosCORR= worksheet.getCell('AC9');
+  headerdatosCORR.value = 'CORREO';
+  const headerdatosTELR= worksheet.getCell('AD9');
+  headerdatosTELR.value = 'CELULAR';
+  const headerdatosNAC= worksheet.getCell('AE9');
+  headerdatosNAC.value = 'FECHA_NACIMIENTO';
+  const headerdatosSEDE= worksheet.getCell('A9');
+  headerdatosSEDE.value = 'SEDE';
+  const headerdatosFACULTAD= worksheet.getCell('B9');
+  headerdatosFACULTAD.value = 'FACULTAD';
+  const headerdatosCARRERA= worksheet.getCell('C9');
+  headerdatosCARRERA.value = 'CARRERA';
+      
+      // FILA 3: Encabezados base (N° - VALOR)
+  const headers = [
+    'N°', 'APELLIDOS', 'NOMBRES', 'CEDULA', 'CODIGO', 'SEXO',
+    'NACIONALIDAD', 'PROVINCIA', 'CANTON', 'PARROQUIA', 'DIRECCION',
+    'PAO', 'ESTADO_MATRICULA', 'INSCRIPCION',
+    '', '', '', '', '', '', // espacios ocupados por combinación
+    'SI/NO', 'VALOR',
+    'REPETIDOR', 'TIPO_ESTUDIANTE'
+  ];
+  // Estilos generales para las primeras 3 filas
+  for (let row = 7; row <= 9; row++) {
+    worksheet.getRow(row).eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+  }
+      
+        // Agregar datos y aplicar bordes a cada celda
+        listado.forEach((row, index) => {
+          const rowData = [
+            row.sede,
+            row.facultad,
+            row.carrera,
+            index + 1,
+            row.per_primerApellido,
+            row.per_nombres,
+            row.strCedula,
+            row.strCodEstud,
+            row.sexo,
+            row.nac_nombre,
+            row.provincia,
+            row.canton,
+            row.parroquia,
+            row.dir_callePrincipal,
+            row.descripcionnivel,
+            row.descripcionestado,
+            row.descripcioninscripcion,
+            row.primera,
+            row.cantidadprimera,
+            row.segunda,
+            row.cantidadsegunda,
+            row.tercera,
+            row.cantidadtercera,
+            row.gratuidad,
+            row.valorpago,
+            row.repetidor,
+            row.regular,
+            row.aprobacion,
+            row.per_email,
+            row.per_telefonoCelular,
+            row.per_fechaNacimiento,
+          ];
+          const excelRow = worksheet.addRow(rowData);
+      
+          excelRow.eachCell((cell) => {
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' },
+            };
+          });
+        });
+      
+      
+        // Ajustar tamaño de las columnas
+        worksheet.columns.forEach((column) => {
+          column.width = 20;
+        });
+      
+       // Retornar la cadena Base64
+       const buffer = await workbook.xlsx.writeBuffer();
+      const base64 = buffer.toString('base64');
+      
+      
+      // Guardar archivo Excel
+     // const fs = require('fs');
+     //  fs.writeFileSync('ListadoMatriculasInstitucionalCarreras'+periodo+'.xlsx', buffer);
+        return base64;
+            
+            } catch (error) {
+                console.error(error);
+                return 'ERROR';
+            }
+        }
+   async function ProcesoExcelMatriculasNivelacionInstitucional(periodo,listado) {
+        try {
+               
+                  
+                  var periodoinfo =await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
+                  var respuesta=[]
+          const workbook = new ExcelJS.Workbook();
+          const worksheet = workbook.addWorksheet('Listado_Matriculas');
+          // Crear un header superior que combine las primeras 18 columnas
+      
+          worksheet.mergeCells('A1:X1');
+          const headerespoch = worksheet.getCell('A1');
+          headerespoch.value = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO'; // Texto del header
+          headerespoch.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
+          headerespoch.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+          worksheet.mergeCells('A2:X2');
+          const headerCell0 = worksheet.getCell('A2');
+          headerCell0.value = 'INFORMACIÓN ACADEMICA INSTITUCIONAL NIVELACION'; // Texto del header
+          headerCell0.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+          headerCell0.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+          worksheet.mergeCells('A3:X3');
+          const headerperiodo = worksheet.getCell('A3');
+          headerperiodo.value = 'PERIODO: '+  periodoinfo.data[0].strDescripcion + "("+periodo+")" ; // Texto del header
+          headerperiodo.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+          headerperiodo.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+          // Crear un header superior que combine las primeras 18 columnas
+          worksheet.mergeCells('A5:X5'); // Combina de A1 a Q1 (18 columnas)
+          const headerCell = worksheet.getCell('A5');
+          headerCell.value = 'LISTADO DE ESTUDIANTES MATRICULADOS'; // Texto del header
+          headerCell.font = { name: 'Arial', size: 11, bold: false }; // Tamaño y fuente Arial
+          headerCell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+          headerCell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: '9cccfc' }, // Color de fondo
+          };
+        
+    
+    
+  // FILA 1: Agrupaciones principales
+  worksheet.mergeCells('A7:C8'); // DATOS INSTITUCIONAL
+  const headerdatosINST = worksheet.getCell('A7');
+  headerdatosINST.value = 'DATOS INSTITUCIONALES';
+  headerdatosINST.alignment = { vertical: 'middle', horizontal: 'center' };
+
+
+  worksheet.mergeCells('D7:I8'); // DATOS ESTUDIANTES
+  const headerdatos = worksheet.getCell('D7');
+  headerdatos.value = 'DATOS ESTUDIANTES';
+  headerdatos.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('J7:N8'); // DATOS GEOGRAFICOS
+  const headerdatosg = worksheet.getCell('J7');
+  headerdatosg.value = 'DATOS GEOGRAFICOS';
+  headerdatosg.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('O7:W7'); // MATRÍCULA
+  const headerdatosM = worksheet.getCell('O7');
+  headerdatosM.value = 'MATRICULA';
+  headerdatosM.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('X7:Y8'); // GRATUIDAD
+  const headerdatosGR = worksheet.getCell('X7');
+  headerdatosGR.value = 'GRATUIDAD';
+  headerdatosGR.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('Z7:Z9'); // REPETIDOR
+  const headerdatosR = worksheet.getCell('Z7');
+  headerdatosR.value = 'REPETIDOR';
+  headerdatosR.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  
+  worksheet.mergeCells('AA7:AA9'); // TIPO_ESTUDIANTE
+  const headerdatosTE= worksheet.getCell('AA7');
+  headerdatosTE.value = 'TIPO_ESTUDIANTE';
+  headerdatosTE.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  worksheet.mergeCells('AB7:AB9'); // ESTADO_ESTUDIANTE
+  const headerdatosAP= worksheet.getCell('AB7');
+  headerdatosAP.value = 'ESTADO';
+  headerdatosAP.alignment = { vertical: 'middle', horizontal: 'center' };
+  worksheet.mergeCells('AC7:AE8'); // OTROS_DATOS
+  const headerdatosOT= worksheet.getCell('AC7');
+  headerdatosOT.value = 'OTROS DATOS';
+  headerdatosOT.alignment = { vertical: 'middle', horizontal: 'center' };
+  // FILA 2: Subniveles de MATRÍCULA
+  worksheet.mergeCells('O8:O9');
+  const headerdatosPAO= worksheet.getCell('O8');
+  headerdatosPAO.value = 'PAO';
+
+  worksheet.mergeCells('P8:P9');
+  const headerdatosEM= worksheet.getCell('P8');
+  headerdatosEM.value = 'ESTADO_MATRICULA';
+
+  worksheet.mergeCells('Q8:Q9');
+  const headerdatosINS= worksheet.getCell('Q8');
+  headerdatosINS.value = 'INSCRIPCION';
+
+  worksheet.mergeCells('R8:S8');
+  const headerdatosPRI= worksheet.getCell('R8');
+  headerdatosPRI.value = 'PRIMERA';
+  
+  worksheet.mergeCells('T8:U8');
+  const headerdatosSE= worksheet.getCell('T8');
+  headerdatosSE.value = 'SEGUNDA';
+  
+  
+  worksheet.mergeCells('V8:W8');
+  const headerdatosTERC= worksheet.getCell('V8');
+  headerdatosTERC.value = 'TERCERA';
+  const headerdatosNu= worksheet.getCell('D9');
+  headerdatosNu.value = 'N°';
+  const headerdatosApe= worksheet.getCell('E9');
+  headerdatosApe.value = 'APELLIDOS';
+  const headerdatosNo= worksheet.getCell('F9');
+  headerdatosNo.value = 'NOMBRES';
+  const headerdatosCE= worksheet.getCell('G9');
+  headerdatosCE.value = 'CEDULA';
+  const headerdatosCO= worksheet.getCell('H9');
+  headerdatosCO.value = 'CODIGO';
+  const headerdatosSEX= worksheet.getCell('I9');
+  headerdatosSEX.value = 'SEXO';
+  const headerdatosNA= worksheet.getCell('J9');
+  headerdatosNA.value = 'NACIONALIDAD';
+  const headerdatosPRO= worksheet.getCell('K9');
+  headerdatosPRO.value = 'PROVINCIA';
+  const headerdatosCANT= worksheet.getCell('L9');
+  headerdatosCANT.value = 'CANTON';
+  const headerdatosPARR= worksheet.getCell('M9');
+  headerdatosPARR.value = 'PARROQUIA';
+  const headerdatosDIRE= worksheet.getCell('N9');
+  headerdatosDIRE.value = 'DIRECCION';
+  const headerdatosSI= worksheet.getCell('R9');
+  headerdatosSI.value = 'SI/NO';
+  const headerdatosCAN= worksheet.getCell('S9');
+  headerdatosCAN.value = 'CANTIDAD';
+  const headerdatosSIN= worksheet.getCell('T9');
+  headerdatosSIN.value = 'SI/NO';
+  const headerdatosCA1= worksheet.getCell('U9');
+  headerdatosCA1.value = 'CANTIDAD';
+  const headerdatosSI1= worksheet.getCell('V9');
+  headerdatosSI1.value = 'SI/NO';
+  const headerdatosCA2= worksheet.getCell('W9');
+  headerdatosCA2.value = 'CANTIDAD';
+  const headerdatosGRATU= worksheet.getCell('X9');
+  headerdatosGRATU.value = 'SI/NO';
+  const headerdatosVAL= worksheet.getCell('Y9');
+  headerdatosVAL.value = 'VALOR';
+  const headerdatosCORR= worksheet.getCell('AC9');
+  headerdatosCORR.value = 'CORREO';
+  const headerdatosTELR= worksheet.getCell('AD9');
+  headerdatosTELR.value = 'CELULAR';
+  const headerdatosNAC= worksheet.getCell('AE9');
+  headerdatosNAC.value = 'FECHA_NACIMIENTO';
+  const headerdatosSEDE= worksheet.getCell('A9');
+  headerdatosSEDE.value = 'SEDE';
+  const headerdatosFACULTAD= worksheet.getCell('B9');
+  headerdatosFACULTAD.value = 'FACULTAD';
+  const headerdatosCARRERA= worksheet.getCell('C9');
+  headerdatosCARRERA.value = 'CARRERA';
+      
+      // FILA 3: Encabezados base (N° - VALOR)
+  const headers = [
+    'N°', 'APELLIDOS', 'NOMBRES', 'CEDULA', 'CODIGO', 'SEXO',
+    'NACIONALIDAD', 'PROVINCIA', 'CANTON', 'PARROQUIA', 'DIRECCION',
+    'PAO', 'ESTADO_MATRICULA', 'INSCRIPCION',
+    '', '', '', '', '', '', // espacios ocupados por combinación
+    'SI/NO', 'VALOR',
+    'REPETIDOR', 'TIPO_ESTUDIANTE'
+  ];
+  // Estilos generales para las primeras 3 filas
+  for (let row = 7; row <= 9; row++) {
+    worksheet.getRow(row).eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+  }
+      
+        // Agregar datos y aplicar bordes a cada celda
+        listado.forEach((row, index) => {
+          const rowData = [
+            row.sede,
+            row.facultad,
+            row.carrera,
+            index + 1,
+            row.per_primerApellido,
+            row.per_nombres,
+            row.strCedula,
+            row.strCodEstud,
+            row.sexo,
+            row.nac_nombre,
+            row.provincia,
+            row.canton,
+            row.parroquia,
+            row.dir_callePrincipal,
+            row.descripcionnivel,
+            row.descripcionestado,
+            row.descripcioninscripcion,
+            row.primera,
+            row.cantidadprimera,
+            row.segunda,
+            row.cantidadsegunda,
+            row.tercera,
+            row.cantidadtercera,
+            row.gratuidad,
+            row.valorpago,
+            row.repetidor,
+            row.regular,
+            row.aprobacion,
+            row.per_email,
+            row.per_telefonoCelular,
+            row.per_fechaNacimiento,
+          ];
+          const excelRow = worksheet.addRow(rowData);
+      
+          excelRow.eachCell((cell) => {
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' },
+            };
+          });
+        });
+      
+      
+        // Ajustar tamaño de las columnas
+        worksheet.columns.forEach((column) => {
+          column.width = 20;
+        });
+      
+       // Retornar la cadena Base64
+       const buffer = await workbook.xlsx.writeBuffer();
+      const base64 = buffer.toString('base64');
+      
+      
+      // Guardar archivo Excel
+     // const fs = require('fs');
+     //  fs.writeFileSync('ListadoMatriculasInstitucionalNivelacion'+periodo+'.xlsx', buffer);
+        return base64;
+            
+            } catch (error) {
+                console.error(error);
+                return 'ERROR';
+            }
+        }
+        async function ProcesoExcelMatriculasAdminisionesInstitucional(periodo,listado) {
+          try {
+                 
+                    var periodoinfo =await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
+                    var respuesta=[]
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Listado_Matriculas');
+            // Crear un header superior que combine las primeras 18 columnas
+        
+            worksheet.mergeCells('A1:X1');
+            const headerespoch = worksheet.getCell('A1');
+            headerespoch.value = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO'; // Texto del header
+            headerespoch.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
+            headerespoch.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+            worksheet.mergeCells('A2:X2');
+            const headerCell0 = worksheet.getCell('A2');
+            headerCell0.value = 'INFORMACIÓN ACADEMICA INSTITUCIONAL'; // Texto del header
+            headerCell0.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+            headerCell0.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+            worksheet.mergeCells('A3:X3');
+            const headerperiodo = worksheet.getCell('A3');
+            headerperiodo.value = 'PERIODO: '+  periodoinfo.data[0].strDescripcion + "("+periodo+")" ; // Texto del header
+            headerperiodo.font = { name: 'Arial', size: 11, bold: true }; // Tamaño y fuente Arial
+            headerperiodo.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+            // Crear un header superior que combine las primeras 18 columnas
+            worksheet.mergeCells('A5:X5'); // Combina de A1 a Q1 (18 columnas)
+            const headerCell = worksheet.getCell('A5');
+            headerCell.value = 'LISTADO PROCESO ADMISIONES'; // Texto del header
+            headerCell.font = { name: 'Arial', size: 11, bold: false }; // Tamaño y fuente Arial
+            headerCell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+            headerCell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: '9cccfc' }, // Color de fondo
+            };
+          
+      
+      
+    // FILA 1: Agrupaciones principales
+    worksheet.mergeCells('A7:C8'); // DATOS INSTITUCIONAL
+    const headerdatosINST = worksheet.getCell('A7');
+    headerdatosINST.value = 'DATOS INSTITUCIONALES';
+    headerdatosINST.alignment = { vertical: 'middle', horizontal: 'center' };
+  
+  
+    worksheet.mergeCells('D7:I8'); // DATOS ESTUDIANTES
+    const headerdatos = worksheet.getCell('D7');
+    headerdatos.value = 'DATOS ESTUDIANTES';
+    headerdatos.alignment = { vertical: 'middle', horizontal: 'center' };
+    
+    worksheet.mergeCells('J7:N8'); // DATOS GEOGRAFICOS
+    const headerdatosg = worksheet.getCell('J7');
+    headerdatosg.value = 'DATOS GEOGRAFICOS';
+    headerdatosg.alignment = { vertical: 'middle', horizontal: 'center' };
+    
+    worksheet.mergeCells('O7:W7'); // MATRÍCULA
+    const headerdatosM = worksheet.getCell('O7');
+    headerdatosM.value = 'MATRICULA';
+    headerdatosM.alignment = { vertical: 'middle', horizontal: 'center' };
+    
+    worksheet.mergeCells('X7:Y8'); // GRATUIDAD
+    const headerdatosGR = worksheet.getCell('X7');
+    headerdatosGR.value = 'GRATUIDAD';
+    headerdatosGR.alignment = { vertical: 'middle', horizontal: 'center' };
+    
+    worksheet.mergeCells('Z7:Z9'); // REPETIDOR
+    const headerdatosR = worksheet.getCell('Z7');
+    headerdatosR.value = 'REPETIDOR';
+    headerdatosR.alignment = { vertical: 'middle', horizontal: 'center' };
+    
+    
+    worksheet.mergeCells('AA7:AA9'); // TIPO_ESTUDIANTE
+    const headerdatosTE= worksheet.getCell('AA7');
+    headerdatosTE.value = 'TIPO_ESTUDIANTE';
+    headerdatosTE.alignment = { vertical: 'middle', horizontal: 'center' };
+    
+    worksheet.mergeCells('AB7:AB9'); // ESTADO_ESTUDIANTE
+    const headerdatosAP= worksheet.getCell('AB7');
+    headerdatosAP.value = 'ESTADO';
+    headerdatosAP.alignment = { vertical: 'middle', horizontal: 'center' };
+    worksheet.mergeCells('AC7:AE8'); // OTROS_DATOS
+    const headerdatosOT= worksheet.getCell('AC7');
+    headerdatosOT.value = 'OTROS DATOS';
+    headerdatosOT.alignment = { vertical: 'middle', horizontal: 'center' };
+    worksheet.mergeCells('AF7:AL8'); // DATOS_SENECYTS
+    const headerdatosSNE= worksheet.getCell('AF7');
+    headerdatosSNE.value = 'DATOS_SENECYT';
+    headerdatosSNE.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    // FILA 2: Subniveles de MATRÍCULA
+    worksheet.mergeCells('O8:O9');
+    const headerdatosPAO= worksheet.getCell('O8');
+    headerdatosPAO.value = 'PAO';
+  
+    worksheet.mergeCells('P8:P9');
+    const headerdatosEM= worksheet.getCell('P8');
+    headerdatosEM.value = 'ESTADO_MATRICULA';
+  
+    worksheet.mergeCells('Q8:Q9');
+    const headerdatosINS= worksheet.getCell('Q8');
+    headerdatosINS.value = 'INSCRIPCION';
+  
+    worksheet.mergeCells('R8:S8');
+    const headerdatosPRI= worksheet.getCell('R8');
+    headerdatosPRI.value = 'PRIMERA';
+    
+    worksheet.mergeCells('T8:U8');
+    const headerdatosSE= worksheet.getCell('T8');
+    headerdatosSE.value = 'SEGUNDA';
+    
+    
+    worksheet.mergeCells('V8:W8');
+    const headerdatosTERC= worksheet.getCell('V8');
+    headerdatosTERC.value = 'TERCERA';
+    const headerdatosNu= worksheet.getCell('D9');
+    headerdatosNu.value = 'N°';
+    const headerdatosApe= worksheet.getCell('E9');
+    headerdatosApe.value = 'APELLIDOS';
+    const headerdatosNo= worksheet.getCell('F9');
+    headerdatosNo.value = 'NOMBRES';
+    const headerdatosCE= worksheet.getCell('G9');
+    headerdatosCE.value = 'CEDULA';
+    const headerdatosCO= worksheet.getCell('H9');
+    headerdatosCO.value = 'CODIGO';
+    const headerdatosSEX= worksheet.getCell('I9');
+    headerdatosSEX.value = 'SEXO';
+    const headerdatosNA= worksheet.getCell('J9');
+    headerdatosNA.value = 'NACIONALIDAD';
+    const headerdatosPRO= worksheet.getCell('K9');
+    headerdatosPRO.value = 'PROVINCIA';
+    const headerdatosCANT= worksheet.getCell('L9');
+    headerdatosCANT.value = 'CANTON';
+    const headerdatosPARR= worksheet.getCell('M9');
+    headerdatosPARR.value = 'PARROQUIA';
+    const headerdatosDIRE= worksheet.getCell('N9');
+    headerdatosDIRE.value = 'DIRECCION';
+    const headerdatosSI= worksheet.getCell('R9');
+    headerdatosSI.value = 'SI/NO';
+    const headerdatosCAN= worksheet.getCell('S9');
+    headerdatosCAN.value = 'CANTIDAD';
+    const headerdatosSIN= worksheet.getCell('T9');
+    headerdatosSIN.value = 'SI/NO';
+    const headerdatosCA1= worksheet.getCell('U9');
+    headerdatosCA1.value = 'CANTIDAD';
+    const headerdatosSI1= worksheet.getCell('V9');
+    headerdatosSI1.value = 'SI/NO';
+    const headerdatosCA2= worksheet.getCell('W9');
+    headerdatosCA2.value = 'CANTIDAD';
+    const headerdatosGRATU= worksheet.getCell('X9');
+    headerdatosGRATU.value = 'SI/NO';
+    const headerdatosVAL= worksheet.getCell('Y9');
+    headerdatosVAL.value = 'VALOR';
+    const headerdatosCORR= worksheet.getCell('AC9');
+    headerdatosCORR.value = 'CORREO';
+    const headerdatosTELR= worksheet.getCell('AD9');
+    headerdatosTELR.value = 'CELULAR';
+    const headerdatosNAC= worksheet.getCell('AE9');
+    headerdatosNAC.value = 'FECHA_NACIMIENTO';
+    const headerdatosSEDE= worksheet.getCell('A9');
+    headerdatosSEDE.value = 'SEDE';
+    const headerdatosFACULTAD= worksheet.getCell('B9');
+    headerdatosFACULTAD.value = 'FACULTAD';
+    const headerdatosCARRERA= worksheet.getCell('C9');
+    headerdatosCARRERA.value = 'CARRERA';
+    const headerdatosOFA= worksheet.getCell('AF9');
+    headerdatosOFA.value = 'OFA_ID';
+    const headerdatosCUID= worksheet.getCell('AG9');
+    headerdatosCUID.value = 'CUIS_ID';
+    const headerdatosMODALIDAD= worksheet.getCell('AH9');
+    headerdatosMODALIDAD.value = 'MODALIDAD';
+    const headerdatosJORNADA= worksheet.getCell('AI9');
+    headerdatosJORNADA.value = 'JORNADA';
+    const headerdatosTIPO= worksheet.getCell('AJ9');
+    headerdatosTIPO.value = 'TIPO CUPO';
+    const headerdatosPERIODO= worksheet.getCell('AK9');
+    headerdatosPERIODO.value = 'PERIODO';
+    const headerdatosESTA= worksheet.getCell('AL9');
+    headerdatosESTA.value = 'ESTADO MATRICULA';
+        // FILA 3: Encabezados base (N° - VALOR)
+    const headers = [
+      'N°', 'APELLIDOS', 'NOMBRES', 'CEDULA', 'CODIGO', 'SEXO',
+      'NACIONALIDAD', 'PROVINCIA', 'CANTON', 'PARROQUIA', 'DIRECCION',
+      'PAO', 'ESTADO_MATRICULA', 'INSCRIPCION',
+      '', '', '', '', '', '', // espacios ocupados por combinación
+      'SI/NO', 'VALOR',
+      'REPETIDOR', 'TIPO_ESTUDIANTE'
+    ];
+    // Estilos generales para las primeras 3 filas
+    for (let row = 7; row <= 9; row++) {
+      worksheet.getRow(row).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+    }
+        
+          // Agregar datos y aplicar bordes a cada celda
+          listado.forEach((row, index) => {
+            const rowData = [
+              row.sede,
+              row.facultad,
+              row.carrera,
+              index + 1,
+              row.per_primerApellido,
+              row.per_nombres,
+              row.strCedula,
+              row.strCodEstud,
+              row.sexo,
+              row.nac_nombre,
+              row.provincia,
+              row.canton,
+              row.parroquia,
+              row.dir_callePrincipal,
+              row.strCodNivel,
+              row.descripcionestado,
+              row.descripcioninscripcion,
+              row.primera,
+              row.cantidadprimera,
+              row.segunda,
+              row.cantidadsegunda,
+              row.tercera,
+              row.cantidadtercera,
+              row.gratuidad,
+              row.valorpago,
+              row.repetidor,
+              row.regular,
+              row.aprobacion,
+              row.per_email,
+              row.per_telefonoCelular,
+              row.per_fechaNacimiento,
+              row.dc_ofaid,
+              row.dc_cusid,
+              row.dc_modalidad,
+              row.dc_jornada,
+              row.dc_tipocupo,
+              row.dc_cupo_aceptado,
+              row.dc_estado_matricula,
+            ];
+            const excelRow = worksheet.addRow(rowData);
+        
+            excelRow.eachCell((cell) => {
+              cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' },
+              };
+            });
+          });
+        
+        
+          // Ajustar tamaño de las columnas
+          worksheet.columns.forEach((column) => {
+            column.width = 20;
+          });
+        
+         // Retornar la cadena Base64
+         const buffer = await workbook.xlsx.writeBuffer();
+        const base64 = buffer.toString('base64');
+        
+        
+        // Guardar archivo Excel
+       // const fs = require('fs');
+       //  fs.writeFileSync('ListadoMatriculasAdmisionesInstitucional'+periodo+'.xlsx', buffer);
+          return base64;
+              
+              } catch (error) {
+                  console.error(error);
+                  return 'ERROR';
+              }
+          }
 

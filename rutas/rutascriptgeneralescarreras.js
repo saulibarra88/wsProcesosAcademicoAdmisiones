@@ -6,7 +6,7 @@ const procesoMigracion = require('../rutas/ProcesosMigracionNivelacion');
 const procesoCupo = require('../modelo/procesocupos');
 const reportes = require('../rutas/reportesadmisiones');
 const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
-const procesosCarreras = require('../rutas/procesoscarreras');
+const procesosCarreras = require('./procesoscarrerasespoch');
 const tools = require('../rutas/tools');
 const procesosScript = require('../rutas/procesosscriptcarreras');
 

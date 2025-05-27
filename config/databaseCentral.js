@@ -9,4 +9,5 @@ module.exports = {
     database: process.env.DB_NAMECENTRALIZADA,
     password: process.env.DB_PASSWORDCENTRALIZADA,
     port: process.env.DB_PORTCENTRALIZADA,
+    
 };
