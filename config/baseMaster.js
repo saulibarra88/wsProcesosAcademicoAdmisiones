@@ -11,8 +11,8 @@ module.exports = {
   "portNumber": process.env.DB_PORTMASTER,
   pool: {
     max: 9000000,
-    min: 0,
-    idleTimeoutMillis: 600,  // Reducir el tiempo de espera en milisegundos
+    min: 2,
+    idleTimeoutMillis: 30000,  // Reducir el tiempo de espera en milisegundos
   },
   options: {
     encrypt: false, // for azure

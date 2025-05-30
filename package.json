@@ -45,6 +45,7 @@
     "morgan": "~1.8.1",
     "mssql": "^4.3.9",
     "node-cron": "^3.0.2",
+    "p-limit": "^2.3.0",
     "pdf-parse": "^1.1.1",
     "pdf-to-excel": "^0.3.2",
     "pdfkit": "^0.13.0",

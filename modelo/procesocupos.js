@@ -6,6 +6,7 @@ const CONFIGACADEMICO = require('./../config/databaseDinamico');
 
 const sql = require("mssql");
 var os = require('os');
+const { execMasterMejorado } = require('../config/execSQLMasterMejorado.helper');
 
 
 module.exports.InsertarCupoConfirmado = async function (carrera,datosCupo,datosDetalle) {
@@ -638,7 +639,8 @@ module.exports.ObtenerDatosBase = async function (carrera) {
  
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+    const sqlConsulta = await execDinamicoTransaccion("OAS_Master",sentencia, "OK","OK");
+  
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}

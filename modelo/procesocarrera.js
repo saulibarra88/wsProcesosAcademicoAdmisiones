@@ -1,6 +1,7 @@
 const { connectionAcademico } = require('./../config/PollConexionesAcademico'); // Importa el pool de conexiones
 const { execDinamico, execDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { execMaster, execMasterTransaccion } = require("./../config/execSQLMaster.helper");
+const { execMasterMejorado} = require("./../config/execSQLMasterMejorado.helper");
 const CONFIGACADEMICO = require('./../config/databaseDinamico');
 const sql = require("mssql");
 var os = require('os');
@@ -677,6 +678,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+    
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -706,6 +708,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -754,7 +757,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
 
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -786,7 +789,8 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
    
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -831,7 +835,8 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
    
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}

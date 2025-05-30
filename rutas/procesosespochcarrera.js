@@ -10,13 +10,17 @@ const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
 const crypto = require("crypto");
+const pLimit = require('p-limit');
+const limit = pLimit(10);
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { iniciarMasterTransaccion, iniciarMasterPool } = require("./../config/execSQLMaster.helper");
+const { closeAllPools } = require('./../config/dbPoolManager');
 const agent = new https.Agent({
     rejectUnauthorized: false,
     // other options if needed
     secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+
 
 module.exports.ProcesoReporteExcelMatriculasCarrerasIndividual = async function (carrera, periodo, estado) {
     try {
@@ -31,8 +35,8 @@ module.exports.ProcesoReporteExcelMatriculasCarrerasIndividual = async function 
 module.exports.ProcesoReporteExcelMatriculasCarrerasTodasInstitucionales = async function (periodo, estado) {
     try {
 
-     //  var resultado = await FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, estado);
-        var resultado = await FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccion(periodo, estado);
+//  var resultado = await FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, estado);
+var resultado = await FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccion(periodo, estado);
         return { resultado }
 
     } catch (error) {
@@ -41,6 +45,7 @@ module.exports.ProcesoReporteExcelMatriculasCarrerasTodasInstitucionales = async
 
     }
 }
+
 module.exports.ProcesoReporteExcelMatriculasNivelacionInstitucional = async function (periodo, estado) {
     try {
       //  var resultado = await FuncionReporteExcelMatriculasNivelacionTodasInstitucional(periodo, estado);
@@ -65,6 +70,7 @@ module.exports.ProcesoReporteExcelMatriculasAdmisionesnstitucional = async funct
       
     }
 }
+
 
 async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTransaccion(carrera,periodo, estado) {
 
@@ -218,7 +224,7 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
 
     
 }
-async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, estado) {
+/*async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, estado) {
     console.log("Aqui")
     try {
         var listadoNomina = [];
@@ -358,7 +364,9 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, e
         console.log(err)
         return { "error: ": err }
     }
-}
+}*/
+
+
 
 async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccion(periodo, estado) {
 
@@ -473,6 +481,7 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
                         
                          if(await tools.VerificacionPeriodoTresCalificaciones(periodo)){
                             var datosAprobacion = await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matriculas.sintCodigo);
+                        
                         }else{
                              var datosAprobacion = await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matriculas.sintCodigo);
                         }
@@ -518,6 +527,7 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
 
     
 }
+
 
 async function FuncionReporteExcelMatriculasNivelacionTodasInstitucional(periodo, estado) {
     console.log("Aqui")
