@@ -111,15 +111,19 @@ module.exports.ListadoEstadosAdmisiones = async function (strBaseCarrera, period
     }
 }
 module.exports.ListadoAspiranteAdmisiones = async function (strBaseCarrera, periodoAdmisiones) {
+    console.log(strBaseCarrera, periodoAdmisiones)
     try {
         try {
             var ListadoEstados = [];
             var DatosBaseCarrera = await procesoCupo.ObtenerDatosBase(strBaseCarrera);
+            console.log(DatosBaseCarrera)
             if (DatosBaseCarrera.data[0].strSede == 'NORTE') {
                 DatosBaseCarrera.data[0].strSede = 'ORELLANA'
             }
             if (DatosBaseCarrera.count > 0) {
+                console.log(periodoAdmisiones)
                 var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/aspirante_sede/list_periodo/" + periodoAdmisiones, { httpsAgent: agent });
+               console.log(informacion.data.length)
                 if (informacion.data.length > 0) {
                     
                     var DatosPeriodoAcademico = await procesoCupo.ObtenerPeriodoDadoCodigo(informacion.data[0].Periodo.perNomenclatura);

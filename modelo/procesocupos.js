@@ -639,7 +639,7 @@ module.exports.ObtenerDatosBase = async function (carrera) {
  
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamicoTransaccion("OAS_Master",sentencia, "OK","OK");
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
   
    return (sqlConsulta)
   } else {
