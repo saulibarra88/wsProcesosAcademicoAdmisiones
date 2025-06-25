@@ -36,6 +36,26 @@ module.exports.EsVigente = function (fecha)  {
   return fechaEvaluar.isSameOrAfter(fechaActual);
 }
 
+module.exports.FechaVigenteInicioFin = function (fechaInicio, fechaFin)  {
+ if (!fechaInicio || !fechaFin) return false;
+
+  const inicio = new Date(fechaInicio);
+  const fin = new Date(fechaFin);
+  const ahora = new Date();
+
+  // Verifica si las fechas son válidas
+  if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) return false;
+
+  return ahora >= inicio && ahora <= fin;
+}
+module.exports.formatearFechaISO = function (fechaInput)  {
+if (!fechaInput) return null;
+
+  const fecha = new Date(fechaInput);
+  if (isNaN(fecha.getTime())) return null; // Validación de fecha
+
+  return fecha.toISOString().substring(0, 10);
+}
 
 module.exports.FechaActualCupo = function () {
   var date = new Date();
