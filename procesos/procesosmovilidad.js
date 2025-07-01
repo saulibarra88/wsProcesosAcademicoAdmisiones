@@ -251,6 +251,15 @@ module.exports.ProcesoActulizarGradoEstuidante = async function (objEstudiante) 
         console.log(error);
     }
 }
+module.exports.ProcesoDatosEstuidanteCarrera = async function (dbcarrera, cedula) {
+
+    try {
+        var resultado = await funcionesmodelocarrera.ObtenerDatosEstudianteCarrera(dbcarrera, funcionestools.CedulaConGuion(cedula));
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
 module.exports.ProcesoInsertarEstudianteMaster = async function (objEstudiante) {
     try {
         var resultado = await FuncionInsertarEstuidanteMaster(objEstudiante);
@@ -278,21 +287,57 @@ module.exports.ProcesoEliminacionInscripcionMovExterna = async function (dbCarre
 async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel) {
     try {
         var respuesta = {};
-        var AprobacionNivel = await funcionesmodelomovilidad.ObtenerMateriasAprobadasPorNivelPensum(carrera, codestudiante, nivel);
-        console.log(AprobacionNivel)
-        if (AprobacionNivel.count > 0) {
-            respuesta.nivel = nivel;
-            respuesta.codestudiante = codestudiante;
-            respuesta.pensummaterias = AprobacionNivel.data[0].materiaspensum;
-            respuesta.aprobadas = AprobacionNivel.data[0].aprobadas;
-            respuesta.noaprobadas = AprobacionNivel.data[0].no_aprobadas;
-            if (AprobacionNivel.data[0].materiaspensum == AprobacionNivel.data[0].aprobadas) {
+        var AsignaturaHomologadas = [];
+        var RecordAcademicoNivel = await funcionesmodelomovilidad.ObtnerRecodAcademicoporNivel(carrera, codestudiante, nivel);
+        var banderahomologacion = false
+        for (var datosrecord of RecordAcademicoNivel.data) {
+            if (datosrecord.Tipo == 2) {
+                banderahomologacion = true
+            } else {
+                AsignaturaHomologadas.push(datosrecord)
+            }
+        }
+        if (banderahomologacion) { //Datos con Homologacion
+            console.log('Datos con homologacion')
+            var noaprobadas = 0
+            var aprobadas = 0
+            var datosProcesados = await funcionestools.obtenerUltimosIntentosPorMateria(AsignaturaHomologadas)
+            console.log("datosProcesados Homologacion Record ")
+            console.log(datosProcesados)
+            for (var asig of datosProcesados) {
+                if (asig.Equivalencia == 'R' || asig.Equivalencia == 'RVC') {
+                    noaprobadas = noaprobadas + 1
+                } else {
+                    aprobadas = aprobadas + 1
+                }
+            }
+            if (aprobadas == datosProcesados.length) {
                 respuesta.aprobacionnivel = true;
             } else {
                 respuesta.aprobacionnivel = false;
             }
+            respuesta.nivel = nivel;
+            respuesta.codestudiante = codestudiante;
+            respuesta.pensummaterias = datosProcesados.length;
+            respuesta.aprobadas = aprobadas;
+            respuesta.noaprobadas = noaprobadas;
 
+        } else {//'Datos SIN homologacion'
+            var AprobacionNivel = await funcionesmodelomovilidad.ObtenerMateriasAprobadasPorNivelPensum(carrera, codestudiante, nivel);
+            if (AprobacionNivel.count > 0) {
+                respuesta.nivel = nivel;
+                respuesta.codestudiante = codestudiante;
+                respuesta.pensummaterias = AprobacionNivel.data[0].materiaspensum;
+                respuesta.aprobadas = AprobacionNivel.data[0].aprobadas;
+                respuesta.noaprobadas = AprobacionNivel.data[0].no_aprobadas;
+                if (AprobacionNivel.data[0].materiaspensum == AprobacionNivel.data[0].aprobadas) {
+                    respuesta.aprobacionnivel = true;
+                } else {
+                    respuesta.aprobacionnivel = false;
+                }
+            }
         }
+
         var PerdidaSegundaMatricula = await funcionesmodelomovilidad.ObtenerMateriasPerdidasSegundaMatriculaCantidad(carrera, codestudiante);
 
         if (PerdidaSegundaMatricula.count > 0) {
@@ -304,7 +349,8 @@ async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel
                 respuesta.detallePerdida = PerdidaSegundaMatriculaDetalle.data
             }
         }
-
+        console.log("respuesta")
+        console.log(respuesta)
         return respuesta;
 
     } catch (error) {

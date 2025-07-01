@@ -23,10 +23,11 @@ module.exports.CarrerasDadoFacultadHomologacion = async function (carrera,period
   }
 
   module.exports.ObtenerMateriasAprobadasPorNivelPensum = async function (carrera,codEstudiante,nivel) {
-    var sentencia=""; sentencia = "WITH MateriasMatriculadas AS ( SELECT mp.strCodMateria FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN [" + carrera + "].[dbo].[Periodos] AS p ON p.strCodigo = m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias_Pensum] AS mp ON mp.strCodPensum = p.strCodPensum WHERE m.strCodEstud = " + codEstudiante + " AND m.strCodNivel = " + nivel + " AND m.strCodEstado = 'DEF' AND mp.strCodNivel = " + nivel + " AND m.strCodPeriodo = ( SELECT MAX(strCodPeriodo) FROM [" + carrera + "].[dbo].[Matriculas] WHERE strCodEstud = " + codEstudiante + " AND strCodEstado='DEF' AND m.strCodNivel = " + nivel + " ) ), MateriasAprobadas AS ( SELECT strCodMateria FROM [" + carrera + "].[dbo].[Materias_Aprobadas] WHERE strCodEstud = " + codEstudiante + " ) SELECT COUNT(*) AS materiaspensum, COUNT(CASE WHEN a.strCodMateria IS NOT NULL THEN 1 END) AS aprobadas, COUNT(CASE WHEN a.strCodMateria IS NULL THEN 1 END) AS no_aprobadas FROM MateriasMatriculadas m LEFT JOIN MateriasAprobadas a ON m.strCodMateria = a.strCodMateria; "; 
- try {
+    var sentencia=""; sentencia = "WITH MateriasMatriculadas AS ( SELECT mp.strCodMateria FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN [" + carrera + "].[dbo].[Periodos] AS p ON p.strCodigo = m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias_Pensum] AS mp ON mp.strCodPensum = p.strCodPensum WHERE m.strCodEstud = " + codEstudiante + " AND m.strCodNivel = " + nivel + " AND m.strCodEstado = 'DEF' AND mp.strCodNivel = " + nivel + " AND m.strCodPeriodo = ( SELECT MAX(strCodPeriodo) FROM [" + carrera + "].[dbo].[Matriculas] as m WHERE strCodEstud = " + codEstudiante + " AND strCodEstado='DEF' AND m.strCodNivel = " + nivel + " ) ), MateriasAprobadas AS ( SELECT strCodMateria FROM [" + carrera + "].[dbo].[Materias_Aprobadas] WHERE strCodEstud = " + codEstudiante + " ) SELECT COUNT(*) AS materiaspensum, COUNT(CASE WHEN a.strCodMateria IS NOT NULL THEN 1 END) AS aprobadas, COUNT(CASE WHEN a.strCodMateria IS NULL THEN 1 END) AS no_aprobadas FROM MateriasMatriculadas m LEFT JOIN MateriasAprobadas a ON m.strCodMateria = a.strCodMateria; "; 
+
+    try {
     if (sentencia != "") {
-      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -36,9 +37,10 @@ module.exports.CarrerasDadoFacultadHomologacion = async function (carrera,period
   }
   }
 
-    module.exports.ObtenerMateriasPerdidasSegundaMatriculaCantidad= async function (carrera,codEstudiante) {
+module.exports.ObtenerMateriasPerdidasSegundaMatriculaCantidad= async function (carrera,codEstudiante) {
     var sentencia="";
- sentencia = "WITH MateriasMatriculadasSegunda AS ( select ma.strCodMateria from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Materias_Asignadas] as ma on ma.sintCodMatricula=m.sintCodigo and ma.strCodPeriodo=m.strCodPeriodo where strCodEstud =" + codEstudiante + " and strCodEstado='DEF' and ma.bytNumMat>=2 and (ma.strObservaciones NOT LIKE '%VALIDADA%' AND ma.strObservaciones NOT LIKE '%RETIRADO%') ), MateriasAprobadas AS ( SELECT strCodMateria FROM [" + carrera + "].[dbo].[Materias_Aprobadas] WHERE strCodEstud = " + codEstudiante + " ) SELECT COUNT(*) AS materiasegundamat, COUNT(CASE WHEN a.strCodMateria IS NOT NULL THEN 1 END) AS aprobadas, COUNT(CASE WHEN a.strCodMateria IS NULL THEN 1 END) AS no_aprobadas FROM MateriasMatriculadasSegunda m LEFT JOIN MateriasAprobadas a ON m.strCodMateria = a.strCodMateria; "; 
+
+ sentencia = "WITH MateriasMatriculadasSegunda AS ( select ma.strCodMateria from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Materias_Asignadas] as ma on ma.sintCodMatricula=m.sintCodigo and ma.strCodPeriodo=m.strCodPeriodo where strCodEstud =" + codEstudiante + " and strCodEstado='DEF' and ma.bytNumMat>=3 and (ma.strObservaciones NOT LIKE '%VALIDADA%' AND ma.strObservaciones NOT LIKE '%RETIRADO%') ), MateriasAprobadas AS ( SELECT strCodMateria FROM [" + carrera + "].[dbo].[Materias_Aprobadas] WHERE strCodEstud = " + codEstudiante + " ) SELECT COUNT(*) AS materiasegundamat, COUNT(CASE WHEN a.strCodMateria IS NOT NULL THEN 1 END) AS aprobadas, COUNT(CASE WHEN a.strCodMateria IS NULL THEN 1 END) AS no_aprobadas FROM MateriasMatriculadasSegunda m LEFT JOIN MateriasAprobadas a ON m.strCodMateria = a.strCodMateria; "; 
     try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -648,7 +650,6 @@ try {
 
   var sentencia="";
   sentencia="DELETE FROM [" + carrera + "].[cupos].[tb_detalle_cupo] WHERE [dc_idcupo] IN ( SELECT c_id FROM [" + carrera + "].[cupos].[tb_cupos] WHERE [c_identificacion] = '" + cedula + "' AND [c_periodo] = '" + periodo + "' ); DELETE FROM [" + carrera + "].[cupos].[tb_cupos] WHERE [c_identificacion] = '" + cedula+ "' AND [c_periodo] = '" + periodo + "';"
- console.log(sentencia)
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -694,4 +695,20 @@ module.exports.EliminarInscripcionSolicitudEstuidante = async function (carrera,
   return {data:"Error: "+ error}
 }
 }
+
+ module.exports.ObtnerRecodAcademicoporNivel = async function (carrera,codEstudiante,nivel) {
+
+   const sentencia = ` EXEC [${carrera}].[dbo].[getrecordpensumvigenteDecimales] @CodEstud = '${codEstudiante}', @CodNivel = ${nivel} `;
+ 
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
 

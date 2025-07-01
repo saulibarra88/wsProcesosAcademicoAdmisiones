@@ -27,7 +27,7 @@ router.get('/CarrerasDadoFacultadHomologaciones/:periodo/:codFacultad', async (r
 
 });
 
-router.get('/DatosEstudiantesCambioCarrera/:carrera/:codEstudiante/:nivel', async (req, res) => {
+router.get('/DatosEstudiantesCambioCarreraProcesos/:carrera/:codEstudiante/:nivel', async (req, res) => {
     const carrera = req.params.carrera;
     const codEstudiante = req.params.codEstudiante;
     const nivel = req.params.nivel;
@@ -659,4 +659,26 @@ router.post('/EliminacionInscripcionMovExterna', async (req, res) => {
 
     }
 });
+
+router.get('/ObtenerDatosEstuidanteCarrera/:dbcarrera/:cedula', async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const cedula = req.params.cedula;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoDatosEstuidanteCarrera(dbcarrera, cedula);
+        res.json({
+            success: true,
+            Informacion: respuesta.data[0]
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+
+});
+
 module.exports = router;

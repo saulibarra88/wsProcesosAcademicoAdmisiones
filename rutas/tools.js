@@ -351,3 +351,40 @@ async function obtenerNumeroDelPeriodo(parametro) {
 
   return 0;
 }
+module.exports.obtenerUltimosIntentosPorMateria = function (registros) {
+   if (!Array.isArray(registros)) return [];
+
+  // Crear un mapa para almacenar el intento más reciente por materia
+  const materiasMap = new Map();
+
+  registros.forEach(registro => {
+    const codigo = registro.CodigoMateriaAnterior;
+    const fecha = new Date(registro.FechaInicPer1);
+
+    if (!materiasMap.has(codigo)) {
+      materiasMap.set(codigo, registro);
+    } else {
+      const existente = materiasMap.get(codigo);
+      const fechaExistente = new Date(existente.FechaInicPer1);
+      if (fecha > fechaExistente) {
+        materiasMap.set(codigo, registro);
+      }
+    }
+  });
+
+  // Construir el resultado con información de aprobación
+  const resultado = [];
+  for (const [codigo, registro] of materiasMap.entries()) {
+    resultado.push({
+      CodigoMateria: codigo,
+      NombreMateria: registro.NombreMateriaAnterior,
+      Periodo: registro.Periodo,
+      Fecha: registro.FechaInicPer1,
+      ComputoTotal: registro.ComputoTotal,
+      Equivalencia: registro.Equivalencia,
+      
+    });
+  }
+
+  return resultado;
+} 

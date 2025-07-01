@@ -20,6 +20,7 @@ const rutacarrera = require('./rutas/rutaCarreras');
 const rutascript = require('./rutas/rutascriptgeneralescarreras');
 const rutasalta = require('./rutas/rutaaltatransaccionalidad');
 const rutamovilidad = require('./rutas/rutamovilidad');
+const rutamovilidadconfiguraciones = require('./rutas/rutamovilidadconfiguraciones');
 
 const url='/wsprocesosadmisiones'
 //Port Number
@@ -58,6 +59,7 @@ app.use(url+'/rutacarrera',rutacarrera);
 app.use(url+'/rutascript',rutascript);
 app.use(url+'/rutasalta',rutasalta);
 app.use(url+'/rutamovilidad',rutamovilidad);
+app.use(url+'/rutamovilidadconfiguraciones',rutamovilidadconfiguraciones);
 
 
 //Index Router
