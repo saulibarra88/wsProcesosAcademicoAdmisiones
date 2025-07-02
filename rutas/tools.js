@@ -57,6 +57,38 @@ if (!fechaInput) return null;
   return fecha.toISOString().substring(0, 10);
 }
 
+module.exports.estaVigenteFechaMovilidad = function (fechaInicio, fechaFin)  {
+  if (!fechaInicio || !fechaFin) return false;
+
+  const inicio = new Date(fechaInicio);
+  const fin = new Date(fechaFin);
+
+  if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) return false;
+
+  const hoy = new Date();
+
+  return hoy >= inicio && hoy <= fin;
+}
+
+module.exports.codigopesumultimo = function (codigo) {
+  if (!codigo) return null;
+
+  const currentYear = new Date().getFullYear();
+  const num = parseInt(codigo, 10);
+
+  if (isNaN(num)) return null;
+
+  const baseYear = Math.floor(num / 10);
+  const incremental = num - (baseYear * 10);
+
+  const nuevoIncremental = incremental + 1;
+  const nuevoCodigo = parseInt(`${currentYear}${nuevoIncremental}`);
+
+  return {
+    codigo: nuevoCodigo,
+    descripcion: `MALLA CURRICULAR ${nuevoCodigo}`
+  };
+};
 module.exports.FechaActualCupo = function () {
   var date = new Date();
   var hour = date.getHours();

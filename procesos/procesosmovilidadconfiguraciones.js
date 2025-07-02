@@ -30,6 +30,7 @@ module.exports.ProcesoListadoFacultadesAdministracion = async function () {
         return resultado
     } catch (error) {
         console.log(error);
+          return 'ERROR: ' +err;
     }
 }
 module.exports.ProcesoListadoFacultadesActivas = async function () {
@@ -38,14 +39,42 @@ module.exports.ProcesoListadoFacultadesActivas = async function () {
         return resultado
     } catch (error) {
         console.log(error);
+          return 'ERROR: ' +err;
     }
 }
 
 module.exports.ProcesoListadoEscuelaAdministracion = async function (facultad) {
     try {
-        var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoEscuelaAdministracion('OAS_Master',facultad);
+        var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoEscuelaAdministracion('OAS_Master', facultad);
         return resultado
     } catch (error) {
         console.log(error);
+          return 'ERROR: ' +err;
+    }
+}
+
+module.exports.ProcesoPropuestaCodigoPensumCarrera = async function (carrera) {
+    try {
+        respuesta = {};
+        var UltimoPensumCarrera = await funcionesmodelocarrera.EncontrarUltimoPesumCarrera(carrera);
+        var reglamento = await funcionesmodelocarrera.ReglamentoActivoMaster('SistemaAcademico');
+        if (UltimoPensumCarrera.count > 0) {
+            var valores = funcionestools.codigopesumultimo(UltimoPensumCarrera.data[0].strCodigo)
+            respuesta.codigo = valores.codigo;
+            respuesta.descripcion = valores.descripcion;
+            respuesta.idreglamentoactivo = reglamento.data[0].reg_id;
+            respuesta.codigoanterior = UltimoPensumCarrera.data[0].strCodigo;
+        } else {
+            const currentYear = new Date().getFullYear();
+            respuesta.codigo = currentYear + '1';
+            respuesta.descripcion = 'MALLA CURRICULAR ' + currentYear + '1';
+            respuesta.idreglamentoactivo = reglamento.data[0].reg_id;
+            respuesta.codigoanterior = '';
+        }
+
+        return respuesta
+    } catch (err) {
+        console.log(err);
+        return 'ERROR: ' +err;
     }
 }

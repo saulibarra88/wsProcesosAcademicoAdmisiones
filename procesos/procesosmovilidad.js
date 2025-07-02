@@ -284,6 +284,15 @@ module.exports.ProcesoEliminacionInscripcionMovExterna = async function (dbCarre
         console.log(error);
     }
 }
+module.exports.ProcesoActulizarInscripcionesEstuidante = async function (objEstudiante) {
+
+    try {
+        var resultado = await funcionesmodelomovilidad.ActualizarInscripcionesEstudiante('OAS_Master', objEstudiante);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
 async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel) {
     try {
         var respuesta = {};
@@ -369,49 +378,56 @@ async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreram
         var DatosSolicitudesAprobadasTraspaso = await funcionesmodelomovilidad.ObtenerSolicitudAprobadasCarrerasMovilidad("OAS_Master", carreramovilidad, periodo, 'MOVTP');
         if (DatosConfiguraciones.count > 0) {
             respuesta.configuracionesCupos = DatosConfiguraciones.data[0];
-            if (DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera == 0) {
+            if (await funcionestools.estaVigenteFechaMovilidad(DatosConfiguraciones.data[0].mc_fecha_inicio, DatosConfiguraciones.data[0].mc_fecha_fin)) {
+                respuesta.fechavigente=true;
+                if (DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera == 0) {
+                    respuesta.permitirsolicitudmoviInterna = false;
+                    respuesta.permitirsolicitudmoviExterna = false;
+                    respuesta.permitirsolicitudmoviTraspaso = false;
+                      respuesta.mensaje = 'Control de puntaje , no tiene puntaje la crrera';
+                } else {
+                    if (DatosConfiguraciones.data[0].mc_cupos_movi_interna == 0) {
+                        respuesta.permitirsolicitudmoviInterna = false;
+                    } else {
+                        if (DatosSolicitudesAprobadasInterna.count <= DatosConfiguraciones.data[0].mc_cupos_movi_interna && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
+                            respuesta.permitirsolicitudmoviInterna = true;
+                        } else {
+                            respuesta.permitirsolicitudmoviInterna = false;
+                        }
+                    }
+                    if (DatosConfiguraciones.data[0].mc_cupos_movi_externa == 0) {
+                        respuesta.permitirsolicitudmoviExterna = false;
+                    } else {
+                        if (DatosSolicitudesAprobadasExterna.count <= DatosConfiguraciones.data[0].mc_cupos_movi_externa && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
+                            respuesta.permitirsolicitudmoviExterna = true;
+                        } else {
+                            respuesta.permitirsolicitudmoviExterna = false;                         
+                        }
+                    }
+                    if (DatosConfiguraciones.data[0].mc_cupos_movi_externa == 0) {
+                        respuesta.permitirsolicitudmoviTraspaso = false;
+                    } else {
+                        if (DatosSolicitudesAprobadasTraspaso.count <= DatosConfiguraciones.data[0].mc_cupos_movi_traspaso && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
+                            respuesta.permitirsolicitudmoviTraspaso = true;
+                        } else {
+                            respuesta.permitirsolicitudmoviTraspaso = false;
+                        }
+                    }
+                     respuesta.mensaje = 'Controles varios';
+                }
+            } else {
+                respuesta.fechavigente=false;
                 respuesta.permitirsolicitudmoviInterna = false;
                 respuesta.permitirsolicitudmoviExterna = false;
                 respuesta.permitirsolicitudmoviTraspaso = false;
-            } else {
-                if (DatosConfiguraciones.data[0].mc_cupos_movi_interna == 0) {
-                    respuesta.permitirsolicitudmoviInterna = false;
-                } else {
-                    if (DatosSolicitudesAprobadasInterna.count <= DatosConfiguraciones.data[0].mc_cupos_movi_interna && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
-                        respuesta.permitirsolicitudmoviInterna = true;
-                    } else {
-                        respuesta.permitirsolicitudmoviInterna = false;
-                    }
-                }
-
-                if (DatosConfiguraciones.data[0].mc_cupos_movi_externa == 0) {
-                    respuesta.permitirsolicitudmoviExterna = false;
-                } else {
-                    if (DatosSolicitudesAprobadasExterna.count <= DatosConfiguraciones.data[0].mc_cupos_movi_externa && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
-                        respuesta.permitirsolicitudmoviExterna = true;
-                    } else {
-                        respuesta.permitirsolicitudmoviExterna = false;
-                    }
-                }
-                if (DatosConfiguraciones.data[0].mc_cupos_movi_externa == 0) {
-                    respuesta.permitirsolicitudmoviTraspaso = false;
-                } else {
-                    if (DatosSolicitudesAprobadasTraspaso.count <= DatosConfiguraciones.data[0].mc_cupos_movi_traspaso && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
-                        respuesta.permitirsolicitudmoviTraspaso = true;
-                    } else {
-                        respuesta.permitirsolicitudmoviTraspaso = false;
-                    }
-                }
+                respuesta.mensaje = 'Control de fecha , fechas no permitidas';
             }
         } else {
             respuesta.configuracionesCupos = null;
-
         }
-
         respuesta.SolicitudesAprobadasInterna = DatosSolicitudesAprobadasInterna.count;
         respuesta.SolicitudesAprobadasExterna = DatosSolicitudesAprobadasExterna.count;
         respuesta.SolicitudesAprobadasTraspaso = DatosSolicitudesAprobadasTraspaso.count;
-
         return respuesta;
 
     } catch (error) {

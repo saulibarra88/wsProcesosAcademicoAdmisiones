@@ -630,10 +630,8 @@ try {
 }
 }
  module.exports.ActualizarGradoEstudanteMaster = async function (carrera,objEstudiante) {
-
   var sentencia="";
   sentencia="UPDATE [" + carrera + "].[dbo].[Grados] SET dtFecha='" + objEstudiante.fecha + "',strRefrendacion='" + objEstudiante.refrendacion + "' WHERE strCedEstud='" + objEstudiante.cedula + "' AND strCodTit='" + objEstudiante.codtitulo + "' AND strCodInt='" + objEstudiante.codInstitucion + "'"
-
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -697,9 +695,7 @@ module.exports.EliminarInscripcionSolicitudEstuidante = async function (carrera,
 }
 
  module.exports.ObtnerRecodAcademicoporNivel = async function (carrera,codEstudiante,nivel) {
-
    const sentencia = ` EXEC [${carrera}].[dbo].[getrecordpensumvigenteDecimales] @CodEstud = '${codEstudiante}', @CodNivel = ${nivel} `;
- 
     try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -711,4 +707,17 @@ module.exports.EliminarInscripcionSolicitudEstuidante = async function (carrera,
     return {data:"Error: "+ error}
   }
   }
-
+ module.exports.ActualizarInscripcionesEstudiante = async function (carrera,objEstudiante) {
+  var sentencia="";
+  sentencia="UPDATE [" + carrera + "].[dbo].[Inscripciones] SET [boolGratuidadT]=" + objEstudiante.boolGratuidadT + " ,[boolGratuidad30]=" + objEstudiante.boolGratuidad30 + ",[strObservaciones]='" + objEstudiante.strObservaciones + "' WHERE [strCedEstud]='" + objEstudiante.strCedEstud + "' AND [strCodPeriodo]='" + objEstudiante.strCodPeriodo + "' AND [strCodCarrera]='" + objEstudiante.strCodCarrera + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}

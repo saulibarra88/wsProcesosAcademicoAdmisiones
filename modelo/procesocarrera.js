@@ -952,4 +952,35 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
 
 
+    module.exports.EncontrarUltimoPesumCarrera = async function (carrera) {
+    var sentencia="";
+    sentencia="SELECT TOP 1 * FROM [" + carrera + "].[dbo].[Pensums] WHERE dtFechaInic IS NOT NULL and [blnActivo]=1 ORDER BY dtFechaInic DESC;"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  
+  }
+    module.exports.ReglamentoActivoMaster = async function (carrera) {
+    var sentencia="";
+    sentencia="SELECT TOP 1 * FROM [" + carrera + "].[seguridad].[reglamento] WHERE [reg_fecha] IS NOT NULL and [reg_estado]=1 ORDER BY [reg_fecha] DESC;"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  
+  }
+
   

@@ -61,4 +61,23 @@ router.get('/ListadoEscuelaAdministracion/:facultad', async (req, res) => {
     }
 
 });
+router.get('/PrpuestaCodigoPensum/:carrera',async (req, res) => {
+    const carrera = req.params.carrera;
+    try {
+        var Informacion=await  funcionesprocesosmovilidadconfiguraciones.ProcesoPropuestaCodigoPensumCarrera(carrera);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

@@ -263,4 +263,6 @@ router.get('/ReporteExcelMatriculasAdmisionesInstitucional/:periodo',async (req,
     }
  
 });
+
+
 module.exports = router;
