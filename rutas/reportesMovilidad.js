@@ -393,11 +393,14 @@ if (objTitulacion.proceso) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
         <title>Datos Académicos</title>
         <style>
             /* Estilos generales optimizados para PDF */
          body {
-                font-family: 'Arial', sans-serif;
+               
                 margin: 0;
                 padding: 0;
                 color: #333;
@@ -776,13 +779,13 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula,persona,carrera,l
          const estado = ojbAsignaturas.Estado?.toUpperCase() === 'APROBADA' ? 'Aprobada' : 'Por aprobar';
         datos += `
         <tr>
-          <td style="font-size: 10px; text-align: center;font-family: 'Arial Regular'"> ${contadot} </td>
-                 <td style="text-align: center;font-size:12px;font-family: 'Arial Regular'"> ${ojbAsignaturas.CodigoMateriaNueva} </td>
-                 <td style="text-align: left;font-size:12px;font-family: 'Arial Regular'"> ${ojbAsignaturas.CodigoMateria} </td>
-                <td style="text-align: left;font-size:12px;font-family: 'Arial Regular'"> ${ojbAsignaturas.NombreMateria} </td>
-                <td style="text-align: center;font-size:12px;font-family: 'Arial Regular'"> ${objnivel.strCodNivel} </td>
-                <td style="text-align: center;font-size:11px;font-family: 'Arial Regular'"> ${ojbAsignaturas.nombretipo} </td>
-                <td  style="text-align: center;font-size:11px;font-family: 'Arial Regular'" class="${estado === 'Aprobada' ? 'aprobada' : 'por-aprobar'}"> ${ojbAsignaturas.Estado} </td>
+          <td style="font-size: 10px; text-align: center;font-family: 'Arial'"> ${contadot} </td>
+                 <td style="text-align: center;font-size:12px;font-family: 'Arial'"> ${ojbAsignaturas.CodigoMateriaNueva} </td>
+                 <td style="text-align: left;font-size:12px;font-family: 'Arial'"> ${ojbAsignaturas.CodigoMateria} </td>
+                <td style="text-align: left;font-size:12px;font-family: 'Arial'"> ${ojbAsignaturas.NombreMateria} </td>
+                <td style="text-align: center;font-size:12px;font-family: 'Arial'"> ${objnivel.strCodNivel} </td>
+                <td style="text-align: center;font-size:11px;font-family: 'Arial'"> ${ojbAsignaturas.nombretipo} </td>
+                <td  style="text-align: center;font-size:11px;font-family: 'Arial'" class="${estado === 'Aprobada' ? 'aprobada' : 'por-aprobar'}"> ${ojbAsignaturas.Estado} </td>
         </tr>
       `;
       });
@@ -902,7 +905,7 @@ if (objTitulacion.proceso) {
         <style>
             /* Estilos generales optimizados para PDF */
          body {
-                font-family: 'Arial Regular', sans-serif;
+                font-family: 'Arial', sans-serif;
                 margin: 0;
                 padding: 0;
                 color: #333;
