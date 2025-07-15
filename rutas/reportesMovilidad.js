@@ -34,17 +34,17 @@ module.exports.PdfListadoSolicitudesAprobadasCarreras = async function (listado,
     console.log(error);
   }
 }
-module.exports.PdfCurriculumEstuidantil = async function (cedula,persona,carrera,listado,foto,objTitulacion,listadoBecas) {
+module.exports.PdfCurriculumEstuidantil = async function (cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas) {
   try {
-    var resultado = await ProcesoPdfCurriculumEstudiantil(cedula,persona,carrera,listado,foto,objTitulacion,listadoBecas);
+    var resultado = await ProcesoPdfCurriculumEstudiantil(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas);
     return resultado
   } catch (error) {
     console.log(error);
   }
 }
-module.exports.PdfCurriculumEstuidantilConsultor = async function (cedula,persona,carrera,listado,foto,objTitulacion,listadoBecas,codigo) {
+module.exports.PdfCurriculumEstuidantilConsultor = async function (cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo) {
   try {
-    var resultado = await ProcesoPdfCurriculumEstudiantilConsultor(cedula,persona,carrera,listado,foto,objTitulacion,listadoBecas,codigo);
+    var resultado = await ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo);
     return resultado
   } catch (error) {
     console.log(error);
@@ -148,7 +148,7 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
   try {
     var periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
     var datos = "";
-  
+
     listado.forEach(carrera => {
       datos += `<br/><div style="font-size: 14px; text-align: left" >CARRERA:  ${carrera.cm_nombrecarrera_movilidad}</div>`;
       datos += `
@@ -166,9 +166,9 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
         </thead>
         <tbody>
     `;
-  var contadot = 0;
+      var contadot = 0;
       carrera.ListaEstuidantes.forEach(estudiante => {
-         contadot = contadot + 1;
+        contadot = contadot + 1;
         datos += `
         <tr>
           <td style="font-size: 10px; text-align: left;font-family: serif;">${contadot}</td>
@@ -236,15 +236,15 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
   }
 }
 
-async function ProcesoPdfCurriculumEstudiantil(cedula,persona,carrera,listado,foto,objTitulacion,listadoBecas) {
+async function ProcesoPdfCurriculumEstudiantil(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas) {
   try {
-  var bodylistadoAsignaturas = "";
-  var bodylistadoBecas = "";
-  var datos = "";
-  var datosTitulacion = "";
-  var datosBecas = "";
-  var contadot = 0;
-  var contadotBecas = 0;
+    var bodylistadoAsignaturas = "";
+    var bodylistadoBecas = "";
+    var datos = "";
+    var datosTitulacion = "";
+    var datosBecas = "";
+    var contadot = 0;
+    var contadotBecas = 0;
 
     listado.forEach(objnivel => {
       datos += `<br/> <div class="section-title"> PAO:  ${objnivel.strDescripcion}</div>`;
@@ -264,10 +264,10 @@ async function ProcesoPdfCurriculumEstudiantil(cedula,persona,carrera,listado,fo
         </thead>
         <tbody>
     `;
-  var contadot = 0;
+      var contadot = 0;
       objnivel.listadoasignaturas.forEach(ojbAsignaturas => {
-         contadot = contadot + 1;
-         const estado = ojbAsignaturas.estadoasignatura?.toUpperCase() === 'APROBADA' ? 'Aprobada' : 'Por aprobar';
+        contadot = contadot + 1;
+        const estado = ojbAsignaturas.estadoasignatura?.toUpperCase() === 'APROBADA' ? 'Aprobada' : 'Por aprobar';
         datos += `
         <tr>
           <td style="font-size: 10px; text-align: center"> ${contadot} </td>
@@ -284,10 +284,10 @@ async function ProcesoPdfCurriculumEstudiantil(cedula,persona,carrera,listado,fo
       datos += `</tbody></table>`;
     });
 
-    
+
     for (let objBecas of listadoBecas) {
-                contadotBecas = contadotBecas + 1;
-                                          bodylistadoBecas += `<tr >
+      contadotBecas = contadotBecas + 1;
+      bodylistadoBecas += `<tr >
                               <td style="font-size: 10px; text-align: center">
                               ${contadotBecas}
                             </td>
@@ -310,11 +310,11 @@ async function ProcesoPdfCurriculumEstudiantil(cedula,persona,carrera,listado,fo
                             </td>
 
                            </tr>`
-            }
+    }
 
 
- if (listadoBecas.length >0) {
-        datosBecas += `
+    if (listadoBecas.length > 0) {
+      datosBecas += `
     <div class="data-section">
       <div class="section-title">BECAS ESTUDIANTIL</div>
      <div class="table-container">
@@ -336,8 +336,8 @@ async function ProcesoPdfCurriculumEstudiantil(cedula,persona,carrera,listado,fo
     </div>
     </div>
   `;
- }else{
-   datosTitulacion += `
+    } else {
+      datosTitulacion += `
     <div class="data-section">
       <div class="section-title">BECAS ESTUDIANTIL</div>
   
@@ -348,9 +348,9 @@ async function ProcesoPdfCurriculumEstudiantil(cedula,persona,carrera,listado,fo
 
     </div>
   `;
- } 
-if (objTitulacion.proceso) {
-  datosTitulacion += `
+    }
+    if (objTitulacion.proceso) {
+      datosTitulacion += `
     <div class="data-section">
       <div class="section-title">PROYECTO TITULACIÓN</div>
     
@@ -372,8 +372,8 @@ if (objTitulacion.proceso) {
       </div>
     </div>
   `;
-}else{
-    datosTitulacion += `
+    } else {
+      datosTitulacion += `
     <div class="data-section">
       <div class="section-title">PROYECTO TITULACIÓN</div>
       <div class="data-row">
@@ -386,21 +386,30 @@ if (objTitulacion.proceso) {
       </div>
     </div>
   `;
-}
- const htmlContent = `
+    }
+    const htmlContent = `
     <!DOCTYPE html>
     <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
+  
         <title>Datos Académicos</title>
         <style>
+ @font-face {
+      font-family: 'Arial';
+      src: local('Arial'), url('/font/arial.ttf') format('truetype');
+      font-weight: normal;
+    }
+    @font-face {
+      font-family: 'Arial';
+      src: local('Arial Bold'), url('/font/arialbd.ttf') format('truetype');
+      font-weight: bold;
+    }
+
             /* Estilos generales optimizados para PDF */
          body {
-               
+                font-family: 'TikTok Display', sans-serif;
                 margin: 0;
                 padding: 0;
                 color: #333;
@@ -408,7 +417,7 @@ if (objTitulacion.proceso) {
                 font-size: 12px;
 
             }
-            
+          
             /* Contenedor principal */
             .container {
                 width: 100%;
@@ -719,8 +728,8 @@ if (objTitulacion.proceso) {
     var htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
     const options = {
       format: 'A4',
-       orientation: 'portrait',
-       type: 'pdf',
+      orientation: 'portrait',
+      type: 'pdf',
       border: {
         top: '1.0cm', // Margen superior
         right: '1.5cm', // Margen derecho
@@ -745,15 +754,15 @@ if (objTitulacion.proceso) {
   }
 }
 
-async function ProcesoPdfCurriculumEstudiantilConsultor(cedula,persona,carrera,listado,foto,objTitulacion,listadoBecas,codigo) {
+async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo) {
   try {
-  var bodylistadoAsignaturas = "";
-  var bodylistadoBecas = "";
-  var datos = "";
-  var datosTitulacion = "";
-  var datosBecas = "";
-  var contadot = 0;
-  var contadotBecas = 0;
+    var bodylistadoAsignaturas = "";
+    var bodylistadoBecas = "";
+    var datos = "";
+    var datosTitulacion = "";
+    var datosBecas = "";
+    var contadot = 0;
+    var contadotBecas = 0;
 
     listado.forEach(objnivel => {
       datos += `<br/> <div class="section-title"> PAO:  ${objnivel.strDescripcion}</div>`;
@@ -773,10 +782,10 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula,persona,carrera,l
         </thead>
         <tbody>
     `;
-  var contadot = 0;
+      var contadot = 0;
       objnivel.listadoasignaturas.forEach(ojbAsignaturas => {
-         contadot = contadot + 1;
-         const estado = ojbAsignaturas.Estado?.toUpperCase() === 'APROBADA' ? 'Aprobada' : 'Por aprobar';
+        contadot = contadot + 1;
+        const estado = ojbAsignaturas.Estado?.toUpperCase() === 'APROBADA' ? 'Aprobada' : 'Por aprobar';
         datos += `
         <tr>
           <td style="font-size: 10px; text-align: center;font-family: 'Arial'"> ${contadot} </td>
@@ -792,10 +801,10 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula,persona,carrera,l
       datos += `</tbody></table>`;
     });
 
-    
+
     for (let objBecas of listadoBecas) {
-                contadotBecas = contadotBecas + 1;
-                                          bodylistadoBecas += `<tr >
+      contadotBecas = contadotBecas + 1;
+      bodylistadoBecas += `<tr >
                               <td style="font-size: 10px; text-align: center;font-family: 'Arial'">
                               ${contadotBecas}
                             </td>
@@ -818,11 +827,11 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula,persona,carrera,l
                             </td>
 
                            </tr>`
-            }
+    }
 
 
- if (listadoBecas.length >0) {
-        datosBecas += `
+    if (listadoBecas.length > 0) {
+      datosBecas += `
     <div class="data-section">
       <div class="section-title">BECAS ESTUDIANTIL</div>
      <div class="table-container">
@@ -844,8 +853,8 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula,persona,carrera,l
     </div>
     </div>
   `;
- }else{
-   datosTitulacion += `
+    } else {
+      datosTitulacion += `
     <div class="data-section">
       <div class="section-title">BECAS ESTUDIANTIL</div>
   
@@ -856,9 +865,9 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula,persona,carrera,l
 
     </div>
   `;
- } 
-if (objTitulacion.proceso) {
-  datosTitulacion += `
+    }
+    if (objTitulacion.proceso) {
+      datosTitulacion += `
     <div class="data-section">
       <div class="section-title">PROYECTO TITULACIÓN</div>
     
@@ -880,8 +889,8 @@ if (objTitulacion.proceso) {
       </div>
     </div>
   `;
-}else{
-    datosTitulacion += `
+    } else {
+      datosTitulacion += `
     <div class="data-section">
       <div class="section-title">PROYECTO TITULACIÓN</div>
       <div class="data-row">
@@ -894,16 +903,26 @@ if (objTitulacion.proceso) {
       </div>
     </div>
   `;
-}
- const htmlContent = `
+    }
+    const htmlContent = `
     <!DOCTYPE html>
     <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Datos Académicos</title>
+           <title>Datos Académicos</title>
         <style>
             /* Estilos generales optimizados para PDF */
+             @font-face {
+      font-family: 'Arial';
+      src: url('/font/arial.ttf') format('truetype');
+      font-weight: normal;
+    }
+    @font-face {
+      font-family: 'Arial';
+      src: url('/font/arialbd.ttf') format('truetype');
+      font-weight: bold;
+    }
          body {
                 font-family: 'Arial', sans-serif;
                 margin: 0;
@@ -1224,12 +1243,15 @@ if (objTitulacion.proceso) {
     </body>
     </html>
     `;
-
+const path = require('path');
+console.log(path)
     var htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
     const options = {
       format: 'A4',
-       orientation: 'portrait',
-       type: 'pdf',
+      orientation: 'portrait',
+      type: 'pdf',
+      localUrlAccess: true,
+    base: 'file://' + path.join(__dirname, '../public/'),
       border: {
         top: '1.0cm', // Margen superior
         right: '1.5cm', // Margen derecho
@@ -1268,14 +1290,14 @@ function generarPDF(htmlCompleto, options) {
             const base64Data = Buffer.from(data).toString('base64');
 
             // Eliminar el archivo PDF generado (opcional)
-         /*   fs.unlink(res.filename, (err) => {
-              if (err) {
-                console.error('Error al eliminar el archivo PDF:', err);
-              } else {
-                console.log('Archivo PDF eliminado.');
-              }
-            });
-*/
+            /*   fs.unlink(res.filename, (err) => {
+                 if (err) {
+                   console.error('Error al eliminar el archivo PDF:', err);
+                 } else {
+                   console.log('Archivo PDF eliminado.');
+                 }
+               });
+   */
             // Resolver la promesa con base64Data
             resolve(base64Data);
           }
