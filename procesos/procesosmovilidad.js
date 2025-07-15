@@ -13,6 +13,8 @@ const funcionestools = require('../rutas/tools');
 const funcionesmodelocarrera = require('../modelo/procesocarrera');
 const funcionesmodelocupos = require('../modelo/procesocupos');
 const funcionesmodelonotasacademicas = require('../modelo/procesonotasacademicos');
+const funcionesreportemovilidad = require('../rutas/reportesMovilidad');
+require('dotenv').config()
 const xlsx = require('xlsx');
 const ExcelJS = require('exceljs');
 const { JSDOM } = require('jsdom');
@@ -293,6 +295,35 @@ module.exports.ProcesoActulizarInscripcionesEstuidante = async function (objEstu
         console.log(error);
     }
 }
+module.exports.ProcesoGenerarExcelSolicitudes = async function (periodo, estado) {
+
+    try {
+        var resultado = await FuncionReporteExcelSolicitudes(periodo, estado);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports.ProcesoGenerarPdfSolicitudesAprbadas = async function (periodo) {
+
+    try {
+        var resultado = await FuncionReportePdfSolicitudes(periodo);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports.ProcesoGeneracionCurriculumEstuidante = async function (carrera, cedula, periodo) {
+
+    try {
+        var resultado = await FuncionCurriculumEstudiantil(carrera, cedula, periodo);
+
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel) {
     try {
         var respuesta = {};
@@ -379,12 +410,12 @@ async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreram
         if (DatosConfiguraciones.count > 0) {
             respuesta.configuracionesCupos = DatosConfiguraciones.data[0];
             if (await funcionestools.estaVigenteFechaMovilidad(DatosConfiguraciones.data[0].mc_fecha_inicio, DatosConfiguraciones.data[0].mc_fecha_fin)) {
-                respuesta.fechavigente=true;
+                respuesta.fechavigente = true;
                 if (DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera == 0) {
                     respuesta.permitirsolicitudmoviInterna = false;
                     respuesta.permitirsolicitudmoviExterna = false;
                     respuesta.permitirsolicitudmoviTraspaso = false;
-                      respuesta.mensaje = 'Control de puntaje , no tiene puntaje la crrera';
+                    respuesta.mensaje = 'Control de puntaje , no tiene puntaje la crrera';
                 } else {
                     if (DatosConfiguraciones.data[0].mc_cupos_movi_interna == 0) {
                         respuesta.permitirsolicitudmoviInterna = false;
@@ -401,7 +432,7 @@ async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreram
                         if (DatosSolicitudesAprobadasExterna.count <= DatosConfiguraciones.data[0].mc_cupos_movi_externa && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
                             respuesta.permitirsolicitudmoviExterna = true;
                         } else {
-                            respuesta.permitirsolicitudmoviExterna = false;                         
+                            respuesta.permitirsolicitudmoviExterna = false;
                         }
                     }
                     if (DatosConfiguraciones.data[0].mc_cupos_movi_externa == 0) {
@@ -413,10 +444,10 @@ async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreram
                             respuesta.permitirsolicitudmoviTraspaso = false;
                         }
                     }
-                     respuesta.mensaje = 'Controles varios';
+                    respuesta.mensaje = 'Controles varios';
                 }
             } else {
-                respuesta.fechavigente=false;
+                respuesta.fechavigente = false;
                 respuesta.permitirsolicitudmoviInterna = false;
                 respuesta.permitirsolicitudmoviExterna = false;
                 respuesta.permitirsolicitudmoviTraspaso = false;
@@ -612,7 +643,7 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solic
 async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmision, strRutadocumento, codigocarreraunico) {
     try {
         var respuesta = {};
-        var VerificarCupoCarreraActual = await axios.get("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_actual, content, { httpsAgent: agent });
+        var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_actual, content, { httpsAgent: agent });
         console.log("VerificarCupoCarreraActual.data")
         console.log(VerificarCupoCarreraActual.data)
         if (VerificarCupoCarreraActual.data.success) {
@@ -629,7 +660,7 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
                 }
                 console.log('Insertar Detalle')
                 console.log(content)
-                var IngresarDetalleCupo = await axios.post("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/IngresoDetalleCupo/", content, { httpsAgent: agent });
+                var IngresarDetalleCupo = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/IngresoDetalleCupo/", content, { httpsAgent: agent });
                 var content = {
                     idCupo: VerificarCupoCarreraActual.data.informacion[0].c_id,
                     estado: 1,
@@ -638,7 +669,7 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
                 }
                 console.log('Cambio carrera')
                 console.log(content)
-                var IngresarCupoCarrera = await axios.post("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/CambiarEstadoCupoDadoId/", content, { httpsAgent: agent });
+                var IngresarCupoCarrera = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/CambiarEstadoCupoDadoId/", content, { httpsAgent: agent });
 
             } else {
                 var content = {
@@ -667,8 +698,8 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
                 }
                 console.log('Creacion Cupo')
                 console.log(content)
-                var IngresarCupoCarrera = await axios.post("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/IngresoCupoEstudiante/", content, { httpsAgent: agent });
-                var VerificarCupoCarreraActual = await axios.get("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_actual, content, { httpsAgent: agent });
+                var IngresarCupoCarrera = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/IngresoCupoEstudiante/", content, { httpsAgent: agent });
+                var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_actual, content, { httpsAgent: agent });
                 console.log('Obtener Cupo')
                 console.log(VerificarCupoCarreraActual.data)
                 var content = {
@@ -677,7 +708,7 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
                     vigencia: 0,
                     strObservacion: "DESACTIVACION CARRERA DESDE PROCESO INSCRIPION NUEVO",
                 }
-                var IngresarCupoCarrera = await axios.post("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/CambiarEstadoCupoDadoId/", content, { httpsAgent: agent });
+                var IngresarCupoCarrera = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/CambiarEstadoCupoDadoId/", content, { httpsAgent: agent });
             }
         }
 
@@ -694,7 +725,7 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
     try {
         console.log('Proceso Movilidad ')
         var respuesta = {};
-        var VerificarCupoCarreraActual = await axios.get("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_movilidad, content, { httpsAgent: agent });
+        var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_movilidad, content, { httpsAgent: agent });
         console.log("VerificarCupoCarreraActual.data")
         console.log(VerificarCupoCarreraActual.data)
         if (VerificarCupoCarreraActual.data.success) {
@@ -711,7 +742,7 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
                 }
                 console.log('Insertar Detalle')
                 console.log(content)
-                var IngresarDetalleCupo = await axios.post("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/IngresoDetalleCupo/", content, { httpsAgent: agent });
+                var IngresarDetalleCupo = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/IngresoDetalleCupo/", content, { httpsAgent: agent });
 
             } else {
                 var content = {
@@ -740,7 +771,7 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
                 }
                 console.log('Creacion Cupo')
                 console.log(content)
-                var IngresarCupoCarrera = await axios.post("https://pruebas.espoch.edu.ec/wsservicioscupos/procesonivelacion/IngresoCupoEstudiante/", content, { httpsAgent: agent });
+                var IngresarCupoCarrera = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/IngresoCupoEstudiante/", content, { httpsAgent: agent });
             }
         }
 
@@ -943,3 +974,178 @@ async function FuncionEliminacionInscripcionMovilidadExterna(dbCarrera, cedula, 
 
     }
 }
+
+async function FuncionReporteExcelSolicitudes(periodo, estado) {
+    console.log(periodo, estado)
+    try {
+        var Base64 = ''
+        var respuesta = {};
+        var listado = [];
+        var listadoDocumentos = await funcionesmodelomovilidad.ListadoSolicitudesMovilidadPorEstado('OAS_Master', estado, periodo);
+        if (listadoDocumentos.count > 0) {
+            for (var solicitudes of listadoDocumentos.data) {
+                var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + solicitudes.cm_identificacion, { httpsAgent: agent });
+                solicitudes.nombreestudiante =
+                    solicitudes.nombreestudiante = ObtenerPersona.data.listado[0].per_nombres
+                solicitudes.correoestudiante = ObtenerPersona.data.listado[0].per_email
+                solicitudes.celularstudiante = ObtenerPersona.data.listado[0].per_telefonoCelular
+                solicitudes.apellidoestudiante = ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+                listado.push(solicitudes)
+            }
+            Base64 = await funcionesreportemovilidad.ExcelExcelListadoSolicitudes(listado, periodo)
+        }
+
+        return Base64;
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+
+
+async function FuncionReportePdfSolicitudes(periodo) {
+    try {
+        var Base64 = ''
+        var respuesta = {};
+
+        var listadoCarreras = await funcionesmodelomovilidad.CarrerasSlicitudesMovilidad('OAS_Master', periodo, 'APRO');
+        if (listadoCarreras.count > 0) {
+
+            for (var carreras of listadoCarreras.data) {
+                var listadoSolicitudes = await funcionesmodelomovilidad.ListadoEstuidanteCarreraSolicitudes('OAS_Master', periodo, 'APRO', carreras.cm_dbcarrera_movilidad);
+                var listado = [];
+                for (var solicitudes of listadoSolicitudes.data) {
+                    var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + solicitudes.cm_identificacion, { httpsAgent: agent });
+                    solicitudes.nombreestudiante =
+                        solicitudes.nombreestudiante = ObtenerPersona.data.listado[0].per_nombres
+                    solicitudes.correoestudiante = ObtenerPersona.data.listado[0].per_email
+                    solicitudes.celularstudiante = ObtenerPersona.data.listado[0].per_telefonoCelular
+                    solicitudes.apellidoestudiante = ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+                    listado.push(solicitudes)
+                }
+                carreras.ListaEstuidantes = listado
+            }
+            Base64 = await funcionesreportemovilidad.PdfListadoSolicitudesAprobadasCarreras(listadoCarreras.data, periodo)
+        }
+
+        return Base64;
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+
+
+async function FuncionCurriculumEstudiantil(carrera, cedula, periodo) {
+    try {
+        var Base64 = ''
+        var respuesta = {};
+        var listado = []
+        var listadoBecas = []
+        var foto = ''
+        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + funcionestools.CedulaSinGuion(cedula), { httpsAgent: agent });
+        var ObtenerFoto = await axios.get("https://apigestioncupos.espoch.edu.ec/wsservicioscupos/procesosdinardap/ObtenerFotoPersona/" + funcionestools.CedulaSinGuion(cedula), { httpsAgent: agent });
+        var DatosTitulacion = await axios.get("https://apisustentacion.espoch.edu.ec/rutagrado/seguimientoTitulacion/" + carrera + '/' + cedula, { httpsAgent: agent });
+        var DatosBecas = await axios.get("https://swbecas.espoch.edu.ec/rutaBecasUsuario/getGestionSrvBecasFicha/1/" + funcionestools.CedulaSinGuion(cedula) + '/5/5', { httpsAgent: agent });
+        var datosCarrera = await funcionesmodelocupos.ObtenerDatosBase(carrera);
+        console.log(DatosBecas.data)
+        var Titulacion = {}
+        var datosEstuidante = await funcionesmodelocupos.ObtenerDatosEstudianteCarrera(carrera, cedula);
+        if (ObtenerFoto.data.success && ObtenerFoto.data.Informacion.blProceso) {
+            foto = 'data:image/jpeg;base64,' + ObtenerFoto.data.Informacion.Datos.valor
+        } else {
+            foto = 'data:image/png;base64,' + await funcionestools.FotoPorDefecto();
+        }
+
+        if (DatosTitulacion.data.success) {
+            if (DatosTitulacion.data.informacion.tipo == 'OASIS') {
+                Titulacion.proceso = true;
+                Titulacion.nombreproyecto = DatosTitulacion.data.informacion.proyecto.nombreproyecto;
+                Titulacion.formagrado = DatosTitulacion.data.informacion.proyecto.formagrado;
+                Titulacion.estado = DatosTitulacion.data.informacion.proyecto.estado;
+                Titulacion.resolucion = '';
+            } else {
+                Titulacion.proceso = true;
+                Titulacion.nombreproyecto = DatosTitulacion.data.informacion.proyecto.Tema;
+                Titulacion.formagrado = DatosTitulacion.data.informacion.proyecto.Modalidad;
+                Titulacion.estado = DatosTitulacion.data.informacion.proyecto.estado;
+                Titulacion.resolucion = DatosTitulacion.data.informacion.proyecto.resolucionaprobacion;
+            }
+        } else {
+            Titulacion.proceso = false;
+            Titulacion.mensaje = DatosTitulacion.data.mensaje;
+        }
+        if (DatosBecas.data.resultado) {
+            listadoBecas = DatosBecas.data.resBecas
+        }
+
+        var RecordAcademicoNivel = await funcionesmodelomovilidad.ObtnerRecodAcademicoporNivel(carrera, datosEstuidante.data[0].strCodigo, 15);
+        var VerificarHomologacion = RecordAcademicoNivel.data.find(item => item.Tipo === 2) !== undefined
+        var ListadoNiveles = await funcionesmodelomovilidad.ObtenerNivelesMallaDadoPeriodo(carrera, periodo);
+        if (VerificarHomologacion) {//Proceso Con Homologacion Carreras
+            console.log('Carrera homologada')
+            if (ListadoNiveles.count > 0) {
+                for (var objniveles of ListadoNiveles.data) {
+                    var listadoAsignaturas = [];
+                    var MallaAsignatura = await funcionesmodelomovilidad.MallCarreraASignaturasporNivelPeriodo(carrera, periodo, objniveles.strCodNivel);
+                    for (var datosasignatura of MallaAsignatura.data) {
+                        var objtoEncontrado = await funcionestools.EncontraObjetodentroListadoRecordAcademico(datosasignatura.strCodMateria, RecordAcademicoNivel.data, 'CodigoMateriaNueva')
+
+                        if (objtoEncontrado != null) {
+                            if (objtoEncontrado.Equivalencia == 'A' || objtoEncontrado.Equivalencia == 'E' || objtoEncontrado.Equivalencia == 'H' || objtoEncontrado.Equivalencia == 'RC' || objtoEncontrado.Equivalencia == 'AVC' || objtoEncontrado.Equivalencia == 'C') {
+                                datosasignatura.estadoasignatura = 'APROBADA'
+                            } else {
+                                datosasignatura.estadoasignatura = 'POR APROBAR'
+                            }
+                        } else {
+                            datosasignatura.estadoasignatura = 'POR APROBAR'
+                        }
+                        listadoAsignaturas.push(datosasignatura)
+
+                    }
+                    objniveles.listadoasignaturas = listadoAsignaturas
+                    listado.push(objniveles)
+                }
+
+            }
+        } else {//Proceso sin Homologacion Carreras
+            console.log('Carrera no Hmologada')
+            if (ListadoNiveles.count > 0) {
+                for (var objniveles of ListadoNiveles.data) {
+                    var listadoAsignaturas = [];
+                    var MallaAsignatura = await funcionesmodelomovilidad.MallCarreraASignaturasporNivelPeriodo(carrera, periodo, objniveles.strCodNivel);
+                    for (var datosasignatura of MallaAsignatura.data) {
+                        var objtoEncontrado = await funcionestools.EncontraObjetodentroListadoRecordAcademico(datosasignatura.strCodMateria, RecordAcademicoNivel.data, 'CodigoMateriaAnterior')
+
+                        if (objtoEncontrado != null) {
+                            if (objtoEncontrado.Equivalencia == 'A' || objtoEncontrado.Equivalencia == 'E' || objtoEncontrado.Equivalencia == 'H' || objtoEncontrado.Equivalencia == 'RC' || objtoEncontrado.Equivalencia == 'AVC' || objtoEncontrado.Equivalencia == 'C') {
+                                datosasignatura.estadoasignatura = 'APROBADA'
+                            } else {
+                                datosasignatura.estadoasignatura = 'POR APROBAR'
+                            }
+                        } else {
+                            datosasignatura.estadoasignatura = 'POR APROBAR'
+                        }
+                        listadoAsignaturas.push(datosasignatura)
+
+                    }
+                    objniveles.listadoasignaturas = listadoAsignaturas
+                    listado.push(objniveles)
+                }
+
+            }
+        }
+
+        Base64 = await funcionesreportemovilidad.PdfCurriculumEstuidantil(cedula, ObtenerPersona.data.listado[0], datosCarrera.data[0], listado, foto, Titulacion, listadoBecas)
+
+        return Base64;
+        // return listado;
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+

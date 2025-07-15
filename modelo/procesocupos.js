@@ -928,3 +928,38 @@ module.exports.ListadoDetalleCuposporDescripcion = async function (carrera,perio
 }
 
 }
+
+module.exports.ObtenerTituloCarrera = async function (carrera) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Titulos]"
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+  
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+  module.exports.ObtenerDatosEstudianteCarrera = async function (carrera,cedula) {
+ var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Estudiantes] WHERE strCedula='" + cedula + "'"
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+  
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+  }

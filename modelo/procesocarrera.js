@@ -982,5 +982,50 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   
   }
+    module.exports.ListadoPeriodosCarrera = async function (carrera) {
+    var sentencia="";
+    sentencia = "SELECT TOP 10 * FROM [" + carrera + "].[dbo].[Periodos] ORDER BY dtFechaInic DESC";
+ 
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+      module.exports.VigentePeriodosCarrera = async function (carrera) {
+    var sentencia="";
+    sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Periodos] WHERE blnVigente=1";
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+
+  module.exports.MatriculasCarrerasPeriodoAcademicos = async function (carrera,periodo) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' ORDER BY m.strCodNivel,e.strApellidos"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
 
   

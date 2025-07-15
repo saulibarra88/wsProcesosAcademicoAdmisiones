@@ -3,6 +3,7 @@ const router = express.Router();
 const Request = require("request");
 
 const funcionesprocesosmovilidad = require('../procesos/procesosmovilidad');
+const funcionesprocesosrecordmallaestuidante = require('../procesos/procesorecordmallaestuidante');
 
 
 
@@ -279,8 +280,8 @@ router.post('/InsertarSolicitudAprobadaInscripcionMoviInterna', async (req, res)
 });
 router.post('/InsertarInscripcionMoviExterna', async (req, res) => {
     try {
-        const {solicitud, idpersona, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30,idCupoAdmision,strFoto } = req.body;
-        const Informacion = await funcionesprocesosmovilidad.ProcesInsertarSolicitudAprobadaInscripcionMovilidadExterna(solicitud,idpersona,idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30,strFoto);
+        const { solicitud, idpersona, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, idCupoAdmision, strFoto } = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesInsertarSolicitudAprobadaInscripcionMovilidadExterna(solicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, strFoto);
         res.json({
             success: true,
             Informacion
@@ -589,15 +590,15 @@ router.get('/ListadoGradoEstudianteTodas/:cedula', async (req, res) => {
 });
 router.post('/EliminarGradoEstuidante', async (req, res) => {
     try {
-        const { cedula,codtitulo,codInstitucion } = req.body;
+        const { cedula, codtitulo, codInstitucion } = req.body;
         var objEstudiante = {
             cedula: cedula,
             codtitulo: codtitulo,
             codInstitucion: codInstitucion
-            
+
         }
 
-        const Informacion = await funcionesprocesosmovilidad.ProcesoEliminarGradoEstuidante(cedula,codtitulo,codInstitucion);
+        const Informacion = await funcionesprocesosmovilidad.ProcesoEliminarGradoEstuidante(cedula, codtitulo, codInstitucion);
         res.json({
             success: true,
             Informacion
@@ -615,13 +616,13 @@ router.post('/EliminarGradoEstuidante', async (req, res) => {
 });
 router.post('/ActualizarradoEstuidante', async (req, res) => {
     try {
-        const { cedula,codtitulo,codInstitucion,fecha,refrendacion } = req.body;
+        const { cedula, codtitulo, codInstitucion, fecha, refrendacion } = req.body;
         var objEstudiante = {
             cedula: cedula,
             codtitulo: codtitulo,
             codInstitucion: codInstitucion,
-            fecha:fecha,
-            refrendacion:refrendacion
+            fecha: fecha,
+            refrendacion: refrendacion
         }
         const Informacion = await funcionesprocesosmovilidad.ProcesoActulizarGradoEstuidante(objEstudiante);
         res.json({
@@ -641,9 +642,9 @@ router.post('/ActualizarradoEstuidante', async (req, res) => {
 });
 router.post('/EliminacionInscripcionMovExterna', async (req, res) => {
     try {
-        const { dbCarrera,cedula,periodo } = req.body;
-      
-        const Informacion = await funcionesprocesosmovilidad.ProcesoEliminacionInscripcionMovExterna(dbCarrera,cedula,periodo);
+        const { dbCarrera, cedula, periodo } = req.body;
+
+        const Informacion = await funcionesprocesosmovilidad.ProcesoEliminacionInscripcionMovExterna(dbCarrera, cedula, periodo);
         res.json({
             success: true,
             Informacion
@@ -681,4 +682,112 @@ router.get('/ObtenerDatosEstuidanteCarrera/:dbcarrera/:cedula', async (req, res)
 
 });
 
+router.post('/ActulizarSolicitudesEstudiante', async (req, res) => {
+    try {
+        const { boolGratuidadT, boolGratuidad30, strObservaciones, strCedEstud, strCodPeriodo, strCodCarrera } = req.body;
+        var objEstudiante = {
+            boolGratuidadT: boolGratuidadT,
+            boolGratuidad30: boolGratuidad30,
+            strObservaciones: strObservaciones,
+            strCedEstud: strCedEstud,
+            strCodPeriodo: strCodPeriodo,
+            strCodCarrera: strCodCarrera,
+        }
+        const Informacion = await funcionesprocesosmovilidad.ProcesoActulizarInscripcionesEstuidante(objEstudiante);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
+
+router.get('/ReporteExcelSolicitudesMovilidad/:periodo/:estado', async (req, res) => {
+    const periodo = req.params.periodo;
+    const estado = req.params.estado;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoGenerarExcelSolicitudes(periodo,estado);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+
+});
+router.get('/ReportePdfSolicitudesMovilidadAprobadas/:periodo', async (req, res) => {
+    const periodo = req.params.periodo;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoGenerarPdfSolicitudesAprbadas(periodo);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+
+});
+router.get('/CurriculumEstuidante/:carrera/:cedula/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  funcionesprocesosmovilidad.ProcesoGeneracionCurriculumEstuidante(carrera,cedula,periodo);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/CurriculumEstuidanteConsultor/:carrera/:cedula/',async (req, res) => {
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion=await  funcionesprocesosrecordmallaestuidante.ProcesoGeneracionCurriculumEstuidanteConsultor(carrera,cedula);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

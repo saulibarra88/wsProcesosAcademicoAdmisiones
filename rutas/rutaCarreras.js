@@ -264,5 +264,64 @@ router.get('/ReporteExcelMatriculasAdmisionesInstitucional/:periodo',async (req,
  
 });
 
+router.get('/ListadoPeriodosCarreras/:carrera/',async (req, res) => {
+    const carrera = req.params.carrera;
+    try {
+        var Informacion=await  carrerasprocesosInformacion.ProcesoListadoPeriodosCarreras(carrera);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ObtenerPeriodosVigenteCarreras/:carrera/',async (req, res) => {
+    const carrera = req.params.carrera;
+    try {
+        var Informacion=await  carrerasprocesosInformacion.ProcesoPeriodosVigenteCarreras(carrera);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/ListadoEstuidantesMatriculadosPeriodos/:carrera/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  carrerasprocesosInformacion.ProcesoListadoEstuidantesMatriculados(carrera,periodo);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
 
 module.exports = router;

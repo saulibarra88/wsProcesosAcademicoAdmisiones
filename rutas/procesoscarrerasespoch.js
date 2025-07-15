@@ -242,6 +242,51 @@ module.exports.ProcesoListadoPensumCarreras = async function (carrera) {
         return 'ERROR';
     }
 }
+module.exports.ProcesoListadoPensumCarreras = async function (carrera) {
+    try {
+        var ListadoDocumentos = [];
+        var ListadoPensum = await modeloprocesocarreras.ListadoPensumCarrera(carrera);
+        if (ListadoPensum.count > 0) {
+
+            ListadoDocumentos = ListadoPensum.data
+        } else {
+            ListadoDocumentos = []
+        }
+
+        return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
+module.exports.ProcesoListadoPeriodosCarreras = async function (carrera) {
+    try {
+        var ListadoDocumentos = [];
+        var ListadoPensum = await modeloprocesocarreras.ListadoPeriodosCarrera(carrera);
+        if (ListadoPensum.count > 0) {
+
+            ListadoDocumentos = ListadoPensum.data
+        } else {
+            ListadoDocumentos = []
+        }
+
+        return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
+module.exports.ProcesoPeriodosVigenteCarreras = async function (carrera) {
+    try {
+        var ListadoDocumentos = [];
+        var ListadoPensum = await modeloprocesocarreras.VigentePeriodosCarrera(carrera);
+       
+       return ListadoPensum.data[0]
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
 module.exports.ProcesoListadoPensumMateriasarreras = async function (carrera, pensum) {
     try {
         var ListadoDocumentos = [];
@@ -335,6 +380,18 @@ module.exports.ProcesoListadoMatriculasFirmadasPorNivel = async function (carrer
         var resultado = await modeloprocesocarreras.ListadoMatriculasFirmadasPorNivel(carrera, periodo, nivel);
 
         return resultado.data
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
+
+module.exports.ProcesoListadoEstuidantesMatriculados = async function (carrera,periodo) {
+    try {
+        var ListadoDocumentos = [];
+        var ListadoDocumentos = await modeloprocesocarreras.MatriculasCarrerasPeriodoAcademicos(carrera,periodo);
+       
+       return ListadoDocumentos.data
     } catch (err) {
         console.log(err);
         return 'ERROR';

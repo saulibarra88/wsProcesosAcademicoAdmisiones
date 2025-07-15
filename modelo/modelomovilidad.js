@@ -721,3 +721,115 @@ module.exports.EliminarInscripcionSolicitudEstuidante = async function (carrera,
   return {data:"Error: "+ error}
 }
 }
+
+ module.exports.CarrerasSlicitudesMovilidad = async function (carrera,periodo,estado) {
+  var sentencia="";
+  sentencia="SELECT [cm_dbcarrera_movilidad],[cm_nombrecarrera_movilidad],[cm_periodo] FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] WHERE [cm_estado]=1 AND [cm_idtipo_estado]='" + estado + "' AND [cm_periodo]='" + periodo + "' GROUP BY [cm_dbcarrera_movilidad],[cm_nombrecarrera_movilidad],[cm_periodo]"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+ module.exports.ListadoEstuidanteCarreraSolicitudes = async function (carrera,periodo,estado,carreramovilidad) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] AS sm INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_estado] AS mts ON mts.mte_strcodigo=sm.cm_idtipo_estado INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_solicitud] AS mt ON mt.mte_strcodigo=sm.cm_idtipo_movilidad WHERE sm.[cm_estado]=1 AND sm.[cm_idtipo_estado]='" + estado + "' AND sm.[cm_periodo]='" + periodo + "' AND sm.[cm_dbcarrera_movilidad]='" + carreramovilidad + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+ module.exports.MallCarreraASignaturasporNivelPeriodo = async function (carrera,periodo,nivel) {
+  var sentencia="";
+  sentencia="SELECT m.strNombre as nombreasignatura, a.strNombre as nombrearea , t.strDescripcion as nombretipo,* FROM [" + carrera + "].[dbo].[Materias_Pensum] AS mp INNER JOIN [" + carrera + "].[dbo].[Materias] AS m ON m.strCodigo=mp.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Areas] AS a ON a.strCodigo=mp.strCodArea INNER JOIN [" + carrera + "].[dbo].[Tipos_de_Materias] AS t ON t.strCodigo=mp.strCodTipo INNER JOIN [" + carrera + "].[dbo].[Periodos] AS pe ON pe.strCodPensum=mp.strCodPensum WHERE pe.strCodigo='" + periodo + "' AND mp.strCodNivel='" + nivel + "' ORDER BY mp.strCodMateria "
+  
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+
+
+ module.exports.ObtenerUltimoPeriodMatriculaEstuidante = async function (carrera,cedula) {
+  var sentencia="";
+  sentencia="SELECT TOP 1 * FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS e ON e.strCodigo=m.strCodEstud WHERE e.strCedula='" + cedula + "' AND m.[strCodEstado]='DEF' ORDER BY [dtFechaAutorizada] DESC"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+ module.exports.ListadoASignaturasqNotieneqAprobar = async function (carrera,codigo) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Materias_Sin_Tener_Aprobar] WHERE [strCodEstud]='" + codigo + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+ module.exports.ObtenerNivelesMallaDadoPeriodo= async function (carrera,periodo) {
+  var sentencia="";
+ sentencia="SELECT mp.strCodNivel,n.strDescripcion FROM [" + carrera + "].[dbo].[Materias_Pensum] AS mp INNER JOIN [" + carrera + "].[dbo].[Periodos] AS pe ON pe.strCodPensum = mp.strCodPensum INNER JOIN [" + carrera + "].[dbo].[Niveles] AS n ON n.strCodigo = mp.strCodNivel WHERE pe.strCodigo = '" + periodo + "' GROUP BY mp.strCodNivel, n.strDescripcion ORDER BY CAST(mp.strCodNivel AS INT)"
+ try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+module.exports.ObtenerDatosBaseMovilidad = async function (dbcarrera,carrera) {
+  var sentencia="";
+  sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + dbcarrera + "].[dbo].Facultades AS F INNER JOIN [" + dbcarrera + "].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [" + dbcarrera + "].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo  WHERE C.strBaseDatos='" + carrera + "' "
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(dbcarrera,sentencia, "OK","OK");
+  
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+
+
+

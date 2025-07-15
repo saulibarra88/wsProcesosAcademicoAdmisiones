@@ -14,7 +14,6 @@ const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null)
 
   let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
   //let conn;
-
   try {
 
     if (!pool) {
@@ -27,7 +26,7 @@ const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null)
     const result = await conn.query(SQL);
     return buildResponse(result, OK, msgVacio, msgError);
   } catch (err) {
-    console.log("Error conexion Base Academico:" + err);
+    console.log("Error conexion Base Master:" + err);
     return handleDatabaseError(err, msgError);
   } finally {
     if (pool) {
@@ -65,7 +64,7 @@ const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null)
       const result = await conn.query(SQL);
       return buildResponse(result, OK, msgVacio, msgError);
     } catch (err) {
-      console.log("Error conexion Base Academico:" + err);
+      console.log("Error conexion Base Master:" + err);
       return handleDatabaseError(err, msgError);
     } finally {
       if (pool) {

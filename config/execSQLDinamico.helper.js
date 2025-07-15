@@ -14,13 +14,11 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
   //let conn;
 
   try {
-
     if (!pool) {
       pool = await new sql.ConnectionPool(conex).connect();
     }
     // Obtener una conexión del grupo de conexiones
     const conn = pool.request();
-
     // Ejecutar la consulta
     const result = await conn.query(SQL);
     return buildResponse(result, OK, msgVacio, msgError);
