@@ -790,7 +790,6 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera
       },
    
     };
-console.log( path.join(__dirname, '../public/font/arial.ttf'))
     const htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
     const base64 = await generarPDF(htmlCompleto, options);
     return base64;
