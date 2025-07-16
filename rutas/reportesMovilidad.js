@@ -802,10 +802,10 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera
       // Configuración de fuentes para el PDF
       "font-family": {
         "Arial": {
-          "normal": "arial.ttf",
-          "bold": "arialbd.ttf",
-          "italics": "ariali.ttf",
-          "bolditalics": "arialbi.ttf"
+       "normal": path.join(__dirname, '../public/font/arial.ttf'),
+      "bold": path.join(__dirname, '../public/font/arialbd.ttf'),
+      "italics": path.join(__dirname, '../public/font/ariali.ttf'),
+      "bolditalics": path.join(__dirname, '../public/font/arialbi.ttf')
         }
       },
         "font": {
@@ -815,10 +815,11 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera
       "italics": path.join(__dirname, '../public/font/ariali.ttf'),
       "bolditalics": path.join(__dirname, '../public/font/arialbi.ttf')
     },
-    "font-aliases": {
+    
+  },
+  "font-aliases": {
     "AriaIMT": "Arial",
     "AriaINarrow-Bold": "Arial"
-  }
   }
     };
 console.log( path.join(__dirname, '../public/font/arial.ttf'))
@@ -1330,6 +1331,16 @@ function generarPDF(htmlCompleto, options) {
             reject(err);
           } else {
             const base64Data = Buffer.from(data).toString('base64');
+            // Eliminar el archivo PDF generado (opcional)
+               fs.unlink(res.filename, (err) => {
+                 if (err) {
+                   console.error('Error al eliminar el archivo PDF:', err);
+                 } else {
+                   console.log('Archivo PDF eliminado.');
+                 }
+               });
+   
+            // Resolver la promesa con base64Data
             resolve(base64Data);
           }
         });
