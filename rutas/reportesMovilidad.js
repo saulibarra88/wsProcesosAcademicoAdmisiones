@@ -1143,7 +1143,7 @@ function generarHtmlCompleto(cedula, persona, carrera, foto, codigo, datosAsigna
             }
                  .lienzo{
               position: relative;
-              height:170px;
+              height:200px;
           }  
           
           .izquierda{
@@ -1154,7 +1154,7 @@ function generarHtmlCompleto(cedula, persona, carrera, foto, codigo, datosAsigna
           
           .derecha{
               position:absolute;
-              left:180px;
+              left:140px;
           }
       </style>
     </head>
