@@ -459,7 +459,7 @@ async function ProcesoPdfCurriculumEstudiantil(cedula, persona, carrera, listado
             }
             
             .document-title {
-                font-size: 16px;
+                font-size: 12px;
                 color: #2c3e50;
                 margin: 5px 0 0 0;
             }
@@ -624,7 +624,12 @@ async function ProcesoPdfCurriculumEstudiantil(cedula, persona, carrera, listado
               left:210px;
           }
            
-           
+              .data-label {
+                font-weight: bold;
+                display: inline-block;
+                width: 50mm;
+                color: #555;
+            }
         </style>
     </head>
     <body>
@@ -805,13 +810,13 @@ async function generarContenidoTablas(listado, listadoBecas, objTitulacion) {
       <table>
         <thead>
           <tr>
-            <th style="text-align: center;font-family: 'Arial'">#</th>
-            <th style="text-align: center;font-family: 'Arial'">HOMOL.</th>
-            <th style="text-align: center;font-family: 'Arial'">CÓDIGO</th>
-            <th style="text-align: center;font-family: 'Arial'">NOMBRES</th>
-            <th style="text-align: center;font-family: 'Arial'">NIVEL</th>
-            <th style="text-align: center;font-family: 'Arial'">TIPO</th>
-            <th style="text-align: center;font-family: 'Arial'">ESTADO</th>
+            <th style="font-size: 10px;text-align: center;font-family: 'Arial'">#</th>
+            <th style="font-size: 10px;text-align: center;font-family: 'Arial'">HOMOL.</th>
+            <th style="font-size: 10px;text-align: center;font-family: 'Arial'">CÓDIGO</th>
+            <th style="font-size: 10px;text-align: center;font-family: 'Arial'">NOMBRES</th>
+            <th style="font-size: 10px;text-align: center;font-family: 'Arial'">NIVEL</th>
+            <th style="font-size: 10px;text-align: center;font-family: 'Arial'">TIPO</th>
+            <th style="font-size: 10px;text-align: center;font-family: 'Arial'">ESTADO</th>
           </tr>
         </thead>
         <tbody>
@@ -859,12 +864,12 @@ async function generarContenidoTablas(listado, listadoBecas, objTitulacion) {
           <table>
             <thead>
               <tr>
-                <th style="text-align: center;font-family: 'Arial'">#</th>
-                <th style="text-align: center;font-family: 'Arial'">FACULTAD</th>
-                <th style="text-align: center;font-family: 'Arial'">CARRERA</th>
-                <th style="text-align: center;font-family: 'Arial'">BECA</th>
-                <th style="text-align: center;font-family: 'Arial'">PERÍODO</th>
-                <th style="text-align: center;font-family: 'Arial'">ESTADO</th>
+                <th style="font-size: 10px;text-align: center;font-family: 'Arial'">#</th>
+                <th style="font-size: 10px;text-align: center;font-family: 'Arial'">FACULTAD</th>
+                <th style="font-size: 10px;text-align: center;font-family: 'Arial'">CARRERA</th>
+                <th style="font-size: 10px;text-align: center;font-family: 'Arial'">BECA</th>
+                <th style="font-size: 10px;text-align: center;font-family: 'Arial'">PERÍODO</th>
+                <th style="font-size: 10px;text-align: center;font-family: 'Arial'">ESTADO</th>
               </tr>
             </thead>
             <tbody>${bodylistadoBecas}</tbody>
@@ -968,7 +973,12 @@ function generarHtmlCompleto(cedula, persona, carrera, foto, codigo, datosAsigna
           padding: 20px;
           box-sizing: border-box;
         }
-        
+            .data-label {
+                font-weight: bold;
+                display: inline-block;
+                width: 50mm;
+                color: #555;
+            }
         /* Encabezado */
             .header {
                 display: flex;
@@ -994,14 +1004,14 @@ function generarHtmlCompleto(cedula, persona, carrera, foto, codigo, datosAsigna
             }
             
             .university-name {
-                font-size: 18px;
+                font-size: 14px;
                 font-weight: bold;
                 color: #2c3e50;
                 margin: 0;
             }
             
             .document-title {
-                font-size: 16px;
+                font-size: 12px;
                 color: #2c3e50;
                 margin: 5px 0 0 0;
             }
@@ -1021,8 +1031,8 @@ function generarHtmlCompleto(cedula, persona, carrera, foto, codigo, datosAsigna
             }
               
            .photo-container {
-                width: 120px;       /* Ancho fijo */
-                 height: 150px;      /* Alto fijo para proporción 4:5 */
+                width: 100px;       /* Ancho fijo */
+                 height: 130px;      /* Alto fijo para proporción 4:5 */
                 border: 1px solid #999;
                 display: flex;
                 align-items: center;
@@ -1037,7 +1047,7 @@ function generarHtmlCompleto(cedula, persona, carrera, foto, codigo, datosAsigna
             .photo-text {
                 font-weight: bold;
                 color: #666;
-                font-size: 11pt;
+                font-size: 9pt;
                 z-index: 1;
             }
             
