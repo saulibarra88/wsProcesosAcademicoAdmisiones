@@ -807,7 +807,19 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera
           "italics": "ariali.ttf",
           "bolditalics": "arialbi.ttf"
         }
-      }
+      },
+        "font": {
+    "Arial": {
+      "normal": path.join(__dirname, '../public/font/arial.ttf'),
+      "bold": path.join(__dirname, '../public/font/arialbd.ttf'),
+      "italics": path.join(__dirname, '../public/font/ariali.ttf'),
+      "bolditalics": path.join(__dirname, '../public/font/arialbi.ttf')
+    },
+    "font-aliases": {
+    "AriaIMT": "Arial",
+    "AriaINarrow-Bold": "Arial"
+  }
+  }
     };
 
     const htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
