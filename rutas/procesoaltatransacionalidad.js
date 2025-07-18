@@ -78,7 +78,6 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
         var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBase("OAS_Master", carrera);
         await Promise.all(datosMatriculas.data.map(async (matricula, i) => {
 
-            console.log(`Carrera ${carrera}  , Matricula ${matricula.strCedula} #${i + 1}`);
             const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
             const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
             const [personaResponse, pago, asignaturas, regulares, aprobacion] = await Promise.all([
@@ -175,7 +174,6 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
             if (datosMatriculas.count === 0) return;
             await Promise.all(datosMatriculas.data.map((matricula, j) =>
                 limitSQL(async () => {
-                    console.log(`Carrera ${carrera.hmbdbasecar} # ${i + 1} , Matricula ${matricula.strCedula} #${j + 1}`);
                     const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
                     const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
                     const [personaResponse, pago, asignaturas, regulares, aprobacion] = await Promise.all([
@@ -266,7 +264,6 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
             if (datosMatriculas.count === 0) return;
             await Promise.all(datosMatriculas.data.map((matricula, j) =>
                 limitSQL(async () => {
-                    console.log(`Carrera ${carrera.hmbdbasecar} # ${i + 1} , Matricula ${matricula.strCedula} #${j + 1}`);
                     const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
                     const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
                     const [personaResponse, pago, asignaturas, regulares, aprobacion] = await Promise.all([
@@ -351,7 +348,6 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
 
         await Promise.all(Lstestudiantes.data.map(async (estudiante, i) => {
 
-            console.log(` Matricula ${estudiante.c_identificacion} #${i + 1}`);
             const cedula = tools.CedulaSinGuion(estudiante.c_identificacion);
             const [DatosCarreraNivelacion, DatosEstudiantes] = await Promise.all([
                 limitHTTP(() => axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", { perNomenclatura: periodo, cusId: estudiante.c_cus_id }, { httpsAgent: agent })),
@@ -527,7 +523,6 @@ async function FuncionListadoEstudiantePeriodos(carrera, periodo) {
         const matriculaEstudiantesCarrera = await modeloprocesocarreras.ListadoEstudiantePeriodoMatricula(carrera, periodo, 'DEF');
         const DatosPeriodo = await modeloprocesocarreras.PeriodoDatosCarrera(carrera, periodo);
         await Promise.all(matriculaEstudiantesCarrera.data.map(async (matricula, i) => {
-            console.log('Carrera ' + carrera + ' Código: ' + matricula.sintCodigo);
             const AsignaturasMatricula = await limitSQL(() => modeloprocesocarreras.ListadoAsignaturasEstudiante(carrera, matricula.strCodPeriodo, matricula.sintCodigo));
             if (AsignaturasMatricula.count === 0) return;
             const asignaturasValidas = await Promise.all( AsignaturasMatricula.data.map(async(asignatura) =>

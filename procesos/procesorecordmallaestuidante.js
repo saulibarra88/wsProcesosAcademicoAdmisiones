@@ -303,7 +303,6 @@ async function procesarAsignaturanoTieneAprobarQuitar(carrera, codigoEstudiante,
 }
 
 async function procesarAsignaturaCasoHomlogacionEspecial(asignaturaMalla, datosasignatura, listadoAsignaturasSinHomologadasAprobadas, listadoAsignaturaProcesada) {
-    console.log('Caso Especial',asignaturaMalla.CodigoMateriaAnterior,asignaturaMalla.NombreMateriaAnterior)  
     var objtoEncontradoSinHomlogaciones = await funcionestools.EncontraObjetodentroListadoRecordAcademico(datosasignatura.strCodMateria, listadoAsignaturasSinHomologadasAprobadas, 'CodigoMateriaAnterior')
 
     if (objtoEncontradoSinHomlogaciones != null) {

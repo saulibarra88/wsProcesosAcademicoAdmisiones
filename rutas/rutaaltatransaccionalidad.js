@@ -31,7 +31,7 @@ router.get('/ReporteExcelMatriculasCarrerasTodasInstitucional/:periodo/:estado',
     const periodo = req.params.periodo;
     const estado = req.params.estado;
     try {
-        console.log("MATRIZ CARRERAS INSTITUCIONAL",periodo,estado)
+ 
    
         var Informacion= await  pruebasInformacion.ProcesoReporteExcelMatriculasCarrerasTodasInstitucionales(periodo,estado);
         res.json({
@@ -54,8 +54,7 @@ router.get('/ReporteExcelMatriculasNivelacionTodasInstitucional/:periodo/:estado
     const periodo = req.params.periodo;
     const estado = req.params.estado;
     try {
-        console.log("MATRIZ NIVELACION INSTITUCIONAL",periodo,estado)
-        
+
         var Informacion=await  pruebasInformacion.ProcesoReporteExcelMatriculasNivelacionInstitucional(periodo,estado);
         res.json({
             success: true,

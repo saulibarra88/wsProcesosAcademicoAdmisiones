@@ -88,8 +88,7 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
                  var j=0;
                     for (var matriculas of datosMatriculas.data) {
                         j = j + 1
-                        console.log("Carrera " + carrera  + " Matricula " + matriculas.strCedula + " " + j);
-                 
+        
                         var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
                 
                         if (ObtenerPersona.data.success) {
@@ -377,12 +376,12 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
             try {
         var listadoNomina = [];
         var ListadoCarrera = await modeloprocesocarreras.ListadoHomologacionesCarreraPeriodoTransaccion(transaction, "OAS_Master", periodo);
-        console.log(ListadoCarrera.count)
+    
         var i = 0;
         for (var carrera of ListadoCarrera.data) {
     
                 i = i + 1
-                console.log("Carrera " + carrera.hmbdbasecar + " " + i);
+           
                 var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbasecar, periodo, estado);
                 var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBaseTransaccion(transaction,"OAS_Master",carrera.hmbdbasecar);
 
@@ -390,7 +389,7 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
                     var j = 0;
                     for (var matriculas of datosMatriculas.data) {
                         j = j + 1
-                        console.log("Carrera " + carrera.hmbdbasecar + "#  " + i + " Matricula " + matriculas.strCedula + " " + j);
+                     
                  
                         var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
                 
@@ -530,23 +529,23 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
 
 
 async function FuncionReporteExcelMatriculasNivelacionTodasInstitucional(periodo, estado) {
-    console.log("Aqui")
+
     try {
         var listadoNomina = [];
         var ListadoCarrera = await modeloprocesocarreras.ListadoHomologacionesCarreraPeriodo("OAS_Master", periodo);
-        console.log("ListadoCarrera.length")
-        console.log(ListadoCarrera.count)
+      
+
         var i = 0;
         for (var carrera of ListadoCarrera.data) {
             i = i + 1
-            console.log("Carrera " + carrera.hmbdbaseniv + " " + i);
+     
             var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodos(carrera.hmbdbaseniv, periodo, estado);
             var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBase(carrera.hmbdbaseniv);
             if (datosMatriculas.count > 0) {
                 var j = 0;
                 for (var matriculas of datosMatriculas.data) {
                     j = j + 1
-                    console.log("Carrera " + carrera.hmbdbaseniv + "#  " + i + " Matricula " + matriculas.strCedula + " " + j);
+           
                     var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
                     if (ObtenerPersona.data.success) {
                         if (ObtenerPersona.data.listado.length > 0) {
@@ -670,8 +669,6 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucional(periodo
     }
 }
 async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransaccion(periodo, estado) {
-
-   console.log("Aqui Transaxcc")
             const pool = await iniciarMasterPool("OAS_Master");
             await pool.connect();
             const transaction = await iniciarMasterTransaccion(pool);
@@ -679,12 +676,10 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
             try {
         var listadoNomina = [];
         var ListadoCarrera = await modeloprocesocarreras.ListadoHomologacionesCarreraPeriodoTransaccion(transaction, "OAS_Master", periodo);
-        console.log(ListadoCarrera.count)
         var i = 0;
         for (var carrera of ListadoCarrera.data) {
     
                 i = i + 1
-                console.log("Carrera " + carrera.hmbdbaseniv + " " + i);
                 var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbaseniv, periodo, estado);
                 var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBaseTransaccion(transaction,"OAS_Master",carrera.hmbdbaseniv);
 
@@ -692,7 +687,6 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                     var j = 0;
                     for (var matriculas of datosMatriculas.data) {
                         j = j + 1
-                        console.log("Carrera " + carrera.hmbdbaseniv + "#  " + i + " Matricula " + matriculas.strCedula + " " + j);
                  
                         var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
                 
@@ -840,10 +834,10 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinal(periodo) {
         var DatosEstudiantes = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), { httpsAgent: agent });
         var ObjEstudianteMatriculadoNivelacion = await modeloprocesocarreras.EncontrarEstudianteMatriculado( estudiante.c_dbnivelacion, estudiante.c_periodo, estudiante.c_identificacion);
            i = i + 1
-                console.log("Carrera " + DatosCarreraNivelacion.data.Carrera.carNombre + " " + estudiante.c_dbnivelacion + "# " +i);
+          
         var ObjEstudianteMatriculadoCarrera = await modeloprocesocarreras.EncontrarEstudianteMatriculado( estudiante.c_dbcarrera, estudiante.c_periodo, estudiante.c_identificacion);
            if (ObjEstudianteMatriculadoCarrera.count > 0) {
-              console.log("CARRERA")
+       
             var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBase(estudiante.c_dbcarrera);
         
             var listadoRetiros = await modeloreporteexcelcarrera.ProcesoListadoRetirosEstudiantePeriodo( estudiante.c_dbcarrera, periodo, estudiante.c_identificacion, ObjEstudianteMatriculadoCarrera.data[0].strCodEstud);
@@ -947,8 +941,7 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinal(periodo) {
             listadoNomina.push(estudiante)
            // return base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
             }
-            if (ObjEstudianteMatriculadoNivelacion.count > 0) {
-                console.log("NIVELACION")
+            if (ObjEstudianteMatriculadoNivelacion.count > 0) {//Nivelacion Ninguna
                 var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBase(estudiante.c_dbnivelacion);
   
                 var listadoRetiros = await modeloreporteexcelcarrera.ProcesoListadoRetirosEstudiantePeriodo( estudiante.c_dbnivelacion, periodo, estudiante.c_identificacion, ObjEstudianteMatriculadoNivelacion.data[0].strCodEstud);
@@ -1052,7 +1045,6 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinal(periodo) {
                // return base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
             }
            if (ObjEstudianteMatriculadoNivelacion.count == 0 && ObjEstudianteMatriculadoCarrera.count == 0) {
-                console.log("NNINGUNA")
                 var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBase(estudiante.c_dbcarrera);
                 var DatosNivelacion = await modeloprocesoCupo.ObtenerDatosBase(estudiante.c_dbnivelacion);
          
@@ -1149,10 +1141,9 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
         var DatosEstudiantes = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), { httpsAgent: agent });
         var ObjEstudianteMatriculadoNivelacion = await modeloprocesocarreras.EncontrarEstudianteMatriculadoTransaccion(transaction, estudiante.c_dbnivelacion, estudiante.c_periodo, estudiante.c_identificacion);
            i = i + 1
-                console.log("Carrera " + DatosCarreraNivelacion.data.Carrera.carNombre + " " + estudiante.c_dbnivelacion + "# " +i);
+
         var ObjEstudianteMatriculadoCarrera = await modeloprocesocarreras.EncontrarEstudianteMatriculadoTransaccion(transaction, estudiante.c_dbcarrera, estudiante.c_periodo, estudiante.c_identificacion);
            if (ObjEstudianteMatriculadoCarrera.count > 0) {
-              console.log("CARRERA")
             var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBase(estudiante.c_dbcarrera);
         
             var listadoRetiros = await modeloreporteexcelcarrera.ProcesoListadoRetirosEstudiantePeriodoTrnsaccion(transaction, estudiante.c_dbcarrera, periodo, estudiante.c_identificacion, ObjEstudianteMatriculadoCarrera.data[0].strCodEstud);
@@ -1257,7 +1248,6 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
            // return base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
             }
             if (ObjEstudianteMatriculadoNivelacion.count > 0) {
-                console.log("NIVELACION")
                 var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBaseTransaccion(transaction,'OAS_Master',estudiante.c_dbnivelacion);
   
                 var listadoRetiros = await modeloreporteexcelcarrera.ProcesoListadoRetirosEstudiantePeriodoTrnsaccion(transaction, estudiante.c_dbnivelacion, periodo, estudiante.c_identificacion, ObjEstudianteMatriculadoNivelacion.data[0].strCodEstud);
@@ -1358,7 +1348,6 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
                // return base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
             }
            if (ObjEstudianteMatriculadoNivelacion.count == 0 && ObjEstudianteMatriculadoCarrera.count == 0) {
-                console.log("NNINGUNA")
                 var DatosCarreras = await modeloprocesoCupo.ObtenerDatosBaseTransaccion(transaction,'OAS_Master',estudiante.c_dbcarrera);
                 var DatosNivelacion = await modeloprocesoCupo.ObtenerDatosBaseTransaccion(transaction,'OAS_Master',estudiante.c_dbnivelacion);
          

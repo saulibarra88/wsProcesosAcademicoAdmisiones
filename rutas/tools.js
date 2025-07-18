@@ -298,7 +298,7 @@ module.exports.FormatoCalificacionesRecuperacion=function (text) {
      throw new Error("El texto no tiene el formato esperado o contiene valores nulos");
   }
   validCount++;
-  console.log(`Registros válidos procesados: ${validCount}`);
+ 
  
   
   return {
