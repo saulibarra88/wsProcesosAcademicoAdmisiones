@@ -698,7 +698,7 @@ module.exports.EliminarInscripcionSolicitudEstuidante = async function (carrera,
    const sentencia = ` EXEC [${carrera}].[dbo].[getrecordpensumvigenteDecimales] @CodEstud = '${codEstudiante}', @CodNivel = ${nivel} `;
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
