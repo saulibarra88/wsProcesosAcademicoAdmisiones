@@ -45,7 +45,7 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
         var listadoAsignaturasSinHomologadasAprobadas = []
         var listadoBecas = []
         var ListadoNiveles = []
-        var foto = ''
+      var foto = ''
         const baseUrl = "https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/";
         const photoUrl = `https://apigestioncupos.espoch.edu.ec/wsservicioscupos/procesosdinardap/ObtenerFotoPersona/`;
         const graduationUrl = `https://apisustentacion.espoch.edu.ec/rutagrado/seguimientoTitulacion/${carrera}/${cedula}`;
@@ -66,7 +66,7 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
         // Procesar titulación
         const Titulacion = await processGraduationData(DatosTitulacion);
         // Procesar becas
-        listadoBecas = DatosBecas.data.resultado ? DatosBecas.data.resBecas : [];
+       listadoBecas = DatosBecas.data.resultado ? DatosBecas.data.resBecas : [];
         var RecordAcademicoNivel = await funcionesmodelomovilidad.ObtnerRecodAcademicoporNivel(carrera, datosEstuidanteUltima.data[0].strCodigo, 15);
         var VerificarHomologacion = await RecordAcademicoNivel.data.find(item => item.Tipo === 2) !== undefined
         if (VerificarHomologacion) {//Proceso Con Asignaturas Homologacion Carreras
@@ -76,8 +76,7 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
         }
         var Base64 = ''
         Base64 = await funcionesreportemovilidad.PdfCurriculumEstuidantilConsultor(cedula, ObtenerPersona.data.listado[0], datosCarrera.data[0], InformacionListado, foto, Titulacion, listadoBecas, datosEstuidanteUltima.data[0].strCodigo)
-     return Base64;
-   //  return InformacionListado;
+        return Base64;
     } catch (error) {
         console.log(error);
         return { blProceso: false, mensaje: "Error :" + error }
@@ -85,7 +84,6 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
     }
 }
 
-// Funciones auxiliares
 async function procesarConHomologacion(RecordAcademicoNivel, carrera, datosEstuidanteUltima, cedula) {
     var listadoAsignaturasSinHomologadasAprobadas = []
     var listadoAsignaturaProcesada = []
@@ -93,8 +91,7 @@ async function procesarConHomologacion(RecordAcademicoNivel, carrera, datosEstui
     const { listadoAsignaturasSinHomologadasAprobadas2, listadoAsignaturaProcesada2 } = await procesarAsignaturaSinHomologarAprobadas(ListadoAsignaturas);
     listadoAsignaturasSinHomologadasAprobadas = listadoAsignaturasSinHomologadasAprobadas2
     listadoAsignaturaProcesada = listadoAsignaturaProcesada2
-    //Proceso para las asignaturas con homologacionees
-   var ListadoNiveles = await funcionesmodelomovilidad.ObtenerNivelesMallaDadoPeriodo(carrera, datosEstuidanteUltima.strCodPeriodo);
+    var ListadoNiveles = await funcionesmodelomovilidad.ObtenerNivelesMallaDadoPeriodo(carrera, datosEstuidanteUltima.strCodPeriodo);
     for (var objniveles of ListadoNiveles.data) {
         var MallaAsignatura = await funcionesmodelomovilidad.MallCarreraASignaturasporNivelPeriodo(carrera, datosEstuidanteUltima.strCodPeriodo, objniveles.strCodNivel);
         if (MallaAsignatura.count > 0) {
@@ -122,8 +119,6 @@ async function procesarConHomologacion(RecordAcademicoNivel, carrera, datosEstui
 
                 } else {//Proceso Homologacioones de Asignaturas Codigo Actual Malla pero sin homologar tipo 1 (1-0)
                     const ASignaturaProcesadaCasoEspecial = await procesarAsignaturaCasoHomlogacionEspecial(asignaturaMalla, datosasignatura, listadoAsignaturasSinHomologadasAprobadas, listadoAsignaturaProcesada)
-
-
                     if (ASignaturaProcesadaCasoEspecial.procesada) {
                         listadoAsignaturaProcesada.push(ASignaturaProcesadaCasoEspecial)
                     }
@@ -132,6 +127,7 @@ async function procesarConHomologacion(RecordAcademicoNivel, carrera, datosEstui
         }
 
     }
+
     var listadoProcesado = await procesarAsignaturanoTieneAprobarQuitar(carrera, datosEstuidanteUltima.strCodigo, listadoAsignaturaProcesada, ListadoNiveles.data)
     return listadoProcesado;
 }
@@ -270,7 +266,7 @@ async function procesarAsignaturasHomologadas(registrosAcademicos) {
         } else {//Asignaturas SIN Homologar
             datosrecord.nombretipo = 'OBLIGATORIA'
             datosrecord.nombrearea = ''
-            datosrecord.CodigoMateriaNueva = datosrecord.Tipo == 1?'':datosrecord.CodigoMateriaNueva,
+            datosrecord.CodigoMateriaNueva = datosrecord.Tipo == 1 ? '' : datosrecord.CodigoMateriaNueva,
                 listadoAsignaturasSinHomologadas.push(datosrecord)
         }
     }
@@ -306,14 +302,14 @@ async function procesarAsignaturaCasoHomlogacionEspecial(asignaturaMalla, datosa
     var objtoEncontradoSinHomlogaciones = await funcionestools.EncontraObjetodentroListadoRecordAcademico(datosasignatura.strCodMateria, listadoAsignaturasSinHomologadasAprobadas, 'CodigoMateriaAnterior')
 
     if (objtoEncontradoSinHomlogaciones != null) {
-        var objtoEncontradoProcesadas = await funcionestools.EncontraObjetodentroListadoRecordAcademico(datosasignatura.strCodMateria, listadoAsignaturaProcesada, 'CodigoMateriaAnterior')
+        var objtoEncontradoProcesadas = await funcionestools.EncontraObjetodentroListadoRecordAcademicoNoAprobadas(datosasignatura.strCodMateria, listadoAsignaturaProcesada, 'CodigoMateriaAnterior')
         if (objtoEncontradoProcesadas == null) {
             if (objtoEncontradoSinHomlogaciones.Equivalencia == 'A' || objtoEncontradoSinHomlogaciones.Equivalencia == 'E' || objtoEncontradoSinHomlogaciones.Equivalencia == 'H' || objtoEncontradoSinHomlogaciones.Equivalencia == 'RC' || objtoEncontradoSinHomlogaciones.Equivalencia == 'AVC' || objtoEncontradoSinHomlogaciones.Equivalencia == 'C') {
                 asignaturaMalla.estadoasignatura = 'APROBADA'
                 asignaturaMalla.CodigoMateriaAnterior = objtoEncontradoSinHomlogaciones.CodigoMateriaAnterior
                 asignaturaMalla.NombreMateriaAnterior = objtoEncontradoSinHomlogaciones.NombreMateriaAnterior
                 asignaturaMalla.nombrehomologacion = objtoEncontradoSinHomlogaciones.nombrehomologacion
-                asignaturaMalla.CodigoMateriaNueva =  ''
+                asignaturaMalla.CodigoMateriaNueva = ''
                 asignaturaMalla.procesada = true
             } else {
                 asignaturaMalla.estadoasignatura = 'POR APROBAR'
@@ -342,18 +338,24 @@ async function procesarAsignaturaCasoHomlogacionNormales(objtoEncontrado, asigna
         asignaturaMalla.CodigoMateriaNueva = objtoEncontrado.CodigoMateriaNueva
     } else {
         var objtoEncontradoSinHomlogaciones = await funcionestools.EncontraObjetodentroListadoRecordAcademico(datosasignatura.strCodMateria, listadoAsignaturasSinHomologadasAprobadas, 'CodigoMateriaAnterior')
-        if (objtoEncontradoSinHomlogaciones.Equivalencia == 'A' || objtoEncontradoSinHomlogaciones.Equivalencia == 'E' || objtoEncontradoSinHomlogaciones.Equivalencia == 'H' || objtoEncontradoSinHomlogaciones.Equivalencia == 'RC' || objtoEncontradoSinHomlogaciones.Equivalencia == 'AVC' || objtoEncontradoSinHomlogaciones.Equivalencia == 'C') {
+        if (objtoEncontradoSinHomlogaciones != null) {
+            if (objtoEncontradoSinHomlogaciones.Equivalencia == 'A' || objtoEncontradoSinHomlogaciones.Equivalencia == 'E' || objtoEncontradoSinHomlogaciones.Equivalencia == 'H' || objtoEncontradoSinHomlogaciones.Equivalencia == 'RC' || objtoEncontradoSinHomlogaciones.Equivalencia == 'AVC' || objtoEncontradoSinHomlogaciones.Equivalencia == 'C') {
 
-            asignaturaMalla.estadoasignatura = 'APROBADA'
-            asignaturaMalla.CodigoMateriaAnterior = objtoEncontradoSinHomlogaciones.CodigoMateriaAnterior
-            asignaturaMalla.NombreMateriaAnterior = objtoEncontradoSinHomlogaciones.NombreMateriaAnterior
-            asignaturaMalla.nombrehomologacion = objtoEncontradoSinHomlogaciones.nombrehomologacion
-     
-            asignaturaMalla.CodigoMateriaNueva = ''
+                asignaturaMalla.estadoasignatura = 'APROBADA'
+                asignaturaMalla.CodigoMateriaAnterior = objtoEncontradoSinHomlogaciones.CodigoMateriaAnterior
+                asignaturaMalla.NombreMateriaAnterior = objtoEncontradoSinHomlogaciones.NombreMateriaAnterior
+                asignaturaMalla.nombrehomologacion = objtoEncontradoSinHomlogaciones.nombrehomologacion
+
+                asignaturaMalla.CodigoMateriaNueva = ''
+            } else {
+                asignaturaMalla.estadoasignatura = 'POR APROBAR'
+                asignaturaMalla.CodigoMateriaNueva = ''
+            }
         } else {
             asignaturaMalla.estadoasignatura = 'POR APROBAR'
             asignaturaMalla.CodigoMateriaNueva = ''
         }
+
 
 
     }
@@ -361,28 +363,27 @@ async function procesarAsignaturaCasoHomlogacionNormales(objtoEncontrado, asigna
 
 }
 async function procesarAsignaturaSinHomologarAprobadas(ListadoAsignaturas) {
-    console.log(ListadoAsignaturas.noHomologadas)
     var listadoAsignaturasSinHomologadasAprobadas2 = []
+    var listadoAsignaturasSinHomologadas = []
+    listadoAsignaturasSinHomologadas = await funcionestools.OrdenarRecordAcademicoFechas(ListadoAsignaturas.noHomologadas)
+
     var listadoAsignaturaProcesada2 = []
-       for (let i = 0; i < ListadoAsignaturas.noHomologadas.length; i++) {
-        const asignaturasinhomologar2 = ListadoAsignaturas.noHomologadas[i];
-
-     //   console.log( i+1,asignaturasinhomologar2.CodigoMateriaAnterior,asignaturasinhomologar2.NombreMateriaAnterior)
+    for (var i = 0; i < listadoAsignaturasSinHomologadas.length; i++) {
+       var  asignaturasinhomologar2 =await listadoAsignaturasSinHomologadas[i];
         var objtoEncontradoAgrgar = await funcionestools.EncontraObjetodentroEnunListado(asignaturasinhomologar2.CodigoMateriaAnterior, listadoAsignaturasSinHomologadasAprobadas2, 'CodigoMateriaAnterior')
-
-        if (objtoEncontradoAgrgar == null) {
-            var objtoEncontrado = await funcionestools.EncontraObjetodentroListadoRecordAcademico(asignaturasinhomologar2.CodigoMateriaAnterior, ListadoAsignaturas.noHomologadas, 'CodigoMateriaAnterior')
-            if (objtoEncontrado != null) {
-
-
-                if (objtoEncontrado.Equivalencia == 'A' || objtoEncontrado.Equivalencia == 'E' || objtoEncontrado.Equivalencia == 'H' || objtoEncontrado.Equivalencia == 'RC' || objtoEncontrado.Equivalencia == 'AVC' || objtoEncontrado.Equivalencia == 'C') {
+        if (objtoEncontradoAgrgar === null) {
+            var objtoEncontrado = await funcionestools.EncontraObjetodentroListadoRecordAcademicoNoAprobadas(asignaturasinhomologar2.CodigoMateriaAnterior, ListadoAsignaturas.noHomologadas, 'CodigoMateriaAnterior')
+            if (objtoEncontrado !== null) {
+                if (objtoEncontrado.Equivalencia === 'A' || objtoEncontrado.Equivalencia === 'E' || objtoEncontrado.Equivalencia === 'H' || objtoEncontrado.Equivalencia === 'RC' || objtoEncontrado.Equivalencia === 'AVC' || objtoEncontrado.Equivalencia === 'C') {
                     asignaturasinhomologar2.estadoasignatura = 'APROBADA'
 
                     listadoAsignaturasSinHomologadasAprobadas2.push(asignaturasinhomologar2)
                     listadoAsignaturaProcesada2.push(asignaturasinhomologar2)
+
                 }
             }
         }
+
     }
     return { listadoAsignaturasSinHomologadasAprobadas2, listadoAsignaturaProcesada2 }
 }
@@ -412,5 +413,31 @@ function ordenarListadoPorAtributo(listado, atributo, ascendente = true) {
 
     // Ordenar y retornar
     return copiaListado.sort(comparador);
+}
+
+async function procesarAsignaturaSinHomologarAprobadasRevision(ListadoAsignaturas) {
+    var listadoAsignaturasSinHomologadasAprobadas2 = []
+    var listadoAsignaturasSinHomologadas = []
+    listadoAsignaturasSinHomologadas = await funcionestools.OrdenarRecordAcademicoFechas(ListadoAsignaturas.noHomologadas)
+
+    var listadoAsignaturaProcesada2 = []
+    for (var i = 0; i < listadoAsignaturasSinHomologadas.length; i++) {
+       var  asignaturasinhomologar2 =await listadoAsignaturasSinHomologadas[i];
+        var objtoEncontradoAgrgar = await funcionestools.EncontraObjetodentroEnunListado(asignaturasinhomologar2.CodigoMateriaAnterior, listadoAsignaturasSinHomologadasAprobadas2, 'CodigoMateriaAnterior')
+        if (objtoEncontradoAgrgar === null) {
+            var objtoEncontrado = await funcionestools.EncontraObjetodentroListadoRecordAcademicoNoAprobadas(asignaturasinhomologar2.CodigoMateriaAnterior, ListadoAsignaturas.noHomologadas, 'CodigoMateriaAnterior')
+            if (objtoEncontrado !== null) {
+                if (objtoEncontrado.Equivalencia === 'A' || objtoEncontrado.Equivalencia === 'E' || objtoEncontrado.Equivalencia === 'H' || objtoEncontrado.Equivalencia === 'RC' || objtoEncontrado.Equivalencia === 'AVC' || objtoEncontrado.Equivalencia === 'C') {
+                    asignaturasinhomologar2.estadoasignatura = 'APROBADA'
+
+                    listadoAsignaturasSinHomologadasAprobadas2.push(asignaturasinhomologar2)
+                    listadoAsignaturaProcesada2.push(asignaturasinhomologar2)
+
+                }
+            }
+        }
+
+    }
+    return { listadoAsignaturasSinHomologadasAprobadas2, listadoAsignaturaProcesada2 }
 }
 

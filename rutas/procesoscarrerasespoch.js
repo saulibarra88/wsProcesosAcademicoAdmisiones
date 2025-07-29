@@ -191,8 +191,6 @@ module.exports.pdfPerdidaAsignaturasEstudiantes = async function (carrera, perio
                 var CantidadMatriculadosAsignatura = await modeloprocesocarreras.AsignaturasMatriculadaPeriodoCantidad(carrera, periodo, asignaturas.strCodMateria);
                 var datos = await modeloprocesocarreras.CalculosEstuidantesPorAsignaturas(carrera, periodo, asignaturas.strCodMateria);
                 var datosRetiros = await modeloprocesocarreras.RetirosAsignaturasNormalesCarrerasListado(carrera, periodo, asignaturas.strCodMateria);
-                console.log("datos")
-                console.log(datos)
                 if(CantidadMatriculadosAsignatura.data[0].Segunda>0 || CantidadMatriculadosAsignatura.data[0].Tercera){
                     var Repitencia= Number(CantidadMatriculadosAsignatura.data[0].Segunda)+ Number(CantidadMatriculadosAsignatura.data[0].Tercera) 
                 }

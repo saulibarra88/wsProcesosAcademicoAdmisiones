@@ -9,6 +9,7 @@ const pLimit = require('p-limit');
 const limit = pLimit(10);
 const { closeAllPools } = require('./../config/dbPoolManager');
 const modeloreporteexcelcarrera = require('../procesos/reportesexcelcarreras');
+const modelocentralizada = require('../modelo/centralizada');
 const agent = new https.Agent({
     rejectUnauthorized: false,
     // other options if needed
@@ -40,6 +41,30 @@ module.exports.ProcesoReporteExcelMatriculasCarrerasTodasInstitucionales = async
 module.exports.ProcesoReporteExcelMatriculasNivelacionInstitucional = async function (periodo, estado) {
     try {
         var resultado = await FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransaccion(periodo, estado);
+        return { resultado }
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+
+module.exports.ProcesoFotoMatriculasNivelacionInstitucional = async function (periodo) {
+    try {
+        var resultado = await FuncionFotoMatriculasNivelacionTodasInstitucionalTransaccion(periodo);
+        return { resultado }
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+
+module.exports.ProcesoFinancieroDatos = async function () {
+    try {
+        var resultado = await FuncionFinancieroDatos();
         return { resultado }
 
     } catch (error) {
@@ -656,6 +681,76 @@ async function FuncionEstudiantesRetirosPeriodoCarreraCedula( dbCarrera,periodo,
 
 }
 
+
+async function FuncionFotoMatriculasNivelacionTodasInstitucionalTransaccion(periodo) {
+    try {
+        const listadoNomina = [];
+        const ListadoCarrera = await modeloprocesocarreras.ListadoHomologacionesCarreraPeriodo("OAS_Master", periodo);
+        const limitHTTP = pLimit(10); // Limita a 10 peticiones simultáneas
+        const limitSQL = pLimit(10);
+        await Promise.all(ListadoCarrera.data.map(async (carrera, i) => {
+
+            const [datosMatriculas, DatosCarreras] = await Promise.all([
+                modeloprocesocarreras.ListadoMatriculasCarrerasPeriodos(carrera.hmbdbasecar, periodo, 'DEF'),
+                modeloprocesocarreras.ObtenerDatosBase("OAS_Master", carrera.hmbdbasecar)
+            ]);
+
+            if (datosMatriculas.count === 0) return;
+            await Promise.all(datosMatriculas.data.map((matricula, j) =>
+                limitSQL(async () => {
+                    const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
+                    const personaFoto = limitHTTP(() => axios.get(`https://apigestioncupos.espoch.edu.ec/wsservicioscupos/procesosdinardap/ObtenerFotoPersona/${cedulaSinGuion}`, { httpsAgent: agent }));
+                })
+            ));
+
+        }));
+
+      
+console.log('FInalizacion')
+        return 'OK';
+    } catch (err) {
+        console.error(err);
+        return 'ERROR' + err;
+    } finally {
+        await closeAllPools();
+    }
+}
+
+async function FuncionFinancieroDatos() {
+    try {
+        const listadoNomina = [];
+        const ListadoCarrera = await modelocentralizada.ListadoFinanciero();
+        const limitHTTP = pLimit(10); // Limita a 10 peticiones simultáneas
+        const limitSQL = pLimit(10);
+       // console.log(ListadoCarrera)
+        await Promise.all(ListadoCarrera.data.map(async (info, i) => {
+
+            const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.stridentificacioncomprador}`, { httpsAgent: agent }));
+              const [personaResponse] = await Promise.all([ personaPromise.catch(() => null), ]);
+          
+            const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
+              const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
+                        info.per_emailAlternativo= safe(persona?.per_emailAlternativo);
+                        info.dir_callePrincipal= safe(persona?.dir_callePrincipal);
+                        info.per_email= safe(persona?.per_email);
+                        info.per_telefonoCelular= safe(persona?.per_telefonoCelular);
+                  
+            listadoNomina.push(info);
+          
+          
+
+        }));
+
+        const base64 = await reportescarreras.ExcelReporteFinanciero(listadoNomina);
+
+        return listadoNomina;
+    } catch (err) {
+        console.error(err);
+        return 'ERROR' + err;
+    } finally {
+        await closeAllPools();
+    }
+}
 
 
 

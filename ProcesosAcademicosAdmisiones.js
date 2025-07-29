@@ -68,7 +68,7 @@ app.get('/', (req, res) => {
 });
 
 var options = {
-    key: fs.readFileSync('Certificados/STAR_espoch_edu_ec.key'),
+     key: fs.readFileSync('Certificados/STAR_espoch_edu_ec.key'),
     cert: fs.readFileSync('Certificados/STAR_espoch_edu_ec.crt'),
     ca: fs.readFileSync('Certificados/STAR_espoch_edu_ec.crt')
 };

@@ -4,6 +4,7 @@ const sql = require('pg')
 var os = require('os');
 const { Console } = require('console');
 const { Client } = require('pg');
+const { execCentralizadaMejorada,execCentralizadaTransaccionMejorada } = require('./../config/execSQLCentralizadaMejorada.helper');
 const { execCentralizada,execCentralizadaTransaccion } = require('./../config/execSQLCentralizada.helper');
 
 
@@ -25,7 +26,23 @@ module.exports.obtenerdocumento = async function (cedula) {
   
   }
 
-
+module.exports.ListadoFinanciero = async function () {
+    var sentencia;
+    sentencia = "SELECT * FROM factura.infofactura WHERE dtfechaemision>='2022-01-01' AND dtfechaemision<='2023-12-29' and strestadosri='AUTORIZADO' and blnnotacredito=false"
+   console.log(sentencia)
+    try {
+  
+      if (sentencia != "") {
+        const resp = await execCentralizadaMejorada(sentencia, "OK", "OK");
+        return (resp)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  
+  }
 
 
 

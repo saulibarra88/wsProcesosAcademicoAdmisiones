@@ -114,4 +114,45 @@ router.get('/ListadoEstudiantesPeriodo/:carrera/:periodo',async (req, res) => {
     }
  
 });
+
+router.get('/FotosNivelacionMatriculas/:periodo',async (req, res) => {
+    const periodo = req.params.periodo;
+    try {
+        var respuesta=await  pruebasInformacion.ProcesoFotoMatriculasNivelacionInstitucional(periodo);
+        
+        res.json({
+            success: true,
+            Informacion:  respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
+router.get('/FinancieroProcesoDatos/',async (req, res) => {
+    try {
+        var respuesta=await  pruebasInformacion.ProcesoFinancieroDatos();
+        
+        res.json({
+            success: true,
+            Informacion:  respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

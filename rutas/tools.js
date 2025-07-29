@@ -369,7 +369,7 @@ module.exports.VerificacionPeriodoTresCalificaciones=async function(strCodigoPer
 module.exports.EncontraObjetodentroListadoRecordAcademico = async function (valorBuscado, listadoCarreras, atributo) {
    if (!Array.isArray(listadoCarreras)) return null;
 
-  // Ordenar por fechaInicioperiodo de forma descendente
+  // Ordenar por fecha Inicioperiodo de forma descendente
   const listadoOrdenado = listadoCarreras.sort((a, b) => {
     const fechaA = new Date(a.FechaInicPer1);
     const fechaB = new Date(b.FechaInicPer1);
@@ -377,18 +377,33 @@ module.exports.EncontraObjetodentroListadoRecordAcademico = async function (valo
   });
 
   // Buscar el valor dentro del listado ordenado
-  const resultado = listadoOrdenado.find(carrera =>
-    String(carrera?.[atributo] || '').toUpperCase() === valorBuscado.toUpperCase()
-  );
+ const resultado = listadoOrdenado.find(carrera => String(carrera?.[atributo] || '') === String(valorBuscado) );
+ //  const resultado = listadoCarreras.some(carrera => String(carrera?.[atributo]|| '') === valorBuscado);
+  return resultado || null;
+};
+module.exports.OrdenarRecordAcademicoFechas= async function (listadoCarreras) {
+   if (!Array.isArray(listadoCarreras)) return null;
 
+  // Ordenar por fecha Inicioperiodo de forma descendente
+  const listadoOrdenado = listadoCarreras.sort((a, b) => {
+    const fechaA = new Date(a.FechaInicPer1);
+    const fechaB = new Date(b.FechaInicPer1);
+    return fechaB - fechaA; // Descendente
+  });
+
+  return listadoOrdenado || null;
+};
+module.exports.EncontraObjetodentroListadoRecordAcademicoNoAprobadas = async function (valorBuscado, listadoCarreras, atributo) {
+   if (!Array.isArray(listadoCarreras)) return null;
+
+   // Buscar el valor dentro del listado ordenado
+ const resultado = listadoCarreras.find(carrera => String(carrera?.[atributo] || '') === String(valorBuscado) );
   return resultado || null;
 };
 module.exports.EncontraObjetodentroEnunListado = async function (valorBuscado, listadoCarreras, atributo) {
    if (!Array.isArray(listadoCarreras)) return null;
   // Buscar el valor dentro del listado ordenado
-  const resultado = listadoCarreras.find(carrera =>
-    String(carrera?.[atributo] || '').toUpperCase() === valorBuscado.toUpperCase()
-  );
+  const resultado = listadoCarreras.find(carrera => String(carrera?.[atributo] || '') === String(valorBuscado) );
 
   return resultado || null;
 };
