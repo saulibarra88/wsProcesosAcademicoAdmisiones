@@ -790,4 +790,23 @@ router.get('/CurriculumEstuidanteConsultor/:carrera/:cedula/',async (req, res) =
     }
  
 });
+router.post('/IngresoDocumentosSolicitud', async (req, res) => {
+    try {
+        const { listadodocumentoSolicitud } = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesoIngresoDocumentoSolicitud(listadodocumentoSolicitud);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
 module.exports = router;

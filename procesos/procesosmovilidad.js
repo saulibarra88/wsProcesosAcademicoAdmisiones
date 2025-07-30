@@ -323,6 +323,16 @@ module.exports.ProcesoGeneracionCurriculumEstuidante = async function (carrera, 
         console.log(error);
     }
 }
+module.exports.ProcesoIngresoDocumentoSolicitud = async function (listadoDocumentos) {
+
+    try {
+        var resultado = await FuncionInsertarDocumentosSolicitud(listadoDocumentos);
+
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel) {
     try {
@@ -484,6 +494,20 @@ async function FuncionInsertarSolicitudMovilidadEstudiante(solicitud, listadoDoc
     }
 }
 
+
+async function FuncionInsertarDocumentosSolicitud(listadoDocumentos) {
+    try {
+            for (var documento of listadoDocumentos) {
+                var IngresoDocumento = await funcionesmodelomovilidad.InsertarDocumentosMovilidad("OAS_Master", documento);
+            }
+        return 'OK';
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
 async function FuncionListadoSolicitudesMovilidadPorEstado(estado, periodo) {
     try {
         var respuesta = {};
