@@ -2,6 +2,8 @@
 const { execDinamico, execDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { execMaster, execMasterTransaccion } = require("./../config/execSQLMaster.helper");
 const { execMasterMejorado} = require("./../config/execSQLMasterMejorado.helper");
+const { execPagos} = require("./../config/execSQLPagos.helper");
+const { execPagosMejorado} = require("./../config/execSQLPagosMejorado.helper");
 const CONFIGACADEMICO = require('./../config/databaseDinamico');
 const sql = require("mssql");
 var os = require('os');
@@ -28,7 +30,7 @@ const path = require('path');
     sentencia = "select *,fi.strDescripcion as descripcioninscripcion,n.strDescripcion as descripcionnivel,em.strDescripcion as descripcionestado from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud inner join [" + carrera + "].[dbo].[Sexos] as sex on sex.strCodigo=e.strCodSexo inner join [" + carrera + "].[dbo].[Formas de Inscripcion] as fi on fi.strCodigo=e.strFormaIns inner join [" + carrera + "].[dbo].[Niveles] as n on n.strCodigo=m.strCodNivel inner join [" + carrera + "].[dbo].[Estados_Matriculas] as em on em.strCodigo=m.strCodEstado where m.[strCodPeriodo]='" + periodo + "' and m.strCodEstado='" + estado + "' order by n.strCodigo desc ,e.strApellidos asc";
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -60,7 +62,7 @@ const path = require('path');
     sentencia="SELECT SUM(CASE WHEN bytNumMat = 1 THEN 1 ELSE 0 END) AS Primera, SUM(CASE WHEN bytNumMat = 2 THEN 1 ELSE 0 END) AS Segunda, SUM(CASE WHEN bytNumMat = 3 THEN 1 ELSE 0 END) AS Tercera FROM [" + carrera + "].[dbo].[Materias_Asignadas] WHERE sintCodMatricula = '" + intmatricula + "' AND strCodPeriodo ='" + periodo + "' AND (strObservaciones IS NULL OR (strObservaciones NOT LIKE '%VALIDADA%' AND strObservaciones NOT LIKE '%RETIRADO%'));"
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
 
      return (sqlConsulta)
     } else {
@@ -77,7 +79,7 @@ const path = require('path');
 
     try {
     if (sentencia != "") {
-     const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -127,7 +129,7 @@ const path = require('path');
    
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execPagos(carrera,sentencia, "OK","OK");
     
      return (sqlConsulta)
     } else {
@@ -144,7 +146,7 @@ const path = require('path');
  
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execMasterMejorado(bddatos,sentencia, "OK","OK");
+    const sqlConsulta = await execMaster(bddatos,sentencia, "OK","OK");
   
    return (sqlConsulta)
   } else {

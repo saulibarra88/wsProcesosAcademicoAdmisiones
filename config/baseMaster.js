@@ -10,13 +10,15 @@ module.exports = {
   "database":process.env.DB_NAMEMASTER,
   "portNumber": process.env.DB_PORTMASTER,
   pool: {
-    max: 9000000,
-    min: 2,
-    idleTimeoutMillis: 30000,  // Reducir el tiempo de espera en milisegundos
+   max: 300,
+    min: 10,
+    idleTimeoutMillis: 30000 // Reducir el tiempo de espera en milisegundos
   },
   options: {
     encrypt: false, // for azure
-    trustServerCertificate: false
+    trustServerCertificate: false,
+      appName: 'PROCESOSACADEMICOS',
+    enableArithAbort: true,
   }
 };
 

@@ -176,9 +176,7 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
 
         console.error(err);
         return 'ERROR' + err;
-    } finally {
-        await closeAllPools();
-    }
+    } 
 
 
 }
