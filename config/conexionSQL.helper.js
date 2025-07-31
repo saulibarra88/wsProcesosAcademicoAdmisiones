@@ -16,7 +16,7 @@ const sqlConfig = {
   options: {
     encrypt: false, // for azure
     trustServerCertificate: true,
-    appName: 'PROCESOSACADEMICOS',
+    appName: 'SERVICIOSPROCESOSACADEMICOS',
     enableArithAbort: true,
   }
 };

@@ -48,8 +48,8 @@ var resultado = await FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTra
 
 module.exports.ProcesoReporteExcelMatriculasNivelacionInstitucional = async function (periodo, estado) {
     try {
-      //  var resultado = await FuncionReporteExcelMatriculasNivelacionTodasInstitucional(periodo, estado);
-        var resultado = await FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransaccion(periodo, estado);
+  var resultado = await FuncionReporteExcelMatriculasNivelacionTodasInstitucional(periodo, estado);
+       // var resultado = await FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransaccion(periodo, estado);
         return { resultado }
 
     } catch (error) {
@@ -204,7 +204,6 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
                             matriculas.valorpago = 0
                         }
                         listadoNomina.push(matriculas)
-                      
                     }
 
                 }
@@ -223,7 +222,7 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
 
     
 }
-/*async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, estado) {
+async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, estado) {
     console.log("Aqui")
     try {
         var listadoNomina = [];
@@ -363,7 +362,7 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
         console.log(err)
         return { "error: ": err }
     }
-}*/
+}
 
 
 

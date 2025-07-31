@@ -47,7 +47,7 @@ const execPagosMejorado = async (carrera, SQL, OK = "", msgVacio = "", msgError 
       const result = await conn.query(SQL);
       return buildResponse(result, OK, msgVacio, msgError);
     } catch (err) {
-      console.log("Error conexion Base Academico:" + err);
+      console.log("Error conexion Base Pagos:" + err);
       return handleDatabaseError(err, msgError);
     } finally {
       if (pool) {

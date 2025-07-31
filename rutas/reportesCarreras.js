@@ -1387,8 +1387,8 @@ for (let row = 7; row <= 9; row++) {
     
     
     // Guardar archivo Excel
-   // const fs = require('fs');
-   //  fs.writeFileSync('ListadoMatriculasCarreraIndividual'+periodo+'.xlsx', buffer);
+    const fs = require('fs');
+     fs.writeFileSync('ListadoMatriculasCarreraIndividual'+periodo+'.xlsx', buffer);
       return base64;
           
           } catch (error) {

@@ -2,27 +2,21 @@
 const CONFIGPAGOS = require('./databasepagos');
 const sql = require('mssql');
 const { Connection, Request } = require('mssql');
-
-
 const execPagos = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
-
   var conex = CONFIGPAGOS;
   conex.database = carrera;
   let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
-  //let conn;
   try {
-
     if (!pool) {
       pool = await new sql.ConnectionPool(conex).connect();
     }
     // Obtener una conexión del grupo de conexiones
     const conn = pool.request();
-
     // Ejecutar la consulta
     const result = await conn.query(SQL);
     return buildResponse(result, OK, msgVacio, msgError);
   } catch (err) {
-    console.log("Error conexion Base Master:" + err);
+    console.log("Error conexion Base Pagos:" + err);
     return handleDatabaseError(err, msgError);
   } finally {
     if (pool) {
@@ -60,7 +54,7 @@ const execPagos = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) 
       const result = await conn.query(SQL);
       return buildResponse(result, OK, msgVacio, msgError);
     } catch (err) {
-      console.log("Error conexion Base Master:" + err);
+      console.log("Error conexion Base Pagos:" + err);
       return handleDatabaseError(err, msgError);
     } finally {
       if (pool) {
@@ -82,7 +76,7 @@ const execPagos = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) 
     if (err instanceof sql.ConnectionError) {
       return {
         count: -1,
-        message: "Error de conexión a la base de datos. " + err,
+        message: "Error de conexión a la base de datos Pagos. " + err,
         data: [],
       };
     } else {

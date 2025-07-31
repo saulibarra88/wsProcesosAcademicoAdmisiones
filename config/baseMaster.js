@@ -17,8 +17,10 @@ module.exports = {
   options: {
     encrypt: false, // for azure
     trustServerCertificate: false,
-      appName: 'PROCESOSACADEMICOS',
+    appName: 'SERVICIOSPROCESOSACADEMICOS',
     enableArithAbort: true,
+    requestTimeout: 30000, // 30 segundos
+        connectionTimeout: 30000 // 30 segundos
   }
 };
 

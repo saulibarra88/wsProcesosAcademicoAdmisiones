@@ -2,9 +2,9 @@
 const sql = require('mssql');
 const pools = new Map();
 
+
 async function getPool(config) {
   const key = config.database;
-
   if (pools.has(key)) {
     return pools.get(key);
   }
