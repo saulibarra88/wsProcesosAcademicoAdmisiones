@@ -251,7 +251,6 @@ try {
  module.exports.ObtenerSolictudesEstuidantePeriodosUltima = async function (carrera,dbcarrera,cedula,periodo) {
  var  sentencia=""
    sentencia="SELECT  TOP(1) * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] AS sm INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_estado] AS mts ON mts.mte_strcodigo=sm.cm_idtipo_estado INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_solicitud] AS mt ON mt.mte_strcodigo=sm.cm_idtipo_movilidad WHERE sm.[cm_identificacion]='" + cedula + "' AND sm.[cm_periodo]='" + periodo + "' AND sm.[cm_estado]=1 AND sm.[cm_dbcarrera_actual]='" + dbcarrera + "' order by sm.[cm_fecha_registro] desc";
- console.log(sentencia)
 try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");

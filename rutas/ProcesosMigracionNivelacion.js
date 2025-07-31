@@ -697,11 +697,11 @@ async function ProcesodeVerificarMatriculadoConfirmadosCasoRuben(periodo) {
         var ListadoEstudiantes = await procesoCupo.ListadoEstudianteConfirmados("OAS_Master", periodo);
         if (ListadoEstudiantes.data.length > 0) {
             for (var obj of ListadoEstudiantes.data) {
-                if(obj.carrera.includes("OAS_Niv")){
-                    console.log("Nivelacion")
+                if(obj.carrera.includes("OAS_Niv")){//Nivelacion
+               
                     var BasesHomologacion = await procesoCupo.ObenterHomologacionCarreraNivelacion("OAS_Master", obj.carrera, periodo);
-                }else{
-                    console.log("Carrera")
+                }else{//Carrera
+               
                     var BasesHomologacion = await procesoCupo.ObenterHomologacionCarrera("OAS_Master", obj.carrera, periodo);
                 }
                     var ObjEstudianteMatriculadoNivelacion = await procesoCupo.EncontrarEstudianteMatriculado(BasesHomologacion.data[0].hmbdbaseniv, obj.per_carrera, obj.identificacion);
