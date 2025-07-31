@@ -9,13 +9,15 @@ const sqlConfig = {
   database:CONFIGACADEMICO.database,
   server: CONFIGACADEMICO.server,
   pool: {
-    max: Number(9000000),
-    min: 0,
-    idleTimeoutMillis: Number(600),
+   max: 300,
+    min: 10,
+    idleTimeoutMillis: 30000
   },
   options: {
     encrypt: false, // for azure
-    trustServerCertificate: true
+    trustServerCertificate: true,
+    appName: 'SERVICIOSPROCESOSACADEMICOS',
+    enableArithAbort: true,
   }
 };
 

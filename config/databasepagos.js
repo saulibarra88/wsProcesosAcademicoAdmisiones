@@ -1,14 +1,11 @@
 
-//SERVIDOR DE PRODUCCION
-
 require('dotenv').config()
-
 module.exports = {
-  user: process.env.DB_USERSISTEMAACADEMICO,
-   password: process.env.DB_PASSWORDSISTEMAACADEMICO,
-  server:process.env.DB_SERVERSISTEMAACADEMICO,
-  database:process.env.DB_NAMESISTEMAACADEMICO,
-  portNumber:process.env.DB_PORTSISTEMAACADEMICO,
+  user: process.env.DB_USERPAGOS,
+   password:process.env.DB_PASSWORDPAGOS,
+  server:process.env.DB_SERVERPAGOS, 
+  database:process.env.DB_NAMEPAGOS,
+  portNumber:process.env.DB_PORTPAGOS,
   pool: {
    max: 300,
     min: 10,
@@ -21,5 +18,3 @@ module.exports = {
     enableArithAbort: true,
   }
 };
-
-

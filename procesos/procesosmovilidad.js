@@ -623,7 +623,7 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadInterna(idsol
 
             var actualizarprocesocupocarreraactual = await FuncionProcesoCupoCarreraActual(DatosSolicitud.data[0], idpersona, idCupoAdmision, strRutadocumento, DatosCarreraActual.data[0].carrera_unica);
             if (actualizarprocesocupocarreraactual.blProceso) {
-                var actualizarprocesocupocarreramovilidad = await FuncionProcesoCupoCarreraMovilidad(DatosSolicitud.data[0], idpersona, idCupoAdmision, strRutadocumento, DatosCarreraMovilidad.data[0].carrera_unica, 3);
+                var actualizarprocesocupocarreramovilidad = await FuncionProcesoCupoCarreraMovilidad(DatosSolicitud.data[0], idpersona, idCupoAdmision, strRutadocumento, DatosCarreraMovilidad.data[0].carrera_unica, 3,actualizarprocesocupocarreraactual.datoscarreraActual);
                 if (actualizarprocesocupocarreramovilidad.blProceso) {
                     var ActualizarSolicitud = await funcionesmodelomovilidad.ActualziarEstadoSolitiud('OAS_Master', idsolicitud, 'APRO', 'SLLICITUD APROBADA', idpersona);
                     var IngresoInscripcionCarrera = await FuncionInscripcionEstuidanteCarreraInterna(DatosSolicitud.data[0], DatosCarreraMovilidad.data[0], strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30)
@@ -661,13 +661,15 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solic
 async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmision, strRutadocumento, codigocarreraunico) {
     try {
         var respuesta = {};
-        var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_actual, content, { httpsAgent: agent });
+        var datosCarreraActual=null
+        var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_actual, { httpsAgent: agent });
         if (VerificarCupoCarreraActual.data.success) {
+            datosCarreraActual=VerificarCupoCarreraActual.data.informacion[0]
             if (VerificarCupoCarreraActual.data.informacion.length > 0) {
                 var content = {
                     idCupo: VerificarCupoCarreraActual.data.informacion[0].c_id,
                     estado: 3,//Inactivo
-                    strObservacion: 'DESACTIVACION CUPO POR CAMBIO DE CARRERRA PROCESO INSCRIPION NUEVO',
+                    strObservacion: 'DESACTIVACION CUPO POR CAMBIO DE CARRERRA PROCESO INSCRIPCION MODULO MOVILIDAD',
                     strRuta: "",
                     dbcarrera: solicitud.cm_dbcarrera_actual,
                     dbnivelacion: VerificarCupoCarreraActual.data.informacion[0].c_dbnivelacion,
@@ -679,7 +681,7 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
                     idCupo: VerificarCupoCarreraActual.data.informacion[0].c_id,
                     estado: 1,
                     vigencia: 0,
-                    strObservacion: "DESACTIVACION CARRERA DESDE PROCESO INSCRIPION NUEVO",
+                    strObservacion: "DESACTIVACION CARRERA DESDE PROCESO INSCRIPCION MODULO MOVILIDAD",
                 }
                 var IngresarCupoCarrera = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/CambiarEstadoCupoDadoId/", content, { httpsAgent: agent });
 
@@ -696,13 +698,13 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
                         "c_periodo": solicitud.cm_periodo,
                         "c_cupo_admision": idCupoAdmision,
                         "c_id_anterior": 0,
-                        "c_observacion": 'ACTIVACION CARRERA DESDE PROCESO INSCRIPION NUEVO',
+                        "c_observacion": 'ACTIVACION CARRERA DESDE PROCESO INSCRIPCION MODULO MOVILIDAD',
                         "c_codcarreraunico": codigocarreraunico
                     },
                     "detalle": {
                         "dc_per_id": solicitud.cm_perid,
                         "dc_idestado": 3,//DESACTIVACION CUPO
-                        "dc_observacion": "CREACION CUPO DESDE PROCESO INSCRIPION NUEVO",
+                        "dc_observacion": "CREACION CUPO DESDE PROCESO INSCRIPCION MODULO MOVILIDAD",
                         "dc_periodo": solicitud.cm_periodo,
                         "dc_rutaarchivo": strRutadocumento,
                         "dc_cupo_admision": idCupoAdmision
@@ -710,18 +712,17 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
                 }
 
                 var IngresarCupoCarrera = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/IngresoCupoEstudiante/", content, { httpsAgent: agent });
-                var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_actual, content, { httpsAgent: agent });
+                var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_actual, { httpsAgent: agent });
                 var content = {
                     idCupo: VerificarCupoCarreraActual.data.informacion[0].c_id,
                     estado: 1,
                     vigencia: 0,
-                    strObservacion: "DESACTIVACION CARRERA DESDE PROCESO INSCRIPION NUEVO",
+                    strObservacion: "DESACTIVACION CARRERA DESDE PROCESO INSCRIPCION MODULO MOVILIDAD",
                 }
                 var IngresarCupoCarrera = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/CambiarEstadoCupoDadoId/", content, { httpsAgent: agent });
             }
         }
-
-        return { blProceso: true, mensaje: "OK" }
+        return { blProceso: true, mensaje: "OK" ,datoscarreraActual:datosCarreraActual}
 
     } catch (error) {
         console.log(error);
@@ -730,10 +731,10 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
     }
 }
 
-async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAdmision, strRutadocumento, codigocarreraunico, idtipo) {
+async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAdmision, strRutadocumento, codigocarreraunico, idtipo,datoscarreraActual) {
     try {
         var respuesta = {};
-        var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_movilidad, content, { httpsAgent: agent });
+        var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_movilidad, { httpsAgent: agent });
         if (VerificarCupoCarreraActual.data.success) {
             if (VerificarCupoCarreraActual.data.informacion.length > 0) {
                 var content = {
@@ -756,10 +757,10 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
                         "c_idtipo": idtipo,//3 CAMBIO INTERNO//2 CAMBIO EXTERNO
                         "c_dbcarrera": solicitud.cm_dbcarrera_movilidad,
                         "matriculacarrera": true,
-                        "c_cus_id": 0,
-                        "c_ofa_id": 0,
+                        "c_cus_id": datoscarreraActual.c_cus_id,
+                        "c_ofa_id": datoscarreraActual.c_ofa_id,
                         "c_periodo": solicitud.cm_periodo,
-                        "c_cupo_admision": idCupoAdmision,
+                        "c_cupo_admision":  datoscarreraActual.c_cupo_admision,
                         "c_id_anterior": 0,
                         "c_observacion": 'ACTIVACION CARRERA DESDE PROCESO INSCRIPION NUEVO',
                         "c_codcarreraunico": codigocarreraunico
@@ -769,7 +770,7 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
                         "dc_idestado": 1,//ACTIVACION CUPO
                         "dc_observacion": "CREACION CUPO DESDE PROCESO INSCRIPION NUEVO",
                         "dc_periodo": solicitud.cm_periodo,
-                        "dc_rutaarchivo": strRutadocumento,
+                        "dc_rutaarchivo": '',
                         "dc_cupo_admision": idCupoAdmision
                     }
                 }

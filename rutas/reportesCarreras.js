@@ -467,40 +467,40 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
                               <td style="font-size: 10px; text-align: center">
                               ${contadot}
                             </td>
-                            <td style="font-size: 11px; text-align: left">
+                            <td style="font-size: 9px; text-align: left">
                               ${carreras.strCodMateria}   
                               
                             </td>
-                             <td style="font-size: 11px; text-align: left">
+                             <td style="font-size: 10px; text-align: left">
                               ${carreras.strNombre}
                               
                             </td>
-                            <td style="font-size: 11px; text-align: center">
+                            <td style="font-size: 9px; text-align: center">
                               ${carreras.strCodNivel}  
                             </td>
-                            <td style="font-size: 11px; text-align: center">
+                            <td style="font-size: 9px; text-align: center">
                               ${carreras.cantidadtotal}  
                             </td>
-                            <td style="font-size: 11px; text-align: center">
+                            <td style="font-size: 9px; text-align: center">
                               ${carreras.cantidadprimera}  
                             </td>
-                               <td style="font-size: 11px; text-align: center">
+                               <td style="font-size: 9px; text-align: center">
                               ${carreras.cantidadsegunda}  
                             </td>
-                               <td style="font-size: 11px; text-align: center">
+                               <td style="font-size: 9px; text-align: center">
                               ${carreras.cantidadtercera}  
                             </td>
-                               <td style="font-size: 11px; text-align: center">
+                               <td style="font-size: 9px; text-align: center">
                               ${carreras.repitencia}  
                             </td>
-                               <td style="font-size: 11px; text-align: center">
+                               <td style="font-size: 9px; text-align: center">
                               ${carreras.Aprueban}  
                             </td>
-                              <td style="font-size: 11px; text-align: center">
+                              <td style="font-size: 9px; text-align: center">
                               ${carreras.Reprueban}  
                             </td>
                               </td>
-                              <td style="font-size: 11px; text-align: center">
+                              <td style="font-size: 9px; text-align: center">
                               ${carreras.retiros}  
                             </td>
                            </tr>`
@@ -524,18 +524,18 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera,cedula,
                      </th>
                  </tr>
                 <tr>
-                  <th style="font-size: 10px;text-align: center;">N°</th>
-                  <th style="font-size: 10px;text-align: center;">CODIGO</th>
-                  <th style="font-size: 10px;text-align: center;">ASIGNATURA</th>
-                  <th style="font-size: 10px;text-align: center;">NIVEL</th>
-                  <th style="font-size: 10px;text-align: center;">MATRICULADOS</th>
-                  <th style="font-size: 10px;text-align: center;">PRIMERA</th>
-                  <th style="font-size: 10px;text-align: center;">SEGUNDA</th>
-                  <th style="font-size: 10px;text-align: center;">TERCERA</th>
-                  <th style="font-size: 10px;text-align: center;">REPITENCIA</th>
-                  <th  style="font-size: 10px;text-align: center;">APRUEBAN </th>
-                  <th  style="font-size: 10px;text-align: center;">REPRUEBAN </th>
-                  <th  style="font-size: 10px;text-align: center;">RETIROS </th>
+                  <th style="font-size: 9px;text-align: center;">N°</th>
+                  <th style="font-size: 9px;text-align: center;">CÓDIGO</th>
+                  <th style="font-size: 9px;text-align: center;">ASIGNATURA</th>
+                  <th style="font-size: 9px;text-align: center;">PAO</th>
+                  <th style="font-size: 9px;text-align: center;">MATRICULADOS</th>
+                  <th style="font-size: 9px;text-align: center;">PRIMERA</th>
+                  <th style="font-size: 9px;text-align: center;">SEGUNDA</th>
+                  <th style="font-size: 9px;text-align: center;">TERCERA</th>
+                  <th style="font-size: 9px;text-align: center;">REPITEN</th>
+                  <th  style="font-size: 9px;text-align: center;">APRUEBAN </th>
+                  <th  style="font-size: 9px;text-align: center;">REPRUEBAN </th>
+                  <th  style="font-size: 9px;text-align: center;">RETIROS </th>
                 </tr>
               </thead>
   
@@ -1387,7 +1387,7 @@ for (let row = 7; row <= 9; row++) {
     
     
     // Guardar archivo Excel
-   // const fs = require('fs');
+    //const fs = require('fs');
    //  fs.writeFileSync('ListadoMatriculasCarreraIndividual'+periodo+'.xlsx', buffer);
       return base64;
           

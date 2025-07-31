@@ -26,7 +26,6 @@ const execCentralizada = async (SQL, OK = "", msgVacio = "", msgError = null) =>
   const execCentralizadaTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
     try {
       // Ejecuta el SQL personalizado con los parámetros
-     // console.log(SQL)
       var res=  await transaction.request().query(SQL);
       return buildResponse(res, OK, msgVacio, msgError);
     } catch (error) {
@@ -40,7 +39,6 @@ const execCentralizada = async (SQL, OK = "", msgVacio = "", msgError = null) =>
   const buildResponse = (res, OK, msgVacio, msgError) => {
     const count = res.rowCount ==undefined?0:res.rowCount.length;
     const message = res.rowCount  > 0 ? OK : msgVacio;
-    //const data = multiple ? res.rows : res.rows[0] ?? [];
     const data = res.rows[0] ?? [];
     return { count, message, data };
   };

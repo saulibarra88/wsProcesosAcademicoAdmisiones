@@ -198,28 +198,6 @@ router.get('/ReporteExcelMatriculasCarrerasTodasInstitucional/:periodo/:estado',
     }
  
 });
-router.get('/ReporteExcelMatriculasNivelacionTodasInstitucional/:periodo/:estado',async (req, res) => {
-    const periodo = req.params.periodo;
-    const estado = req.params.estado;
-    try {
-     
-        
-        var Informacion=await  pruebasInformacion.ProcesoReporteExcelMatriculasNivelacionInstitucional(periodo,estado);
-        res.json({
-            success: true,
-            Informacion:Informacion,
-        });
-    }catch (err) {
-        console.log('Error: ' + err);
-        return res.json(
-             {
-                success: false,
-                mensaje:'Error en el registro' + err
-            }
-        );
-    }
- 
-});
 
 router.get('/ReporteExcelUltimoNivelCarrerasTodasInstitucional/:periodo/:estado',async (req, res) => {
     const periodo = req.params.periodo;
