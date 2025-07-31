@@ -8,10 +8,6 @@ const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null)
 
   var conex = CONFIGMASTER;
   conex.database = carrera;
- // console.log("*********************************************************************")
- // console.log("conexxion Master:", conex.database)
- // console.log("SQL:", SQL)
-
   let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
   //let conn;
   try {
@@ -40,7 +36,6 @@ const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null)
     
       try {
         // Ejecuta el SQL personalizado con los parámetros
-      //  console.log(SQL)
         var res=  await transaction.request().query(SQL);
         return buildResponse(res, OK, msgVacio, msgError);
       } catch (error) {

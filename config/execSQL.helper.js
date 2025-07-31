@@ -4,8 +4,6 @@ const sql = require('mssql');
 const exec = async (SQL, OK = "", msgVacio = "", msgError = null) => {
 
     var conex = CONFIGACADEMICO;
-   // console.log("Conexion Academica:",CONFIGACADEMICO.database)
-   // console.log("SQL:",SQL)
     let conn;
 
     let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única

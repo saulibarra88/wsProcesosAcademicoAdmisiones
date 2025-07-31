@@ -712,7 +712,6 @@ try {
 module.exports.ObtenerVerificacionHomologacionCarreraIngreso = async function (periodo,bsCarrera) {
   var sentencia="";
   sentencia="SELECT * FROM  [OAS_Master].[dbo].[Homologacioncarreras] WHERE periodo= '" + periodo + "' AND hmbdbasecar= '" + bsCarrera + "' AND homestado= 1"
- console.log(sentencia)
 try {
   if (sentencia != "") {
     const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");

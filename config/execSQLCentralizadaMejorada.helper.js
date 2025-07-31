@@ -38,7 +38,6 @@ const execCentralizadaMejorada = async (SQL, OK = "", msgVacio = "", msgError = 
     }
   
   const buildResponse = (res, OK, msgVacio, msgError) => {
-   // console.log(res)
     const count = res.rowCount ==undefined?0:res.rowCount;
     const message = res.rowCount  > 0 ? OK : msgVacio;
     const data = res.rows ?? [];

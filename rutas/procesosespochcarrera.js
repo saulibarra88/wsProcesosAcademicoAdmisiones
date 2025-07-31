@@ -223,12 +223,9 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
     
 }
 async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, estado) {
-    console.log("Aqui")
     try {
         var listadoNomina = [];
         var ListadoCarrera = await modeloprocesocarreras.ListadoHomologacionesCarreraPeriodo("OAS_Master", periodo);
-        console.log("ListadoCarrera.length")
-        console.log(ListadoCarrera.count)
         var i = 0;
         for (var carrera of ListadoCarrera.data) {
             i = i + 1

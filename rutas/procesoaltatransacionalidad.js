@@ -105,17 +105,13 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
         var listadoNomina = [];
         var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera, periodo, estado);
         var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera);
-        await Promise.all(datosMatriculas.data.map(async (matricula, i) => {
-
+         for (var matricula of datosMatriculas.data) {
             const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-            const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
-            const [personaResponse, pago, asignaturas, regulares, aprobacion] = await Promise.all([
-                personaPromise.catch(() => null),
-                modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion),
-                modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera, periodo, matricula.sintCodigo),
-                modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera, periodo, matricula.sintCodigo),
-                await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera, periodo, matricula.sintCodigo) : await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
-            ]);
+            var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
+            var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
+            var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
+            var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
+            var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera, periodo, matricula.sintCodigo) :await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
             const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
             const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
             // Datos personales
@@ -166,9 +162,8 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
             matricula.aprobacion = aprobacion.data[0]?.Reprueba == 0 ? 'APROBADO' : 'REPROBADO';
             listadoNomina.push(matricula);
 
-
-
-        }));
+         }
+      
         var base64 = await reportescarreras.ExcelReporteMaticulasCarrerasIndividual(carrera, periodo, listadoNomina);
         return base64
     }
@@ -183,7 +178,6 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
 
 
 }
-
 async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccion(periodo, estado) {
     const pool = await iniciarMasterPool("OAS_Master");
     await pool.connect();

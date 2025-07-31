@@ -54,6 +54,7 @@ router.get('/ReporteExcelMatriculasNivelacionTodasInstitucional/:periodo/:estado
     const periodo = req.params.periodo;
     const estado = req.params.estado;
     try {
+
         var Informacion=await  pruebasInformacion.ProcesoReporteExcelMatriculasNivelacionInstitucional(periodo,estado);
         res.json({
             success: true,
