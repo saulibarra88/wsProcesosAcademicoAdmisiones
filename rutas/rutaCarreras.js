@@ -156,28 +156,7 @@ router.get('/ListadoMatriculasFirmadasPorNivel/:carrera/:periodo/:nivel',async (
  
 });
 
-router.get('/ReporteExcelMatriculasCarrerasTodasInstitucional/:periodo/:estado',async (req, res) => {
-    const periodo = req.params.periodo;
-    const estado = req.params.estado;
-    try {
- 
-   
-        var Informacion= await  pruebasInformacion.ProcesoReporteExcelMatriculasCarrerasTodasInstitucionales(periodo,estado);
-        res.json({
-            success: true,
-            Informacion:Informacion,
-        });
-    }catch (err) {
-        console.log('Error: ' + err);
-        return res.json(
-             {
-                success: false,
-                mensaje:'Error en el registro' + err
-            }
-        );
-    }
- 
-});
+
 
 router.get('/ReporteExcelUltimoNivelCarrerasTodasInstitucional/:periodo/:estado',async (req, res) => {
     const periodo = req.params.periodo;

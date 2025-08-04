@@ -14,7 +14,7 @@ module.exports = {
   options: {
     encrypt: false, // for azure
     trustServerCertificate: false,
-      appName: 'SERVICIOSPROCESOSACADEMICOS',
+    appName: 'SERVICIOSPROCESOSACADEMICOS',
     enableArithAbort: true,
   }
 };
