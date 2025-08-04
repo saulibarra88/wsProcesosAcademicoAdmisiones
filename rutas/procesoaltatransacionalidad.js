@@ -190,23 +190,21 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
         const limitSQL = pLimit(10);
 
         for (var carrera of ListadoCarrera.data) {
-            const [datosMatriculas, DatosCarreras] = await Promise.all([
-                modeloprocesocarreras.ListadoMatriculasCarrerasPeriodos(carrera.hmbdbasecar, periodo, estado),
-                modeloprocesocarreras.ObtenerDatosBase("OAS_Master", carrera.hmbdbasecar)
-            ]);
-
+          
+ var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbasecar, periodo, estado);
+        var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera.hmbdbasecar);
             for (var matricula of datosMatriculas.data) {
-                const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-                const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
-                const [personaResponse, pago, asignaturas, regulares, aprobacion] = await Promise.all([
-                    personaPromise.catch(() => null),
-                    modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion),
-                    modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo),
-                    modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo),
-                    await tools.VerificacionPeriodoTresCalificaciones(periodo) ? modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo) : modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
-                ]);
-                const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
-                const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
+                console.log(matricula.strCedula)
+       const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
+            var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
+            var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
+            var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
+            var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
+            var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo) :await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
+            const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
+            const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
+
+   
                 // Datos personales
                 matricula.per_nombres = safe(persona?.per_nombres, matricula.strNombres);
                 matricula.per_primerApellido = safe(`${persona?.per_primerApellido || ''} ${persona?.per_segundoApellido || ''}`, matricula.strApellidos);
@@ -285,24 +283,22 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
         const limitSQL = pLimit(10);
         for (var carrera of ListadoCarrera.data) {
 
-            const [datosMatriculas, DatosCarreras] = await Promise.all([
-                modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbaseniv, periodo, estado),
-                modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera.hmbdbaseniv)
-            ]);
 
+ var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbaseniv, periodo, estado);
+        var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera.hmbdbaseniv);
             for (var matricula of datosMatriculas.data) {
 
-                const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-                const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
-                const [pago, asignaturas, regulares, aprobacion] = await Promise.all([
+              const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
+  console.log(matricula.strCedula)
+  var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
+            var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
+            var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
+            var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
+            var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo) :await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
+            const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
+            const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
 
-                    await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion),
-                    await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo),
-                    await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo),
-                    await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo) : await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
-                ]);
-                const persona = personaPromise?.data?.success ? personaPromise.data.listado[0] : null;
-                const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
+
                 // Datos personales
                 matricula.per_nombres = safe(persona?.per_nombres, matricula.strNombres);
                 matricula.per_primerApellido = safe(`${persona?.per_primerApellido || ''} ${persona?.per_segundoApellido || ''}`, matricula.strApellidos);
@@ -349,7 +345,7 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                     matricula.valorpago = 0;
                 }
                 matricula.aprobacion = aprobacion.data[0]?.Reprueba == 0 ? 'APROBADO' : 'REPROBADO';
-                console.log(matricula)
+    
                 listadoNomina.push(matricula);
 
             }
