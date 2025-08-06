@@ -7,7 +7,7 @@ module.exports = {
   database:process.env.DB_NAMEPAGOS,
   portNumber:process.env.DB_PORTPAGOS,
   pool: {
-   max: 300,
+   max: 300000,
     min: 10,
     idleTimeoutMillis: 30000 // Reducir el tiempo de espera en milisegundos
   },

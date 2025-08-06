@@ -9,7 +9,7 @@ const sqlConfig = {
   database:CONFIGACADEMICO.database,
   server: CONFIGACADEMICO.server,
   pool: {
-   max: 300,
+   max: 300000,
     min: 10,
     idleTimeoutMillis: 30000
   },
