@@ -739,7 +739,7 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
             if (VerificarCupoCarreraActual.data.informacion.length > 0) {
                 var content = {
                     idCupo: VerificarCupoCarreraActual.data.informacion[0].c_id,
-                    estado: 1,//Activacion
+                    estado: 2,//Activacion
                     strObservacion: 'ACTIVACION CUPO POR CAMBIO DE CARRERRA PROCESO INSCRIPION NUEVO',
                     strRuta: "",
                     dbcarrera: solicitud.cm_dbcarrera_movilidad,
