@@ -311,7 +311,7 @@ try {
  module.exports.InsertarInscripcionEstuidante = async function (carrera,strCedEstud,strCodCarrera,strCodPeriodo,strCodFormaIns,strObservaciones,boolGratuidadT,boolGratuidad30) {
   const now = new Date().toISOString().slice(0, 10).replace('T', ' ');
   var sentencia="";
-  sentencia="INSERT INTO [" + carrera + "].[dbo].[Inscripciones] ([strCedEstud],[strCodCarrera],[strCodPeriodo],[dtFecha],[blnConfirmada],[strCodFormaIns],[strObservaciones],[boolGratuidadT],[boolGratuidad30]) VALUES('" + strCedEstud + "','" + strCodCarrera + "','" + strCodPeriodo + "',CONVERT(datetime, '" + now + "', 120) ," + 1 + ",'" + strCodFormaIns + "','" + strObservaciones + "'," + boolGratuidadT + "," + boolGratuidad30 + ")"
+  sentencia="INSERT INTO [" + carrera + "].[dbo].[Inscripciones] ([strCedEstud],[strCodCarrera],[strCodPeriodo],[dtFecha],[blnConfirmada],[strCodFormaIns],[strObservaciones],[boolGratuidadT],[boolGratuidad30]) VALUES('" + strCedEstud + "','" + strCodCarrera + "','" + strCodPeriodo + "',CONVERT(datetime, '" + now + "', 120) ," + 0 + ",'" + strCodFormaIns + "','" + strObservaciones + "'," + boolGratuidadT + "," + boolGratuidad30 + ")"
 
   try {
   if (sentencia != "") {
@@ -355,6 +355,20 @@ try {
  module.exports.ObtenerCodigoSiguienteEstuidanteConfiguracionCarrera = async function (carrera) {
   var sentencia="";
   sentencia="SELECT ISNULL(CAST([lngUltNumEst] AS INT), 0) + 1 AS siguientecodigodisponible FROM [" + carrera + "].[dbo].[Configuracion_Carrera]"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+ module.exports.ObtenerEstuidanteCarreraCodigo = async function (carrera,codigo) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Estudiantes] WHERE [strCodigo]='" + codigo + "'"
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
