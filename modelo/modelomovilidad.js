@@ -352,7 +352,34 @@ try {
   return {data:"Error: "+ error}
 }
 }
-
+ module.exports.ObtenerCodigoSiguienteEstuidanteConfiguracionCarrera = async function (carrera) {
+  var sentencia="";
+  sentencia="SELECT ISNULL(CAST([lngUltNumEst] AS INT), 0) + 1 AS siguientecodigodisponible FROM [" + carrera + "].[dbo].[Configuracion_Carrera]"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+ module.exports.ActualizarUltimoEstuidanteConfiguracionCarrera = async function (carrera,numero) {
+  var sentencia="";
+  sentencia="update [" + carrera + "].[dbo].[Configuracion_Carrera] set [lngUltNumEst]='" + numero + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
  module.exports.InsertarEstudianteCarrera = async function (carrera,objEstuidante) {
     const now = new Date().toISOString().slice(0, 10).replace('T', ' ');
   var sentencia="";

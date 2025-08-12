@@ -278,6 +278,25 @@ router.post('/InsertarSolicitudAprobadaInscripcionMoviInterna', async (req, res)
 
     }
 });
+router.post('/InsertarSolicitudAprobadaInscripcionMoviTraspaso', async (req, res) => {
+    try {
+        const { idsolicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30 } = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesInsertarSolicitudAprobadaInscripcionMovilidadTraspaso(idsolicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
 router.post('/InsertarInscripcionMoviExterna', async (req, res) => {
     try {
         const { solicitud, idpersona, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, idCupoAdmision, strFoto } = req.body;
