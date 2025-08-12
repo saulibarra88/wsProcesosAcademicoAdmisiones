@@ -676,7 +676,7 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solic
         if (InsertarSolicitud.count > 0) {
             var DatosCarreraMovilidad = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', solicitud.cm_dbcarrera_movilidad);
 
-            var actualizarprocesocupocarreramovilidad = await FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAdmision, strRutadocumento, DatosCarreraMovilidad.data[0].carrera_unica, 2);
+            var actualizarprocesocupocarreramovilidad = await FuncionProcesoCupoCarreraMovilidadExterna(solicitud, idpersona, idCupoAdmision, strRutadocumento, DatosCarreraMovilidad.data[0].carrera_unica, 2);
             if (actualizarprocesocupocarreramovilidad.blProceso) {
                 var ActualizarSolicitud = await funcionesmodelomovilidad.ActualziarEstadoSolitiud('OAS_Master', InsertarSolicitud.data[0].cm_id, 'APRO', 'APROBACION DIRECTA DESDE DECANATO ACADEMICO', idpersona);
                 var IngresoInscripcionCarrera = await FuncionInscripcionEstuidanteCarreraExterna(solicitud, DatosCarreraMovilidad.data[0], strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, strFoto)
@@ -818,8 +818,63 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
 
     }
 }
+async function FuncionProcesoCupoCarreraMovilidadExterna(solicitud, idpersona, idCupoAdmision, strRutadocumento, codigocarreraunico, idtipo,datoscarreraActual) {
+    try {
+        var respuesta = {};
+        var VerificarCupoCarreraActual = await axios.get(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/ObtenerCupoEstuidanteCarrera/" + solicitud.cm_identificacion + '/' + solicitud.cm_dbcarrera_movilidad, { httpsAgent: agent });
+        if (VerificarCupoCarreraActual.data.success) {
+            if (VerificarCupoCarreraActual.data.informacion.length > 0) {
+                var content = {
+                    idCupo: VerificarCupoCarreraActual.data.informacion[0].c_id,
+                    estado: 2,//Activacion
+                    strObservacion: 'ACTIVACION CUPO POR CAMBIO DE CARRERRA PROCESO INSCRIPION NUEVO',
+                    strRuta: "",
+                    dbcarrera: solicitud.cm_dbcarrera_movilidad,
+                    dbnivelacion: VerificarCupoCarreraActual.data.informacion[0].c_dbnivelacion,
+                    matriculacarrera: true,
+                    dc_per_id: idpersona
+                }
+                var IngresarDetalleCupo = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/IngresoDetalleCupo/", content, { httpsAgent: agent });
 
+            } else {
+                var content = {
+                    "cupo": {
+                        "c_identificacion": solicitud.cm_identificacion,
+                        "c_perid": solicitud.cm_perid,
+                        "c_idtipo": idtipo,//3 CAMBIO INTERNO//2 CAMBIO EXTERNO
+                        "c_dbcarrera": solicitud.cm_dbcarrera_movilidad,
+                        "matriculacarrera": true,
+                        "c_cus_id": 0,
+                        "c_ofa_id": 0,
+                        "c_periodo": solicitud.cm_periodo,
+                        "c_cupo_admision":  0,
+                        "c_id_anterior": 0,
+                        "c_observacion": 'ACTIVACION CARRERA DESDE PROCESO INSCRIPION NUEVO',
+                        "c_codcarreraunico": codigocarreraunico
+                    },
+                    "detalle": {
+                        "dc_per_id": solicitud.cm_perid,
+                        "dc_idestado": 1,//ACTIVACION CUPO
+                        "dc_observacion": "CREACION CUPO DESDE PROCESO INSCRIPION NUEVO",
+                        "dc_periodo": solicitud.cm_periodo,
+                        "dc_rutaarchivo": '',
+                        "dc_cupo_admision": 0
+                    }
+                }
+                var IngresarCupoCarrera = await axios.post(process.env.DNS_SERVICIOS_CUPOS + "wsservicioscupos/procesonivelacion/IngresoCupoEstudiante/", content, { httpsAgent: agent });
+            }
+        }
+
+        return { blProceso: true, mensaje: "OK" }
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
 async function FuncionInscripcionEstuidanteCarreraInterna(solicitud, datosCarreraMovilidad, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30) {
+  console.log('Cambio Externo')
     try {
         var respuesta = {};
         var ObnterDatosInscripcionCarreraEstuidante = await funcionesmodelomovilidad.ObtenerInscripcionEstuidante('OAS_Master', funcionestools.CedulaConGuion(solicitud.cm_identificacion), datosCarreraMovilidad.strCodigo);
@@ -848,9 +903,20 @@ async function FuncionInscripcionEstuidanteCarreraInterna(solicitud, datosCarrer
                 strFormaIns: strFormaInscripcion,
             }
             var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad);
+            var VerificarEstudiante = await funcionesmodelomovilidad.ObtenerEstuidanteCarreraCodigo(solicitud.cm_dbcarrera_movilidad,CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
             objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
-            var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante);
-            var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+            if(VerificarEstudiante.count==0){
+                var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante);
+                 var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+            }else{
+                var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidante(solicitud.cm_dbcarrera_movilidad);
+                objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
+                  var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+                  var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante);
+                   // var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+                }
+            
+           
         }
         return { blProceso: true, mensaje: "OK" }
 
@@ -887,10 +953,30 @@ async function FuncionInscripcionEstuidanteCarreraExterna(solicitud, datosCarrer
                 strCodInt: DatosGradoEstuidantes.data[0].codigoinstitucion,
                 strFormaIns: strFormaInscripcion,
             }
-            var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidante(solicitud.cm_dbcarrera_movilidad);
+          //  var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidante(solicitud.cm_dbcarrera_movilidad);
+          //  objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
+         //   var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante);
+          //  var InsertarFotoEstuidanteCarrera = await funcionesmodelomovilidad.InsertarFotoEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante.strCodigo, solicitud.cm_periodo, strFoto);
+       
+       
+          var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad);
+            var VerificarEstudiante = await funcionesmodelomovilidad.ObtenerEstuidanteCarreraCodigo(solicitud.cm_dbcarrera_movilidad,CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
             objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
-            var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante);
-            var InsertarFotoEstuidanteCarrera = await funcionesmodelomovilidad.InsertarFotoEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante.strCodigo, solicitud.cm_periodo, strFoto);
+            if(VerificarEstudiante.count==0){
+                var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante);
+                var InsertarFotoEstuidanteCarrera = await funcionesmodelomovilidad.InsertarFotoEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante.strCodigo, solicitud.cm_periodo, strFoto);
+       
+                var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+            }else{
+                var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidante(solicitud.cm_dbcarrera_movilidad);
+                objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
+                  var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+                  var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante);
+                 var InsertarFotoEstuidanteCarrera = await funcionesmodelomovilidad.InsertarFotoEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante.strCodigo, solicitud.cm_periodo, strFoto);
+       
+                  // var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+                }
+       
         }
         return { blProceso: true, mensaje: "OK" }
 
