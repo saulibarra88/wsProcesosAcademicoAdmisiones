@@ -139,6 +139,14 @@ module.exports.ProcesInsertarSolicitudAprobadaInscripcionMovilidadInterna = asyn
         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
+module.exports.ProcesInsertarSolicitudAprobadaInscripcionMovilidadTraspaso = async function (idsolicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30) {
+    try {
+        var resultado = await FuncionInsertarSolicitudAprobadaInscripcionMovilidadTraspaso(idsolicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30);
+        return resultado
+    } catch (error) {
+        return { blProceso: false, mensaje: "Error :" + error }
+    }
+}
 module.exports.ProcesInsertarSolicitudAprobadaInscripcionMovilidadExterna = async function (solicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, strFoto) {
     try {
         var resultado = await FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, strFoto);
@@ -611,7 +619,31 @@ async function FuncionObtenerSolicitudesEstudiantes(carrera, cedula, periodo) {
 
     }
 }
+async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadTraspaso(idsolicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30) {
+    try {
+        var respuesta = {};
+        var DatosSolicitud = await funcionesmodelomovilidad.ObtenerSolictudDadoId('OAS_Master', idsolicitud);
 
+        if (DatosSolicitud.count > 0) {
+            var DatosCarreraActual = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', DatosSolicitud.data[0].cm_dbcarrera_actual);
+            var DatosCarreraMovilidad = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', DatosSolicitud.data[0].cm_dbcarrera_movilidad);
+
+            var actualizarprocesocupocarreraactual = await FuncionProcesoCupoCarreraActual(DatosSolicitud.data[0], idpersona, idCupoAdmision, strRutadocumento, DatosCarreraActual.data[0].carrera_unica);
+            if (actualizarprocesocupocarreraactual.blProceso) {
+                var actualizarprocesocupocarreramovilidad = await FuncionProcesoCupoCarreraMovilidad(DatosSolicitud.data[0], idpersona, idCupoAdmision, strRutadocumento, DatosCarreraMovilidad.data[0].carrera_unica, 3,actualizarprocesocupocarreraactual.datoscarreraActual);
+                if (actualizarprocesocupocarreramovilidad.blProceso) {
+                    var ActualizarSolicitud = await funcionesmodelomovilidad.ActualziarEstadoSolitiud('OAS_Master', idsolicitud, 'APRO', 'SLLICITUD APROBADA', idpersona);
+                    var IngresoInscripcionCarrera = await FuncionInscripcionEstuidanteCarreraInterna(DatosSolicitud.data[0], DatosCarreraMovilidad.data[0], strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30)
+
+                }
+            }
+        }
+        return { blProceso: true, mensaje: "OK" }
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+    }
+}
 async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadInterna(idsolicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30) {
     try {
         var respuesta = {};
@@ -797,7 +829,7 @@ async function FuncionInscripcionEstuidanteCarreraInterna(solicitud, datosCarrer
         var DatoEstudianteCarreaMovilidad = await funcionesmodelocarrera.ObtenerDatosEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, funcionestools.CedulaConGuion(solicitud.cm_identificacion));
         var DatoEstudianteCarreActual = await funcionesmodelocarrera.ObtenerDatosEstudianteCarrera(solicitud.cm_dbcarrera_actual, funcionestools.CedulaConGuion(solicitud.cm_identificacion));
         if (DatoEstudianteCarreaMovilidad.count == 0) {
-            var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidante(solicitud.cm_dbcarrera_movilidad);
+           // var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidante(solicitud.cm_dbcarrera_movilidad);
             var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + solicitud.cm_identificacion, { httpsAgent: agent });
 
             var objEstuidante = {
@@ -815,9 +847,10 @@ async function FuncionInscripcionEstuidanteCarreraInterna(solicitud, datosCarrer
                 strCodInt: DatoEstudianteCarreActual.data[0].strCodInt,
                 strFormaIns: strFormaInscripcion,
             }
-            var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidante(solicitud.cm_dbcarrera_movilidad);
+            var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad);
             objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
             var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(solicitud.cm_dbcarrera_movilidad, objEstuidante);
+            var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(solicitud.cm_dbcarrera_movilidad, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
         }
         return { blProceso: true, mensaje: "OK" }
 

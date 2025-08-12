@@ -10,8 +10,14 @@ const centralizada = require('../modelo/centralizada');
 const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
+const crypto = require("crypto");
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { iniciarMasterTransaccion, iniciarMasterPool } = require("./../config/execSQLMaster.helper");
+const agent = new https.Agent({
+    rejectUnauthorized: false,
+    secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
+});
+
 
 module.exports.ProcesoVerificarRegistroIncripcionesEstudiantesAdmisiones = async function (periodo, cedula) {
     try {
@@ -68,7 +74,7 @@ module.exports.ProcesoVerificarRegistroIncripcionesEstudiantesAdmisiones = async
 module.exports.ProcesoConfirmacionCupoInscripcion = async function (periodo, cedula) {
     try {
         //Proceso para insertar el cupo en confirmado cuando han aceptado la postulacion de la carrera
-    /*    var obtenerDatos = await procesoCupo.ObtenerDatosCupoProcesoTabla(periodo, 1);
+        var obtenerDatos = await procesoCupo.ObtenerDatosCupoProcesoTabla(periodo, 1);
         if (obtenerDatos.count > 0) {
             return { blProceso: true, mensaje: "El proceso CONFIRMACION CUPO INSCRIPCION ya se encuetra ejecutado en el periodo:  " + periodo }
         } else {
@@ -81,11 +87,11 @@ module.exports.ProcesoConfirmacionCupoInscripcion = async function (periodo, ced
 
             var ingresoProceso = await procesoCupo.InsertarCupoProcesoTabla(1, "CONFIRMACION CUPO INSCRIPCION", periodo, cedula);
             return { blProceso: true, mensaje: "Se ejecuto el proceso CONFIRMACION CUPO INSCRIPCION con éxito en el " + periodo }
-        }*/
+        }
 
-            var resultado = await ProcesoVerificacionConfirmacionCupoInscripcion(periodo);
+          //  var resultado = await ProcesoVerificacionConfirmacionCupoInscripcion(periodo);
 
-            return { blProceso: true, mensaje: "Se ejecuto el proceso CONFIRMACION CUPO INSCRIPCION con éxito en el " + periodo }
+         //   return { blProceso: true, mensaje: "Se ejecuto el proceso CONFIRMACION CUPO INSCRIPCION con éxito en el " + periodo }
     } catch (error) {
         return { blProceso: false, mensaje: "Error :" + error }
         console.log(error);
@@ -493,9 +499,7 @@ module.exports.ListadoeEtadoCupos = async function () {
         
     }
 }
-const agent = new https.Agent({
-    rejectUnauthorized: false
-});
+
 
 async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
     const pool = await iniciarMasterPool("OAS_Master");

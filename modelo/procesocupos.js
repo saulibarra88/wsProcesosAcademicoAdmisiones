@@ -728,7 +728,7 @@ try {
 module.exports.InsertarCupoProcesoTabla = async function (idTipo,strNombre,strPeriodo,cedula) {
   var sentencia="";
  
-  sentencia = "INSERT INTO [OAS_Master].[dbo].[CupoProcesos]([idTipo],[nombreProceso],[strPeriodo],[blestado],[cedulausuario],[cedulamodifica])"
+  sentencia = "INSERT INTO [OAS_Master].[dbo].[tb_procesos_cupo]([idTipo],[nombreProceso],[strPeriodo],[blestado],[cedulausuario],[cedulamodifica])"
   + "VALUES(" + idTipo + ",'" + strNombre + "','" + strPeriodo+ "',1,'" + cedula+ "','" + cedula+ "');";
 
 
@@ -746,7 +746,7 @@ module.exports.InsertarCupoProcesoTabla = async function (idTipo,strNombre,strPe
 }
 module.exports.ObtenerDatosCupoProcesoTabla = async function (strPeriodo,idTipo) {
   var sentencia="";
-  sentencia = "SELECT * FROM  [OAS_Master].[dbo].[CupoProcesos] WHERE idTipo=" + idTipo+ " and blestado=1 and strPeriodo='" + strPeriodo+ "'"
+  sentencia = "SELECT * FROM  [OAS_Master].[dbo].[tb_procesos_cupo] WHERE idTipo=" + idTipo+ " and blestado=1 and strPeriodo='" + strPeriodo+ "'"
  
   try {
   if (sentencia != "") {
@@ -762,7 +762,7 @@ module.exports.ObtenerDatosCupoProcesoTabla = async function (strPeriodo,idTipo)
 }
 module.exports.ListadoProcesoPeriodos = async function (strPeriodo) {
   var sentencia="";
-  sentencia = "SELECT * FROM  [OAS_Master].[dbo].[CupoProcesos] WHERE  strPeriodo='" + strPeriodo+ "'"
+  sentencia = "SELECT * FROM  [OAS_Master].[dbo].[tb_procesos_cupo] WHERE  strPeriodo='" + strPeriodo+ "'"
  
   try {
   if (sentencia != "") {
@@ -778,7 +778,7 @@ module.exports.ListadoProcesoPeriodos = async function (strPeriodo) {
 }
 module.exports.ListadoPeriodoEjecutados = async function () {
   var sentencia="";
-  sentencia = "SELECT distinct strPeriodo FROM  [OAS_Master].[dbo].[CupoProcesos]  ORDER BY  strPeriodo DESC"
+  sentencia = "SELECT distinct strPeriodo FROM  [OAS_Master].[dbo].[tb_procesos_cupo]  ORDER BY  strPeriodo DESC"
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster("OAS_Master",sentencia, "OK","OK");
