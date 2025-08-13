@@ -413,7 +413,80 @@ async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel
 
     }
 }
+async function FuncionDatosEstudianteCambioCarreraMejorado(carrera, codestudiante, nivel) {
+    try {
+        var respuesta = {};
+        var AsignaturaHomologadas = [];
+          const [datosEstuidanteUltima] = await Promise.all([
+                    funcionesmodelomovilidad.ObtenerUltimoPeriodMatriculaEstuidante(carrera, cedula)
+                ])
+        var RecordAcademicoNivel = await funcionesmodelomovilidad.ObtnerRecodAcademicoporNivel(carrera, codestudiante, nivel);
+        var banderahomologacion = false
+        for (var datosrecord of RecordAcademicoNivel.data) {
+            if (datosrecord.Tipo == 2) {
+                banderahomologacion = true
+            } else {
+                AsignaturaHomologadas.push(datosrecord)
+            }
+        }
+        if (banderahomologacion) { //Datos con Homologacion
 
+            var noaprobadas = 0
+            var aprobadas = 0
+            var datosProcesados = await funcionestools.obtenerUltimosIntentosPorMateria(AsignaturaHomologadas)
+            for (var asig of datosProcesados) {
+                if (asig.Equivalencia == 'R' || asig.Equivalencia == 'RVC') {
+                    noaprobadas = noaprobadas + 1
+                } else {
+                    aprobadas = aprobadas + 1
+                }
+            }
+            if (aprobadas == datosProcesados.length) {
+                respuesta.aprobacionnivel = true;
+            } else {
+                respuesta.aprobacionnivel = false;
+            }
+            respuesta.nivel = nivel;
+            respuesta.codestudiante = codestudiante;
+            respuesta.pensummaterias = datosProcesados.length;
+            respuesta.aprobadas = aprobadas;
+            respuesta.noaprobadas = noaprobadas;
+
+        } else {//'Datos SIN homologacion'
+            var AprobacionNivel = await funcionesmodelomovilidad.ObtenerMateriasAprobadasPorNivelPensum(carrera, codestudiante, nivel);
+            if (AprobacionNivel.count > 0) {
+                respuesta.nivel = nivel;
+                respuesta.codestudiante = codestudiante;
+                respuesta.pensummaterias = AprobacionNivel.data[0].materiaspensum;
+                respuesta.aprobadas = AprobacionNivel.data[0].aprobadas;
+                respuesta.noaprobadas = AprobacionNivel.data[0].no_aprobadas;
+                if (AprobacionNivel.data[0].materiaspensum == AprobacionNivel.data[0].aprobadas) {
+                    respuesta.aprobacionnivel = true;
+                } else {
+                    respuesta.aprobacionnivel = false;
+                }
+            }
+        }
+
+        var PerdidaSegundaMatricula = await funcionesmodelomovilidad.ObtenerMateriasPerdidasSegundaMatriculaCantidad(carrera, codestudiante);
+
+        if (PerdidaSegundaMatricula.count > 0) {
+            if (PerdidaSegundaMatricula.data[0].materiasegundamat == PerdidaSegundaMatricula.data[0].aprobadas) {
+                respuesta.perdidasegunda = false;
+            } else {
+                respuesta.perdidasegunda = true;
+                var PerdidaSegundaMatriculaDetalle = await funcionesmodelomovilidad.ObtenerMateriasPerdidasSegundaMatriculaDetalle(carrera, codestudiante);
+                respuesta.detallePerdida = PerdidaSegundaMatriculaDetalle.data
+            }
+        }
+        return respuesta;
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
 async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreramovilidad, periodo, puntaje) {
     try {
         var respuesta = {};
