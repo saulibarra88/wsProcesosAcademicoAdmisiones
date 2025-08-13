@@ -151,18 +151,18 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
     var datos = "";
 
     listado.forEach(carrera => {
-      datos += `<br/><div style="font-size: 14px; text-align: left" >CARRERA:  ${carrera.cm_nombrecarrera_movilidad}</div>`;
+      datos += `<br/><div style="font-size: 10px; text-align: left" >CARRERA:  ${carrera.cm_nombrecarrera_movilidad}</div>`;
       datos += `
       <table border=2>
         <thead>
           <tr>
-            <th style="font-size: 10px;text-align: center;font-family: serif;">#</th>
-            <th style="font-size: 10px;text-align: center;font-family: serif;">CEDULA</th>
-            <th style="font-size: 10px;text-align: center;font-family: serif;">NOMBRES ESTUIDANTES</th>
-            <th style="font-size: 10px;text-align: center;font-family: serif;">PUNTAJE</th>
-            <th style="font-size: 10px;text-align: center;font-family: serif;">CARRERA ACTUAL</th>
-            <th style="font-size: 10px;text-align: center;font-family: serif;">CARRERA MOVILIDAD</th>
-            <th style="font-size: 10px;text-align: center;font-family: serif;">TIPO</th>
+            <th style="font-size: 9px;text-align: center;font-family: serif;">#</th>
+            <th style="font-size: 9px;text-align: center;font-family: serif;">CEDULA</th>
+            <th style="font-size: 9px;text-align: center;font-family: serif;">NOMBRES ESTUIDANTES</th>
+            <th style="font-size: 9px;text-align: center;font-family: serif;">PUNTAJE</th>
+            <th style="font-size: 9px;text-align: center;font-family: serif;">CARRERA ACTUAL</th>
+            <th style="font-size: 9px;text-align: center;font-family: serif;">CARRERA MOVILIDAD</th>
+            <th style="font-size: 9px;text-align: center;font-family: serif;">TIPO</th>
           </tr>
         </thead>
         <tbody>
@@ -172,13 +172,13 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
         contadot = contadot + 1;
         datos += `
         <tr>
-          <td style="font-size: 10px; text-align: left;font-family: serif;">${contadot}</td>
-          <td style="font-size: 10px; text-align: left;font-family: serif;">${estudiante.cm_identificacion}</td>
-          <td style="font-size: 10px; text-align: left;font-family: serif;">${estudiante.nombreestudiante} ${estudiante.apellidoestudiante}</td>
-          <td style="font-size: 10px; text-align: center;font-family: serif;">${estudiante.cm_puntaje}</td>
-          <td style="font-size: 10px; text-align: left;font-family: serif;">${estudiante.cm_nombrecarrera_actual}</td>
-          <td style="font-size: 10px; text-align: left;font-family: serif;">${estudiante.cm_nombrecarrera_movilidad}</td>
-          <td style="font-size: 10px; text-align: left;font-family: serif;">${estudiante.mts_strdescripcion}</td>
+          <td style="font-size: 8px; text-align: left;font-family: serif;">${contadot}</td>
+          <td style="font-size: 8px; text-align: left;font-family: serif;">${estudiante.cm_identificacion}</td>
+          <td style="font-size: 8px; text-align: left;font-family: serif;">${estudiante.nombreestudiante} ${estudiante.apellidoestudiante}</td>
+          <td style="font-size: 8px; text-align: center;font-family: serif;">${estudiante.cm_puntaje}</td>
+          <td style="font-size: 8px; text-align: left;font-family: serif;">${estudiante.cm_nombrecarrera_actual}</td>
+          <td style="font-size: 8px; text-align: left;font-family: serif;">${estudiante.cm_nombrecarrera_movilidad}</td>
+          <td style="font-size: 8px; text-align: left;font-family: serif;">${estudiante.mts_strdescripcion}</td>
         </tr>
       `;
       });
@@ -193,19 +193,19 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
               <!DOCTYPE html>
               <html lang="es">
               <head>
-                <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left;font-size: 11px; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
+                <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left;font-size: 10px; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
               </head>
               <body>
-              <p style='text-align: center;font-size: 11px;font-family: serif;'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
-              <p style='text-align: center;font-size: 11px;font-family: serif;'> <strong>DECANATO ACADEMICO INSTITUCIONAL</strong> </p>
-              <p style='text-align: center;font-size: 11px;font-family: serif;'> <strong>NÓMINA DE ESTUIDANTES CON MOVILIDAD </strong> </p>
-              <p style='text-align: center;font-size: 11px;font-family: serif;'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
+              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
+              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>DECANATO ACADEMICO INSTITUCIONAL</strong> </p>
+              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>NÓMINA DE ESTUIDANTES CON MOVILIDAD </strong> </p>
+              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
                      ${datos}
             
                 <br/><br/>
                 <p style="text-align: center;font-family: serif;"> <strong>----------------------------------------</strong></p>
-                <p style="text-align: center;font-size: 11px;font-family: serif;"> GENERADO POR:</p>
-                <p style="text-align: center;font-size: 11px;font-family: serif;">DECANATO ACADEMICO</p>
+                <p style="text-align: center;font-size: 10px;font-family: serif;"> GENERADO POR:</p>
+                <p style="text-align: center;font-size: 10px;font-family: serif;">DECANATO ACADEMICO</p>
               </body>
               </html>
               `;
