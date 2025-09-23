@@ -155,6 +155,14 @@ module.exports.ProcesInsertarSolicitudAprobadaInscripcionMovilidadExterna = asyn
         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
+module.exports.ProcesInsertarInscripcionesAntiguas = async function (objinscripcion) {
+    try {
+        var resultado = await FuncionInscripcionAntiguaEstuidante(objinscripcion);
+        return resultado
+    } catch (error) {
+        return { blProceso: false, mensaje: "Error :" + error }
+    }
+}
 module.exports.ProcesInsertarCarrerasCuposConfiguraciones = async function (periodo, idUsuario) {
     try {
         var resultado = await FuncionInsertarCuposMigracionPeriodoActual(periodo, idUsuario);
@@ -755,7 +763,6 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solic
                 var IngresoInscripcionCarrera = await FuncionInscripcionEstuidanteCarreraExterna(solicitud, DatosCarreraMovilidad.data[0], strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, strFoto)
 
             }
-
         }
         return { blProceso: true, mensaje: "OK" }
     } catch (error) {
@@ -1059,6 +1066,64 @@ async function FuncionInscripcionEstuidanteCarreraExterna(solicitud, datosCarrer
 
     }
 }
+async function FuncionInscripcionAntiguaEstuidante(objinscripcion) {
+  console.log('Inscripcion Antigua Proceso')
+    try {
+        var respuesta = {};
+        var ObnterDatosInscripcionCarreraEstuidante = await funcionesmodelomovilidad.ObtenerInscripcionEstuidante('OAS_Master', funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante), objinscripcion.codcarreracambio);
+        if (ObnterDatosInscripcionCarreraEstuidante.count == 0) {
+            var InsertarInscripcionEstuidante = await funcionesmodelomovilidad.InsertarInscripcionEstuidante('OAS_Master', funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante), objinscripcion.codcarreracambio, objinscripcion.codperiodo, objinscripcion.codformainscripcion, objinscripcion.observacion, objinscripcion.blgratuidadT, objinscripcion.blgratuidad30);
+        }
+        var DatoEstudianteCarreaMovilidad = await funcionesmodelocarrera.ObtenerDatosEstudianteCarrera(objinscripcion.basecarreracambio, funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante));
+      console.log(DatoEstudianteCarreaMovilidad)
+      var DatosTitulosEstuidante = await funcionesmodelomovilidad.ObtenerGradoEstudianteTodas('OAS_Master',funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante));
+      console.log(DatosTitulosEstuidante)
+      var codigoTit=DatosTitulosEstuidante.count>0? DatosTitulosEstuidante.data[0].strCodTit[0]:'';
+      var codigoInt=DatosTitulosEstuidante.count>0? DatosTitulosEstuidante.data[0].strCodInt[0]:'';
+      console.log(codigoTit)
+      console.log(codigoInt)
+        if (DatoEstudianteCarreaMovilidad.count == 0) {
+            var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + objinscripcion.cedulaestuidante, { httpsAgent: agent });
+            var objEstuidante = {
+                strCodigo: 0,
+                strCedula: funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante),
+                strNombres: ObtenerPersona.data.listado[0].per_nombres,
+                strApellidos: ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido,
+                strCedulaMil: ObtenerPersona.data.listado[0].per_telefonoCelular,
+                dtFechaNac: ObtenerPersona.data.listado[0].per_fechaNacimiento,
+                strEmail: ObtenerPersona.data.listado[0].per_email,
+                strNacionalidad: ObtenerPersona.data.listado[0].nac_nombre,
+                strDocumentacion: ObtenerPersona.data.listado[0].dir_callePrincipal,
+                strCodSexo: ObtenerPersona.data.listado[0].gen_nombre == 'MASCULINO' ? 'MAS' : 'FEM',
+                strCodTit: codigoTit,
+                strCodInt: codigoInt,
+                strFormaIns: objinscripcion.codformainscripcion,
+            }
+            console.log(objEstuidante)
+            var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidanteConfiguracionCarrera(objinscripcion.basecarreracambio);
+            var VerificarEstudiante = await funcionesmodelomovilidad.ObtenerEstuidanteCarreraCodigo(objinscripcion.basecarreracambio,CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+            objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
+            if(VerificarEstudiante.count==0){
+                var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(objinscripcion.basecarreracambio, objEstuidante);
+                 var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(objinscripcion.basecarreracambio, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+            }else{
+                var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidante(objinscripcion.basecarreracambio);
+                objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
+                  var ActualizarUltimoEstudiante = await funcionesmodelomovilidad.ActualizarUltimoEstuidanteConfiguracionCarrera(objinscripcion.basecarreracambio, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
+                  var InsertarEstuidanteCarrera = await funcionesmodelomovilidad.InsertarEstudianteCarrera(objinscripcion.basecarreracambio, objEstuidante);
+                
+                }
+            
+           
+        }
+        return { blProceso: true, mensaje: "OK" }
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
 async function FuncionInsertarCuposMigracionPeriodoActual(periodo, idUsuario) {
     try {
         var respuesta = {};
@@ -1178,8 +1243,11 @@ async function FuncionReporteExcelSolicitudes(periodo, estado) {
                 solicitudes.correoestudiante = ObtenerPersona.data.listado[0].per_email
                 solicitudes.celularstudiante = ObtenerPersona.data.listado[0].per_telefonoCelular
                 solicitudes.apellidoestudiante = ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+                solicitudes.puntajedescripcion= solicitudes.cm_blpuntajeadmision == 0 ? 'DESCONOCIDO' : 'PUNTAJE SISTEMA ADMISION'
+                solicitudes.terceramatricula= solicitudes.cm_perdidatercera_actual == 1 ? 'PERDIDA TERCERA' : ''
                 listado.push(solicitudes)
             }
+            console.log(solicitudes)
             Base64 = await funcionesreportemovilidad.ExcelExcelListadoSolicitudes(listado, periodo)
         }
 

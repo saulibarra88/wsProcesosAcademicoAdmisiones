@@ -930,7 +930,7 @@ module.exports.ListadoDetalleCuposporDescripcion = async function (carrera,perio
 
 module.exports.ObtenerTituloCarrera = async function (carrera) {
   var sentencia="";
-  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Titulos]"
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Titulos] ORDER BY strNombre ASC"
  
 try {
   if (sentencia != "") {

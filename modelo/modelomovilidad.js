@@ -397,7 +397,7 @@ try {
  module.exports.InsertarEstudianteCarrera = async function (carrera,objEstuidante) {
     const now = new Date().toISOString().slice(0, 10).replace('T', ' ');
   var sentencia="";
-  sentencia="INSERT INTO [" + carrera + "].[dbo].[Estudiantes]([strCodigo],[strCedula],[strNombres],[strApellidos],[strCedulaMil],[dtFechaNac],[dtFechaIng],[strEmail],[strNacionalidad],[strDocumentacion],[strCodSexo],[strCodInt],[strFormaIns]) VALUES('" + objEstuidante.strCodigo + "','" + objEstuidante.strCedula + "','" + objEstuidante.strNombres + "','" + objEstuidante.strApellidos + "','" + objEstuidante.strCedulaMil + "','" + objEstuidante.dtFechaNac + "',CONVERT(datetime, '" + now + "', 120) ,'" + objEstuidante.strEmail + "','" + objEstuidante.strNacionalidad + "','" + objEstuidante.strDocumentacion + "','" + objEstuidante.strCodSexo + "','" + objEstuidante.strCodInt + "','" + objEstuidante.strFormaIns + "')"
+  sentencia="INSERT INTO [" + carrera + "].[dbo].[Estudiantes]([strCodigo],[strCedula],[strNombres],[strApellidos],[strCedulaMil],[dtFechaNac],[dtFechaIng],[strEmail],[strNacionalidad],[strDocumentacion],[strCodSexo],[strCodTit],[strCodInt],[strFormaIns]) VALUES('" + objEstuidante.strCodigo + "','" + objEstuidante.strCedula + "','" + objEstuidante.strNombres + "','" + objEstuidante.strApellidos + "','" + objEstuidante.strCedulaMil + "','" + objEstuidante.dtFechaNac + "',CONVERT(datetime, '" + now + "', 120) ,'" + objEstuidante.strEmail + "','" + objEstuidante.strNacionalidad + "','" + objEstuidante.strDocumentacion + "','" + objEstuidante.strCodSexo + "','" + objEstuidante.strCodTit + "','" + objEstuidante.strCodInt + "','" + objEstuidante.strFormaIns + "')"
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -870,6 +870,65 @@ try {
 }
 }
 
+module.exports.ListadoEstadoSolicitud = async function (dbcarrera) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + dbcarrera + "].[dbo].[tb_movilidad_tipo_estado] ORDER BY mte_strcodigo"
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(dbcarrera, "OK","OK");
+  
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+   module.exports.InsertarFacultad= async function (carrera,objFacultad) {
+      const now = new Date().toISOString().slice(0, 10).replace('T', ' ');
+    var sentencia=""; 
+    sentencia = "INSERT INTO [" + carrera + "].[dbo].[Facultades]([strCodigo],[strNombre],[strDecano],[strCedulaDecano],[strClaveDecano], [strSudDecano],[strCedulaSubDecano],[strClaveSubDecano],[dtCreacion],[strUbicacion],[imgLogo],[strDatos],[strCodEstado],[strCodTipoEntidad]) VALUES ('" + objFacultad.strCodigo + "','" + objFacultad.strNombre + "','" + objFacultad.strDecano + "','" + objFacultad.strCedulaDecano + "','" + objFacultad.strClaveDecano + "','" + objFacultad.strSudDecano + "','" + objFacultad.strCedulaSubDecano + "','" + objFacultad.strClaveSubDecano + "'," + now+ ",'" + objFacultad.strUbicacion + "','" + objFacultad.imgLogo + "','" + objFacultad.strDatos + "','ABI','FAC')"; 
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+   module.exports.ActualizarFacultad = async function (carrera,objFacultad) {
+  var sentencia="";
+  sentencia="UPDATE [" + carrera + "].[dbo].[Facultades] SET [strNombre]='" + objFacultad.strNombre + "',[strDecano]='" + objFacultad.strDecano + "',[strCedulaDecano]='" + objFacultad.strCedulaDecano + "',[strClaveDecano]='" + objFacultad.strClaveDecano + "', [strSudDecano]='" + objFacultad.strSudDecano + "',[strCedulaSubDecano]='" + objFacultad.strCedulaSubDecano + "',[strClaveSubDecano]='" + objFacultad.strClaveSubDecano + "',[strUbicacion]='" + objFacultad.strUbicacion + "',[imgLogo]='" + objFacultad.imgLogo + "',[strDatos]='" + objFacultad.strDatos + "' WHERE [strCodigo]='" + objFacultad.strCodigo + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
 
+   module.exports.CambiarEstadoFacultad = async function (carrera,codigo,estado) {
+  var sentencia="";
+  sentencia="UPDATE [" + carrera + "].[dbo].[Facultades] SET [strCodEstado]='" + estado+ "' WHERE [strCodigo]='" + codigo+ "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
 
 

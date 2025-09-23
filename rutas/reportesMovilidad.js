@@ -86,7 +86,7 @@ async function ProcesoExcelListadoSolicitudes(listado, periodo) {
     };
 
     // Encabezados de tabla
-    const headers = ['No', 'CEDULA', 'NOMBRES', 'APELLIDOS', 'PERIODO', 'CARRERA ACTUAL', 'CARRERA MOVILIDAD', 'MOVILIDAD', 'PUNTAJE', 'ESTADO'];
+    const headers = ['No', 'CEDULA', 'NOMBRES', 'APELLIDOS', 'PERIODO', 'CARRERA ACTUAL', 'CARRERA MOVILIDAD', 'MOVILIDAD', 'PUNTAJE','TIPO_PUNTAJE','TERCERA_MATRICULA', 'ESTADO'];
     worksheet.addRow(headers).eachCell((cell) => {
       cell.font = { bold: true };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -110,6 +110,8 @@ async function ProcesoExcelListadoSolicitudes(listado, periodo) {
         row.cm_nombrecarrera_movilidad,
         row.mts_strdescripcion,
         row.cm_puntaje,
+        row.puntajedescripcion,
+        row.terceramatricula,
         row.mte_strdescripcion,
       ];
       const excelRow = worksheet.addRow(rowData);
