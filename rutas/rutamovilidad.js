@@ -316,6 +316,25 @@ router.post('/InsertarInscripcionMoviExterna', async (req, res) => {
 
     }
 });
+router.post('/InsertarInscripcionAntigua', async (req, res) => {
+    try {
+        const { objinscripcion } = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesInsertarInscripcionesAntiguas(objinscripcion);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
 router.get('/InsertarCuposConfiguracionesCarreras/:periodo/:idusuario/', async (req, res) => {
     const idusuario = req.params.idusuario;
     const periodo = req.params.periodo;
