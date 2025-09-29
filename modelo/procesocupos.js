@@ -204,7 +204,6 @@ try {
 } catch (error) {
   return {data:"Error: "+ error}
 }
-
 }
 module.exports.ObenterEstudianteIncripcionMaster = async function (carrera,cedula,periodo) {
   var sentencia="";

@@ -28,12 +28,11 @@ router.get('/CarrerasDadoFacultadHomologaciones/:periodo/:codFacultad', async (r
 
 });
 
-router.get('/DatosEstudiantesCambioCarreraProcesos/:carrera/:codEstudiante/:nivel', async (req, res) => {
-    const carrera = req.params.carrera;
-    const codEstudiante = req.params.codEstudiante;
-    const nivel = req.params.nivel;
+router.post('/DatosEstudiantesCambioCarreraProcesos/', async (req, res) => {
+
+        const { carrera, codEstudiante,nivel,periodo,cedula } = req.body;
     try {
-        var respuesta = await funcionesprocesosmovilidad.ProcesoDatosEstudianteCambioCarrera(carrera, codEstudiante, nivel);
+        var respuesta = await funcionesprocesosmovilidad.ProcesoDatosEstudianteCambioCarrera(carrera, codEstudiante, nivel,periodo,cedula);
         res.json({
             success: true,
             Informacion: respuesta
@@ -845,6 +844,135 @@ router.post('/IngresoDocumentosSolicitud', async (req, res) => {
             }
         );
 
+    }
+});
+router.post('/IngresoEstuidanteExcepcionMovilidad', async (req, res) => {
+    try {
+        const { objDatos } = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesoIngresoEstuidanteExcepcionMovilidad(objDatos);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
+
+router.get('/ListadoEstadoCivilMaster/', async (req, res) => {
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoEstadoCivilMaster();
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+router.get('/ListadoSexoMaster/', async (req, res) => {
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoSexoMaster();
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+router.get('/ListadoCiudadTodasMaster/', async (req, res) => {
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoCiudadTodasMaster();
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+
+router.post('/ActualizarEstuidanteMaster', async (req, res) => {
+    try {
+        const { objDatos,carrera } = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesoActualizarEstuidanteMaster(objDatos,carrera);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
+router.post('/ActualizarEstuidanteCarrera', async (req, res) => {
+    try {
+        const { objDatos,carrera } = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesoActualizarEstuidanteCarrera(objDatos,carrera);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
+
+router.get('/ListadoInscripcionesTodasEstudiante/:cedula', async (req, res) => {
+        const cedula = req.params.cedula;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadosInscrionestodasEstudiante(cedula);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
     }
 });
 module.exports = router;
