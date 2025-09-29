@@ -504,7 +504,6 @@ try {
    module.exports.ActualizarFechasCalificacionesCarrera = async function (carrera,strcodigo,strValor) {
   var sentencia="";
   sentencia="UPDATE [" + carrera + "].[dbo].[Parametros_Carrera] SET [strValor]='" + strValor+ "' WHERE [strCodigo]='" + strcodigo+ "'"
-  console.log(sentencia)
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");

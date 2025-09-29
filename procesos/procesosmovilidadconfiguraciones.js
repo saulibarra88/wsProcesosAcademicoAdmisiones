@@ -404,7 +404,7 @@ module.exports.ProcesoActualizarPeriodosCarreras = async function (objPeriodo, l
 
     try {
         if (tipo == 0) {
-            var ListadoCarreras = await funcionesmodelomovilidadconfiguraciones.ListadosTodasCarrerasAcademica('OAS_Master', objPeriodo);
+            var ListadoCarreras = await funcionesmodelomovilidadconfiguraciones.ListadosTodasCarrerasAcademica('OAS_Master');
             if (ListadoCarreras.count > 0) {
                 for (var carreras of ListadoCarreras.data) {
                     var ActualizarCarrera = await funcionesmodelomovilidadconfiguraciones.ActualizarPeridoAcademicoCarrera(carreras.strBaseDatos, objPeriodo);
@@ -471,8 +471,6 @@ module.exports.ProcesoListarFechasCalificacionesCarreras = async function () {
 }
 
 module.exports.ProcesoActualizarFechasCalificacionesCarreras = async function (objFechas, listadoCarrera, tipo) {
-    console.log(tipo)
-    console.log(listadoCarrera)
     try {
         if (tipo == 0) {
             var ListadoCarreras = await funcionesmodelomovilidadconfiguraciones.ListadosTodasCarrerasAcademica('OAS_Master');
