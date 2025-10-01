@@ -616,17 +616,17 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         <thead>
           <tr>
              <th style="font-size: 8px;text-align: center;">N°</th>
-                  <th style="font-size: 8px;text-align: center;">PAO</th>
-                  <th style="font-size: 8px;text-align: center;">PARALELO</th>
-                  <th style="font-size: 8px;text-align: center;">MATRI</th>
-                  <th style="font-size: 8px;text-align: center;">PRIMERA</th>
-                  <th style="font-size: 8px;text-align: center;">SEGUNDA</th>
-                  <th style="font-size: 8px;text-align: center;">TERCERA</th>
-                  <th style="font-size: 8px;text-align: center;">REPITEN</th>
-                  <th  style="font-size: 8px;text-align: center;">APRUEBAN </th>
-                  <th  style="font-size: 8px;text-align: center;">REPRUEBAN </th>
-                  <th  style="font-size: 8px;text-align: center;">RETIROS </th>
-                  <th  style="font-size: 8px;text-align: center;">CONVALIDA </th>
+                  <th style="font-size: 7px;text-align: center;">PAO</th>
+                  <th style="font-size: 7px;text-align: center;">PARALELO</th>
+                  <th style="font-size: 7px;text-align: center;">MATRI</th>
+                  <th style="font-size: 7px;text-align: center;">PRIMERA</th>
+                  <th style="font-size: 7px;text-align: center;">SEGUNDA</th>
+                  <th style="font-size: 7px;text-align: center;">TERCERA</th>
+                  <th style="font-size: 7px;text-align: center;">REPITEN</th>
+                  <th  style="font-size: 7px;text-align: center;">APRUEBAN </th>
+                  <th  style="font-size: 7px;text-align: center;">REPRUEBAN </th>
+                  <th  style="font-size: 7px;text-align: center;">RETIROS </th>
+                  <th  style="font-size: 7px;text-align: center;">CONVALIDA </th>
                   <th  style="font-size: 7px;text-align: center;">DOCENTES_NOMBRES </th>
           </tr>
         </thead>
@@ -727,17 +727,17 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         <thead>
           <tr>
              <th style="font-size: 8px;text-align: center;">N°</th>
-                  <th style="font-size: 8px;text-align: center;">PAO</th>
-                  <th style="font-size: 8px;text-align: center;">PARALELO</th>
-                  <th style="font-size: 8px;text-align: center;">MATRICULAS</th>
-                  <th style="font-size: 8px;text-align: center;">DEFINITIVA</th>
-                  <th style="font-size: 8px;text-align: center;">PENDIENTE</th>
-                  <th style="font-size: 8px;text-align: center;">SOLICITADA</th>
-                  <th style="font-size: 8px;text-align: center;">PRESOL</th>
-                  <th  style="font-size: 8px;text-align: center;">VA_DEF </th>
-                  <th  style="font-size: 8px;text-align: center;">VA_PEN </th>
-                  <th  style="font-size: 8px;text-align: center;">VA_SOL </th>
-                  <th  style="font-size: 8px;text-align: center;">VA_PRE</th>
+                  <th style="font-size: 7px;text-align: center;">PAO</th>
+                  <th style="font-size: 7px;text-align: center;">PARALELO</th>
+                  <th style="font-size: 7px;text-align: center;">MATRICULAS</th>
+                  <th style="font-size: 7px;text-align: center;">DEFINITIVA</th>
+                  <th style="font-size: 7px;text-align: center;">PENDIENTE</th>
+                  <th style="font-size: 7px;text-align: center;">SOLICITADA</th>
+                  <th style="font-size: 7px;text-align: center;">PRESOL</th>
+                  <th  style="font-size: 7px;text-align: center;">VA_DEF </th>
+                  <th  style="font-size: 7px;text-align: center;">VA_PEN </th>
+                  <th  style="font-size: 7px;text-align: center;">VA_SOL </th>
+                  <th  style="font-size: 7px;text-align: center;">VA_PRE</th>
                   <th  style="font-size: 7px;text-align: center;">DOCENTES_NOMBRES </th>
           </tr>
         </thead>
