@@ -607,9 +607,7 @@ module.exports.ArialPorDefecto=async function() {
 }
 
 module.exports.obtenerImagenFacultad = function(bufferObj1) {
-  console.log(bufferObj1)
   bufferObj = bufferToObject(bufferObj1);
-  console.log(bufferObj)
   // Verificar la estructura
     if (!bufferObj || bufferObj.type !== 'Buffer' || !Array.isArray(bufferObj.data)) {
         throw new Error('Estructura de Buffer inválida');

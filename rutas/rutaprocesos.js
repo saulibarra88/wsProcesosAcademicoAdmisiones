@@ -7,6 +7,7 @@ const procesoCupo = require('../modelo/procesocupos');
 const reportes = require('../rutas/reportesadmisiones');
 const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
 const procesosCarrerasFunciones = require('./procesoscarrerasespoch');
+const procesosReportesFunciones = require('./procesosreportescarreras');
 const pruebasInformacion = require('./procesosespochcarrera');
 
 router.get('/ProcesoConfirmacionCupoInscripcion/:periodo/:cedula/',async (req, res) => {
@@ -582,7 +583,49 @@ router.get('/PDFPerdidasAsignaturasEstudiantes/:carrera/:periodo/:cedula',async 
     }
  
 });
+router.get('/PDFPerdidasAsignaturasEstudiantesNivelParalelos/:carrera/:periodo/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion = await procesosReportesFunciones.pdfPerdidaAsignaturasEstudiantesporParalelos(carrera,periodo,cedula);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
 
+router.get('/PDFMatriculasEstadosNivelParalelos/:carrera/:periodo/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion = await procesosReportesFunciones.pdfMatriculasEstadosEstudiantesporParalelos(carrera,periodo,cedula);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
 router.get('/ProcesosPruebas/:periodo/',async (req, res) => {
     const periodo = req.params.periodo;
 

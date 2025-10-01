@@ -186,6 +186,37 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     }
   }
 
+   module.exports.AsignaturasDictadosMateriasParalelosCarreras = async function ( carrera, periodo,materia) {
+    var sentencia = "";
+    sentencia = "SELECT dm.strCodMateria, dm.strCodNivel,dm.strCodParalelo,m.strNombre,d.strCedula,d.strNombres,d.strApellidos FROM [" + carrera + "].[dbo].[Dictado_Materias]  as dm INNER JOIN [" + carrera + "].[dbo].[Materias]  as m on m.strCodigo=dm.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Docentes] as d on d.strCodigo=dm.strCodDocente WHERE strCodPeriodo='" + periodo + "' AND strCodMateria='" + materia + "' ORDER BY dm.strCodNivel,dm.strCodMateria"
+                try {
+
+      if (sentencia != "") {
+       
+        const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
+        return (sqlconsulta)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }
+    module.exports.CalculosEstuidantesApruebaRepruebaPorAsignaturasNivelParalelo = async function ( carrera, periodo,materia,nivel,paralelo) {
+    var sentencia = "";
+  sentencia="SELECT SUM(CASE WHEN (np.Aprobado = 1 ) THEN 1 ELSE 0 END) AS Aprueba, SUM(CASE WHEN (np.Aprobado = 0 ) THEN 1 ELSE 0 END) AS Reprueba, COUNT(sintCodMatricula) AS Total FROM ( SELECT np.sintCodMatricula, np.strCodPeriodo, np.strCodMateria,MAX( CASE WHEN strCodEquiv = 'A' THEN 1 ELSE 0 END) AS Aprobado FROM [" + carrera + "].[dbo].Notas_Parciales as np INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS ma on ma.sintCodMatricula=np.sintCodMatricula and ma.strCodPeriodo=np.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m ON ma.sintCodMatricula=m.sintCodigo and ma.strCodPeriodo=m.strCodPeriodo WHERE  m.strCodPeriodo ='" + periodo + "' and np.strCodPeriodo = '" + periodo + "' AND np.strCodMateria ='" + materia + "'  AND ma.strCodMateria ='" + materia + "' AND ma.strCodParalelo = '" + paralelo + "' AND ma.strCodNivel='" + nivel + "' AND ma.strCodPeriodo ='" + periodo + "' AND (ma.strObservaciones IS NULL OR (ma.strObservaciones NOT LIKE '%VALIDADA%')) GROUP BY np.sintCodMatricula, np.strCodPeriodo, np.strCodMateria) AS np"
+  try {
+      if (sentencia != "") {
+       
+        const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
+        return (sqlconsulta)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }
   module.exports.CalculosEstuidantesPorAsignaturas = async function ( carrera, periodo,materia) {
     var sentencia = "";
   sentencia="SELECT SUM(CASE WHEN (np.Aprobado = 1 ) THEN 1 ELSE 0 END) AS Aprueba, SUM(CASE WHEN (np.Aprobado = 0 ) THEN 1 ELSE 0 END) AS Reprueba, COUNT(sintCodMatricula) AS Total FROM ( SELECT sintCodMatricula, strCodPeriodo, strCodMateria,MAX( CASE WHEN strCodEquiv = 'A' THEN 1 ELSE 0 END) AS Aprobado FROM Notas_Parciales WHERE strCodPeriodo = '" + periodo + "' AND strCodMateria ='" + materia + "' GROUP BY sintCodMatricula, strCodPeriodo, strCodMateria) AS np"
@@ -371,6 +402,36 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   }
 
+ module.exports.RetirosAsignaturasNormalesCarrerasListadoNivelParalelo = async function (carrera,periodo,codmateria,nivel,paralelo) {
+    var sentencia="";
+    sentencia="select * from [" + carrera + "].[dbo].[Matriculas] as m INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] as ma on ma.sintCodMatricula=m.sintCodigo and ma.strCodPeriodo=m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Retiros] as r on r.sintCodMatricula=m.sintCodigo and r.strCodPeriodo =m.strCodPeriodo where m.strCodPeriodo='" + periodo + "' and r.strCodPeriodo='" + periodo + "' and ma.strCodMateria ='" + codmateria + "' and r.strCodMateria ='" + codmateria + "' and ma.strCodNivel='" + nivel + "' and ma.strCodParalelo='" + paralelo + "' "
+   
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
+    module.exports.AsignaturasConvalidadasPorNivelParalelo = async function (carrera,periodo,codmateria,nivel,paralelo) {
+    var sentencia="";
+    sentencia=" SELECT * FROM [" + carrera + "].[dbo].[Materias_Asignadas] AS ma INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m ON ma.sintCodMatricula=m.sintCodigo and ma.strCodPeriodo=m.strCodPeriodo WHERE m.strCodEstado='DEF' and  ma.strCodMateria = '" + codmateria + "' AND ma.strCodParalelo = '" + paralelo + "' AND ma.strCodNivel='" + nivel + "' AND ma.strCodPeriodo ='" + periodo + "' AND (ma.strObservaciones IS NULL OR (ma.strObservaciones LIKE '%VALIDADA%')) "
+   
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
   module.exports.RetirosEstudiantesNormalesCarrerasCedula = async function (carrera,cedula) {
     var sentencia="";
     sentencia="select * from ( SELECT  r.sintCodMatricula,r.dtFechaAprob,r.dtFechaAsentado,r.strResolucion FROM [" + carrera + "].[dbo].[Retiros] as r INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=r.sintCodMatricula INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud WHERE e.strCedula='" + cedula + "' group by r.sintCodMatricula,r.dtFechaAprob,r.dtFechaAsentado,r.strResolucion ) as ta INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=ta.sintCodMatricula INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud WHERE e.strCedula='" + cedula + "'"
@@ -735,7 +796,36 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   
   }
-
+  module.exports.AsignaturasMatriculadaNivelParalelosPeriodoCantidad = async function (carrera,periodo,codmateria,nivel,paralelo) {
+    var sentencia="";
+    sentencia="SELECT SUM(CASE WHEN bytNumMat = 1 THEN 1 ELSE 0 END) AS Primera, SUM(CASE WHEN bytNumMat = 2 THEN 1 ELSE 0 END) AS Segunda, SUM(CASE WHEN bytNumMat = 3 THEN 1 ELSE 0 END) AS Tercera,COUNT(bytNumMat) AS Total  FROM [" + carrera + "].[dbo].[Materias_Asignadas] AS ma INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m ON ma.sintCodMatricula=m.sintCodigo and ma.strCodPeriodo=m.strCodPeriodo WHERE m.strCodEstado='DEF' and  ma.strCodMateria = '" + codmateria + "' AND ma.strCodParalelo = '" + paralelo + "' AND ma.strCodNivel='" + nivel + "' AND ma.strCodPeriodo ='" + periodo + "' AND (ma.strObservaciones IS NULL OR (ma.strObservaciones NOT LIKE '%VALIDADA%'));"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  
+  }
+    module.exports.MatriculasCantidadEstadosAsignaturas = async function (carrera,periodo,materia,nivel,paralelo) {
+    var sentencia="";
+    sentencia="SELECT SUM(CASE WHEN m.strCodEstado = 'DEF' THEN 1 ELSE 0 END) AS Definitiva, SUM(CASE WHEN m.strCodEstado = 'PEN' THEN 1 ELSE 0 END) AS Pendiente, SUM(CASE WHEN m.strCodEstado = 'SOL' THEN 1 ELSE 0 END) AS Solicitadas, SUM(CASE WHEN m.strCodEstado = 'PRE' THEN 1 ELSE 0 END) AS Presolicitada, SUM(CASE WHEN m.strCodEstado = 'VCDEF' THEN 1 ELSE 0 END) AS Definitvavalidacion, SUM(CASE WHEN m.strCodEstado = 'VCPEN' THEN 1 ELSE 0 END) AS Pendientevalidación, SUM(CASE WHEN m.strCodEstado = 'VCSOL' THEN 1 ELSE 0 END) AS Solicitadavalidacion, SUM(CASE WHEN m.strCodEstado = 'VCPRE' THEN 1 ELSE 0 END) AS presolicitadavalidacion, COUNT(m.sintCodigo) AS Total FROM [" + carrera + "].[dbo].[Materias_Asignadas] AS ma INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m ON ma.sintCodMatricula=m.sintCodigo and ma.strCodPeriodo=m.strCodPeriodo WHERE ma.strCodMateria = '" + materia + "' AND ma.strCodParalelo = '" + paralelo + "' AND ma.strCodNivel='" + nivel + "' AND ma.strCodPeriodo ='" + periodo + "' AND (ma.strObservaciones IS NULL OR (ma.strObservaciones NOT LIKE '%VALIDADA%')); "
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  
+  }
   module.exports.AsignaturasMatriculadaEstudiantePeriodoCantidadTrasaccion = async function (transaction,carrera,periodo,intmatricula) {
     var sentencia="";
     sentencia="SELECT SUM(CASE WHEN bytNumMat = 1 THEN 1 ELSE 0 END) AS Primera, SUM(CASE WHEN bytNumMat = 2 THEN 1 ELSE 0 END) AS Segunda, SUM(CASE WHEN bytNumMat = 3 THEN 1 ELSE 0 END) AS Tercera FROM [" + carrera + "].[dbo].[Materias_Asignadas] WHERE sintCodMatricula = '" + intmatricula + "' AND strCodPeriodo ='" + periodo + "' AND (strObservaciones IS NULL OR (strObservaciones NOT LIKE '%VALIDADA%' AND strObservaciones NOT LIKE '%RETIRADO%'));"

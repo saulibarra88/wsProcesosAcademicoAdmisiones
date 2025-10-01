@@ -1057,7 +1057,6 @@ async function FuncionProcesoCupoCarreraMovilidadExterna(solicitud, idpersona, i
     }
 }
 async function FuncionInscripcionEstuidanteCarreraInterna(solicitud, datosCarreraMovilidad, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30) {
-    console.log('Cambio Externo')
     try {
         var respuesta = {};
         var ObnterDatosInscripcionCarreraEstuidante = await funcionesmodelomovilidad.ObtenerInscripcionEstuidante('OAS_Master', funcionestools.CedulaConGuion(solicitud.cm_identificacion), datosCarreraMovilidad.strCodigo);
@@ -1169,8 +1168,7 @@ async function FuncionInscripcionEstuidanteCarreraExterna(solicitud, datosCarrer
 
     }
 }
-async function FuncionInscripcionAntiguaEstuidante(objinscripcion) {
-    console.log('Inscripcion Antigua Proceso')
+async function FuncionInscripcionAntiguaEstuidante(objinscripcion) {//Inscripcion Antigua Proceso
     try {
         var respuesta = {};
         var ObnterDatosInscripcionCarreraEstuidante = await funcionesmodelomovilidad.ObtenerInscripcionEstuidante('OAS_Master', funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante), objinscripcion.codcarreracambio);
@@ -1178,13 +1176,9 @@ async function FuncionInscripcionAntiguaEstuidante(objinscripcion) {
             var InsertarInscripcionEstuidante = await funcionesmodelomovilidad.InsertarInscripcionEstuidante('OAS_Master', funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante), objinscripcion.codcarreracambio, objinscripcion.codperiodo, objinscripcion.codformainscripcion, objinscripcion.observacion, objinscripcion.blgratuidadT, objinscripcion.blgratuidad30);
         }
         var DatoEstudianteCarreaMovilidad = await funcionesmodelocarrera.ObtenerDatosEstudianteCarrera(objinscripcion.basecarreracambio, funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante));
-        console.log(DatoEstudianteCarreaMovilidad)
         var DatosTitulosEstuidante = await funcionesmodelomovilidad.ObtenerGradoEstudianteTodas('OAS_Master', funcionestools.CedulaConGuion(objinscripcion.cedulaestuidante));
-        console.log(DatosTitulosEstuidante)
         var codigoTit = DatosTitulosEstuidante.count > 0 ? DatosTitulosEstuidante.data[0].strCodTit[0] : '';
         var codigoInt = DatosTitulosEstuidante.count > 0 ? DatosTitulosEstuidante.data[0].strCodInt[0] : '';
-        console.log(codigoTit)
-        console.log(codigoInt)
         if (DatoEstudianteCarreaMovilidad.count == 0) {
             var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + objinscripcion.cedulaestuidante, { httpsAgent: agent });
             var objEstuidante = {
@@ -1202,7 +1196,6 @@ async function FuncionInscripcionAntiguaEstuidante(objinscripcion) {
                 strCodInt: codigoInt,
                 strFormaIns: objinscripcion.codformainscripcion,
             }
-            console.log(objEstuidante)
             var CodigoSiguienteEstuidante = await funcionesmodelomovilidad.ObtenerCodigoSiguienteEstuidanteConfiguracionCarrera(objinscripcion.basecarreracambio);
             var VerificarEstudiante = await funcionesmodelomovilidad.ObtenerEstuidanteCarreraCodigo(objinscripcion.basecarreracambio, CodigoSiguienteEstuidante.data[0].siguientecodigodisponible);
             objEstuidante.strCodigo = CodigoSiguienteEstuidante.data[0].siguientecodigodisponible
@@ -1350,7 +1343,6 @@ async function FuncionReporteExcelSolicitudes(periodo, estado) {
                 solicitudes.terceramatricula = solicitudes.cm_perdidatercera_actual == 1 ? 'PERDIDA TERCERA' : ''
                 listado.push(solicitudes)
             }
-            console.log(solicitudes)
             Base64 = await funcionesreportemovilidad.ExcelExcelListadoSolicitudes(listado, periodo)
         }
 
