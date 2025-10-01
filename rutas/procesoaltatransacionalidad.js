@@ -723,7 +723,6 @@ async function FuncionFinancieroDatos() {
         const ListadoCarrera = await modelocentralizada.ListadoFinanciero();
         const limitHTTP = pLimit(10); // Limita a 10 peticiones simultáneas
         const limitSQL = pLimit(10);
-        // console.log(ListadoCarrera)
         await Promise.all(ListadoCarrera.data.map(async (info, i) => {
 
             const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.stridentificacioncomprador}`, { httpsAgent: agent }));
