@@ -616,18 +616,18 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         <thead>
           <tr>
              <th style="font-size: 8px;text-align: center;">N°</th>
-                  <th style="font-size: 8px;text-align: center;">PAO</th>
-                  <th style="font-size: 8px;text-align: center;">PARALELOS</th>
-                  <th style="font-size: 8px;text-align: center;">MATRI._NORMALES</th>
-                  <th style="font-size: 8px;text-align: center;">PRIMERA</th>
-                  <th style="font-size: 8px;text-align: center;">SEGUNDA</th>
-                  <th style="font-size: 8px;text-align: center;">TERCERA</th>
-                  <th style="font-size: 8px;text-align: center;">REPITEN</th>
-                  <th  style="font-size: 8px;text-align: center;">APRUEBAN </th>
-                  <th  style="font-size: 8px;text-align: center;">REPRUEBAN </th>
-                  <th  style="font-size: 8px;text-align: center;">RETIROS </th>
-                  <th  style="font-size: 8px;text-align: center;">CONVALIDA/VALIDA </th>
-                  <th  style="font-size: 8px;text-align: center;">DOCENTE </th>
+                  <th style="font-size: 7px;text-align: center;">PAO</th>
+                  <th style="font-size: 7px;text-align: center;">PARALELO</th>
+                  <th style="font-size: 7px;text-align: center;">MATRI</th>
+                  <th style="font-size: 7px;text-align: center;">PRIMERA</th>
+                  <th style="font-size: 7px;text-align: center;">SEGUNDA</th>
+                  <th style="font-size: 7px;text-align: center;">TERCERA</th>
+                  <th style="font-size: 7px;text-align: center;">REPITEN</th>
+                  <th  style="font-size: 7px;text-align: center;">APRUEBAN </th>
+                  <th  style="font-size: 7px;text-align: center;">REPRUEBAN </th>
+                  <th  style="font-size: 7px;text-align: center;">RETIROS </th>
+                  <th  style="font-size: 7px;text-align: center;">CONVALIDA </th>
+                  <th  style="font-size: 7px;text-align: center;">DOCENTES_NOMBRES </th>
           </tr>
         </thead>
         <tbody>
@@ -649,7 +649,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
           <td style="font-size: 8px; text-align: center;font-family: serif;">${paralelodatos.Reprueban}</td>
           <td style="font-size: 8px; text-align: center;font-family: serif;">${paralelodatos.retiros}</td>
           <td style="font-size: 8px; text-align: center;font-family: serif;">${paralelodatos.convalidaciones}</td>
-          <td style="font-size: 8px; text-align: center;font-family: serif;">${paralelodatos.docente}</td>
+          <td style="font-size: 7px; text-align: center;font-family: serif;">${paralelodatos.docente}</td>
         </tr>
       `;
         });
@@ -727,18 +727,18 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         <thead>
           <tr>
              <th style="font-size: 8px;text-align: center;">N°</th>
-                  <th style="font-size: 8px;text-align: center;">PAO</th>
-                  <th style="font-size: 8px;text-align: center;">PARALELOS</th>
-                  <th style="font-size: 8px;text-align: center;">MATRICULAS</th>
-                  <th style="font-size: 8px;text-align: center;">DEFINITIVA</th>
-                  <th style="font-size: 8px;text-align: center;">PENDIENTE</th>
-                  <th style="font-size: 8px;text-align: center;">SOLICITADAS</th>
-                  <th style="font-size: 8px;text-align: center;">PRESOLICITADAS</th>
-                  <th  style="font-size: 8px;text-align: center;">VALIDACION_DEF </th>
-                  <th  style="font-size: 8px;text-align: center;">VALIDACION_PEN </th>
-                  <th  style="font-size: 8px;text-align: center;">VALIDACION_SOL </th>
-                  <th  style="font-size: 8px;text-align: center;">VALIDACION_PRE</th>
-                  <th  style="font-size: 8px;text-align: center;">DOCENTE </th>
+                  <th style="font-size: 7px;text-align: center;">PAO</th>
+                  <th style="font-size: 7px;text-align: center;">PARALELO</th>
+                  <th style="font-size: 7px;text-align: center;">MATRICULAS</th>
+                  <th style="font-size: 7px;text-align: center;">DEFINITIVA</th>
+                  <th style="font-size: 7px;text-align: center;">PENDIENTE</th>
+                  <th style="font-size: 7px;text-align: center;">SOLICITADA</th>
+                  <th style="font-size: 7px;text-align: center;">PRESOL</th>
+                  <th  style="font-size: 7px;text-align: center;">VA_DEF </th>
+                  <th  style="font-size: 7px;text-align: center;">VA_PEN </th>
+                  <th  style="font-size: 7px;text-align: center;">VA_SOL </th>
+                  <th  style="font-size: 7px;text-align: center;">VA_PRE</th>
+                  <th  style="font-size: 7px;text-align: center;">DOCENTES_NOMBRES </th>
           </tr>
         </thead>
         <tbody>
@@ -760,7 +760,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
           <td style="font-size: 8px; text-align: center;font-family: serif;">${paralelodatos.cantidadpenva}</td>
           <td style="font-size: 8px; text-align: center;font-family: serif;">${paralelodatos.cantidadsolva}</td>
           <td style="font-size: 8px; text-align: center;font-family: serif;">${paralelodatos.cantidadpreva}</td>
-          <td style="font-size: 8px; text-align: center;font-family: serif;">${paralelodatos.docente}</td>
+          <td style="font-size: 7px; text-align: center;font-family: serif;">${paralelodatos.docente}</td>
         </tr>
       `;
         });
