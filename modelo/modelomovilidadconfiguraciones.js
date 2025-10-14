@@ -544,3 +544,18 @@ try {
   return {data:"Error: "+ error}
 }
 }
+
+   module.exports.ObtenerInformacionAcademicaEstudiante = async function (carrera,cedula) {
+  var sentencia="";
+  sentencia="SELECT * ,T.strNombre AS nombreTiulo,I.strNombre as nombreinstitucion, TI.strDescripcion AS nombretipoinstitucion FROM [dbo].[Estudiantes] AS E INNER JOIN [dbo].[Grados] AS G ON G.strCedEstud=E.strCedula INNER JOIN [dbo].[Titulos_Validos] AS TV ON TV.strCodInt=G.strCodInt AND TV.strCodTit=G.strCodTit INNER JOIN [dbo].[Instituciones] AS I ON I.strCodigo=TV.strCodInt INNER JOIN [dbo].[Titulos] AS T ON T.strCodigo=TV.strCodTit INNER JOIN [dbo].[Tipos_Instituciones] AS TI ON TI.strCodigo=I.strCodTipo WHERE  E.strCedula='" + cedula+ "' ORDER BY G.dtFecha ASC"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}

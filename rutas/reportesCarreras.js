@@ -667,7 +667,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
             <body>
             
             <p style='text-align: center;font-size: 10px'> <strong>LISTADO DE ASIGNATURAS POR CARRERAS INFORMACIÓN MATRÍCULAS</strong> </p>
-            <p style='text-align: center;font-size: 10px'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
+            <p style='text-align: center;font-size: 10px'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p>
     ${datos}
               <br/><br/>
               <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
@@ -778,7 +778,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
             <body>
             
             <p style='text-align: center;font-size: 10px'> <strong>LISTADO DE ASIGNATURAS POR CARRERAS INFORMACIÓN MATRÍCULAS</strong> </p>
-            <p style='text-align: center;font-size: 10px'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
+            <p style='text-align: center;font-size: 10px'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p>
     ${datos}
               <br/><br/>
               <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
