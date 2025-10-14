@@ -96,6 +96,15 @@ module.exports.ProcesoInsertarFacultad = async function (facultad) {
         return 'ERROR: ' + error;
     }
 }
+module.exports.ProcesoObtenerInformacionAcademicaEstudiante = async function (cedula) {
+    try {
+        var resultado = await funcionesmodelomovilidadconfiguraciones.ObtenerInformacionAcademicaEstudiante('OAS_Master', cedula);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR: ' + error;
+    }
+}
 module.exports.ProcesoActualizarFacultad = async function (facultad) {
     try {
         var resultado = await funcionesmodelomovilidad.ActualizarFacultad('OAS_Master', facultad);

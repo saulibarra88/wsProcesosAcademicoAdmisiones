@@ -604,7 +604,6 @@ router.post('/ActualizarDatosInstitucional', async (req, res) => {
 });
 router.get('/ObtenerNuevoCodigoPeriodoAcademico/:tipo',async (req, res) => {
      const tipo = req.params.tipo;
-     console.log(tipo)
     try {
         if(tipo=='P'){
  var Informacion=await  funcionesprocesosmovilidadconfiguraciones.ProcesoObtenerNuevoCodigoPeriodoOrdinario();
@@ -721,5 +720,25 @@ router.post('/ActualizarFechasCalificacionesCarreras', async (req, res) => {
         );
 
     }
+});
+
+router.get('/ObtenerInformacionAcademicaEstudiante/:cedula',async (req, res) => {
+     const cedula = req.params.cedula;
+    try {
+        var Informacion=await  funcionesprocesosmovilidadconfiguraciones.ProcesoObtenerInformacionAcademicaEstudiante(cedula);
+        res.json({
+            success: true,
+            Informacion: Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el proceso' + err
+            }
+        );
+    }
+ 
 });
 module.exports = router;
