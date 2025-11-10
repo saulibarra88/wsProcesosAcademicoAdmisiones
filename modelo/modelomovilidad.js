@@ -216,7 +216,21 @@ try {
 }
 
 }
+ module.exports.ObenterDatosCarreraCodigo = async function (carrera,codigocarrera) {
+  var sentencia="";
+  sentencia=" select * from [" + carrera + "].[dbo].[Carreras] where  [strCodigo]='" + codigocarrera + "'"
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
 
+}
  module.exports.ObtnerDocumentosDadoIdSolicitud = async function (carrera,idSolicitud) {
   var sentencia="";
   sentencia="SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud_documentos] WHERE [msd_idsolicitud]=" + idSolicitud + " AND [msd_estado]=1"
@@ -599,6 +613,21 @@ console.log(sentencia)
 
   var sentencia="";
   sentencia="SELECT  *,evp.[strDescripcion] as estadovidapapa,evm.[strDescripcion] as estadovidamama,s.[strNombre] as nombresexo,ec.[strDescripcion] as nombreestadocivil,c.[strNombre] as nombreciudad,eu.[strDescripcion] as nombreestadousuario FROM [" + carrera + "].[dbo].[Estudiantes] as e INNER JOIN [" + carrera + "].[dbo].[Estados_Vida] AS evp on evp.[strCodigo]=e.[strCodEstVidP] INNER JOIN [" + carrera + "].[dbo].[Estados_Vida] AS evm on evm.[strCodigo]=e.[strCodEstVidM] INNER JOIN [" + carrera + "].[dbo].[Sexos] AS s on s.[strCodigo]=e.[strCodSexo] INNER JOIN [" + carrera + "].[dbo].[Estados_Civiles] AS ec on ec.[strCodigo]=e.[strCodEstCiv] INNER JOIN [" + carrera + "].[dbo].[Ciudades] AS c on c.[strCodigo]=e.[strCodCiudadProc] INNER JOIN [" + carrera + "].[dbo].[Estados_Usuarios] as eu on eu.[strCodigo]=e.[strCodEstadoUsuario] WHERE [strCedula]='"+cedula+"'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+ module.exports.ObtnerEstuidanteCarrera = async function (carrera,cedula) {
+
+  var sentencia="";
+  sentencia="SELECT  *,s.[strNombre] as nombresexo FROM [" + carrera + "].[dbo].[Estudiantes] as e  INNER JOIN [" + carrera + "].[dbo].[Sexos] AS s on s.[strCodigo]=e.[strCodSexo]   WHERE [strCedula]='"+cedula+"'"
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");

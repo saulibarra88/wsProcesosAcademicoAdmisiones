@@ -194,7 +194,7 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
  var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbasecar, periodo, estado);
         var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera.hmbdbasecar);
             for (var matricula of datosMatriculas.data) {
-                console.log(matricula.strCedula)
+                console.log(matricula.strCedula + " - " + carrera.hmbdbasecar)
        const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
             var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
             var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
@@ -289,7 +289,7 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
             for (var matricula of datosMatriculas.data) {
 
               const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-  console.log(matricula.strCedula)
+  console.log(matricula.strCedula + " - " + carrera.hmbdbaseniv)
   var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
             var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
             var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)

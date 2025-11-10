@@ -832,23 +832,23 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         for (let carreras of listado) {
           contadot = contadot + 1;
           bodylistado += `<tr >
-                              <td style="font-size: 10px; text-align: center">
+                              <td style="font-size: 8px; text-align: center">
                               ${contadot}
                             </td>
-                            <td style="font-size: 10px; text-align: left">
+                            <td style="font-size: 8px; text-align: left">
                               ${carreras.identificacion}
                               
                             </td>
-                            <td style="font-size: 10px; text-align: center">
+                            <td style="font-size: 8px;">
                               ${carreras.Estudiante.strNombres}   ${carreras.Estudiante.strApellidos} 
                             </td>
-                            <td style="font-size: 10px; text-align: center">
+                            <td style="font-size: 8px;">
                               ${carreras.Carrera.strNombreCarrera}  
                             </td>
-                              <td style="font-size: 10px; text-align: center">
+                              <td style="font-size: 8px; text-align: center">
                               ${carreras.dcupobservacion}  
                             </td>
-                              <td style="font-size: 10px; text-align: center">
+                              <td style="font-size: 8px; text-align: center">
                               ${carreras.Estado.estnombre}  
                             </td>
   
@@ -861,26 +861,26 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
               <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left;font-size: 11px; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
             </head>
             <body>
-            <p style='text-align: center;font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
-            <p style='text-align: center;font-size: 11px'> <strong>INFORMACIÓN ESTUDIANTE CUPOS</strong> </p>
-            <p style='text-align: center;font-size: 11px'> <strong>ESTADO CUPO ACADÉMICO:   ${estado.estnombre}  </strong> </p>
-            <p style='text-align: center;font-size: 11px'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
+            <p style='text-align: center;font-size: 9px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
+            <p style='text-align: center;font-size: 9px'> <strong>INFORMACIÓN ESTUDIANTE CUPOS</strong> </p>
+            <p style='text-align: center;font-size: 9px'> <strong>ESTADO CUPO ACADÉMICO:   ${estado.estnombre}  </strong> </p>
+            <p style='text-align: center;font-size: 9px'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
   
               <table border=2>
               <thead>
               <tr>
-                     <th colspan="12" style="text-align: center; font-size: 10px">
+                     <th colspan="12" style="text-align: center; font-size: 8px">
                          INFORMACIÓN.
                      </th>
                  </tr>
                 <tr>
-                  <th style="font-size: 10px;text-align: center;">N°</th>
-                  <th style="font-size: 10px;text-align: center;">CEDULA EST.</th>
-                  <th  style="font-size: 10px;text-align: center;">NOMBRES Y APELLIDOS </th>
-                  <th style="font-size: 10px;text-align: center;">CARRERA</th>
+                  <th style="font-size: 8px;text-align: center;">N°</th>
+                  <th style="font-size: 8px;text-align: center;">CEDULA EST.</th>
+                  <th  style="font-size: 8px;text-align: center;">NOMBRES Y APELLIDOS </th>
+                  <th style="font-size: 8px;text-align: center;">CARRERA</th>
                   
-                  <th style="font-size: 10px;text-align: center;">DESCRIPCIÓN</th>
-                  <th style="font-size: 10px;text-align: center;">CUPO</th>
+                  <th style="font-size: 8px;text-align: center;">DESCRIPCIÓN</th>
+                  <th style="font-size: 8px;text-align: center;">CUPO</th>
                 </tr>
               </thead>
   
@@ -890,8 +890,8 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
               </table>
               <br/><br/>
               <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-              <p style="text-align: center;font-size: 11px;"> GENERADO POR:</p>
-              <p style="text-align: center;font-size: 11px;">${strNombres}</p>
+              <p style="text-align: center;font-size: 9px;"> GENERADO POR:</p>
+              <p style="text-align: center;font-size: 9px;">${strNombres}</p>
             </body>
             </html>
             `;
@@ -1879,7 +1879,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
       // Guardar archivo Excel
       //  const fs = require('fs');
-      //  fs.writeFileSync('ListadoMatriculasInstitucionalCarreras'+periodo+'.xlsx', buffer);
+       // fs.writeFileSync('ListadoMatriculasInstitucionalCarreras'+periodo+'.xlsx', buffer);
       return base64;
 
     } catch (error) {
@@ -2131,7 +2131,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
       // Guardar archivo Excel
       // const fs = require('fs');
-      //   fs.writeFileSync('ListadoMatriculasInstitucionalNivelacion'+periodo+'.xlsx', buffer);
+     //  fs.writeFileSync('ListadoMatriculasInstitucionalNivelacion'+periodo+'.xlsx', buffer);
       return base64;
 
     } catch (error) {

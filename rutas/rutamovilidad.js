@@ -518,6 +518,43 @@ router.get('/ObnterDatosEstudianteMaster/:cedula', async (req, res) => {
         );
     }
 });
+router.get('/ObnterDatosEstudianteCarrera/:cedula/:carrera', async (req, res) => {
+    const cedula = req.params.cedula;
+    const carrera = req.params.carrera;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesodatosEstudianteCarrera(cedula,carrera);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+router.get('/ObnterDatosCarreraCodigo/:carrera', async (req, res) => {
+    const carrera = req.params.carrera;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesodatosDatosCarreraCodigo(carrera);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
 router.post('/InserarEstudianteMaster', async (req, res) => {
     try {
         const { strCedula, strNombres, strApellidos, strClave, strCedulaMil, dtFechaNac, strNacionalidad, strDir, strTel, imgFoto, strEmail, strCodSexo, strCodEstCiv, strNombresPadre, strApellidosPadres, strNombresMadre, strApellidosMadre, strCodEstVidP, strCodEstVidM, strCodEstado, strCodCiudadProc, strCodEstadoUsuario } = req.body;
@@ -961,6 +998,24 @@ router.get('/ListadoInscripcionesTodasEstudiante/:cedula', async (req, res) => {
         const cedula = req.params.cedula;
     try {
         var respuesta = await funcionesprocesosmovilidad.ProcesoListadosInscrionestodasEstudiante(cedula);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+router.get('/ObtenerDatosCarrera/:dbBase', async (req, res) => {
+        const dbBase = req.params.dbBase;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoObtenerDatosCarrera(dbBase);
         res.json({
             success: true,
             Informacion: respuesta.data
