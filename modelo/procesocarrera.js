@@ -23,6 +23,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
       return { data: "Error: " + error }
     }
   }
+
   module.exports.TotalDocumentoPendientes = async function ( carrera, periodo) {
     var sentencia = "";
     sentencia = " select count (distinct(matricula)) as total from [" + carrera + "].[dbo].[bandejadocumentos] where periodo='" + periodo + "' and (estado =2 or estado=1)"
@@ -78,7 +79,6 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   } catch (error) {
     return {data:"Error: "+ error}
   }
-
   }
 
   module.exports.MatriculasCarrerasPeriodoTodas = async function (carrera,periodo) {

@@ -9,6 +9,7 @@ const sql = require('mssql');
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
+require('dotenv').config()
 const procesoMigracion = require('./rutas/ProcesosMigracionNivelacion');
 const ProcesoAcademico = require('./rutas/ProcesoNotasAcademico');
 const procesosAdmisiones = require('./rutas/rutaadmisiones');
@@ -66,11 +67,9 @@ app.use(url+'/rutamovilidadconfiguraciones',rutamovilidadconfiguraciones);
 app.get('/', (req, res) => {
     res.send('Invalid Endpoint');
 });
-
 var options = {
-     key: fs.readFileSync('Certificados/STAR_espoch_edu_ec.key'),
-    cert: fs.readFileSync('Certificados/STAR_espoch_edu_ec.crt'),
-    ca: fs.readFileSync('Certificados/STAR_espoch_edu_ec.crt')
+     key: fs.readFileSync(process.env.URL_CERTIFIACADOKEY),
+    cert: fs.readFileSync(process.env.URL_CERTIFIACADOCRT)
 };
 
 app.use(function (req, resp, next) {

@@ -243,6 +243,27 @@ module.exports.ProcesodatosEstudianteMaster = async function (cedula) {
         return 'ERROR' + error
     }
 }
+
+module.exports.ProcesodatosEstudianteCarrera = async function (cedula,carrera) {
+    try {
+          var datos = await funcionesmodelomovilidad.ObenterDatosCarreraCodigo('OAS_Master',carrera);
+        var resultado = await funcionesmodelomovilidad.ObtnerEstuidanteCarrera(datos.data[0].strBaseDatos, funcionestools.CedulaConGuion(cedula));
+      
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
+module.exports.ProcesodatosDatosCarreraCodigo = async function (carrera) {
+    try {
+          var datos = await funcionesmodelomovilidad.ObenterDatosCarreraCodigo('OAS_Master',carrera);
+        return datos
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
 module.exports.ProcesoListadoTitulosColegios = async function (codigoInstitucion) {
     try {
         var resultado = await funcionesmodelomovilidad.TitulosColegios('OAS_Master', codigoInstitucion);
@@ -432,6 +453,15 @@ module.exports.ProcesoActualizarEstuidanteCarrera = async function (objDatos, ca
 module.exports.ProcesoListadosInscrionestodasEstudiante = async function (cedula) {
     try {
         var resultado = await funcionesmodelomovilidad.ObenterTodasEstudianteIncripcion('OAS_Master', cedula);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
+module.exports.ProcesoObtenerDatosCarrera = async function (bdcarrera) {
+    try {
+        var resultado = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', bdcarrera);
         return resultado
     } catch (error) {
         console.log(error);
