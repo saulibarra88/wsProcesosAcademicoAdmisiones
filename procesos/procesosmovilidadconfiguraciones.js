@@ -408,9 +408,16 @@ module.exports.ProcesoInsertarNuevoPeriodoAcademico = async function (objPeriodo
         return 'ERROR: ' + error;
     }
 }
+module.exports.ProcesoObtenerUsuarioPorIdRolyBaseCarrera = async function (idrol,dbcarrera) {
+    try {
+        var resultado = await funcionesmodelomovilidadconfiguraciones.ObtenerUsuarioPorIdRolyBaseCarrera('SistemaAcademico', idrol,dbcarrera);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR: ' + error;
+    }
+}
 module.exports.ProcesoActualizarPeriodosCarreras = async function (objPeriodo, listadoCarrera, tipo) {
-    console.log(tipo)
-
     try {
         if (tipo == 0) {
             var ListadoCarreras = await funcionesmodelomovilidadconfiguraciones.ListadosTodasCarrerasAcademica('OAS_Master');
@@ -428,7 +435,6 @@ module.exports.ProcesoActualizarPeriodosCarreras = async function (objPeriodo, l
             }
         }
         if (tipo == 2) {
-            console.log('Aqui')
             var ActualizarCarrera = await funcionesmodelomovilidadconfiguraciones.ActualizarPeridoAcademicoCarrera('OAS_Master', objPeriodo);
         }
 

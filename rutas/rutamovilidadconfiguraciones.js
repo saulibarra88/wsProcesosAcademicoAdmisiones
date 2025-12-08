@@ -741,4 +741,24 @@ router.get('/ObtenerInformacionAcademicaEstudiante/:cedula',async (req, res) => 
     }
  
 });
+router.get('/ObtenerUsuarioPorIdRolyBaseCarrera/:idrol/:dbcarrera',async (req, res) => {
+     const idrol = req.params.idrol;
+     const dbcarrera = req.params.dbcarrera;
+    try {
+        var Informacion=await  funcionesprocesosmovilidadconfiguraciones.ProcesoObtenerUsuarioPorIdRolyBaseCarrera(idrol,dbcarrera);
+        res.json({
+            success: true,
+            Informacion: Informacion.data
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el proceso' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

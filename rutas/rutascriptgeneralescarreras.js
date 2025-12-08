@@ -54,5 +54,25 @@ router.get('/ProcesosNotasRecuperacion/',async (req, res) => {
     }
  
 });
+router.get('/ProcesosEliminacionMatriculasPendientes/:periodo',async (req, res) => {
+    const periodo = req.params.periodo;
 
+    try {
+        
+        var respuesta=await  procesosScript.ProcesoEliminacionMatriculasPendientes(periodo);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

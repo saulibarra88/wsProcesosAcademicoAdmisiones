@@ -581,7 +581,6 @@ try {
 
   var sentencia="";
   sentencia="UPDATE [" + carrera + "].[dbo].[Estudiantes] SET [strNombres]='"+objEstuidante.strNombres+"',[strApellidos]='"+objEstuidante.strApellidos+"',[strClave]='"+objEstuidante.strClave+"',[strCedulaMil]='"+objEstuidante.strCedulaMil+"',[dtFechaNac]='"+objEstuidante.dtFechaNac+"',[strLugarNac]='"+objEstuidante.strLugarNac+"',[strNacionalidad]='"+objEstuidante.strNacionalidad+"',[strDir]='"+objEstuidante.strDir+"',[strTel]='"+objEstuidante.strTel+"' ,[strEmail]='"+objEstuidante.strEmail+"',[strCodSexo]='"+objEstuidante.strCodSexo+"',[strCodEstCiv]='"+objEstuidante.strCodEstCiv+"',[strNombresPadre]='"+objEstuidante.strNombresPadre+"',[strApellidosPadres]='"+objEstuidante.strApellidosPadres+"',[strNombresMadre]='"+objEstuidante.strNombresMadre+"',[strApellidosMadre]='"+objEstuidante.strApellidosMadre+"',[strCodEstVidP]='"+objEstuidante.strCodEstVidP+"', [strCodEstVidM]='"+objEstuidante.strCodEstVidM+"',[strCodEstado]='"+objEstuidante.strCodEstado+"',[strCodCiudadProc]='"+objEstuidante.strCodCiudadProc+"' WHERE [strCedula]='"+objEstuidante.strCedula+"'"
-console.log(sentencia)
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -596,8 +595,7 @@ console.log(sentencia)
  module.exports.ActualizarEstudianteCarrera = async function (carrera,objEstuidante) {
 
   var sentencia="";
-  sentencia="UPDATE [" + carrera + "].[dbo].[Estudiantes] SET [strNombres]='"+objEstuidante.strNombres+"',[strApellidos]='"+objEstuidante.strApellidos+"',[dtFechaNac]='"+objEstuidante.dtFechaNac+"',[strNacionalidad]='"+objEstuidante.strNacionalidad+"',[strDocumentacion]='"+objEstuidante.strDir+"' ,[strEmail]='"+objEstuidante.strEmail+"',[strCodSexo]='"+objEstuidante.strCodSexo+"' WHERE [strCedula]='"+objEstuidante.strCedula+"'"
-console.log(sentencia)
+  sentencia="UPDATE [" + carrera + "].[dbo].[Estudiantes] SET [strNombres]='"+objEstuidante.strNombres+"',[strApellidos]='"+objEstuidante.strApellidos+"',[dtFechaNac]='"+objEstuidante.dtFechaNac+"',[strNacionalidad]='"+objEstuidante.strNacionalidad+"',[strDocumentacion]='"+objEstuidante.strDir+"' ,[strEmail]='"+objEstuidante.strEmail+"',[strCodSexo]='"+objEstuidante.strCodSexo+"',[strCedulaMil]='"+objEstuidante.strTel+"' WHERE [strCedula]='"+objEstuidante.strCedula+"'"
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
