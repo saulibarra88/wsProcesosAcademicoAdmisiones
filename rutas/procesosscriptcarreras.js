@@ -44,6 +44,17 @@ module.exports.ProcesoActualizacionNotasRecuperacion = async function (carrera, 
       
     }
 }
+module.exports.ProcesoEliminacionMatriculasPendientes = async function (periodo) {
+    try {
+        var resultado = await FuncionCalifacionesRecuperacion();
+        return { resultado }
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+      
+    }
+}
 async function  FuncionActivacionBotonCrearPeriodo(periodo){
     try {
         var resultado = await FuncionListarConfiguracionesActivasPeriodo(carrera,periodo,pensum);
