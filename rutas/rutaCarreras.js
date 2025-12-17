@@ -260,5 +260,4 @@ router.get('/ListadoEstuidantesMatriculadosPeriodos/:carrera/:periodo',async (re
  
 });
 
-
 module.exports = router;

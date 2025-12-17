@@ -191,8 +191,8 @@ module.exports.pdfPerdidaAsignaturasEstudiantes = async function (carrera, perio
                 var CantidadMatriculadosAsignatura = await modeloprocesocarreras.AsignaturasMatriculadaPeriodoCantidad(carrera, periodo, asignaturas.strCodMateria);
                 var datos = await modeloprocesocarreras.CalculosEstuidantesPorAsignaturas(carrera, periodo, asignaturas.strCodMateria);
                 var datosRetiros = await modeloprocesocarreras.RetirosAsignaturasNormalesCarrerasListado(carrera, periodo, asignaturas.strCodMateria);
-                if(CantidadMatriculadosAsignatura.data[0].Segunda>0 || CantidadMatriculadosAsignatura.data[0].Tercera){
-                    var Repitencia= Number(CantidadMatriculadosAsignatura.data[0].Segunda)+ Number(CantidadMatriculadosAsignatura.data[0].Tercera) 
+                if (CantidadMatriculadosAsignatura.data[0].Segunda > 0 || CantidadMatriculadosAsignatura.data[0].Tercera) {
+                    var Repitencia = Number(CantidadMatriculadosAsignatura.data[0].Segunda) + Number(CantidadMatriculadosAsignatura.data[0].Tercera)
                 }
                 var resultado = {
                     cantidadprimera: CantidadMatriculadosAsignatura.data[0].Primera == null ? 0 : CantidadMatriculadosAsignatura.data[0].Primera,
@@ -200,7 +200,7 @@ module.exports.pdfPerdidaAsignaturasEstudiantes = async function (carrera, perio
                     cantidadtercera: CantidadMatriculadosAsignatura.data[0].Tercera == null ? 0 : CantidadMatriculadosAsignatura.data[0].Tercera,
                     cantidadtotal: CantidadMatriculadosAsignatura.data[0].Tercera == null ? 0 : CantidadMatriculadosAsignatura.data[0].Total,
                     retiros: datosRetiros.count,
-                  repitencia:Repitencia,
+                    repitencia: Repitencia,
                     strCodMateria: asignaturas.strCodMateria,
                     strCodMateria: asignaturas.strCodMateria,
                     strCodNivel: asignaturas.strCodNivel,
@@ -278,8 +278,8 @@ module.exports.ProcesoPeriodosVigenteCarreras = async function (carrera) {
     try {
         var ListadoDocumentos = [];
         var ListadoPensum = await modeloprocesocarreras.VigentePeriodosCarrera(carrera);
-       
-       return ListadoPensum.data[0]
+
+        return ListadoPensum.data[0]
     } catch (err) {
         console.log(err);
         return 'ERROR';
@@ -384,17 +384,19 @@ module.exports.ProcesoListadoMatriculasFirmadasPorNivel = async function (carrer
     }
 }
 
-module.exports.ProcesoListadoEstuidantesMatriculados = async function (carrera,periodo) {
+module.exports.ProcesoListadoEstuidantesMatriculados = async function (carrera, periodo) {
     try {
         var ListadoDocumentos = [];
-        var ListadoDocumentos = await modeloprocesocarreras.MatriculasCarrerasPeriodoAcademicos(carrera,periodo);
-       
-       return ListadoDocumentos.data
+        var ListadoDocumentos = await modeloprocesocarreras.MatriculasCarrerasPeriodoAcademicos(carrera, periodo);
+
+        return ListadoDocumentos.data
     } catch (err) {
         console.log(err);
         return 'ERROR';
     }
 }
+
+
 
 
 
