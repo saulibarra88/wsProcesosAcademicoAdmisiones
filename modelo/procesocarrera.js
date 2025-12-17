@@ -1119,4 +1119,50 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
 
 }
 
+ module.exports.VerificacionGradoMaster = async function (carrera,cedula) {
+  var sentencia="";
+  sentencia="select * from [" + carrera + "].[dbo].[Grados] where strCedEstud='" + cedula + "' and strCodInt='ESPOCH'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+ module.exports.InscripcionesTodasMaster = async function (carrera,cedula) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Inscripciones] AS I INNER JOIN [" + carrera + "].[dbo].[Carreras] AS C ON C.strCodigo=I.strCodCarrera WHERE strCedEstud='" + cedula + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+ module.exports.ObtenerDatosGraduadoCarrera = async function (carrera,cedula) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Graduados] AS G INNER JOIN [" + carrera + "].[dbo].[Egresados] AS E ON E.intCodigo=G.intCodEgre INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS ES ON ES.strCodigo=E.strCodEstud WHERE ES.strCedula='" + cedula + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+
   
