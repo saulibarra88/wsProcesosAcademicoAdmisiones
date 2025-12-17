@@ -238,7 +238,6 @@ router.post('/RetiroestudianteSinMatricula/',async (req, res) => {
 });
 router.get('/VerificarEstuidanteGraduado/:cedula',async (req, res) => {
     const cedula = req.params.cedula;
-console.log(cedula)
     try {
         var Informacion=await  procesosmatricula.ProcesoVerificarEstudianteGraduado(cedula);
         res.json({

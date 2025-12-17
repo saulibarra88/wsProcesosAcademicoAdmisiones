@@ -43,8 +43,8 @@ module.exports.ProcesoVerificarEstudianteGraduado = async function (cedula) {
                         info.egresado = true;
                         return info
                     }
-                    return { graduado: false, egresado: false }
                 }
+                 return { graduado: false, egresado: false }
             }
         }else{
             return { graduado: false, egresado: false }
