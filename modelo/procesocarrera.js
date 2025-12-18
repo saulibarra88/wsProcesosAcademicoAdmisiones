@@ -1165,4 +1165,20 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
 
 }
 
+
+ module.exports.ListadoGraduadosCarreraFechas = async function (carrera,fechainicio,fechafin) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Graduados] AS G INNER JOIN [" + carrera + "].[dbo].[Egresados] AS E ON E.intCodigo=G.intCodEgre INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS ES ON ES.strCodigo=E.strCodEstud WHERE G.dtFechaGrado>='" + fechainicio + "' AND G.dtFechaGrado<='" + fechafin + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
   
