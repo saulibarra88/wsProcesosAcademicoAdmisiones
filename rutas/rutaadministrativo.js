@@ -255,5 +255,23 @@ router.get('/VerificarEstuidanteGraduado/:cedula',async (req, res) => {
  
 });
 
+router.post('/ListadoEstuidanteGraduadoCarreraFechas', async (req, res) => {
+    try {
+        const { fechainicio,fechafin,carrera } = req.body;
+        const Informacion = await procesosmatricula.ProcesoGraduadosCarreraFechas(fechainicio,fechafin,carrera);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
 
+    }
+});
 module.exports = router;

@@ -55,6 +55,15 @@ module.exports.ProcesoVerificarEstudianteGraduado = async function (cedula) {
         return 'ERROR';
     }
 }
+
+module.exports.ProcesoGraduadosCarreraFechas = async function (fechaInicio, fechaFin, carrera) {
+    try {
+        var resultado = await procesocarreras.ListadoGraduadosCarreraFechas(carrera, fechaInicio, fechaFin);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
 async function FuncionRegistroRetiroSinmatricula(datos) {
     try {
         var lstResultado = []

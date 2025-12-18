@@ -562,7 +562,7 @@ try {
 
    module.exports.ObtenerUsuarioPorIdRolyBaseCarrera = async function (carrera,idRol,dbcarrera) {
   var sentencia="";
-  sentencia="SELECT * FROM [" + carrera + "].[seguridad].[personarol] AS pr INNER JOIN [" + carrera + "].[seguridad].[persona] AS p ON p.per_id = pr.per_id INNER JOIN [" + carrera + "].[seguridad].[roles] AS r ON r.rol_id = pr.rol_id INNER JOIN [" + carrera + "].[seguridad].[personaubicacion] AS pu on pu.idrol=pr.rol_id and pu.perid=pr.per_id WHERE pr.rol_id = " + idRol+ " and pu.strbasedatos='" + dbcarrera+ "' and  pr.prol_estado=1 AND NOT EXISTS (SELECT 1 FROM [seguridad].[usuariosdescartar] AS ud WHERE ud.u_cedula = p.per_cedula AND ud.u_estado = 1) "
+  sentencia="SELECT * FROM [" + carrera + "].[seguridad].[personarol] AS pr INNER JOIN [" + carrera + "].[seguridad].[persona] AS p ON p.per_id = pr.per_id INNER JOIN [" + carrera + "].[seguridad].[roles] AS r ON r.rol_id = pr.rol_id INNER JOIN [" + carrera + "].[seguridad].[personaubicacion] AS pu on pu.idrol=pr.rol_id and pu.perid=pr.per_id WHERE pr.rol_id = " + idRol+ " and pu.strbasedatos='" + dbcarrera+ "' and pu.intestado=1 and  pr.prol_estado=1 AND NOT EXISTS (SELECT 1 FROM [seguridad].[usuariosdescartar] AS ud WHERE ud.u_cedula = p.per_cedula AND ud.u_estado = 1) "
   try {
   if (sentencia != "") {
     const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
