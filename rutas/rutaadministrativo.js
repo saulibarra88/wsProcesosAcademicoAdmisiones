@@ -274,4 +274,23 @@ router.post('/ListadoEstuidanteGraduadoCarreraFechas', async (req, res) => {
 
     }
 });
+router.get('/ObtenerNivelAcademicoEstudiante/:dbcarrera/:cedula',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion=await  procesosmatricula.ProcesoObtenerNivelEstudiante(dbcarrera,cedula);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

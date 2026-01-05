@@ -1090,3 +1090,18 @@ try {
 }
 
 
+module.exports.ObenterNivelEstuidanteCarrera = async function (carrera,cedula) {
+  var sentencia="";
+  sentencia="SELECT	tbR.strCodigo,tbR.Nivel,MAX( tb1.strCodPeriodo ) AS strCodPeriodo FROM (SELECT	tbE.strCodigo,MAX( tbM.strCodNivel ) AS Nivel FROM [" + carrera + "].dbo.Matriculas tbM INNER JOIN [" + carrera + "].dbo.Estudiantes tbE ON tbM.strCodEstud = tbE.strCodigo WHERE tbM.strCodEstado = 'DEF' AND tbE.strCedula = '" + cedula + "' GROUP BY tbE.strCodigo) tbR inner join [" + carrera + "].dbo.Matriculas tb1 ON tbR.strCodigo = tb1.strCodEstud WHERE tbR.strCodigo = tb1.strCodEstud AND tbR.Nivel = tb1.strCodNivel group by tbR.strCodigo,tbR.Nivel"
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
