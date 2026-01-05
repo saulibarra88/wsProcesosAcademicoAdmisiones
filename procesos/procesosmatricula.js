@@ -9,6 +9,7 @@ const axios = require('axios');
 const https = require('https');
 const crypto = require("crypto");
 const procesoCupo = require('../modelo/procesocupos');
+const procesomodelomovilidad = require('../modelo/modelomovilidad');
 const procesocarreras = require('../modelo/procesocarrera');
 const procesoacademico = require('../rutas/ProcesoNotasAcademico');
 const xlsx = require('xlsx');
@@ -59,6 +60,14 @@ module.exports.ProcesoVerificarEstudianteGraduado = async function (cedula) {
 module.exports.ProcesoGraduadosCarreraFechas = async function (fechaInicio, fechaFin, carrera) {
     try {
         var resultado = await procesocarreras.ListadoGraduadosCarreraFechas(carrera, fechaInicio, fechaFin);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports.ProcesoObtenerNivelEstudiante = async function (carrera,cedula) {
+    try {
+        var resultado = await procesomodelomovilidad.ObenterNivelEstuidanteCarrera(carrera, cedula);
         return resultado
     } catch (error) {
         console.log(error);
