@@ -1105,3 +1105,19 @@ try {
 }
 }
 
+ module.exports.ObenterDatosCarreraFacultadCodigo = async function (carrera,codigocarrera) {
+  var sentencia="";
+  sentencia="select c.strNombre as nombrecarrera,c.strCodigo as codigocarrera, f.strNombre as nombrefacultad ,f.strCodigo as codigofacultad, * from [" + carrera + "].[dbo].[Carreras] as c inner join [" + carrera + "].[dbo].[Escuelas] as e on e.[strCodigo]=c.strCodEscuela inner join [" + carrera + "].[dbo].[Facultades] as f on f.strCodigo=e.strCodFacultad where c.strCodigo='" + codigocarrera + "'"
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+
