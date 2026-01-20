@@ -264,6 +264,15 @@ module.exports.ProcesodatosDatosCarreraCodigo = async function (carrera) {
         return 'ERROR' + error
     }
 }
+module.exports.ProcesodatosDatosCarreraFacultadCodigo = async function (carrera) {
+    try {
+          var datos = await funcionesmodelomovilidad.ObenterDatosCarreraFacultadCodigo('OAS_Master',carrera);
+        return datos
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
 module.exports.ProcesoListadoTitulosColegios = async function (codigoInstitucion) {
     try {
         var resultado = await funcionesmodelomovilidad.TitulosColegios('OAS_Master', codigoInstitucion);

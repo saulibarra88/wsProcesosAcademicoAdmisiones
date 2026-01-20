@@ -555,6 +555,24 @@ router.get('/ObnterDatosCarreraCodigo/:carrera', async (req, res) => {
         );
     }
 });
+router.get('/ObnterDatosCarreraFacultadCodigo/:carrera', async (req, res) => {
+    const carrera = req.params.carrera;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesodatosDatosCarreraFacultadCodigo(carrera);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
 router.post('/InserarEstudianteMaster', async (req, res) => {
     try {
         const { strCedula, strNombres, strApellidos, strClave, strCedulaMil, dtFechaNac, strNacionalidad, strDir, strTel, imgFoto, strEmail, strCodSexo, strCodEstCiv, strNombresPadre, strApellidosPadres, strNombresMadre, strApellidosMadre, strCodEstVidP, strCodEstVidM, strCodEstado, strCodCiudadProc, strCodEstadoUsuario } = req.body;
