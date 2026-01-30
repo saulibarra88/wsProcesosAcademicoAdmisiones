@@ -938,7 +938,7 @@ xlsx.writeFile(wb, tempFilePath);
 const fileData = fs.readFileSync(tempFilePath, { encoding: 'base64' });
 
 // Eliminar el archivo temporal
-//fs.unlinkSync(tempFilePath);
+fs.unlinkSync(tempFilePath);
 return fileData;
           return null
       } catch (error) {
@@ -1150,7 +1150,7 @@ xlsx.writeFile(wb, tempFilePath);
 const fileData = fs.readFileSync(tempFilePath, { encoding: 'base64' });
 
 // Eliminar el archivo temporal
-//fs.unlinkSync(tempFilePath);
+fs.unlinkSync(tempFilePath);
 return fileData;
           return null
       } catch (error) {
