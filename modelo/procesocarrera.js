@@ -483,7 +483,6 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   module.exports.ObtenerDatosEstudianteCarrera = async function (carrera,cedula) {
     var sentencia="";
     sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Estudiantes] WHERE strCedula='" + cedula + "' or strCodigo='" + cedula + "'";
-    console.log(sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");

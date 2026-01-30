@@ -17,7 +17,6 @@ require('dotenv').config()
 const xlsx = require('xlsx');
 const ExcelJS = require('exceljs');
 const { JSDOM } = require('jsdom');
-const { Console } = require('console');
 const agent = new https.Agent({
     rejectUnauthorized: false,
     // other options if needed
