@@ -187,12 +187,12 @@ module.exports.pdfPerdidaAsignaturasEstudiantes = async function (carrera, perio
         var ListadoAsignaturas = await modeloprocesocarreras.AsignaturasDictadosMateriasCarreras(carrera, periodo);
         if (ListadoAsignaturas.count > 0) {
             for (var asignaturas of ListadoAsignaturas.data) {
-
+var Repitencia=0;
                 var CantidadMatriculadosAsignatura = await modeloprocesocarreras.AsignaturasMatriculadaPeriodoCantidad(carrera, periodo, asignaturas.strCodMateria);
                 var datos = await modeloprocesocarreras.CalculosEstuidantesPorAsignaturas(carrera, periodo, asignaturas.strCodMateria);
                 var datosRetiros = await modeloprocesocarreras.RetirosAsignaturasNormalesCarrerasListado(carrera, periodo, asignaturas.strCodMateria);
                 if (CantidadMatriculadosAsignatura.data[0].Segunda > 0 || CantidadMatriculadosAsignatura.data[0].Tercera) {
-                    var Repitencia = Number(CantidadMatriculadosAsignatura.data[0].Segunda) + Number(CantidadMatriculadosAsignatura.data[0].Tercera)
+                    Repitencia = Number(CantidadMatriculadosAsignatura.data[0].Segunda) + Number(CantidadMatriculadosAsignatura.data[0].Tercera)
                 }
                 var resultado = {
                     cantidadprimera: CantidadMatriculadosAsignatura.data[0].Primera == null ? 0 : CantidadMatriculadosAsignatura.data[0].Primera,
