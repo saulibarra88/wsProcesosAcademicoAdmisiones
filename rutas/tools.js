@@ -69,7 +69,23 @@ module.exports.estaVigenteFechaMovilidad = function (fechaInicio, fechaFin)  {
 
   return hoy >= inicio && hoy <= fin;
 }
+module.exports.ObtenerFechaActualCertificado = function ()  {
+    const ciudad = "Riobamba";
 
+    const fecha = new Date();
+
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const anio = fecha.getFullYear();
+
+    const meses = [
+        "enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    ];
+
+    const mes = meses[fecha.getMonth()];
+
+    return `${ciudad} ${dia} de ${mes} del ${anio}`;
+}
 module.exports.codigopesumultimo = function (codigo) {
   if (!codigo) return null;
 

@@ -761,4 +761,43 @@ router.get('/ObtenerUsuarioPorIdRolyBaseCarrera/:idrol/:dbcarrera',async (req, r
     }
  
 });
+router.get('/ListadoTitulosDadoInstitucion/:codInstitucion',async (req, res) => {
+     const codInstitucion = req.params.codInstitucion;
+    try {
+        var Informacion=await  funcionesprocesosmovilidadconfiguraciones.ProcesoListadoTitulodadoInstitucion(codInstitucion);
+        res.json({
+            success: true,
+            Informacion: Informacion.data
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el proceso' + err
+            }
+        );
+    }
+ 
+});
+router.get('/IngresoTituloInstitucion/:codInstitucion/:codTitulo',async (req, res) => {
+     const codInstitucion = req.params.codInstitucion;
+     const codTitulo = req.params.codTitulo;
+    try {
+        var Informacion=await  funcionesprocesosmovilidadconfiguraciones.ProcesoIngresoTitulodadoInstitucion(codInstitucion,codTitulo);
+        res.json({
+            success: true,
+            Informacion: Informacion.data
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el proceso' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

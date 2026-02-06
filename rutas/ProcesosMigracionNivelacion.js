@@ -789,10 +789,7 @@ async function ProcesodePruebas(periodo) {
             for (var obj of ListadoEstudiantes.data) {
                 var ObtenerCupoUltimo = await procesoCupo.ObtenerUltimoDetalleCupoRegistradoRuben("OAS_Master", obj.identificacion,periodo)
                 if (ObtenerCupoUltimo.data[0].idEstadoCupo == VariablesGlobales.ESTADOCONFIRMADO) {
-                  
-
-
-                
+              
         
             }
             }

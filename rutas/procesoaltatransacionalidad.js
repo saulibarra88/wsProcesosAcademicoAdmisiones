@@ -94,6 +94,17 @@ module.exports.ListadoEstudiantesPeriodosCarrera = async function (carrera, peri
         console.log(error);
     }
 }
+module.exports.ProcesoInformacionUsuario = async function () {
+    try {
+        var resultado = await FuncionuUsuariosDatos();
+        return { resultado }
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
 async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carrera, periodo, estado) {
     const pool = await iniciarMasterPool("OAS_Master");
     await pool.connect();
@@ -351,7 +362,6 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
             }
 
         }
-        console.log(listadoNomina)
         const base64 = await reportescarreras.ExcelReporteMaticulasNivelacionInstitucional(periodo, listadoNomina);
         return base64;
     } catch (err) {
@@ -734,6 +744,46 @@ async function FuncionFinancieroDatos() {
             info.dir_callePrincipal = safe(persona?.dir_callePrincipal);
             info.per_email = safe(persona?.per_email);
             info.per_telefonoCelular = safe(persona?.per_telefonoCelular);
+
+            listadoNomina.push(info);
+
+
+
+        }));
+
+        const base64 = await reportescarreras.ExcelReporteFinanciero(listadoNomina);
+
+        return listadoNomina;
+    } catch (err) {
+        console.error(err);
+        return 'ERROR' + err;
+    } finally {
+        await closeAllPools();
+    }
+}
+
+async function FuncionuUsuariosDatos() {
+    try {
+        const listadoNomina = [];
+        const ListadoCarrera = await modelocentralizada.UsuariosOrdenesPagos();
+        console.log(ListadoCarrera)
+        const limitHTTP = pLimit(10); // Limita a 10 peticiones simultáneas
+        const limitSQL = pLimit(10);
+        await Promise.all(ListadoCarrera.data.map(async (info, i) => {
+
+           // const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.usu_strCedula}`, { httpsAgent: agent }));
+            const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objetopersonalizadodadoid/${info.lngusr_id}`, { httpsAgent: agent }));
+            const [personaResponse] = await Promise.all([personaPromise.catch(() => null),]);
+
+            const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
+            const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
+            info.cedula =safe(persona?.pid_valor); 
+            info.nombres = safe(persona?.per_nombres);
+            info.apellidos = safe(persona?.per_primerApellido + " " + persona?.per_segundoApellido);
+            info.correo = safe(persona?.per_email);
+            info.rol = info.strnombre;
+            info.sistema = 'SEGUIMIENTO GRADUADOS';
+          
 
             listadoNomina.push(info);
 

@@ -4,7 +4,7 @@ const sql = require('pg')
 var os = require('os');
 const { Client } = require('pg');
 const { execCentralizadaMejorada,execCentralizadaTransaccionMejorada } = require('./../config/execSQLCentralizadaMejorada.helper');
-const { execCentralizada,execCentralizadaTransaccion } = require('./../config/execSQLCentralizada.helper');
+const { execCentralizada,execCentralizadaTransaccion, } = require('./../config/execSQLCentralizada.helper');
 
 
 
@@ -15,6 +15,24 @@ module.exports.obtenerdocumento = async function (cedula) {
   
       if (sentencia != "") {
         const resp = await execCentralizada(sentencia, "OK", "OK");
+        return (resp)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  
+  }
+
+
+  module.exports.UsuariosOrdenesPagos = async function (cedula) {
+    var sentencia;
+    sentencia = `select * from seguridad.perfil as p inner join seguridad.rol as r on r.intid=p.introl_id where p.blndefault=true`
+    try {
+  
+      if (sentencia != "") {
+        const resp = await execCentralizadaMejorada(sentencia, "OK", "OK");
         return (resp)
       } else {
         return { data: "vacio sql" }

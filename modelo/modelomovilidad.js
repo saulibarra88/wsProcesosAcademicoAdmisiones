@@ -700,7 +700,7 @@ try {
  module.exports.ObtenerGradoEstudianteTodas = async function (carrera,cedula) {
 
   var sentencia="";
-  sentencia="SELECT *,i. [strNombre] as nombrecolegio,t.strNombre as nombretitulo,gr.strCodTit as codigotitulo,gr.strCodInt as codigoinstitucion FROM  [" + carrera + "].[dbo].[Grados] AS gr INNER JOIN [" + carrera + "].[dbo].[Titulos_Validos] AS tv on tv.strCodTit = gr.strCodTit and tv.strCodInt=gr.strCodInt INNER JOIN [" + carrera + "].[dbo].[Titulos] AS t on t.[strCodigo]=tv.[strCodTit] INNER JOIN [" + carrera + "].[dbo].[Instituciones] AS i on i.[strCodigo] =tv.[strCodInt] WHERE gr.[strCedEstud]='" + cedula + "'"
+  sentencia="SELECT *,i. [strNombre] as nombrecolegio,t.strNombre as nombretitulo,gr.strCodTit as codigotitulo,gr.strCodInt as codigoinstitucion,ti.strDescripcion as nombretipoinstitucion, c.strNombre as nombreciudad FROM  [" + carrera + "].[dbo].[Grados] AS gr INNER JOIN [" + carrera + "].[dbo].[Titulos_Validos] AS tv on tv.strCodTit = gr.strCodTit and tv.strCodInt=gr.strCodInt INNER JOIN [" + carrera + "].[dbo].[Titulos] AS t on t.[strCodigo]=tv.[strCodTit] INNER JOIN [" + carrera + "].[dbo].[Instituciones] AS i on i.[strCodigo] =tv.[strCodInt] INNER JOIN [" + carrera + "].[dbo].[Tipos_Instituciones] AS ti ON ti.strCodigo=i.strCodTipo INNER JOIN [" + carrera + "].[dbo].[Ciudades] AS c ON c.strCodigo=i.strCodCiudad WHERE gr.[strCedEstud]='" + cedula + "'"
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -730,7 +730,7 @@ try {
 }
  module.exports.ActualizarGradoEstudanteMaster = async function (carrera,objEstudiante) {
   var sentencia="";
-  sentencia="UPDATE [" + carrera + "].[dbo].[Grados] SET dtFecha='" + objEstudiante.fecha + "',strRefrendacion='" + objEstudiante.refrendacion + "' WHERE strCedEstud='" + objEstudiante.cedula + "' AND strCodTit='" + objEstudiante.codtitulo + "' AND strCodInt='" + objEstudiante.codInstitucion + "'"
+  sentencia="UPDATE [" + carrera + "].[dbo].[Grados] SET dtFecha='" + objEstudiante.fecha + "',strRefrendacion='" + objEstudiante.refrendacion + "',strCodTit='" + objEstudiante.codtitulo + "',strCodInt='" + objEstudiante.codInstitucion + "' WHERE strCedEstud='" + objEstudiante.cedula + "' AND strCodTit='" + objEstudiante.codigotituloanterior + "' AND strCodInt='" + objEstudiante.codigoinstitucionanterior + "'"
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -1121,3 +1121,65 @@ try {
 
 }
 
+ module.exports.InsertarMovilidadMalla = async function (carrera,objmalla) {
+  var sentencia="";
+  sentencia="INSERT INTO [" + carrera + "].[dbo].[tb_movilidad_solicitud_malla]([msm_idsolicitud],[msm_periodo],[msm_strdescripcion], [msm_mallaactualcodigo],[msm_mallaactualnombre],[msm_mallamovilidadcodigo],[msm_mallamovilidadnombre]) VALUES("+objmalla.msm_idSolicitud+",'"+objmalla.msm_periodo+"','"+objmalla.msm_strdescripcion+"','"+objmalla.msm_mallaactualcodigo+"','"+objmalla.msm_mallaactualnombre+"','"+objmalla.msm_mallamovilidadcodigo+"','"+objmalla.msm_mallamovilidadnombre+"')"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+
+
+ module.exports.ObtenerMallaActivaCarrera = async function (carrera) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Pensums] WHERE [blnActivo]=1"
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}
+
+ module.exports.ObtenerSolicitudAprobadaEstudiante = async function (carrera,periodo,cedula) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] WHERE [cm_estado]=1 AND [cm_idtipo_estado]='APRO' AND [cm_periodo]='" + periodo + "' AND cm_identificacion='" + cedula + "' "
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+ module.exports.ListadoCarreraTraspaso = async function (carrera,dbcarreraactual,periodo) {
+  var sentencia="";
+  sentencia="SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] WHERE [msm_estado]=1 AND [msca_periodo]='" + periodo + "' AND [msca_dbcarreraactual]='" + dbcarreraactual + "' AND [msca_tipo]='MOVTRASP' "
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}

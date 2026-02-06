@@ -49,7 +49,7 @@ router.post('/DatosEstudiantesCambioCarreraProcesos/', async (req, res) => {
 
 });
 
-router.get('/DatosConfiguracionesAprobacionSolicitudesCarreras/:carreramovilidad/:periodo/:puntaje', async (req, res) => {
+router.get('/ControlesCuposConfiguracionesMovilidad/:carreramovilidad/:periodo/:puntaje', async (req, res) => {
     const carreramovilidad = req.params.carreramovilidad;
     const periodo = req.params.periodo;
     const puntaje = req.params.puntaje;
@@ -708,13 +708,15 @@ router.post('/EliminarGradoEstuidante', async (req, res) => {
 });
 router.post('/ActualizarradoEstuidante', async (req, res) => {
     try {
-        const { cedula, codtitulo, codInstitucion, fecha, refrendacion } = req.body;
+        const { cedula, codtitulo, codInstitucion, fecha, refrendacion,codigotituloanterior,codigoinstitucionanterior } = req.body;
         var objEstudiante = {
             cedula: cedula,
             codtitulo: codtitulo,
             codInstitucion: codInstitucion,
             fecha: fecha,
-            refrendacion: refrendacion
+            refrendacion: refrendacion,
+            codigotituloanterior:codigotituloanterior,
+            codigoinstitucionanterior:codigoinstitucionanterior
         }
         const Informacion = await funcionesprocesosmovilidad.ProcesoActulizarGradoEstuidante(objEstudiante);
         res.json({
@@ -826,6 +828,26 @@ router.get('/ReportePdfSolicitudesMovilidadAprobadas/:periodo', async (req, res)
     const periodo = req.params.periodo;
     try {
         var respuesta = await funcionesprocesosmovilidad.ProcesoGenerarPdfSolicitudesAprbadas(periodo);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+
+});
+router.get('/PdfCertificadoMovilidadEstudiante/:periodo/:cedula', async (req, res) => {
+    const periodo = req.params.periodo;
+    const cedula = req.params.cedula;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoPdfCertificadoMovilidadEstuidante(periodo,cedula);
         res.json({
             success: true,
             Informacion: respuesta
@@ -1034,6 +1056,25 @@ router.get('/ObtenerDatosCarrera/:dbBase', async (req, res) => {
         const dbBase = req.params.dbBase;
     try {
         var respuesta = await funcionesprocesosmovilidad.ProcesoObtenerDatosCarrera(dbBase);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+router.get('/ListadoCarrerasTraspaso/:dbBase/:periodo', async (req, res) => {
+        const dbBase = req.params.dbBase;
+        const periodo = req.params.periodo;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoCarrerasTraspaso(dbBase,periodo);
         res.json({
             success: true,
             Informacion: respuesta.data

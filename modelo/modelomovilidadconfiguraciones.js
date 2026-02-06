@@ -574,3 +574,33 @@ try {
   return {data:"Error: "+ error}
 }
 }
+
+   module.exports.ListadoTituloInstitucion = async function (carrera,coddigoInstitucion) {
+  var sentencia="";
+  sentencia="SELECT t.strNombre as nombretitulo,i.strNombre as nombreinstitucion, * FROM [" + carrera + "].[dbo].[Titulos_Validos] AS tv INNER JOIN [dbo].[Titulos] AS t ON t.strCodigo=tv.strCodTit INNER JOIN [dbo].[Instituciones] AS i ON I.strCodigo=TV.strCodInt WHERE [strCodInt]='" + coddigoInstitucion + "'"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+   module.exports.IngresarTituloInstitucion = async function (carrera,codigoInstitucion,codigoTitulo) {
+  var sentencia="";
+  sentencia="INSERT INTO [" + carrera + "].[dbo].[Titulos_Validos]([strCodTit],[strCodInt]) VALUES('" + codigoTitulo + "','" + codigoInstitucion + "')"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}

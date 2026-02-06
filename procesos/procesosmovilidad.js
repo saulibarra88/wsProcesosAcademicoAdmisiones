@@ -244,11 +244,11 @@ module.exports.ProcesodatosEstudianteMaster = async function (cedula) {
     }
 }
 
-module.exports.ProcesodatosEstudianteCarrera = async function (cedula,carrera) {
+module.exports.ProcesodatosEstudianteCarrera = async function (cedula, carrera) {
     try {
-          var datos = await funcionesmodelomovilidad.ObenterDatosCarreraCodigo('OAS_Master',carrera);
+        var datos = await funcionesmodelomovilidad.ObenterDatosCarreraCodigo('OAS_Master', carrera);
         var resultado = await funcionesmodelomovilidad.ObtnerEstuidanteCarrera(datos.data[0].strBaseDatos, funcionestools.CedulaConGuion(cedula));
-      
+
         return resultado
     } catch (error) {
         console.log(error);
@@ -257,7 +257,7 @@ module.exports.ProcesodatosEstudianteCarrera = async function (cedula,carrera) {
 }
 module.exports.ProcesodatosDatosCarreraCodigo = async function (carrera) {
     try {
-          var datos = await funcionesmodelomovilidad.ObenterDatosCarreraCodigo('OAS_Master',carrera);
+        var datos = await funcionesmodelomovilidad.ObenterDatosCarreraCodigo('OAS_Master', carrera);
         return datos
     } catch (error) {
         console.log(error);
@@ -266,7 +266,7 @@ module.exports.ProcesodatosDatosCarreraCodigo = async function (carrera) {
 }
 module.exports.ProcesodatosDatosCarreraFacultadCodigo = async function (carrera) {
     try {
-          var datos = await funcionesmodelomovilidad.ObenterDatosCarreraFacultadCodigo('OAS_Master',carrera);
+        var datos = await funcionesmodelomovilidad.ObenterDatosCarreraFacultadCodigo('OAS_Master', carrera);
         return datos
     } catch (error) {
         console.log(error);
@@ -477,6 +477,24 @@ module.exports.ProcesoObtenerDatosCarrera = async function (bdcarrera) {
         return 'ERROR' + error
     }
 }
+module.exports.ProcesoListadoCarrerasTraspaso = async function (bdcarreraactual,periodo) {
+    try {
+        var resultado = await funcionesmodelomovilidad.ListadoCarreraTraspaso('OAS_Master', bdcarreraactual,periodo);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
+module.exports.ProcesoPdfCertificadoMovilidadEstuidante = async function (periodo,cedula) {
+    try {
+        var resultado = await FuncionPDFCertificadoMovilidadEstuidante(periodo,cedula);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
 async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel, periodo, cedula) {
     try {
         var respuesta = {};
@@ -646,50 +664,79 @@ async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreram
             respuesta.configuracionesCupos = DatosConfiguraciones.data[0];
             if (await funcionestools.estaVigenteFechaMovilidad(DatosConfiguraciones.data[0].mc_fecha_inicio, DatosConfiguraciones.data[0].mc_fecha_fin)) {
                 respuesta.fechavigente = true;
+                respuesta.mensajeFechas = ' Si tiene fechas vigentes en esta carrera';
                 if (DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera == 0) {
                     respuesta.permitirsolicitudmoviInterna = false;
                     respuesta.permitirsolicitudmoviExterna = false;
                     respuesta.permitirsolicitudmoviTraspaso = false;
                     respuesta.mensaje = 'Control de puntaje , no tiene puntaje la crrera';
                 } else {
-                    if (DatosConfiguraciones.data[0].mc_cupos_movi_interna == 0) {
+                    respuesta.mensajeMovilidadExterna = '';
+                    respuesta.mensajeMovilidadInterna = '';
+                    respuesta.mensajeMovilidadTraspaso = '';
+                    if (DatosConfiguraciones.data[0].mc_cupos_movi_interna == 0) {//Controles de Movilidad Interna Cupos y Puntaje
                         respuesta.permitirsolicitudmoviInterna = false;
+                        respuesta.mensajeMovilidadInterna = 'Control de puntaje , no tiene cupos movilidad interna';
+                        respuesta.mensajeMovilidadExterna = '';
+
                     } else {
                         if (DatosSolicitudesAprobadasInterna.count <= DatosConfiguraciones.data[0].mc_cupos_movi_interna && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
                             respuesta.permitirsolicitudmoviInterna = true;
+                            respuesta.mensajeMovilidadInterna = 'Control de puntaje , puntaje  alcanzado para movilidad interna: ' + puntaje;
+
                         } else {
                             respuesta.permitirsolicitudmoviInterna = false;
+                            respuesta.mensajeMovilidadInterna = 'Control de puntaje , puntaje  no alcanzado para movilidad interna: ' + puntaje + ' / o Cupos llenos ';
+
                         }
+
                     }
-                    if (DatosConfiguraciones.data[0].mc_cupos_movi_externa == 0) {
+                    if (DatosConfiguraciones.data[0].mc_cupos_movi_externa == 0) {//Controles de Moviliad Externa Cupos y Puntaje
                         respuesta.permitirsolicitudmoviExterna = false;
+                        respuesta.mensajeMovilidadExterna = 'Control de puntaje , no tiene cupos movilidad externa';
+
                     } else {
                         if (DatosSolicitudesAprobadasExterna.count <= DatosConfiguraciones.data[0].mc_cupos_movi_externa && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
                             respuesta.permitirsolicitudmoviExterna = true;
+                            respuesta.mensajeMovilidadExterna = 'Control de puntaje , puntaje  alcanzado para movilidad externa: ' + puntaje;
+
                         } else {
                             respuesta.permitirsolicitudmoviExterna = false;
+                            respuesta.mensajeMovilidadExterna = 'Control de puntaje , puntaje  no alcanzado para movilidad externa: ' + puntaje + ' / o Cupos llenos ';
+
                         }
-                    }
-                    if (DatosConfiguraciones.data[0].mc_cupos_movi_externa == 0) {
+                    }//Controles de Traspaso Cupos y Puntaje
+                    if (DatosConfiguraciones.data[0].mc_cupos_movi_traspaso == 0) {
                         respuesta.permitirsolicitudmoviTraspaso = false;
+                        respuesta.mensajeMovilidadTraspaso = 'Control de puntaje , no tiene cupos movilidad traspaso';
+
+
                     } else {
-                        if (DatosSolicitudesAprobadasTraspaso.count <= DatosConfiguraciones.data[0].mc_cupos_movi_traspaso && Number(puntaje) >= DatosConfiguraciones.data[0].mc_puntaje_minimo_carrera) {
-                            respuesta.permitirsolicitudmoviTraspaso = true;
-                        } else {
+                        if (DatosSolicitudesAprobadasTraspaso.count >= DatosConfiguraciones.data[0].mc_cupos_movi_traspaso ) {
                             respuesta.permitirsolicitudmoviTraspaso = false;
+                            respuesta.mensajeMovilidadTraspaso = 'Control de puntaje , solicittudes llenas para el cupo de traspaso: ' + puntaje;
+
+                        } else {
+                            respuesta.permitirsolicitudmoviTraspaso = true;
+                            respuesta.mensajeMovilidadTraspaso = 'Control de puntaje , puntaje   alcanzado para movilidad traspaso: ' + puntaje;
+
                         }
                     }
-                    respuesta.mensaje = 'Controles varios';
+                
                 }
             } else {
                 respuesta.fechavigente = false;
                 respuesta.permitirsolicitudmoviInterna = false;
                 respuesta.permitirsolicitudmoviExterna = false;
                 respuesta.permitirsolicitudmoviTraspaso = false;
-                respuesta.mensaje = 'Control de fecha , fechas no permitidas';
+                respuesta.mensajeFechas = ' No tiene fechas vigentes en esta carrera';
             }
         } else {
             respuesta.configuracionesCupos = null;
+            respuesta.permitirsolicitudmoviInterna = false;
+            respuesta.permitirsolicitudmoviExterna = false;
+            respuesta.permitirsolicitudmoviTraspaso = false;
+            respuesta.mensajeFechas = ' No tiene configuracion de cupos en este periodo ' + periodo + ' para esta carrera';
         }
         respuesta.SolicitudesAprobadasInterna = DatosSolicitudesAprobadasInterna.count;
         respuesta.SolicitudesAprobadasExterna = DatosSolicitudesAprobadasExterna.count;
@@ -707,15 +754,18 @@ async function FuncionInsertarSolicitudMovilidadEstudiante(solicitud, listadoDoc
     try {
         var respuesta = {};
         var Ingresosolicitud = await funcionesmodelomovilidad.InsertarSolicitudEstudiante("OAS_Master", solicitud);
-       
+
         if (Ingresosolicitud.count > 0) {
-            for (var documento of listadoDocumentos) {
+            if(listadoDocumentos.length>0){
+                for (var documento of listadoDocumentos) {
                 documento.msd_idsolicitud = Ingresosolicitud.data[0].cm_id
                 var IngresoDocumento = await funcionesmodelomovilidad.InsertarDocumentosMovilidad("OAS_Master", documento);
             }
+            }
+            
 
         }
-         var ActualizarExcepcion = await funcionesmodelomovilidad.ActualizarExcepcionEstudianteMovilidad("OAS_Master", solicitud.cm_identificacion,solicitud.cm_periodo);
+        var ActualizarExcepcion = await funcionesmodelomovilidad.ActualizarExcepcionEstudianteMovilidad("OAS_Master", solicitud.cm_identificacion, solicitud.cm_periodo);
         return respuesta;
 
     } catch (error) {
@@ -871,16 +921,25 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadInterna(idsol
     try {
         var respuesta = {};
         var DatosSolicitud = await funcionesmodelomovilidad.ObtenerSolictudDadoId('OAS_Master', idsolicitud);
-
+        var objSolicitudMalla = {};
         if (DatosSolicitud.count > 0) {
             var DatosCarreraActual = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', DatosSolicitud.data[0].cm_dbcarrera_actual);
             var DatosCarreraMovilidad = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', DatosSolicitud.data[0].cm_dbcarrera_movilidad);
-
+            var DatosMallaActual = await funcionesmodelomovilidad.ObtenerMallaActivaCarrera(DatosSolicitud.data[0].cm_dbcarrera_actual);
+            var DatosMallaMovilidad = await funcionesmodelomovilidad.ObtenerMallaActivaCarrera(DatosSolicitud.data[0].cm_dbcarrera_movilidad);
+            objSolicitudMalla.msm_idSolicitud = idsolicitud;
+            objSolicitudMalla.msm_periodo = DatosSolicitud.data[0].cm_periodo;
+            objSolicitudMalla.msm_strdescripcion = '';
+            objSolicitudMalla.msm_mallaactualcodigo = DatosMallaActual.data[0].strCodigo;
+            objSolicitudMalla.msm_mallaactualnombre = DatosMallaActual.data[0].strNombre;
+            objSolicitudMalla.msm_mallamovilidadcodigo = DatosMallaMovilidad.data[0].strCodigo;
+            objSolicitudMalla.msm_mallamovilidadnombre = DatosMallaMovilidad.data[0].strNombre;
             var actualizarprocesocupocarreraactual = await FuncionProcesoCupoCarreraActual(DatosSolicitud.data[0], idpersona, idCupoAdmision, strRutadocumento, DatosCarreraActual.data[0].carrera_unica);
             if (actualizarprocesocupocarreraactual.blProceso) {
                 var actualizarprocesocupocarreramovilidad = await FuncionProcesoCupoCarreraMovilidad(DatosSolicitud.data[0], idpersona, idCupoAdmision, strRutadocumento, DatosCarreraMovilidad.data[0].carrera_unica, 3, actualizarprocesocupocarreraactual.datoscarreraActual);
                 if (actualizarprocesocupocarreramovilidad.blProceso) {
                     var ActualizarSolicitud = await funcionesmodelomovilidad.ActualziarEstadoSolitiud('OAS_Master', idsolicitud, 'APRO', 'SLLICITUD APROBADA', idpersona);
+                    var InsertarSolicitudMalla = await funcionesmodelomovilidad.InsertarMovilidadMalla('OAS_Master', objSolicitudMalla);
                     var IngresoInscripcionCarrera = await FuncionInscripcionEstuidanteCarreraInterna(DatosSolicitud.data[0], DatosCarreraMovilidad.data[0], strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30)
 
                 }
@@ -994,7 +1053,7 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
                 var content = {
                     idCupo: VerificarCupoCarreraActual.data.informacion[0].c_id,
                     estado: 2,//Activacion
-                    strObservacion: 'ACTIVACION CUPO POR CAMBIO DE CARRERRA PROCESO INSCRIPION NUEVO',
+                    strObservacion: 'ACTIVACION CUPO POR CAMBIO DE CARRERRA PROCESO INSCRIPCION NUEVO',
                     strRuta: "",
                     dbcarrera: solicitud.cm_dbcarrera_movilidad,
                     dbnivelacion: VerificarCupoCarreraActual.data.informacion[0].c_dbnivelacion,
@@ -1016,13 +1075,13 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
                         "c_periodo": solicitud.cm_periodo,
                         "c_cupo_admision": datoscarreraActual.c_cupo_admision,
                         "c_id_anterior": 0,
-                        "c_observacion": 'ACTIVACION CARRERA DESDE PROCESO INSCRIPION NUEVO',
+                        "c_observacion": 'ACTIVACION CARRERA DESDE PROCESO MODULO MOVILIDAD NUEVO',
                         "c_codcarreraunico": codigocarreraunico
                     },
                     "detalle": {
                         "dc_per_id": solicitud.cm_perid,
-                        "dc_idestado": 1,//ACTIVACION CUPO
-                        "dc_observacion": "CREACION CUPO DESDE PROCESO INSCRIPION NUEVO",
+                        "dc_idestado": 2,//ACTIVACION CUPO
+                        "dc_observacion": "CREACION CUPO DESDE PROCESO MODULO MOVILIDAD NUEVO",
                         "dc_periodo": solicitud.cm_periodo,
                         "dc_rutaarchivo": '',
                         "dc_cupo_admision": idCupoAdmision
@@ -1049,7 +1108,7 @@ async function FuncionProcesoCupoCarreraMovilidadExterna(solicitud, idpersona, i
                 var content = {
                     idCupo: VerificarCupoCarreraActual.data.informacion[0].c_id,
                     estado: 2,//Activacion
-                    strObservacion: 'ACTIVACION CUPO POR CAMBIO DE CARRERRA PROCESO INSCRIPION NUEVO',
+                    strObservacion: 'ACTIVACION CUPO POR CAMBIO DE CARRERRA PROCESO MODULO MOVILIDAD NUEVO',
                     strRuta: "",
                     dbcarrera: solicitud.cm_dbcarrera_movilidad,
                     dbnivelacion: VerificarCupoCarreraActual.data.informacion[0].c_dbnivelacion,
@@ -1071,13 +1130,13 @@ async function FuncionProcesoCupoCarreraMovilidadExterna(solicitud, idpersona, i
                         "c_periodo": solicitud.cm_periodo,
                         "c_cupo_admision": 0,
                         "c_id_anterior": 0,
-                        "c_observacion": 'ACTIVACION CARRERA DESDE PROCESO INSCRIPION NUEVO',
+                        "c_observacion": 'ACTIVACION CARRERA DESDE PROCESO MODULO MOVILIDAD NUEVO',
                         "c_codcarreraunico": codigocarreraunico
                     },
                     "detalle": {
                         "dc_per_id": solicitud.cm_perid,
                         "dc_idestado": 1,//ACTIVACION CUPO
-                        "dc_observacion": "CREACION CUPO DESDE PROCESO INSCRIPION NUEVO",
+                        "dc_observacion": "CREACION CUPO DESDE PROCESO MODULO MOVILIDAD NUEVO",
                         "dc_periodo": solicitud.cm_periodo,
                         "dc_rutaarchivo": '',
                         "dc_cupo_admision": 0
@@ -1529,6 +1588,41 @@ async function FuncionCurriculumEstudiantil(carrera, cedula, periodo) {
 
         return Base64;
         // return listado;
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+
+async function FuncionPDFCertificadoMovilidadEstuidante(periodo, cedula) {
+    try {
+        var Base64 = ''
+        var respuesta = {};
+        var PeriodoVigenteDatos = await funcionesmodelocupos.ObtenerPeriodoDadoCodigo(periodo)
+        if (PeriodoVigenteDatos.count > 0) {
+
+            var DatosSolicitudEstudiante = await funcionesmodelomovilidad.ObtenerSolicitudAprobadaEstudiante('OAS_Master', periodo, cedula);
+
+            if (DatosSolicitudEstudiante.count > 0) {
+                var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + cedula, { httpsAgent: agent });
+                var objDatosPersona = {
+                    nombreestudiante: ObtenerPersona.data.listado[0].per_nombres,
+                    strcedula:cedula,
+                    correoestudiante: ObtenerPersona.data.listado[0].per_email,
+                    celularstudiante: ObtenerPersona.data.listado[0].per_telefonoCelular,
+                    apellidoestudiante: ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido,
+                }
+                Base64 = await funcionesreportemovilidad.PdfCertificadoMovilidadEstuidante(DatosSolicitudEstudiante.data[0], objDatosPersona,PeriodoVigenteDatos.data[0])
+            return { blProceso: true, Base64: Base64 ,mensaje:"Certificado generado correctamente"}
+            }else{
+                return { blProceso: false, mensaje: "Solicitud de movilidad no encontrada para el periodo :" + periodo + " y cédula :" + cedula}
+            }
+        }else{
+            return { blProceso: false, mensaje: "Periodo no encontrado :" + periodo }
+        }
+
+      
     } catch (error) {
         console.log(error);
         return { blProceso: false, mensaje: "Error :" + error }

@@ -134,7 +134,7 @@ module.exports.ExcelReporteMaticulasAdmisionesInstitucional = async function (pe
 }
 module.exports.ExcelReporteFinanciero = async function (listado) {
   try {
-    var resultado = await ProcesoFinancieroExcel(listado);
+    var resultado = await ProcesoDatosUsuarios(listado);
     return resultado
   } catch (error) {
     console.log(error);
@@ -2502,6 +2502,96 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
       // Guardar archivo Excel
       //  const fs = require('fs');
       //  fs.writeFileSync('InformacionFinanciero.xlsx', buffer);
+      return base64;
+
+    } catch (error) {
+      console.error(error);
+      return 'ERROR';
+    }
+  }
+    async function ProcesoDatosUsuarios(listado) {
+    try {
+      var respuesta = []
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Listado');
+      // Crear un header superior que combine las primeras 18 columnas
+
+      worksheet.mergeCells('A1:I1');
+      const headerespoch = worksheet.getCell('A1');
+      headerespoch.value = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO'; // Texto del header
+      headerespoch.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
+      headerespoch.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+      worksheet.mergeCells('A2:I2');
+      const headerespoch2 = worksheet.getCell('A2');
+      headerespoch2.value = 'INFORMACION USUARIOS'; // Texto del header
+      headerespoch2.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
+      headerespoch2.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+      // Crear un header superior que combine las primeras 18 columnas
+      worksheet.mergeCells('A3:I3'); // Combina de A1 a Q1 (18 columnas)
+      const headerCell = worksheet.getCell('A3');
+      headerCell.value = 'LISTADO INFORMACIÓN '; // Texto del header
+      headerCell.font = { name: 'Arial', size: 11, bold: false }; // Tamaño y fuente Arial
+      headerCell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+      headerCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '9cccfc' }, // Color de fondo
+      };
+
+
+
+
+
+      // Encabezados de tabla
+      const headers = ['No', 'SISTEMA', 'CEDULA', 'NOMBRES', 'APELLIDOS', 'CORREO', 'ROL'];
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+
+      // Agregar datos y aplicar bordes a cada celda
+      listado.forEach((row, index) => {
+        const rowData = [
+          index + 1,
+          row.sistema,
+          row.cedula,
+          row.nombres,
+          row.apellidos,
+          row.correo,
+          row.rol,
+        ];
+        const excelRow = worksheet.addRow(rowData);
+
+        excelRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+      });
+
+
+      // Ajustar tamaño de las columnas
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+      });
+
+      // Retornar la cadena Base64
+      const buffer = await workbook.xlsx.writeBuffer();
+      const base64 = buffer.toString('base64');
+
+
+      // Guardar archivo Excel
+        const fs = require('fs');
+       fs.writeFileSync('InformacionUsuario.xlsx', buffer);
       return base64;
 
     } catch (error) {

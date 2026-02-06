@@ -518,3 +518,23 @@ module.exports.ProcesoActualizarFechasCalificacionesCarreras = async function (o
         return 'ERROR: ' + error;
     }
 }
+
+module.exports.ProcesoListadoTitulodadoInstitucion = async function (codigoInstitucion) {
+    try {
+        var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoTituloInstitucion('OAS_Master', codigoInstitucion);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR: ' + error;
+    }
+}
+
+module.exports.ProcesoIngresoTitulodadoInstitucion = async function (codigoInstitucion,codigoTitulo) {
+    try {
+        var resultado = await funcionesmodelomovilidadconfiguraciones.IngresarTituloInstitucion('OAS_Master', codigoInstitucion,codigoTitulo);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR: ' + error;
+    }
+}

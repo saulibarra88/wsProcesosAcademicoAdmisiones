@@ -9,6 +9,7 @@ const https = require('https');
 const tools = require('./tools');
 const crypto = require("crypto");
 const procesoCupo = require('../modelo/procesocupos');
+const funcionesmodelomovilidad = require('../modelo/modelomovilidad');
 const procesoacademico = require('../rutas/ProcesoNotasAcademico');
 const xlsx = require('xlsx');
 const ExcelJS = require('exceljs');
@@ -30,6 +31,14 @@ module.exports.ExcelExcelListadoSolicitudes = async function (listado, periodo) 
 module.exports.PdfListadoSolicitudesAprobadasCarreras = async function (listado, periodo) {
   try {
     var resultado = await ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo);
+    return resultado
+  } catch (error) {
+    console.log(error);
+  }
+}
+module.exports.PdfCertificadoMovilidadEstuidante = async function (solicitud, objpersona, objperiodo) {
+  try {
+    var resultado = await ProcesoPdfCertificadoMovilidadEstudiante(solicitud, objpersona, objperiodo);
     return resultado
   } catch (error) {
     console.log(error);
@@ -86,7 +95,7 @@ async function ProcesoExcelListadoSolicitudes(listado, periodo) {
     };
 
     // Encabezados de tabla
-    const headers = ['No', 'CEDULA', 'NOMBRES', 'APELLIDOS', 'PERIODO', 'CARRERA ACTUAL', 'CARRERA MOVILIDAD', 'MOVILIDAD', 'PUNTAJE','TIPO_PUNTAJE','TERCERA_MATRICULA', 'ESTADO'];
+    const headers = ['No', 'CEDULA', 'NOMBRES', 'APELLIDOS', 'PERIODO', 'CARRERA ACTUAL', 'CARRERA MOVILIDAD', 'MOVILIDAD', 'PUNTAJE', 'TIPO_PUNTAJE', 'TERCERA_MATRICULA', 'ESTADO'];
     worksheet.addRow(headers).eachCell((cell) => {
       cell.font = { bold: true };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -239,6 +248,134 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
   }
 }
 
+async function ProcesoPdfCertificadoMovilidadEstudiante(objsolicitud, objpersona, objperiodo) {
+  try {
+    var DatosCarreraActual = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', objsolicitud.cm_dbcarrera_actual);
+    var DatosCarreraMovilidad = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', objsolicitud.cm_dbcarrera_movilidad);
+    var fechaActual = tools.ObtenerFechaActualCertificado();
+    const htmlContent = `
+             <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificado</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            margin: 60px;
+            color: #000;
+        }
+
+        .fecha {
+            text-align: right;
+            margin-bottom: 40px;
+             font-size: 10px;
+        }
+
+        .titulo {
+            text-align: center;
+            font-weight: bold;
+            font-size: 10px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .contenido {
+            text-align: justify;
+            font-size: 10px;
+            line-height: 1.8;
+        }
+
+        .firma {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        .linea {
+            margin-bottom: 10px;
+        }
+
+        .cargo {
+            font-weight: bold;
+             font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+
+  
+ <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
+              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>DECANATO ACADEMICO INSTITUCIONAL</strong> </p>
+              <br/>
+      <div class="fecha">
+       ${fechaActual}
+    </div>
+    <div class="titulo">
+        CERTIFICADO CAMBIO DE CARRERA INTERNO
+    </div>
+    <br/>
+    <div class="contenido">
+        <p>
+            La <strong>Escuela Superior Politécnica de Chimborazo</strong>, a través de sus autoridades
+            académicas competentes, <strong>CERTIFICA</strong> que el/la estudiante
+            <strong>${objpersona.nombreestudiante} ${objpersona.apellidoestudiante}</strong>, con cédula de ciudadanía
+            No. <strong>${objpersona.strcedula}</strong>,
+            ha realizado el cambio de carrera (movilidad académica interna) conforme a la normativa
+            institucional vigente, dejando la carrera de
+            <strong>${DatosCarreraActual.data[0].strNombre}</strong> para incorporarse a la carrera de
+            <strong>${DatosCarreraMovilidad.data[0].strNombre}</strong>, correspondiente al período académico
+            <strong>${objperiodo.strDescripcion}</strong>.
+        </p>
+
+        <p>
+            El presente certificado se expide a solicitud del interesado para los fines académicos
+            y administrativos que estime convenientes.
+        </p>
+    </div>
+
+    <div class="firma">
+        <div class="linea">
+            __________________________________________
+        </div>
+        <div class="cargo">
+            DECANO ACADÉMICO
+        </div>
+        <div>
+            <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>VITERI NUÑEZ EDWIN FERNANDO</strong> </p>
+ 
+        </div>
+    </div>
+
+</body>
+</html>
+              `;
+
+    var htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
+    const options = {
+      format: 'A4',
+      border: {
+        top: '1.0cm', // Margen superior
+        right: '1.5cm', // Margen derecho
+        bottom: '2.0cm', // Margen inferior
+        left: '1.5cm' // Margen izquierdo
+      },
+      header: {
+        height: '60px',
+        contents: tools.headerHtml()
+      },
+      footer: {
+        height: '30px',
+        contents: tools.footerHtml()
+      },
+
+    };
+    var base64 = await generarPDF(htmlCompleto, options)
+    return base64
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
 async function ProcesoPdfCurriculumEstudiantil(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas) {
   try {
     var bodylistadoAsignaturas = "";
@@ -762,7 +899,7 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera
 
     // Generar el HTML completo
     const htmlContent = generarHtmlCompleto(
-      cedula, persona, carrera, foto, codigo, 
+      cedula, persona, carrera, foto, codigo,
       datosAsignaturas, datosBecas, datosTitulacion
     );
 
@@ -786,7 +923,7 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera
         height: '30px',
         contents: tools.footerHtml()
       },
-   
+
     };
     const htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
     const base64 = await generarPDF(htmlCompleto, options);
@@ -1265,14 +1402,14 @@ function generarPDF(htmlCompleto, options) {
           } else {
             const base64Data = Buffer.from(data).toString('base64');
             // Eliminar el archivo PDF generado (opcional)
-            fs.unlink(res.filename, (err) => {
-                 if (err) {
-                   console.error('Error al eliminar el archivo PDF:', err);
-                 } else {
-                   console.log('Archivo PDF eliminado.');
-                 }
-               });
-   
+               fs.unlink(res.filename, (err) => {
+                    if (err) {
+                      console.error('Error al eliminar el archivo PDF:', err);
+                    } else {
+                      console.log('Archivo PDF eliminado.');
+                    }
+                  });
+
             // Resolver la promesa con base64Data
             resolve(base64Data);
           }
