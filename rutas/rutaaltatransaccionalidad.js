@@ -155,4 +155,23 @@ router.get('/FinancieroProcesoDatos/',async (req, res) => {
     }
  
 });
+router.get('/InformacionUsuarioSistemas/',async (req, res) => {
+    try {
+        var respuesta=await  pruebasInformacion.ProcesoInformacionUsuario();
+        
+        res.json({
+            success: true,
+            Informacion:  respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

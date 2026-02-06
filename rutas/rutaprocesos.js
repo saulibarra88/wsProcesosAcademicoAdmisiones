@@ -628,7 +628,6 @@ router.get('/PDFMatriculasEstadosNivelParalelos/:carrera/:periodo/:cedula',async
 });
 router.get('/ProcesosPruebas/:periodo/',async (req, res) => {
     const periodo = req.params.periodo;
-
     try {
         
         var respuesta=await  procesoMigracion.ProcesoPruebas(periodo);

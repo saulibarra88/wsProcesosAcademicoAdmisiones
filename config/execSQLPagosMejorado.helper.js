@@ -23,7 +23,6 @@ const execPagosMejorado = async (carrera, SQL, OK = "", msgVacio = "", msgError 
     
       try {
         // Ejecuta el SQL personalizado con los parámetros
-      //  console.log(SQL)
         var res=  await transaction.request().query(SQL);
         return buildResponse(res, OK, msgVacio, msgError);
       } catch (error) {

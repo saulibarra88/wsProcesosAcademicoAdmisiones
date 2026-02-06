@@ -87,8 +87,7 @@ module.exports.pdfMatriculasEstadosEstudiantesporParalelos = async function (car
                 var ListadoAsignaturasParalelos = await modeloprocesocarreras.AsignaturasDictadosMateriasParalelosCarreras(carrera, periodo, asignaturasTodas.strCodMateria);
                 if (ListadoAsignaturasParalelos.count > 0) {
                     for (var asignaturas of ListadoAsignaturasParalelos.data) {
-                        console.log(asignaturas)
-                        
+                   
                         var CantidadMatriculadosAsignatura = await modeloprocesocarreras.MatriculasCantidadEstadosAsignaturas(carrera, periodo, asignaturas.strCodMateria, asignaturas.strCodNivel, asignaturas.strCodParalelo);
                       
                         var resultado = {
