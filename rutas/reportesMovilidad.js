@@ -60,6 +60,14 @@ module.exports.PdfCurriculumEstuidantilConsultor = async function (cedula, perso
     console.log(error);
   }
 }
+module.exports.PdfSolcitudesAprobadasCarreraPeriodo = async function (listado, periodo,strCarrera,strNombre) {
+  try {
+    var resultado = await ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strCarrera,strNombre);
+    return resultado
+  } catch (error) {
+    console.log(error);
+  }
+}
 async function ProcesoExcelListadoSolicitudes(listado, periodo) {
   try {
     var periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
@@ -247,7 +255,105 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
     return 'ERROR';
   }
 }
+async function ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strCarrera,strNombre) {
+  try {
 
+    var periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
+         var bodylistado = "";
+         var contadot = 0;
+         for (let carreras of listado) {
+           contadot = contadot + 1;
+           bodylistado += `<tr >
+                                 <td style="font-size: 10px; text-align: center">
+                                 ${contadot}
+                               </td>
+                               <td style="font-size: 10px; text-align: left">
+                                 ${carreras.nombreestudiante} ${carreras.apellidoestudiante}
+                                 
+                               </td>
+                               <td style="font-size: 10px; text-align: left">
+                                 ${carreras.correoestudiante}  
+                               </td>
+                                 <td style="font-size: 10px; text-align: center">
+                                 ${carreras.cm_puntaje}  
+                               </td>
+                                    <td style="font-size: 9px; text-align: center">
+                                 ${carreras.movilidad}  
+                               </td>
+                             
+                                 <td style="font-size: 9px; text-align: left">
+                                 ${carreras.carreraActualNombre}  
+                               </td>
+     
+     </tr>`
+         }
+         const htmlContent = `
+               <!DOCTYPE html>
+               <html lang="es">
+               <head>
+                 <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
+               </head>
+               <body>
+               <p style='text-align: center;font-size: 10px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
+               <p style='text-align: center;font-size: 10px'> <strong>INFORMACIÓN DE ESTUDIANTES MOVILIDAD ACADÉMICA</strong> </p>
+               <p style='text-align: center;font-size: 10px'> <strong>PERIODO ACADÉMICO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p>
+               <p style='text-align: center;font-size: 10px'> <strong>CARRERA:   ${strCarrera}  </strong> </p><br/>
+                 <table border=2>
+                 <thead>
+                 <tr>
+                        <th colspan="12" style="text-align: center; font-size: 10px">
+                            INFORMACIÓN.
+                        </th>
+                    </tr>
+                   <tr>
+                     <th style="font-size: 10px;text-align: center;">N°</th>
+                     <th style="font-size: 10px;text-align: center;">ESTUDIANTES</th>
+                     <th style="font-size: 10px;text-align: center;">CORREOS</th>
+                     <th  style="font-size: 10px;text-align: center;">PUNTAJES</th>
+                     <th style="font-size: 10px;text-align: center;">MOVILIDAD</th>
+                     <th style="font-size: 10px;text-align: center;">PROCEDENCIAS</th>
+                   </tr>
+                 </thead>
+     
+                 <tbody>
+                    ${bodylistado}
+                   </tbody>
+                 </table>
+                 <br/><br/>
+                 <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
+                 <p style="text-align: center;font-size: 11px;"> GENERADO POR:</p>
+                 <p style="text-align: center;font-size: 11px;">${strNombre}</p>
+               </body>
+               </html>
+               `;
+   
+
+    var htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
+    const options = {
+      format: 'A4',
+      border: {
+        top: '1.0cm', // Margen superior
+        right: '1.5cm', // Margen derecho
+        bottom: '2.0cm', // Margen inferior
+        left: '1.5cm' // Margen izquierdo
+      },
+      header: {
+        height: '60px',
+        contents: tools.headerHtml()
+      },
+      footer: {
+        height: '30px',
+        contents: tools.footerHtml()
+      },
+
+    };
+    var base64 = await generarPDF(htmlCompleto, options)
+    return base64
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
 async function ProcesoPdfCertificadoMovilidadEstudiante(objsolicitud, objpersona, objperiodo) {
   try {
     var DatosCarreraActual = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', objsolicitud.cm_dbcarrera_actual);
@@ -1402,7 +1508,7 @@ function generarPDF(htmlCompleto, options) {
           } else {
             const base64Data = Buffer.from(data).toString('base64');
             // Eliminar el archivo PDF generado (opcional)
-               fs.unlink(res.filename, (err) => {
+              fs.unlink(res.filename, (err) => {
                     if (err) {
                       console.error('Error al eliminar el archivo PDF:', err);
                     } else {
