@@ -477,18 +477,47 @@ module.exports.ProcesoObtenerDatosCarrera = async function (bdcarrera) {
         return 'ERROR' + error
     }
 }
-module.exports.ProcesoListadoCarrerasTraspaso = async function (bdcarreraactual,periodo) {
+module.exports.ProcesoListadoCarrerasTraspaso = async function (bdcarreraactual, periodo) {
     try {
-        var resultado = await funcionesmodelomovilidad.ListadoCarreraTraspaso('OAS_Master', bdcarreraactual,periodo);
+        var resultado = await funcionesmodelomovilidad.ListadoCarreraTraspaso('OAS_Master', bdcarreraactual, periodo);
         return resultado
     } catch (error) {
         console.log(error);
         return 'ERROR' + error
     }
 }
-module.exports.ProcesoPdfCertificadoMovilidadEstuidante = async function (periodo,cedula) {
+module.exports.ProcesoPdfCertificadoMovilidadEstuidante = async function (periodo, cedula) {
     try {
-        var resultado = await FuncionPDFCertificadoMovilidadEstuidante(periodo,cedula);
+        var resultado = await FuncionPDFCertificadoMovilidadEstuidante(periodo, cedula);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
+module.exports.ProcesoListadoCarreraAprobadaSolicitudMovilidad = async function (periodo,) {
+    try {
+        var resultado = await FuncionListadoCarreraAprobadasSolicitudesMovilidad(periodo);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
+module.exports.ProcesoPdfCarrerasSolcitudesAprobadasPeriodos = async function (periodo, carrera, strnombre) {
+
+    try {
+        var resultado = await FuncionReportePdfSolicitudesAprobadasCarreraPeriodo(periodo, carrera, strnombre);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
+module.exports.ProcesoPdfCarrerasSolcitudesAprobadasPeriodosTipos = async function (periodo, carrera, tipo, strNombre) {
+
+    try {
+        var resultado = await FuncionReportePdfSolicitudesAprobadasCarreraPeriodoTipo(periodo, carrera, tipo, strNombre);
         return resultado
     } catch (error) {
         console.log(error);
@@ -712,7 +741,7 @@ async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreram
 
 
                     } else {
-                        if (DatosSolicitudesAprobadasTraspaso.count >= DatosConfiguraciones.data[0].mc_cupos_movi_traspaso ) {
+                        if (DatosSolicitudesAprobadasTraspaso.count >= DatosConfiguraciones.data[0].mc_cupos_movi_traspaso) {
                             respuesta.permitirsolicitudmoviTraspaso = false;
                             respuesta.mensajeMovilidadTraspaso = 'Control de puntaje , solicittudes llenas para el cupo de traspaso: ' + puntaje;
 
@@ -722,7 +751,7 @@ async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreram
 
                         }
                     }
-                
+
                 }
             } else {
                 respuesta.fechavigente = false;
@@ -756,13 +785,13 @@ async function FuncionInsertarSolicitudMovilidadEstudiante(solicitud, listadoDoc
         var Ingresosolicitud = await funcionesmodelomovilidad.InsertarSolicitudEstudiante("OAS_Master", solicitud);
 
         if (Ingresosolicitud.count > 0) {
-            if(listadoDocumentos.length>0){
+            if (listadoDocumentos.length > 0) {
                 for (var documento of listadoDocumentos) {
-                documento.msd_idsolicitud = Ingresosolicitud.data[0].cm_id
-                var IngresoDocumento = await funcionesmodelomovilidad.InsertarDocumentosMovilidad("OAS_Master", documento);
+                    documento.msd_idsolicitud = Ingresosolicitud.data[0].cm_id
+                    var IngresoDocumento = await funcionesmodelomovilidad.InsertarDocumentosMovilidad("OAS_Master", documento);
+                }
             }
-            }
-            
+
 
         }
         var ActualizarExcepcion = await funcionesmodelomovilidad.ActualizarExcepcionEstudianteMovilidad("OAS_Master", solicitud.cm_identificacion, solicitud.cm_periodo);
@@ -1135,7 +1164,7 @@ async function FuncionProcesoCupoCarreraMovilidadExterna(solicitud, idpersona, i
                     },
                     "detalle": {
                         "dc_per_id": solicitud.cm_perid,
-                        "dc_idestado": 1,//ACTIVACION CUPO
+                        "dc_idestado": 2,//ACTIVACION CUPO
                         "dc_observacion": "CREACION CUPO DESDE PROCESO MODULO MOVILIDAD NUEVO",
                         "dc_periodo": solicitud.cm_periodo,
                         "dc_rutaarchivo": '',
@@ -1386,8 +1415,11 @@ async function FuncionInsertarEstuidanteMaster(objEstuidante) {
         var ObnterDatosEstuidanteMaster = await funcionesmodelomovilidad.ObtnerEstuidanteMaster('OAS_Master', objEstuidante.strCedula)
         if (ObnterDatosEstuidanteMaster.count == 0) {
             var ObnterDatosEstuidanteMaster = await funcionesmodelomovilidad.IngresarEstudianteMaster('OAS_Master', objEstuidante)
+            return { blProceso: true, mensaje: "OK" }
+        } else {
+            return { blProceso: true, mensaje: "El estudiante ya existe" }
         }
-        return { blProceso: true, mensaje: "OK" }
+
     } catch (error) {
         console.log(error);
         return { blProceso: false, mensaje: "Error :" + error }
@@ -1608,21 +1640,111 @@ async function FuncionPDFCertificadoMovilidadEstuidante(periodo, cedula) {
                 var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + cedula, { httpsAgent: agent });
                 var objDatosPersona = {
                     nombreestudiante: ObtenerPersona.data.listado[0].per_nombres,
-                    strcedula:cedula,
+                    strcedula: cedula,
                     correoestudiante: ObtenerPersona.data.listado[0].per_email,
                     celularstudiante: ObtenerPersona.data.listado[0].per_telefonoCelular,
                     apellidoestudiante: ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido,
                 }
-                Base64 = await funcionesreportemovilidad.PdfCertificadoMovilidadEstuidante(DatosSolicitudEstudiante.data[0], objDatosPersona,PeriodoVigenteDatos.data[0])
-            return { blProceso: true, Base64: Base64 ,mensaje:"Certificado generado correctamente"}
-            }else{
-                return { blProceso: false, mensaje: "Solicitud de movilidad no encontrada para el periodo :" + periodo + " y cédula :" + cedula}
+                Base64 = await funcionesreportemovilidad.PdfCertificadoMovilidadEstuidante(DatosSolicitudEstudiante.data[0], objDatosPersona, PeriodoVigenteDatos.data[0])
+                return { blProceso: true, Base64: Base64, mensaje: "Certificado generado correctamente" }
+            } else {
+                return { blProceso: false, mensaje: "Solicitud de movilidad no encontrada para el periodo :" + periodo + " y cédula :" + cedula }
             }
-        }else{
+        } else {
             return { blProceso: false, mensaje: "Periodo no encontrado :" + periodo }
         }
 
-      
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+
+async function FuncionListadoCarreraAprobadasSolicitudesMovilidad(periodo) {
+    try {
+        var respuesta = [];
+        var listadoCarreras = await funcionesmodelomovilidad.ListadoCarreraAprobadaSolicitud('OAS_Master', periodo);
+        for (var carreras of listadoCarreras.data) {
+            var DatosCarrera = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', carreras.cm_dbcarrera_movilidad);
+            respuesta.push(DatosCarrera.data[0])
+        }
+        return { blProceso: true, mensaje: "OK", data: respuesta }
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+
+async function FuncionReportePdfSolicitudesAprobadasCarreraPeriodo(periodo, carrera, strNombre) {
+    try {
+        var Base64 = ''
+        var respuesta = {};
+        var listado = [];
+        var listadoCarreras = await funcionesmodelomovilidad.ListadoSolicitudesdadoCarreraAprobadas('OAS_Master', periodo, carrera);
+        if (listadoCarreras.count > 0) {
+            for (var solicitudes of listadoCarreras.data) {
+                var DatosCarreraActualNombre = '';
+                if (solicitudes.cm_idtipo_movilidad != 'MOVEX') {
+                    DatosCarreraActual = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', solicitudes.cm_dbcarrera_actual);
+                    DatosCarreraActualNombre = DatosCarreraActual.data[0].strNombre
+                } else {
+                    DatosCarreraActualNombre = 'NINGUNA // CAMBIO UNIVERSIDAD'
+                }
+                var DatosCarreraMovilidad = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', solicitudes.cm_dbcarrera_movilidad);
+                var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + solicitudes.cm_identificacion, { httpsAgent: agent });
+                solicitudes.carreraActualNombre = DatosCarreraActualNombre;
+                solicitudes.carreraMovilidadNombre = DatosCarreraMovilidad.data[0].strNombre;
+                solicitudes.nombreestudiante = ObtenerPersona.data.listado[0].per_nombres
+                solicitudes.correoestudiante = ObtenerPersona.data.listado[0].per_email
+                solicitudes.celularstudiante = ObtenerPersona.data.listado[0].per_telefonoCelular
+                solicitudes.apellidoestudiante = ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+                solicitudes.movilidad = solicitudes.cm_idtipo_movilidad == 'MOVIN' ? 'MOVILIDAD INTERNA' : solicitudes.cm_idtipo_movilidad == 'MOVEX' ? 'MOVILIDAD EXTERNA' : 'TRASPASO'
+                listado.push(solicitudes)
+            }
+            Base64 = await funcionesreportemovilidad.PdfSolcitudesAprobadasCarreraPeriodo(listado, periodo, listado[0].carreraMovilidadNombre, strNombre)
+        }
+        return Base64;
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+
+async function FuncionReportePdfSolicitudesAprobadasCarreraPeriodoTipo(periodo, carrera, tipo, strNombre) {
+    try {
+        var Base64 = ''
+        var respuesta = {};
+        var listado = [];
+        var listadoCarreras = await funcionesmodelomovilidad.ListadoSolicitudesdadoCarreraTipo('OAS_Master', periodo, carrera, tipo);
+        if (listadoCarreras.count > 0) {
+            for (var solicitudes of listadoCarreras.data) {
+                var DatosCarreraActualNombre = '';
+                if (solicitudes.cm_idtipo_movilidad != 'MOVEX') {
+                    DatosCarreraActual = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', solicitudes.cm_dbcarrera_actual);
+                    DatosCarreraActualNombre = DatosCarreraActual.data[0].strNombre
+                } else {
+                    DatosCarreraActualNombre = 'NINGUNA // CAMBIO UNIVERSIDAD'
+                }
+                var DatosCarreraMovilidad = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', solicitudes.cm_dbcarrera_movilidad);
+                var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + solicitudes.cm_identificacion, { httpsAgent: agent });
+                solicitudes.carreraActualNombre = DatosCarreraActualNombre;
+                solicitudes.carreraMovilidadNombre = DatosCarreraMovilidad.data[0].strNombre;
+                solicitudes.nombreestudiante = ObtenerPersona.data.listado[0].per_nombres
+                solicitudes.correoestudiante = ObtenerPersona.data.listado[0].per_email
+                solicitudes.celularstudiante = ObtenerPersona.data.listado[0].per_telefonoCelular
+                solicitudes.apellidoestudiante = ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+                solicitudes.movilidad = solicitudes.cm_idtipo_movilidad == 'MOVIN' ? 'MOVILIDAD INTERNA' : solicitudes.cm_idtipo_movilidad == 'MOVEX' ? 'MOVILIDAD EXTERNA' : 'TRASPASO'
+                listado.push(solicitudes)
+            }
+            Base64 = await funcionesreportemovilidad.PdfSolcitudesAprobadasCarreraPeriodo(listado, periodo, listado[0].carreraMovilidadNombre, strNombre)
+        }
+
+        return Base64;
     } catch (error) {
         console.log(error);
         return { blProceso: false, mensaje: "Error :" + error }

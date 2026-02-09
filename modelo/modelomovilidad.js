@@ -566,6 +566,7 @@ try {
 
   var sentencia="";
   sentencia="INSERT INTO [" + carrera + "].[dbo].[Estudiantes] ([strCedula],[strNombres],[strApellidos],[strClave],[strCedulaMil],[dtFechaNac],[strNacionalidad],[strDir],[strTel] ,[imgFoto],[strEmail],[strCodSexo],[strCodEstCiv],[strNombresPadre],[strApellidosPadres],[strNombresMadre],[strApellidosMadre],[strCodEstVidP], [strCodEstVidM],[strCodEstado],[strCodCiudadProc],[strCodEstadoUsuario]) VALUES ('"+objEstuidante.strCedula+"','"+objEstuidante.strNombres+"','"+objEstuidante.strApellidos+"','"+objEstuidante.strClave+"','"+objEstuidante.strCedulaMil+"','"+objEstuidante.dtFechaNac+"','"+objEstuidante.strNacionalidad+"','"+objEstuidante.strDir+"','"+objEstuidante.strTel+"','"+objEstuidante.imgFoto+"','"+objEstuidante.strEmail+"','"+objEstuidante.strCodSexo+"','"+objEstuidante.strCodEstCiv+"','"+objEstuidante.strNombresPadre+"','"+objEstuidante.strApellidosPadres+"','"+objEstuidante.strNombresMadre+"','"+objEstuidante.strApellidosMadre+"','"+objEstuidante.strCodEstVidP+"','"+objEstuidante.strCodEstVidM+"','"+objEstuidante.strCodEstado+"','"+objEstuidante.strCodCiudadProc+"','"+objEstuidante.strCodEstadoUsuario+"')"
+
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -1172,6 +1173,50 @@ try {
  module.exports.ListadoCarreraTraspaso = async function (carrera,dbcarreraactual,periodo) {
   var sentencia="";
   sentencia="SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] WHERE [msm_estado]=1 AND [msca_periodo]='" + periodo + "' AND [msca_dbcarreraactual]='" + dbcarreraactual + "' AND [msca_tipo]='MOVTRASP' "
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+ module.exports.ListadoCarreraAprobadaSolicitud = async function (carrera,periodo) {
+  var sentencia="";
+  sentencia=" SELECT [cm_dbcarrera_movilidad] FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] WHERE [cm_estado]=1 AND [cm_periodo]='" + periodo + "' AND [cm_idtipo_estado]='APRO' GROUP BY [cm_dbcarrera_movilidad]"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+ module.exports.ListadoSolicitudesdadoCarreraAprobadas = async function (carrera,periodo,dbcarreramovilidad) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] WHERE [cm_estado]=1 AND [cm_periodo]='" + periodo + "' AND [cm_idtipo_estado]='APRO' AND [cm_dbcarrera_movilidad]='"+dbcarreramovilidad+"' ORDER BY [cm_puntaje] DESC "
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+ module.exports.ListadoSolicitudesdadoCarreraTipo = async function (carrera,periodo,dbcarreramovilidad,tipomovilidad) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] WHERE [cm_estado]=1 AND [cm_periodo]='" + periodo + "' AND [cm_idtipo_estado]='APRO' AND [cm_dbcarrera_movilidad]='"+dbcarreramovilidad+"' AND [cm_idtipo_movilidad]='"+tipomovilidad+"' ORDER BY [cm_puntaje] DESC "
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");

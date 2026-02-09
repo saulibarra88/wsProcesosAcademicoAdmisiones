@@ -1089,4 +1089,64 @@ router.get('/ListadoCarrerasTraspaso/:dbBase/:periodo', async (req, res) => {
         );
     }
 });
+router.get('/ListadoCarrerasSolicitudAprobadasPeriodo/:periodo', async (req, res) => {
+        const periodo = req.params.periodo;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoCarreraAprobadaSolicitudMovilidad(periodo);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+
+router.get('/PdfresporteSolicitudAprobadasCarreraPreiodo/:periodo/:carrera/:strnombre', async (req, res) => {
+        const periodo = req.params.periodo;
+        const carrera = req.params.carrera;
+        const strNombre = req.params.strnombre;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoPdfCarrerasSolcitudesAprobadasPeriodos(periodo,carrera,strNombre);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+router.get('/PdfresporteSolicitudAprobadasCarreraTipo/:periodo/:carrera/:tipo/:strnombre', async (req, res) => {
+        const periodo = req.params.periodo;
+        const carrera = req.params.carrera;
+        const tipo = req.params.tipo;
+        const strNombre = req.params.strnombre;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoPdfCarrerasSolcitudesAprobadasPeriodosTipos(periodo, carrera, tipo, strNombre);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
 module.exports = router;
