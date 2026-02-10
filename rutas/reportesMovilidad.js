@@ -264,24 +264,24 @@ async function ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strC
          for (let carreras of listado) {
            contadot = contadot + 1;
            bodylistado += `<tr >
-                                 <td style="font-size: 10px; text-align: center">
+                                 <td style="font-size: 8x; text-align: center">
                                  ${contadot}
                                </td>
-                               <td style="font-size: 10px; text-align: left">
+                               <td style="font-size: 8px; text-align: left">
                                  ${carreras.nombreestudiante} ${carreras.apellidoestudiante}
                                  
                                </td>
-                               <td style="font-size: 10px; text-align: left">
+                               <td style="font-size: 8px; text-align: left">
                                  ${carreras.correoestudiante}  
                                </td>
-                                 <td style="font-size: 10px; text-align: center">
+                                 <td style="font-size: 8px; text-align: center">
                                  ${carreras.cm_puntaje}  
                                </td>
-                                    <td style="font-size: 9px; text-align: center">
+                                    <td style="font-size: 8px; text-align: center">
                                  ${carreras.movilidad}  
                                </td>
                              
-                                 <td style="font-size: 9px; text-align: left">
+                                 <td style="font-size: 8px; text-align: left">
                                  ${carreras.carreraActualNombre}  
                                </td>
      
@@ -306,12 +306,12 @@ async function ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strC
                         </th>
                     </tr>
                    <tr>
-                     <th style="font-size: 10px;text-align: center;">N°</th>
-                     <th style="font-size: 10px;text-align: center;">ESTUDIANTES</th>
-                     <th style="font-size: 10px;text-align: center;">CORREOS</th>
-                     <th  style="font-size: 10px;text-align: center;">PUNTAJES</th>
-                     <th style="font-size: 10px;text-align: center;">MOVILIDAD</th>
-                     <th style="font-size: 10px;text-align: center;">PROCEDENCIAS</th>
+                     <th style="font-size: 9px;text-align: center;">N°</th>
+                     <th style="font-size: 9px;text-align: center;">ESTUDIANTES</th>
+                     <th style="font-size: 9px;text-align: center;">CORREOS</th>
+                     <th  style="font-size: 9px;text-align: center;">PUNTAJES</th>
+                     <th style="font-size: 9px;text-align: center;">MOVILIDAD</th>
+                     <th style="font-size: 9px;text-align: center;">PROCEDENCIAS</th>
                    </tr>
                  </thead>
      
