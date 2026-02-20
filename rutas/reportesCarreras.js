@@ -140,6 +140,14 @@ module.exports.ExcelReporteFinanciero = async function (listado) {
     console.log(error);
   }
 }
+module.exports.ExcelInconsistenciaMatriculas = async function (listado) {
+  try {
+    var resultado = await ProcesoExcelMatriculasInconsistencia(listado);
+    return resultado
+  } catch (error) {
+    console.log(error);
+  }
+}
 async function ProcesoPdfListadoDocumentosCarreras(listado, cedula, periodo) {
   try {
     try {
@@ -2592,6 +2600,99 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
       // Guardar archivo Excel
         const fs = require('fs');
        fs.writeFileSync('InformacionUsuario.xlsx', buffer);
+      return base64;
+
+    } catch (error) {
+      console.error(error);
+      return 'ERROR';
+    }
+  }
+
+
+    async function ProcesoExcelMatriculasInconsistencia(listado) {
+    try {
+
+      var respuesta = []
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Listado Actas');
+      // Crear un header superior que combine las primeras 18 columnas
+
+      worksheet.mergeCells('A1:J1');
+      const headerespoch = worksheet.getCell('A1');
+      headerespoch.value = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO'; // Texto del header
+      headerespoch.font = { name: 'Arial', size: 12, bold: true }; // Tamaño y fuente Arial
+      headerespoch.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+      worksheet.mergeCells('A2:J2');
+  
+      // Crear un header superior que combine las primeras 18 columnas
+      worksheet.mergeCells('A5:J5'); // Combina de A1 a Q1 (18 columnas)
+      const headerCell = worksheet.getCell('A5');
+      headerCell.value = 'LISTADO DE MATRICULAS INCONSISTENTES'; // Texto del header
+      headerCell.font = { name: 'Arial', size: 11, bold: false }; // Tamaño y fuente Arial
+      headerCell.alignment = { vertical: 'middle', horizontal: 'center' }; // Centrado
+      headerCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '9cccfc' }, // Color de fondo
+      };
+
+
+
+
+
+      // Encabezados de tabla
+      const headers = ['No', 'CARRERA','BASE_DATOS','CEDULA', 'APELLIDOS', 'NOMBRES', 'CODIGO', 'ASIGNATURA',  'MATRICULA_ANTERIOR','MATRICULA_ACTUAL'];
+      worksheet.addRow(headers).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+
+      // Agregar datos y aplicar bordes a cada celda
+      listado.forEach((row, index) => {
+        const rowData = [
+          index + 1,
+          row.objcarrera.strNombre,
+          row.objcarrera.strBaseDatos,
+          row.strCedula,
+          row.strApellidos,
+          row.strNombres,
+          row.strCodigo,
+          '',
+          row.ListadoAsignaturas[row.ListadoAsignaturas.length - 1].anteriror,
+           row.ListadoAsignaturas[row.ListadoAsignaturas.length - 1].actual,
+        ];
+        const excelRow = worksheet.addRow(rowData);
+
+        excelRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+      });
+
+
+      // Ajustar tamaño de las columnas
+      worksheet.columns.forEach((column) => {
+        column.width = 20;
+      });
+
+      // Retornar la cadena Base64
+      const buffer = await workbook.xlsx.writeBuffer();
+      const base64 = buffer.toString('base64');
+
+
+      // Guardar archivo Excel
+       /*  const fs = require('fs');
+     fs.writeFileSync('ListadoMatriculasInconsistencia.xlsx', buffer);*/
       return base64;
 
     } catch (error) {

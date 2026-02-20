@@ -373,3 +373,19 @@ module.exports.ObtenerMateriaConvalidacionConocimiento = async function (transac
     return { data: "Error: " + error }
   }
 }
+
+module.exports.ListadoCarreraTodas = async function (transaction,carrera) {
+  var sentencia="";
+   sentencia=" select * from [" + carrera + "].[dbo].[Carreras]"
+    try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+}

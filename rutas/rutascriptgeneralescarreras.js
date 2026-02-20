@@ -75,4 +75,28 @@ router.get('/ProcesosEliminacionMatriculasPendientes/:periodo',async (req, res) 
     }
  
 });
+
+router.get('/ProcesosVerificacionInconsistenciaMatricula/:carrera/:periodoactual/:periodoanterior',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodoactual = req.params.periodoactual;
+    const periodoanterior = req.params.periodoanterior;
+
+    try {
+        
+        var respuesta=await  procesosScript.ProcesoVerificacionMatriculaAsignaturas(carrera,periodoactual,periodoanterior);
+        res.json({
+            success: true,
+            informacion:respuesta
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;
