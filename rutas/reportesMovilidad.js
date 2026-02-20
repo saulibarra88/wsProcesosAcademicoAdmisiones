@@ -422,20 +422,17 @@ async function ProcesoPdfCertificadoMovilidadEstudiante(objsolicitud, objpersona
     <br/>
     <div class="contenido">
         <p>
-            La <strong>Escuela Superior Politécnica de Chimborazo</strong>, a través de sus autoridades
-            académicas competentes, <strong>CERTIFICA</strong> que el/la estudiante
-            <strong>${objpersona.nombreestudiante} ${objpersona.apellidoestudiante}</strong>, con cédula de ciudadanía
-            No. <strong>${objpersona.strcedula}</strong>,
-            ha realizado el cambio de carrera (movilidad académica interna) conforme a la normativa
-            institucional vigente, dejando la carrera de
-            <strong>${DatosCarreraActual.data[0].strNombre}</strong> para incorporarse a la carrera de
+            La <strong>Escuela Superior Politécnica de Chimborazo</strong>, a través del Decanato Académico,
+            certifica que la estuidante <strong>${objpersona.nombreestudiante} ${objpersona.apellidoestudiante}</strong>,portadora de la cédula de ciudadanía
+            No. <strong>${objpersona.strcedula}</strong>,realizó un cambio interno de carrera conforme a la normativa institucional vigente, pasando de la carrera de
+            <strong>${DatosCarreraActual.data[0].strNombre}</strong> a la carrera de
             <strong>${DatosCarreraMovilidad.data[0].strNombre}</strong>, correspondiente al período académico
             <strong>${objperiodo.strDescripcion}</strong>.
         </p>
 
         <p>
             El presente certificado se expide a solicitud del interesado para los fines académicos
-            y administrativos que estime convenientes.
+            y administrativos que considere pertinentes..
         </p>
     </div>
 
@@ -447,7 +444,7 @@ async function ProcesoPdfCertificadoMovilidadEstudiante(objsolicitud, objpersona
             DECANO ACADÉMICO
         </div>
         <div>
-            <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>VITERI NUÑEZ EDWIN FERNANDO</strong> </p>
+            <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>EDWIN FERNANDO VITERI NUÑEZ</strong> </p>
  
         </div>
     </div>

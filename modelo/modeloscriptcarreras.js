@@ -22,3 +22,4 @@ module.exports.ObtenerCupoEstudianteDadoCarrera = async function (carrera,period
     return {data:"Error: "+ error}
   }
   }
+
