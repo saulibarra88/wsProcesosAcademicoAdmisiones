@@ -910,6 +910,21 @@ module.exports.EliminarInscripcionSolicitudEstuidante = async function (carrera,
   return {data:"Error: "+ error}
 }
 }
+
+ module.exports.ObtenerMatriculaEstuidanteCarrera = async function (carrera,cedula,periodo) {
+  var sentencia="";
+  sentencia="SELECT TOP 1 * FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS e ON e.strCodigo=m.strCodEstud WHERE e.strCedula='" + cedula + "' AND m.[strCodPeriodo]='" + periodo + "' ORDER BY [dtFechaAutorizada] DESC"
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
  module.exports.ListadoASignaturasqNotieneqAprobar = async function (carrera,codigo) {
   var sentencia="";
   sentencia="SELECT * FROM [" + carrera + "].[dbo].[Materias_Sin_Tener_Aprobar] WHERE [strCodEstud]='" + codigo + "'"
