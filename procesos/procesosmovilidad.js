@@ -528,77 +528,99 @@ async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel
     try {
         var respuesta = {};
         var AsignaturaHomologadas = [];
-        var ExcepcionEstuidante = await funcionesmodelomovilidad.ObtnerExcepcionEstudianteMovilidad('OAS_Master', cedula, periodo);
-        if (ExcepcionEstuidante.count > 0) {
-            respuesta.perdidasegunda = false;
-            respuesta.aprobacionnivel = true;
+        var VerificacionMatricula = await funcionesmodelomovilidad.ObtenerMatriculaEstuidanteCarrera(carrera, cedula, periodo);
+        if (VerificacionMatricula.count > 0) {
+            var ExcepcionEstuidante = await funcionesmodelomovilidad.ObtnerExcepcionEstudianteMovilidad('OAS_Master', cedula, periodo);
+            if (ExcepcionEstuidante.count > 0) {
+                respuesta.perdidasegunda = false;
+                respuesta.aprobacionnivel = true;
+                respuesta.matriculaActual = false;
+                respuesta.nivel = 1;
+                respuesta.codestudiante = codestudiante;
+                respuesta.pensummaterias = 0;
+                respuesta.aprobadas = 0;
+                respuesta.noaprobadas = 0;
+                respuesta.mensaje = 'Estudiante con excepcion';
+            } else {
+                respuesta.matriculaActual = false;
+                var RecordAcademicoNivel = await funcionesmodelomovilidad.ObtnerRecodAcademicoporNivel(carrera, codestudiante, nivel);
+                var banderahomologacion = false
+                for (var datosrecord of RecordAcademicoNivel.data) {
+                    if (datosrecord.Tipo == 2) {
+                        banderahomologacion = true
+                    } else {
+                        AsignaturaHomologadas.push(datosrecord)
+                    }
+                }
+                if (banderahomologacion) { //Datos con Homologacion
+                    var noaprobadas = 0
+                    var aprobadas = 0
+                    var datosProcesados = await funcionestools.obtenerUltimosIntentosPorMateria(AsignaturaHomologadas)
+                    for (var asig of datosProcesados) {
+                        if (asig.Equivalencia == 'R' || asig.Equivalencia == 'RVC') {
+                            noaprobadas = noaprobadas + 1
+                        } else {
+                            aprobadas = aprobadas + 1
+                        }
+                    }
+                    if (aprobadas == datosProcesados.length) {
+                        respuesta.aprobacionnivel = true;
+                        respuesta.mensajeNivel = 'Si tiene aprobado el nivel  ' + nivel;
+                    } else {
+                        respuesta.aprobacionnivel = false;
+                        respuesta.mensajeNivel = 'No tiene aprobado el nivel  ' + nivel;
+                    }
+                    respuesta.nivel = nivel;
+                    respuesta.codestudiante = codestudiante;
+                    respuesta.pensummaterias = datosProcesados.length;
+                    respuesta.aprobadas = aprobadas;
+                    respuesta.noaprobadas = noaprobadas;
+
+                } else {//'Datos SIN homologacion'
+                    var AprobacionNivel = await funcionesmodelomovilidad.ObtenerMateriasAprobadasPorNivelPensum(carrera, codestudiante, nivel);
+                    if (AprobacionNivel.count > 0) {
+                        respuesta.nivel = nivel;
+                        respuesta.codestudiante = codestudiante;
+                        respuesta.pensummaterias = AprobacionNivel.data[0].materiaspensum;
+                        respuesta.aprobadas = AprobacionNivel.data[0].aprobadas;
+                        respuesta.noaprobadas = AprobacionNivel.data[0].no_aprobadas;
+                        if (AprobacionNivel.data[0].materiaspensum == AprobacionNivel.data[0].aprobadas) {
+                            respuesta.aprobacionnivel = true;
+                            respuesta.mensajeNivel = 'Si tiene aprobado el nivel  ' + nivel;
+                        } else {
+                            respuesta.aprobacionnivel = false;
+                            respuesta.mensajeNivel = 'No tiene aprobado el nivel  ' + nivel;
+                        }
+                    }
+                }
+
+                var PerdidaSegundaMatricula = await funcionesmodelomovilidad.ObtenerMateriasPerdidasSegundaMatriculaCantidad(carrera, codestudiante);
+
+                if (PerdidaSegundaMatricula.count > 0) {
+                    if (PerdidaSegundaMatricula.data[0].materiasegundamat == PerdidaSegundaMatricula.data[0].aprobadas) {
+                        respuesta.perdidasegunda = false;
+                        respuesta.mensajeperdidasegunda = 'no tiene perdida con segunda matricula';
+                    } else {
+                        respuesta.perdidasegunda = true;
+                        respuesta.mensajeperdidasegunda = 'Perdio con segunda matricula';
+                        var PerdidaSegundaMatriculaDetalle = await funcionesmodelomovilidad.ObtenerMateriasPerdidasSegundaMatriculaDetalle(carrera, codestudiante);
+                        respuesta.detallePerdida = PerdidaSegundaMatriculaDetalle.data
+                    }
+                }
+
+            }
+        } else {
+            respuesta.perdidasegunda = true;
+            respuesta.aprobacionnivel = false;
+            respuesta.matriculaActual = true;
             respuesta.nivel = 1;
             respuesta.codestudiante = codestudiante;
             respuesta.pensummaterias = 0;
             respuesta.aprobadas = 0;
             respuesta.noaprobadas = 0;
-            respuesta.mensaje = 'Estudiante con excepcion';
-        } else {
-            var RecordAcademicoNivel = await funcionesmodelomovilidad.ObtnerRecodAcademicoporNivel(carrera, codestudiante, nivel);
-            var banderahomologacion = false
-            for (var datosrecord of RecordAcademicoNivel.data) {
-                if (datosrecord.Tipo == 2) {
-                    banderahomologacion = true
-                } else {
-                    AsignaturaHomologadas.push(datosrecord)
-                }
-            }
-            if (banderahomologacion) { //Datos con Homologacion
-                var noaprobadas = 0
-                var aprobadas = 0
-                var datosProcesados = await funcionestools.obtenerUltimosIntentosPorMateria(AsignaturaHomologadas)
-                for (var asig of datosProcesados) {
-                    if (asig.Equivalencia == 'R' || asig.Equivalencia == 'RVC') {
-                        noaprobadas = noaprobadas + 1
-                    } else {
-                        aprobadas = aprobadas + 1
-                    }
-                }
-                if (aprobadas == datosProcesados.length) {
-                    respuesta.aprobacionnivel = true;
-                } else {
-                    respuesta.aprobacionnivel = false;
-                }
-                respuesta.nivel = nivel;
-                respuesta.codestudiante = codestudiante;
-                respuesta.pensummaterias = datosProcesados.length;
-                respuesta.aprobadas = aprobadas;
-                respuesta.noaprobadas = noaprobadas;
-
-            } else {//'Datos SIN homologacion'
-                var AprobacionNivel = await funcionesmodelomovilidad.ObtenerMateriasAprobadasPorNivelPensum(carrera, codestudiante, nivel);
-                if (AprobacionNivel.count > 0) {
-                    respuesta.nivel = nivel;
-                    respuesta.codestudiante = codestudiante;
-                    respuesta.pensummaterias = AprobacionNivel.data[0].materiaspensum;
-                    respuesta.aprobadas = AprobacionNivel.data[0].aprobadas;
-                    respuesta.noaprobadas = AprobacionNivel.data[0].no_aprobadas;
-                    if (AprobacionNivel.data[0].materiaspensum == AprobacionNivel.data[0].aprobadas) {
-                        respuesta.aprobacionnivel = true;
-                    } else {
-                        respuesta.aprobacionnivel = false;
-                    }
-                }
-            }
-
-            var PerdidaSegundaMatricula = await funcionesmodelomovilidad.ObtenerMateriasPerdidasSegundaMatriculaCantidad(carrera, codestudiante);
-
-            if (PerdidaSegundaMatricula.count > 0) {
-                if (PerdidaSegundaMatricula.data[0].materiasegundamat == PerdidaSegundaMatricula.data[0].aprobadas) {
-                    respuesta.perdidasegunda = false;
-                } else {
-                    respuesta.perdidasegunda = true;
-                    var PerdidaSegundaMatriculaDetalle = await funcionesmodelomovilidad.ObtenerMateriasPerdidasSegundaMatriculaDetalle(carrera, codestudiante);
-                    respuesta.detallePerdida = PerdidaSegundaMatriculaDetalle.data
-                }
-            }
-
+            respuesta.mensaje = 'Tiene un Proceso de Matricula Actual en este periodo ' + periodo;
         }
+
 
         return respuesta;
 

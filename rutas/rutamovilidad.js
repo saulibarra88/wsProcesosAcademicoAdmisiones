@@ -29,7 +29,6 @@ router.get('/CarrerasDadoFacultadHomologaciones/:periodo/:codFacultad', async (r
 });
 
 router.post('/DatosEstudiantesCambioCarreraProcesos/', async (req, res) => {
-
         const { carrera, codEstudiante,nivel,periodo,cedula } = req.body;
     try {
         var respuesta = await funcionesprocesosmovilidad.ProcesoDatosEstudianteCambioCarrera(carrera, codEstudiante, nivel,periodo,cedula);
