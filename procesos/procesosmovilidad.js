@@ -528,7 +528,7 @@ async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel
     try {
         var respuesta = {};
         var AsignaturaHomologadas = [];
-        var VerificacionMatricula = await funcionesmodelomovilidad.ObtenerMatriculaEstuidanteCarrera(carrera, cedula, periodo);
+        var VerificacionMatricula = await funcionesmodelomovilidad.ObtenerMatriculaEstuidanteCarrera(carrera,funcionestools.CedulaConGuion(cedula) , periodo);
         if (VerificacionMatricula.count == 0) {
             var ExcepcionEstuidante = await funcionesmodelomovilidad.ObtnerExcepcionEstudianteMovilidad('OAS_Master', cedula, periodo);
             if (ExcepcionEstuidante.count > 0) {
