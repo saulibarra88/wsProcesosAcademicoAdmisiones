@@ -125,7 +125,7 @@ module.exports.ObtenerMateriasPerdidasSegundaMatriculaCantidad= async function (
   }
   }
 
-        module.exports.ListadoSolicitudesMovilidadPorEstado= async function (carrera,estado,periodo) {
+  module.exports.ListadoSolicitudesMovilidadPorEstado= async function (carrera,estado,periodo) {
     var sentencia=""; 
     sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] AS sm INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_estado] AS mts ON mts.mte_strcodigo=sm.cm_idtipo_estado INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_solicitud] AS mt ON mt.mte_strcodigo=sm.cm_idtipo_movilidad WHERE sm.[cm_idtipo_estado]='" + estado + "' AND sm.[cm_estado]=1 AND sm.[cm_periodo]='" + periodo + "' ORDER BY sm.[cm_fecha_registro]"; 
     try {
@@ -139,7 +139,20 @@ module.exports.ObtenerMateriasPerdidasSegundaMatriculaCantidad= async function (
     return {data:"Error: "+ error}
   }
   }
-
+  module.exports.ListadoSolicitudesMovilidadPorCarrera= async function (carrera,estado,periodo,dbcarrera) {
+    var sentencia=""; 
+    sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] AS sm INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_estado] AS mts ON mts.mte_strcodigo=sm.cm_idtipo_estado INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_solicitud] AS mt ON mt.mte_strcodigo=sm.cm_idtipo_movilidad WHERE sm.[cm_idtipo_estado]='" + estado + "' AND sm.[cm_estado]=1 AND sm.[cm_periodo]='" + periodo + "' AND sm.[cm_dbcarrera_movilidad]='" + dbcarrera + "' ORDER BY sm.[cm_fecha_registro]"; 
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
  module.exports.ObtnerFormatoTextoDadoCodigo= async function (carrera,codigo) {
     var sentencia=""; 
     sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_formato_texto] WHERE [mft_strcodigo]='" + codigo + "'"; 

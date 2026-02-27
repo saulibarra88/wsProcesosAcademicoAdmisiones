@@ -106,7 +106,14 @@ module.exports.ProcesoListadoSolicitudesMovilidadPorEstado = async function (est
         console.log(error);
     }
 }
-
+module.exports.ProcesoListadoSolicitudesMovilidadPorCarrera = async function (estado, periodo,carrera) {
+    try {
+        var resultado = await FuncionListadoSolicitudesMovilidadPorCarrera(estado, periodo,carrera);
+        return resultado
+    } catch (error) {
+        console.log(error);
+    }
+}
 module.exports.ProcesoDatosHomologacionCarreraEstudiante = async function (carrera, cedula, periodo) {
     try {
         var resultado = await FuncionDatosHomologacionCarreraEstudiante(carrera, cedula, periodo);
@@ -845,6 +852,31 @@ async function FuncionListadoSolicitudesMovilidadPorEstado(estado, periodo) {
         var respuesta = {};
         var listado = [];
         var listadoDocumentos = await funcionesmodelomovilidad.ListadoSolicitudesMovilidadPorEstado('OAS_Master', estado, periodo);
+        if (listadoDocumentos.count > 0) {
+            for (var solicitudes of listadoDocumentos.data) {
+                var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + solicitudes.cm_identificacion, { httpsAgent: agent });
+                solicitudes.nombreestudiante =
+                    solicitudes.nombreestudiante = ObtenerPersona.data.listado[0].per_nombres
+                solicitudes.correoestudiante = ObtenerPersona.data.listado[0].per_email
+                solicitudes.celularstudiante = ObtenerPersona.data.listado[0].per_telefonoCelular
+                solicitudes.apellidoestudiante = ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
+                listado.push()
+            }
+
+        }
+        return listadoDocumentos;
+
+    } catch (error) {
+        console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
+async function FuncionListadoSolicitudesMovilidadPorCarrera(estado,periodo,carrera) {
+    try {
+        var respuesta = {};
+        var listado = [];
+        var listadoDocumentos = await funcionesmodelomovilidad.ListadoSolicitudesMovilidadPorCarrera('OAS_Master',estado, periodo,carrera);
         if (listadoDocumentos.count > 0) {
             for (var solicitudes of listadoDocumentos.data) {
                 var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + solicitudes.cm_identificacion, { httpsAgent: agent });
