@@ -1034,7 +1034,7 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadInterna(idsol
         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
-async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, ) {
+async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30,strFoto ) {
     try {
         var respuesta = {};
         var InsertarSolicitud = await funcionesmodelomovilidad.InsertarSolicitudEstudiante('OAS_Master', solicitud);
