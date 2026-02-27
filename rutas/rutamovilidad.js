@@ -110,6 +110,28 @@ router.get('/ListadoSolicitudesMovilidadPorEstado/:estado/:periodo', async (req,
     }
 
 });
+router.get('/ListadoSolicitudesMovilidadPorCarrera/:estado/:periodo/:carrera', async (req, res) => {
+    const estado = req.params.estado;
+    const periodo = req.params.periodo;
+    const carrera = req.params.carrera;
+
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoSolicitudesMovilidadPorCarrera(estado, periodo,carrera);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+
+});
 router.get('/ObtenerFormatoTextoCodigo/:codigo', async (req, res) => {
     const codigo = req.params.codigo;
 
