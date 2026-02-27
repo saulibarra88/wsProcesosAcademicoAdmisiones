@@ -578,8 +578,8 @@ try {
  module.exports.IngresarEstudianteMaster = async function (carrera,objEstuidante) {
 
   var sentencia="";
-  sentencia="INSERT INTO [" + carrera + "].[dbo].[Estudiantes] ([strCedula],[strNombres],[strApellidos],[strClave],[strCedulaMil],[dtFechaNac],[strNacionalidad],[strDir],[strTel] ,[imgFoto],[strEmail],[strCodSexo],[strCodEstCiv],[strNombresPadre],[strApellidosPadres],[strNombresMadre],[strApellidosMadre],[strCodEstVidP], [strCodEstVidM],[strCodEstado],[strCodCiudadProc],[strCodEstadoUsuario]) VALUES ('"+objEstuidante.strCedula+"','"+objEstuidante.strNombres+"','"+objEstuidante.strApellidos+"','"+objEstuidante.strClave+"','"+objEstuidante.strCedulaMil+"','"+objEstuidante.dtFechaNac+"','"+objEstuidante.strNacionalidad+"','"+objEstuidante.strDir+"','"+objEstuidante.strTel+"','"+objEstuidante.imgFoto+"','"+objEstuidante.strEmail+"','"+objEstuidante.strCodSexo+"','"+objEstuidante.strCodEstCiv+"','"+objEstuidante.strNombresPadre+"','"+objEstuidante.strApellidosPadres+"','"+objEstuidante.strNombresMadre+"','"+objEstuidante.strApellidosMadre+"','"+objEstuidante.strCodEstVidP+"','"+objEstuidante.strCodEstVidM+"','"+objEstuidante.strCodEstado+"','"+objEstuidante.strCodCiudadProc+"','"+objEstuidante.strCodEstadoUsuario+"')"
-
+  sentencia="INSERT INTO [" + carrera + "].[dbo].[Estudiantes] ([strCedula],[strNombres],[strApellidos],[strClave],[strCedulaMil],[dtFechaNac],[strNacionalidad],[strDir],[strTel] ,[imgFoto],[strEmail],[strCodSexo],[strCodEstCiv],[strNombresPadre],[strApellidosPadres],[strNombresMadre],[strApellidosMadre],[strCodEstVidP], [strCodEstVidM],[strCodEstado],[strCodCiudadProc],[strCodEstadoUsuario]) VALUES ('"+objEstuidante.strCedula+"','"+objEstuidante.strNombres+"','"+objEstuidante.strApellidos+"','"+objEstuidante.strClave+"','"+objEstuidante.strCedulaMil+"',CONVERT(datetime,'"+objEstuidante.dtFechaNac+"',112) ,'"+objEstuidante.strNacionalidad+"','"+objEstuidante.strDir+"','"+objEstuidante.strTel+"','"+objEstuidante.imgFoto+"','"+objEstuidante.strEmail+"','"+objEstuidante.strCodSexo+"','"+objEstuidante.strCodEstCiv+"','"+objEstuidante.strNombresPadre+"','"+objEstuidante.strApellidosPadres+"','"+objEstuidante.strNombresMadre+"','"+objEstuidante.strApellidosMadre+"','"+objEstuidante.strCodEstVidP+"','"+objEstuidante.strCodEstVidM+"','"+objEstuidante.strCodEstado+"','"+objEstuidante.strCodCiudadProc+"','"+objEstuidante.strCodEstadoUsuario+"')"
+console.log(sentencia)
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -685,6 +685,7 @@ try {
  module.exports.InsertarGradoEstudiante = async function (carrera,objGrado) {
   var sentencia="";
   sentencia="INSERT INTO [" + carrera + "].[dbo].[Grados] ([strCedEstud],[strCodTit],[strCodInt],[dtFecha],[strRefrendacion],[dtFechaRegistro]) VALUES ( '" + objGrado.strCedEstud + "','" + objGrado.strCodTit + "','" + objGrado.strCodInt + "','" + objGrado.dtFecha + "','" + objGrado.strRefrendacion + "'," + objGrado.dtFechaRegistro + ")"
+  console.log(sentencia)
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");

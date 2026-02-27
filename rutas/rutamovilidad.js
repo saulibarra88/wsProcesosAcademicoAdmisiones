@@ -603,10 +603,10 @@ router.post('/InserarEstudianteMaster', async (req, res) => {
             strApellidos: strApellidos,
             strClave: strClave,
             strCedulaMil: strCedulaMil,
-            dtFechaNac: dtFechaNac,
+            dtFechaNac: dtFechaNac.replaceAll('-',''),
             strNacionalidad: strNacionalidad,
             strDir: strDir,
-            strTel: strTel,
+            strTel: '',
             strEmail: strEmail,
             strCodSexo: strCodSexo,
             strCodEstCiv: strCodEstCiv,
@@ -617,7 +617,7 @@ router.post('/InserarEstudianteMaster', async (req, res) => {
             strCodEstVidP: strCodEstVidP,
             strCodEstVidM: strCodEstVidM,
             strCodEstado: strCodEstado,
-            imgFoto: imgFoto,
+            imgFoto: '',
             strCodCiudadProc: strCodCiudadProc,
             strCodEstadoUsuario: strCodEstadoUsuario
         }
