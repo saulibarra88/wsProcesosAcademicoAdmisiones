@@ -99,6 +99,7 @@ module.exports.ObtenerMateriasPerdidasSegundaMatriculaCantidad= async function (
  module.exports.InsertarSolicitudEstudiante= async function (carrera,datossolicitud) {
     var sentencia=""; 
     sentencia = "insert into [" + carrera + "].[dbo].[tb_movilidad_solicitud] ([cm_periodo],[cm_strsolicitud],[cm_strobservacion],[cm_perid],[cm_identificacion],[cm_idtipo_movilidad] ,[cm_idtipo_estado],[cm_dbcarrera_actual],[cm_nombrecarrera_actual],[cm_perdidatercera_actual],[cm_dbcarrera_movilidad],[cm_nombrecarrera_movilidad],[cm_impedimento_movilidad],[cm_puntaje],[cm_blpuntajeadmision]) values ('" + datossolicitud.cm_periodo + "','" + datossolicitud.cm_strsolicitud + "','" + datossolicitud.cm_strobservacion + "'," + datossolicitud.cm_perid + ",'" + datossolicitud.cm_identificacion + "','" + datossolicitud.cm_idtipo_movilidad + "','" + datossolicitud.cm_idtipo_estado + "','" + datossolicitud.cm_dbcarrera_actual + "','" + datossolicitud.cm_nombrecarrera_actual + "','" + datossolicitud.cm_perdidatercera_actual + "','" + datossolicitud.cm_dbcarrera_movilidad + "','" + datossolicitud.cm_nombrecarrera_movilidad + "','" + datossolicitud.cm_impedimento_movilidad + "','" + datossolicitud.cm_puntaje + "','" + datossolicitud.cm_blpuntajeadmision + "');select max([cm_id]) as cm_id from [" + carrera + "].[dbo].[tb_movilidad_solicitud] where [cm_estado]=1"; 
+   console.log(sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -142,6 +143,7 @@ module.exports.ObtenerMateriasPerdidasSegundaMatriculaCantidad= async function (
   module.exports.ListadoSolicitudesMovilidadPorCarrera= async function (carrera,estado,periodo,dbcarrera) {
     var sentencia=""; 
     sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] AS sm INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_estado] AS mts ON mts.mte_strcodigo=sm.cm_idtipo_estado INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_solicitud] AS mt ON mt.mte_strcodigo=sm.cm_idtipo_movilidad WHERE sm.[cm_idtipo_estado]='" + estado + "' AND sm.[cm_estado]=1 AND sm.[cm_periodo]='" + periodo + "' AND sm.[cm_dbcarrera_movilidad]='" + dbcarrera + "' ORDER BY sm.[cm_fecha_registro]"; 
+   console.log(sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
@@ -991,7 +993,7 @@ module.exports.ListadoEstadoSolicitud = async function (dbcarrera) {
  
 try {
   if (sentencia != "") {
-    const sqlConsulta = await execDinamico(dbcarrera, "OK","OK");
+    const sqlConsulta = await execDinamico(dbcarrera,sentencia, "OK","OK");
   
    return (sqlConsulta)
   } else {
@@ -1246,6 +1248,21 @@ try {
  module.exports.ListadoSolicitudesdadoCarreraTipo = async function (carrera,periodo,dbcarreramovilidad,tipomovilidad) {
   var sentencia="";
   sentencia=" SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] WHERE [cm_estado]=1 AND [cm_periodo]='" + periodo + "' AND [cm_idtipo_estado]='APRO' AND [cm_dbcarrera_movilidad]='"+dbcarreramovilidad+"' AND [cm_idtipo_movilidad]='"+tipomovilidad+"' ORDER BY [cm_puntaje] DESC "
+  try {
+  if (sentencia != "") {
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+}
+
+ module.exports.ActualizarEstadoSolicitud = async function (carrera,periodo,cedula,idsolicitud,observacion,estado) {
+  var sentencia="";
+  sentencia="UPDATE [" + carrera + "].[dbo].[tb_movilidad_solicitud] SET [cm_strobservacion]='" + observacion + "',[cm_idtipo_estado]='" + estado + "' WHERE [cm_periodo]='" + periodo + "' AND [cm_id]=" + idsolicitud + " AND [cm_identificacion]='" + cedula + "'"
   try {
   if (sentencia != "") {
     const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
