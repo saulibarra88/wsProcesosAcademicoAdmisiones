@@ -319,6 +319,7 @@ router.post('/InsertarSolicitudAprobadaInscripcionMoviTraspaso', async (req, res
 });
 router.post('/InsertarInscripcionMoviExterna', async (req, res) => {
     try {
+        console.log('aqui ')
         const { solicitud, idpersona, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, idCupoAdmision, strFoto } = req.body;
         const Informacion = await funcionesprocesosmovilidad.ProcesInsertarSolicitudAprobadaInscripcionMovilidadExterna(solicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, strFoto);
         res.json({
@@ -1168,6 +1169,45 @@ router.get('/PdfresporteSolicitudAprobadasCarreraTipo/:periodo/:carrera/:tipo/:s
                 mensaje: 'Error en el registro' + err
             }
         );
+    }
+});
+router.get('/ListadoEstadosSolicitudes/', async (req, res) => {
+
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoEstadoSolicitudes();
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+
+});
+
+router.post('/ActualizarSolicitudEstadoAcademico', async (req, res) => {
+    try {
+        const { periodo,cedula,idsolicitud,observacion,estado } = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesoActualizarEstadoSolicitudAcademica(periodo,cedula,idsolicitud,observacion,estado);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
     }
 });
 module.exports = router;

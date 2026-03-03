@@ -355,7 +355,6 @@ module.exports.ProcesoEliminacionInscripcionMovExterna = async function (dbCarre
     }
 }
 module.exports.ProcesoActulizarInscripcionesEstuidante = async function (objEstudiante) {
-
     try {
         var resultado = await funcionesmodelomovilidad.ActualizarInscripcionesEstudiante('OAS_Master', objEstudiante);
         return resultado
@@ -529,6 +528,25 @@ module.exports.ProcesoPdfCarrerasSolcitudesAprobadasPeriodosTipos = async functi
     } catch (error) {
         console.log(error);
         return 'ERROR' + error
+    }
+}
+module.exports.ProcesoListadoEstadoSolicitudes = async function () {
+
+    try {
+          var resultado = await funcionesmodelomovilidad.ListadoEstadoSolicitud('OAS_Master');
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
+
+module.exports.ProcesoActualizarEstadoSolicitudAcademica = async function (periodo,cedula,idsolicitud,observacion,estado) {
+    try {
+ var resultado = await funcionesmodelomovilidad.ActualizarEstadoSolicitud('OAS_Master',periodo,cedula,idsolicitud,observacion,estado);  
+      return { blProceso: true, mensaje: 'OK',data:resultado }
+    } catch (error) {
+        return { blProceso: false, mensaje: "Error :" + error }
     }
 }
 async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel, periodo, cedula) {
@@ -1038,6 +1056,7 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solic
     try {
         var respuesta = {};
         var InsertarSolicitud = await funcionesmodelomovilidad.InsertarSolicitudEstudiante('OAS_Master', solicitud);
+        console.log(InsertarSolicitud)
         if (InsertarSolicitud.count > 0) {
             var DatosCarreraMovilidad = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', solicitud.cm_dbcarrera_movilidad);
 
