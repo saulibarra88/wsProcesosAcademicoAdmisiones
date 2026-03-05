@@ -10,7 +10,7 @@ const procesosCarreras = require('./procesoscarrerasespoch');
 const procesosAdministrativo = require('../procesos/Procesosadministrativos');
 const reportesexcelcarreras = require('../procesos/reportesexcelcarreras');
 const procesosmatricula = require('../procesos/procesosmatricula');
-
+const { sendResponseServicios } = require('../herramientas/responseservice'); 
 
 router.get('/ListadoConfigHomologacionesFechas/:periodo/',async (req, res) => {
     const periodo = req.params.periodo;
@@ -290,6 +290,38 @@ router.get('/ObtenerNivelAcademicoEstudiante/:dbcarrera/:cedula',async (req, res
                 mensaje:'Error en el registro' + err
             }
         );
+    }
+ 
+});
+router.get('/ListadoCarrerasDadoFacultad/:facultad',async (req, res) => {
+    const facultad = req.params.facultad;
+    try {
+        var Informacion=await  procesosmatricula.ProcesoListadoCarrerasDadoFacultad(facultad);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
+router.get('/VerifocarRutasMatriculasNuevoAlmacenamiento/:carrera/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  procesosmatricula.ProcesoVerificarRutasMatriculasAlmacenamiento(carrera,periodo);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (err) {
+        console.log('Error: ' + err);
+        return sendResponseServicios(res, false, [],err.message);
     }
  
 });

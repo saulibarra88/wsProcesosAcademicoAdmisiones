@@ -606,7 +606,7 @@ router.post('/InserarEstudianteMaster', async (req, res) => {
             strCedulaMil: strCedulaMil,
             dtFechaNac: dtFechaNac.replaceAll('-',''),
             strNacionalidad: strNacionalidad,
-            strDir: strDir,
+            strDir: strDir.slice(0, 49),
             strTel: '',
             strEmail: strEmail,
             strCodSexo: strCodSexo,
@@ -1195,6 +1195,26 @@ router.post('/ActualizarSolicitudEstadoAcademico', async (req, res) => {
     try {
         const { periodo,cedula,idsolicitud,observacion,estado } = req.body;
         const Informacion = await funcionesprocesosmovilidad.ProcesoActualizarEstadoSolicitudAcademica(periodo,cedula,idsolicitud,observacion,estado);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
+
+router.post('/ActulizarDocumentoSolicitud', async (req, res) => {
+    try {
+        const { idsolicitud, iddocumento, tipo, url,periodo,cedula,observacion,estado} = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesoActualizarDocumentoSolicitud(idsolicitud, iddocumento, tipo, url,periodo,cedula,observacion,estado);
         res.json({
             success: true,
             Informacion
