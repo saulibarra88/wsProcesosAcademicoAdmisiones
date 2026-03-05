@@ -6,6 +6,7 @@ const modeloprocesoCupo = require('../modelo/procesocupos');
 const modeloprocesocarreras = require('../modelo/procesocarrera');
 const procesoadministrativo = require('../modelo/procesoadministrativo');
 const procesoacademiconotas = require('../rutas/ProcesoNotasAcademico');
+const funcionesmodelomovilidad = require('../modelo/modelomovilidad');
 const reportescarreras = require('../rutas/reportesCarreras');
 const reportesExcelcarreras = require('../procesos/reportesexcelcarreras');
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
@@ -395,6 +396,7 @@ module.exports.ProcesoListadoEstuidantesMatriculados = async function (carrera, 
         return 'ERROR';
     }
 }
+
 
 
 

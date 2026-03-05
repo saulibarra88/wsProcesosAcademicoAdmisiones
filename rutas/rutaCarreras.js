@@ -260,4 +260,25 @@ router.get('/ListadoEstuidantesMatriculadosPeriodos/:carrera/:periodo',async (re
  
 });
 
+router.get('/ListadoCarrerasDadoFacultad/:facultad',async (req, res) => {
+    const facultad = req.params.facultad;
+    try {
+        var Informacion=await  carrerasprocesosInformacion.ProcesoListadoCarrerasDadoFacultad(facultad);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+
+
 module.exports = router;

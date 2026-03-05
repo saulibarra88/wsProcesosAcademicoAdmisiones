@@ -98,6 +98,16 @@ module.exports.ProcesoActualizarEstadoSolicitud = async function (idsolicitud, e
         console.log(error);
     }
 }
+module.exports.ProcesoActualizarDocumentoSolicitud = async function (idsolicitud, iddocumento, tipo, url,periodo,cedula,observacion,estado) {
+    try {
+        var resultado = await funcionesmodelomovilidad.ActualizarDocumentosDadoIdSolicitudTipo('OAS_Master', idsolicitud, iddocumento, tipo, url);
+         var ActualizacionSolicitud = await funcionesmodelomovilidad.ActualizarEstadoSolicitud('OAS_Master',periodo,cedula,idsolicitud,observacion,estado); 
+          return { blProceso: true, mensaje: "Ok" , data: resultado }
+    } catch (error) {
+         console.log(error);
+        return { blProceso: false, mensaje: "Error :" + error }
+    }
+}
 module.exports.ProcesoListadoSolicitudesMovilidadPorEstado = async function (estado, periodo) {
     try {
         var resultado = await FuncionListadoSolicitudesMovilidadPorEstado(estado, periodo);
