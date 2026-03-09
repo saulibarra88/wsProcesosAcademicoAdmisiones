@@ -168,14 +168,15 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
   try {
     var periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo)
     var datos = "";
+    var inttotal=0;
 
     listado.forEach(carrera => {
-      datos += `<br/><div style="font-size: 10px; text-align: left" >CARRERA:  ${carrera.cm_nombrecarrera_movilidad}</div>`;
+      datos += `<br/><div style="font-size: 10px; text-align: left" > <strong>CARRERA :   ${carrera.cm_nombrecarrera_movilidad}  </strong> (MOVILIDADES # ${carrera.ListaEstuidantes.length})</div> `;
       datos += `
       <table border=2>
         <thead>
           <tr>
-            <th style="font-size: 9px;text-align: center;font-family: serif;">#</th>
+            <th style="font-size: 9px;text-align: center;font-family: serif;">No</th>
             <th style="font-size: 9px;text-align: center;font-family: serif;">CEDULA</th>
             <th style="font-size: 9px;text-align: center;font-family: serif;">NOMBRES ESTUIDANTES</th>
             <th style="font-size: 9px;text-align: center;font-family: serif;">PUNTAJE</th>
@@ -189,6 +190,7 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
       var contadot = 0;
       carrera.ListaEstuidantes.forEach(estudiante => {
         contadot = contadot + 1;
+        inttotal=inttotal+1;
         datos += `
         <tr>
           <td style="font-size: 8px; text-align: left;font-family: serif;">${contadot}</td>
@@ -215,16 +217,17 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
                 <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left;font-size: 10px; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
               </head>
               <body>
-              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
-              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>DECANATO ACADEMICO INSTITUCIONAL</strong> </p>
+              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO</strong> </p>
+              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>DECANATO ACADÉMICO INSTITUCIONAL</strong> </p>
               <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>NÓMINA DE ESTUIDANTES CON MOVILIDAD </strong> </p>
-              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>PERIODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
+              <p style='text-align: center;font-size: 10px;font-family: serif;'> <strong>PERÍODO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p><br/>
                      ${datos}
             
                 <br/><br/>
+                 <p style='text-align: left;font-size: 10px;font-family: serif;'> <strong>TOTAL DE MOVILIDADES # :   ${inttotal}  </strong> </p><br/>
                 <p style="text-align: center;font-family: serif;"> <strong>----------------------------------------</strong></p>
                 <p style="text-align: center;font-size: 10px;font-family: serif;"> GENERADO POR:</p>
-                <p style="text-align: center;font-size: 10px;font-family: serif;">DECANATO ACADEMICO</p>
+                <p style="text-align: center;font-size: 10px;font-family: serif;">DECANATO ACADÉMICO</p>
               </body>
               </html>
               `;
@@ -264,20 +267,21 @@ async function ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strC
          for (let carreras of listado) {
            contadot = contadot + 1;
            bodylistado += `<tr >
-                                 <td style="font-size: 8x; text-align: center">
+                                 <td style="font-size: 7px; text-align: center">
                                  ${contadot}
+                               </td>
+                                  <td style="font-size: 7px; text-align: center">
+                                 ${carreras.cm_identificacion}
                                </td>
                                <td style="font-size: 8px; text-align: left">
                                  ${carreras.nombreestudiante} ${carreras.apellidoestudiante}
                                  
                                </td>
-                               <td style="font-size: 8px; text-align: left">
-                                 ${carreras.correoestudiante}  
-                               </td>
+                             
                                  <td style="font-size: 8px; text-align: center">
                                  ${carreras.cm_puntaje}  
                                </td>
-                                    <td style="font-size: 8px; text-align: center">
+                                    <td style="font-size: 7px; text-align: center">
                                  ${carreras.movilidad}  
                                </td>
                              
@@ -294,10 +298,10 @@ async function ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strC
                  <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
                </head>
                <body>
-               <p style='text-align: center;font-size: 10px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
-               <p style='text-align: center;font-size: 10px'> <strong>INFORMACIÓN DE ESTUDIANTES MOVILIDAD ACADÉMICA</strong> </p>
-               <p style='text-align: center;font-size: 10px'> <strong>PERIODO ACADÉMICO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p>
-               <p style='text-align: center;font-size: 10px'> <strong>CARRERA:   ${strCarrera}  </strong> </p><br/>
+               <p style='text-align: center;font-size: 9px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong> </p>
+               <p style='text-align: center;font-size: 9px'> <strong>INFORMACIÓN DE ESTUDIANTES MOVILIDAD ACADÉMICA</strong> </p>
+               <p style='text-align: center;font-size: 9px'> <strong>PERIODO ACADÉMICO:   ${periodoinfo.data[0].strDescripcion}  </strong> </p>
+               <p style='text-align: center;font-size: 9px'> <strong>CARRERA:   ${strCarrera}  </strong> </p><br/>
                  <table border=2>
                  <thead>
                  <tr>
@@ -306,12 +310,12 @@ async function ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strC
                         </th>
                     </tr>
                    <tr>
-                     <th style="font-size: 9px;text-align: center;">N°</th>
-                     <th style="font-size: 9px;text-align: center;">ESTUDIANTES</th>
-                     <th style="font-size: 9px;text-align: center;">CORREOS</th>
-                     <th  style="font-size: 9px;text-align: center;">PUNTAJES</th>
-                     <th style="font-size: 9px;text-align: center;">MOVILIDAD</th>
-                     <th style="font-size: 9px;text-align: center;">PROCEDENCIAS</th>
+                     <th style="font-size: 8px;text-align: center;">N°</th>
+                     <th style="font-size: 8px;text-align: center;">CÉDULA</th>
+                     <th style="font-size: 8px;text-align: center;">ESTUDIANTES</th>
+                     <th  style="font-size: 8px;text-align: center;">PUNTAJES</th>
+                     <th style="font-size: 8px;text-align: center;">MOVILIDAD</th>
+                     <th style="font-size: 8px;text-align: center;">PROCEDENCIAS</th>
                    </tr>
                  </thead>
      
@@ -321,8 +325,8 @@ async function ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strC
                  </table>
                  <br/><br/>
                  <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-                 <p style="text-align: center;font-size: 11px;"> GENERADO POR:</p>
-                 <p style="text-align: center;font-size: 11px;">${strNombre}</p>
+                 <p style="text-align: center;font-size: 9px;"> GENERADO POR:</p>
+                 <p style="text-align: center;font-size: 9px;">${strNombre}</p>
                </body>
                </html>
                `;
