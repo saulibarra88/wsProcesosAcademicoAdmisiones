@@ -32,7 +32,7 @@ router.get('/VerifocarRutasMatriculasNuevoAlmacenamiento/:carrera/:periodo',asyn
        logger.error('Error VerifocarRutasMatriculasNuevoAlmacenamiento', { message: error.message, stack: error.stack});
         return sendResponseServicios(res, false, [],err.message);
     }
- 
+
 });
 
 module.exports = router;

@@ -343,7 +343,7 @@ module.exports.ProcesoInsertarEstudianteMaster = async function (objEstudiante) 
         return resultado
     } catch (error) {
         console.log(error);
-        return 'ERROR' + error
+         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
 module.exports.ProcesoInsertarGradoEstudianteMaster = async function (objGrado) {

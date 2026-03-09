@@ -622,11 +622,19 @@ router.post('/InserarEstudianteMaster', async (req, res) => {
             strCodCiudadProc: strCodCiudadProc,
             strCodEstadoUsuario: strCodEstadoUsuario
         }
-        const Informacion = await funcionesprocesosmovilidad.ProcesoInsertarEstudianteMaster(objEstudiante);
-        res.json({
+        const informacion = await funcionesprocesosmovilidad.ProcesoInsertarEstudianteMaster(objEstudiante);
+        if(informacion.blProceso){
+             res.json({
             success: true,
-            Informacion
+            informacion
         });
+        }else{
+             res.json({
+            success: false,
+            informacion
+        });
+        }
+      
     } catch (err) {
         console.log('Error: ' + err);
         return res.json(
