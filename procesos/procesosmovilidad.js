@@ -1066,7 +1066,6 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solic
     try {
         var respuesta = {};
         var InsertarSolicitud = await funcionesmodelomovilidad.InsertarSolicitudEstudiante('OAS_Master', solicitud);
-        console.log(InsertarSolicitud)
         if (InsertarSolicitud.count > 0) {
             var DatosCarreraMovilidad = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', solicitud.cm_dbcarrera_movilidad);
 

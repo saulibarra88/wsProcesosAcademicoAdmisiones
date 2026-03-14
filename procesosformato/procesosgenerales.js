@@ -42,7 +42,7 @@ module.exports.ProcesoVerificarRutasMatriculasAlmacenamiento = async function (c
         var DatosCarrera = await sqlmodelomovilidad.ObenterDatosCarrera('OAS_Master', carrera);
         if (ListadoDocumentosDatos.modelo) {
             for (var documentos of ListadoDocumentosDatos.datos.data) {
-                if (documentos.ruta == null) {
+                if (documentos.ruta == null ||documentos.ruta == 'undefined') {
                     var ruta = periodo + '/ActasMatriculas/' + DatosCarrera.data[0].strNombre.replace('.', 'R') + '/' + documentos.iddocumento + '.pdf'
                      var ActualizarRuta = await sqlmodelogenerales.ActualizarDocumentosfirmadosLegalizadosRuta(carrera, periodo, documentos.iddocumento, ruta);
                     ListadoDocumentos.push(documentos)

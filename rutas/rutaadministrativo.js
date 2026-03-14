@@ -313,16 +313,5 @@ router.get('/ListadoCarrerasDadoFacultad/:facultad',async (req, res) => {
  
 });
 
-router.get('/VerifocarRutasMatriculasNuevoAlmacenamiento/:carrera/:periodo',async (req, res) => {
-    const carrera = req.params.carrera;
-    const periodo = req.params.periodo;
-    try {
-        var Informacion=await  procesosmatricula.ProcesoVerificarRutasMatriculasAlmacenamiento(carrera,periodo);
-           return sendResponseServicios(res, true, Informacion.datos,'OK');
-    }catch (err) {
-        console.log('Error: ' + err);
-        return sendResponseServicios(res, false, [],err.message);
-    }
- 
-});
+
 module.exports = router;
