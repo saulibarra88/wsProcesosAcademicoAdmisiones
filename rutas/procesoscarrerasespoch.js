@@ -33,8 +33,6 @@ module.exports.DocumentosMatriculasPeriosdos = async function (strBaseCarrera, p
         var TotalDocumentosFirmados = await modeloprocesocarreras.TotalDocumentoFirmados(strBaseCarrera, periodo);
         if (datosDocumentos.count > 0) {
             for (var info of datosDocumentos.data) {
-                //    var DatosMatricula = await procesocarreras.ObtenerDatosMatriculasActas(strBaseCarrera,periodo,info.idbandeja);
-                //    info.matricula=DatosMatricula.data[0]
                 if (info.estado == 2) {
                     info.estadodescripcion = 'PENDIENTE FIRMAR'
 

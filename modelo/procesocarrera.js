@@ -11,7 +11,7 @@ const path = require('path');
 
 module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) {
     var sentencia = "";
-    sentencia = " select * from [" + carrera + "].[dbo].[bandejadocumentos] where periodo='" + periodo + "'"
+    sentencia = "SELECT * FROM [" + carrera + "].[dbo].[bandejadocumentos] AS B INNER JOIN [" + carrera + "].[dbo].[Matriculas]AS M ON B.matricula=M.sintCodigo AND B.periodo=M.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=M.strCodEstud WHERE B.periodo='" + periodo + "' ORDER BY B.matricula"
     try {
       if (sentencia != "") {
         const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
@@ -664,7 +664,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
 
   module.exports.ListadoMatriculasFirmadasPorNivel = async function (carrera,periodo,nivel) {
     var sentencia="";
-    sentencia = " SELECT m.sintCodigo, m.strCodPeriodo, m.strCodNivel, m.strCodEstud, m.dtFechaAutorizada, m.dtFechaCreada, b.iddocumento,e.strCedula,e.strApellidos,e.strNombres FROM [" + carrera + "].[dbo].[Matriculas] m INNER JOIN ( SELECT matricula, periodo, iddocumento FROM [" + carrera + "].[dbo].[bandejadocumentos] WHERE periodo = '" + periodo + "' AND estado = 3 AND matricula IS NOT NULL GROUP BY matricula, periodo, iddocumento ) b ON m.sintCodigo = b.matricula AND m.strCodPeriodo = b.periodo INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud WHERE m.strCodNivel = '" + nivel + "' AND m.strCodPeriodo = '" + periodo + "' and m.strCodEstado='DEF';";
+    sentencia = " SELECT S.*, M.*, E.* FROM [" + carrera + "].dbo.solicitardocumento AS S INNER JOIN [" + carrera + "].dbo.Matriculas AS M ON M.sintCodigo = S.matricula AND M.strCodPeriodo = S.periodo INNER JOIN [" + carrera + "].dbo.Estudiantes AS E ON E.strCodigo = S.idestudiante WHERE M.strCodPeriodo = '" + periodo + "' AND M.strCodNivel = '" + nivel + "' AND M.strCodEstado = 'DEF' AND S.estadodocumento = 3;";
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
