@@ -9,3 +9,4 @@
 [error] [2026-03-05 16:01:23]  : Error ProcesoVerificarRutasMatriculasAlmacenamiento procesomodelomovilidad is not defined
 [error] [2026-03-20 16:40:57]  : Error ProcesoListadoRecordEstadoPeriodo Informacion.datos is not iterable
 [error] [2026-03-20 16:41:23]  : Error ProcesoListadoRecordEstadoPeriodo Informacion.datos is not iterable
+[error] [2026-03-23 09:37:32]  : Error EliminarSolicitudRecord strperiodo is not defined
