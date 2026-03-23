@@ -659,13 +659,11 @@ async function generatePDF1(listado, carrera, nombres, asignatura, nivel, parale
                         ${bodylistado}
                     </tbody>
                 </table>
-                 <br/>
-                <br/>
+          
                 <div class="chart-container">
                     <img src="data:image/png;base64,${chartBuffer.toString('base64')}" alt="Gráfico de distribución"/>
                 </div>
-                   <br/>
-                <br/>
+             
                 <br/>
                 <br/>
                 <div class="signature">
@@ -990,13 +988,11 @@ async function generatePDF2(listado, carrera, nombres, asignatura, nivel, parale
                         ${bodylistado}
                     </tbody>
                 </table>
-                 <br/>
-                <br/>
+            
                 <div class="chart-container">
                     <img src="data:image/png;base64,${chartBuffer.toString('base64')}" alt="Gráfico de distribución"/>
                 </div>
-                  <br/>
-                <br/>
+             
                 <br/>
                 <br/>
                 <div class="signature">
@@ -1320,15 +1316,13 @@ async function generatePDFR(listado, carrera, nombres, asignatura, nivel, parale
                         ${bodylistado}
                     </tbody>
                 </table>
-                 <br/>
-                <br/>
+        
                 <div class="chart-container">
                     <img src="data:image/png;base64,${chartBuffer.toString('base64')}" alt="Gráfico de distribución"/>
                 </div>
                  <br/>
                 <br/>
-                <br/>
-                <br/>
+          
                 <div class="signature">
                     <div class="signature-line">_________________________________________</div>
                     <div class="signature-name">${nombres}</div>
