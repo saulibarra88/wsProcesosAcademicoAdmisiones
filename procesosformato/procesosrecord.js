@@ -76,3 +76,19 @@ module.exports.ProcesoListadoRecordCedula = async function (carrera, cedula) {
     }
 
 }
+module.exports.ProcesoEliminarSolicitudRecord = async function (carrera,idsolicitud,strperiodo,strcedula) {
+    try {
+        var listadoInformacion = []
+        var Informacion = await sqlmodelorecord.EliminarSolicitudRecord(carrera,idsolicitud,strperiodo,tools.CedulaConGuion(strcedula));
+        if (Informacion.modelo) {
+            
+            return sendResponseProcesos(true, listadoInformacion, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoEliminarSolicitudRecord', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+
+}
