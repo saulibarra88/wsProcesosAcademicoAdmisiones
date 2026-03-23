@@ -24,6 +24,7 @@ const rutamovilidad = require('./rutas/rutamovilidad');
 const rutamovilidadconfiguraciones = require('./rutas/rutamovilidadconfiguraciones');
 const rutamovilidadAsignatura = require('./rutas/rutamovilidadasignatura');
 const rutageneral = require('./rutasformato/rutageneral');
+const rutarecord = require('./rutasformato/rutarecord');
 
 const url='/wsprocesosadmisiones'
 //Port Number
@@ -65,6 +66,7 @@ app.use(url+'/rutamovilidad',rutamovilidad);
 app.use(url+'/rutamovilidadconfiguraciones',rutamovilidadconfiguraciones);
 app.use(url+'/rutamovilidadAsignatura',rutamovilidadAsignatura);
 app.use(url+'/rutageneral',rutageneral);
+app.use(url+'/rutarecord',rutarecord);
 
 
 //Index Router
