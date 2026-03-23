@@ -190,7 +190,7 @@ router.get('/ReporteExcelMatriculasAdmisionesInstitucional/:periodo',async (req,
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);ee
+        console.log('Error: ' + err);
         return res.json(
              {
                 success: false,

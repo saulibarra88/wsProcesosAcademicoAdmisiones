@@ -101,7 +101,6 @@ module.exports.ObtenerSolicitudAprobadasCarrerasMovilidad = async function (carr
 module.exports.InsertarSolicitudEstudiante = async function (carrera, datossolicitud) {
   var sentencia = "";
   sentencia = "insert into [" + carrera + "].[dbo].[tb_movilidad_solicitud] ([cm_periodo],[cm_strsolicitud],[cm_strobservacion],[cm_perid],[cm_identificacion],[cm_idtipo_movilidad] ,[cm_idtipo_estado],[cm_dbcarrera_actual],[cm_nombrecarrera_actual],[cm_perdidatercera_actual],[cm_dbcarrera_movilidad],[cm_nombrecarrera_movilidad],[cm_impedimento_movilidad],[cm_puntaje],[cm_blpuntajeadmision]) values ('" + datossolicitud.cm_periodo + "','" + datossolicitud.cm_strsolicitud + "','" + datossolicitud.cm_strobservacion + "'," + datossolicitud.cm_perid + ",'" + datossolicitud.cm_identificacion + "','" + datossolicitud.cm_idtipo_movilidad + "','" + datossolicitud.cm_idtipo_estado + "','" + datossolicitud.cm_dbcarrera_actual + "','" + datossolicitud.cm_nombrecarrera_actual + "','" + datossolicitud.cm_perdidatercera_actual + "','" + datossolicitud.cm_dbcarrera_movilidad + "','" + datossolicitud.cm_nombrecarrera_movilidad + "','" + datossolicitud.cm_impedimento_movilidad + "','" + datossolicitud.cm_puntaje + "','" + datossolicitud.cm_blpuntajeadmision + "');select max([cm_id]) as cm_id from [" + carrera + "].[dbo].[tb_movilidad_solicitud] where [cm_estado]=1";
-  console.log(sentencia)
   try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
@@ -145,7 +144,6 @@ module.exports.ListadoSolicitudesMovilidadPorEstado = async function (carrera, e
 module.exports.ListadoSolicitudesMovilidadPorCarrera = async function (carrera, estado, periodo, dbcarrera) {
   var sentencia = "";
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud] AS sm INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_estado] AS mts ON mts.mte_strcodigo=sm.cm_idtipo_estado INNER JOIN [" + carrera + "].[dbo].[tb_movilidad_tipo_solicitud] AS mt ON mt.mte_strcodigo=sm.cm_idtipo_movilidad WHERE sm.[cm_idtipo_estado]='" + estado + "' AND sm.[cm_estado]=1 AND sm.[cm_periodo]='" + periodo + "' AND sm.[cm_dbcarrera_movilidad]='" + dbcarrera + "' ORDER BY sm.[cm_fecha_registro]";
-  console.log(sentencia)
   try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
@@ -702,7 +700,6 @@ module.exports.TitulosColegios = async function (carrera, codigoInstitucion) {
 module.exports.InsertarGradoEstudiante = async function (carrera, objGrado) {
   var sentencia = "";
   sentencia = "INSERT INTO [" + carrera + "].[dbo].[Grados] ([strCedEstud],[strCodTit],[strCodInt],[dtFecha],[strRefrendacion],[dtFechaRegistro]) VALUES ( '" + objGrado.strCedEstud + "','" + objGrado.strCodTit + "','" + objGrado.strCodInt + "','" + objGrado.dtFecha + "','" + objGrado.strRefrendacion + "'," + objGrado.dtFechaRegistro + ")"
-  console.log(sentencia)
   try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");

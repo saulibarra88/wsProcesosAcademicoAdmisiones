@@ -377,79 +377,328 @@ async function generatePDF1(listado, carrera, nombres, asignatura, nivel, parale
     var periodo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
     var bodylistado = "";
     var contadot = 0;
+    
     for (let estudiantes of listado) {
         contadot = contadot + 1;
-        bodylistado += `<tr >
-            <td style="font-size: 9px; text-align: center"> ${contadot} </td>
-            <td style="font-size: 9px; text-align: center"> ${estudiantes.Descripcion} </td>
-            <td style="font-size: 9px; text-align: center"> ${estudiantes.Rango} </td>
-            <td style="font-size: 9px; text-align: center"> ${estudiantes.value} </td>
-            <td style="font-size: 9px; text-align: center"> ${estudiantes.ValorPorcentaje} % </td>
-            </tr>`
+        bodylistado += `<tr class="table-row">
+            <td class="cell-number"> ${contadot}  </td>
+            <td class="cell-description"> ${estudiantes.Descripcion}  </td>
+            <td class="cell-range"> ${estudiantes.Rango}  </td>
+            <td class="cell-quantity"> ${estudiantes.value}  </td>
+            <td class="cell-percentage"> ${estudiantes.ValorPorcentaje} %  </td>
+        </tr>`;
     }
 
     const htmlContent = `
-                    <!DOCTYPE html>
-                    <html lang="es">
-                    <head>
-                <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 5px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
-                    </head>
-                    <body>
-                    <p style='text-align: center;font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong>  </p><p style='text-align: center;font-size: 10px'> <strong>FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</strong> </p><p style='text-align: center;font-size: 10px'><strong>CARRERA: ${datosCarrera.data[0].strNombreCarrera}</strong> </p>
-                <p style='font-size: 9px'> <strong>PAO :</strong> ${nivel}</p>
-                <p style='font-size: 9px'> <strong>PARALELO :</strong> ${paralelo}</p>
-                <p style='font-size: 9px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
-                <p style='font-size: 9px'> <strong>PROFESOR :</strong>${nombres} </p>
-                <p style='font-size: 9px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
-                    <table border=2>
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Helvetica', 'Arial', sans-serif;
+                    background-color: #ffffff;
+                    color: #333333;
+                    line-height: 1.3;
+                }
+                
+                /* Encabezado principal */
+                .main-header {
+                    text-align: center;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid #2c3e50;
+                }
+                
+                .university-title {
+                    font-size: 12px;
+                    font-weight: bold;
+                    color: #1a3e60;
+                    letter-spacing: 1px;
+                    margin-bottom: 3px;
+                }
+                
+                .faculty-title {
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin-bottom: 2px;
+                }
+                
+                .career-title {
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: #34495e;
+                    margin-bottom: 2px;
+                }
+                
+                /* Contenedor de información en dos columnas - VERSIÓN CORREGIDA */
+                .info-container {
+                    background: #f8f9fa;
+                    padding: 12px 15px;
+                    margin: 10px 0;
+                    border-left: 4px solid #3498db;
+                    border-radius: 4px;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 8px 20px;
+                }
+                
+                /* Cada item de información */
+                .info-item {
+                    display: flex;
+                    align-items: baseline;
+                    font-size: 9px;
+                    padding: 3px 0;
+                }
+                
+                .info-label {
+                    font-weight: bold;
+                    min-width: 75px;
+                    color: #2c3e50;
+                    font-size: 9px;
+                }
+                
+                .info-value {
+                    color: #555;
+                    flex: 1;
+                    font-size: 9px;
+                    font-weight: 500;
+                }
+                
+                /* Tabla mejorada y compacta */
+                .data-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 12px 0;
+                    font-size: 8px;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+                }
+                
+                .data-table th {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 6px 4px;
+                    font-weight: bold;
+                    text-align: center;
+                    border: 1px solid #5a67d8;
+                    font-size: 8px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                }
+                
+                .data-table td {
+                    padding: 5px 4px;
+                    text-align: center;
+                    border: 1px solid #e2e8f0;
+                    font-size: 8px;
+                }
+                
+                .data-table tbody tr:nth-child(even) {
+                    background-color: #f8fafc;
+                }
+                
+                /* Estilos específicos para celdas */
+                .cell-number {
+                    font-weight: bold;
+                    color: #4a5568;
+                    text-align: center;
+                }
+                
+                .cell-description {
+                    text-align: left;
+                    font-weight: 500;
+                    color: #2d3748;
+                }
+                
+                .cell-range {
+                    text-align: center;
+                    color: #4a5568;
+                }
+                
+                .cell-quantity {
+                    text-align: center;
+                    font-weight: bold;
+                    color: #2c5282;
+                }
+                
+                .cell-percentage {
+                    text-align: center;
+                    font-weight: bold;
+                    color: #38a169;
+                }
+                
+                /* Contenedor del gráfico */
+                .chart-container {
+                    text-align: center;
+                    margin: 15px 0 10px 0;
+                    padding: 10px;
+                    background: #ffffff;
+                    border-radius: 6px;
+                }
+                
+                .chart-container img {
+                    max-width: 100%;
+                    height: auto;
+                    max-height: 180px;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+                    border-radius: 4px;
+                }
+                
+                /* Firma compacta */
+                .signature {
+                    text-align: center;
+                    margin-top: 15px;
+                    padding-top: 12px;
+                    border-top: 1px solid #cbd5e0;
+                }
+                
+                .signature-line {
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin-bottom: 4px;
+                    font-size: 9px;
+                }
+                
+                .signature-name {
+                    font-size: 8px;
+                    color: #4a5568;
+                    font-style: italic;
+                }
+                
+                /* Título de la tabla */
+                .table-title {
+                    text-align: center;
+                    font-size: 9px;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin: 8px 0 6px 0;
+                    padding: 5px;
+                    background: #ecf0f1;
+                    border-radius: 3px;
+                }
+                
+                /* Ajustes para asegurar una sola página */
+                @media print {
+                    body {
+                        background: white;
+                    }
+                    
+                    .chart-container, .signature {
+                        page-break-inside: avoid;
+                    }
+                    
+                    .data-table {
+                        page-break-inside: auto;
+                    }
+                    
+                    tr {
+                        page-break-inside: avoid;
+                        page-break-after: auto;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="page-content">
+                <div class="main-header">
+                    <div class="university-title">ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO</div>
+                    <div class="faculty-title">FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</div>
+                    <div class="career-title">CARRERA: ${datosCarrera.data[0].strNombreCarrera}</div>
+                </div>
+                
+                <!-- Información en dos columnas - ESTRUCTURA CORREGIDA -->
+                <div class="info-container">
+                 <div class="info-item">
+                        <div class="info-label">PERIODO:</div>
+                        <div class="info-value">${periodo.data[0].strDescripcion}</div>
+                    </div>
+                      <div class="info-item">
+                        <div class="info-label">PROFESOR:</div>
+                        <div class="info-value">${nombres}</div>
+                    </div>
+                       <div class="info-item">
+                        <div class="info-label">ASIGNATURA:</div>
+                        <div class="info-value">${asignatura}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">PAO:</div>
+                        <div class="info-value">${nivel}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">PARALELO:</div>
+                        <div class="info-value">${paralelo}</div>
+                    </div>
+                 
+                  
+                   
+                </div>
+                
+                <div class="table-title">
+                     📊 NIVEL DE CUMPLIMIENTO DE LOS RESULTADOS DE APRENDIZAJES - CICLO 1
+                </div>
+                
+                <table class="data-table">
                     <thead>
-                    <tr>
-                            <th colspan="12" style="text-align: center; font-size: 9px"> INFORMACIÓN CICLO 1. </th>
-                        </tr>
                         <tr>
-                        <th style="font-size: 9px;text-align: center;">N°</th>
-                        <th style="font-size: 9px;text-align: center;">DESCRIPCION</th>
-                        <th  style="font-size: 9px;text-align: center;">RANGO</th>
-                        <th  style="font-size: 9px;text-align: center;">CANTIDAD</th>
-                        <th style="font-size: 9px;text-align: center;">PORCENTAJE</th>
+                            <th style="width: 8%">N°</th>
+                            <th style="width: 42%">DESCRIPCIÓN</th>
+                            <th style="width: 20%">RANGO</th>
+                            <th style="width: 15%">CANTIDAD</th>
+                            <th style="width: 15%">PORCENTAJE</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${bodylistado}
-                        </tbody>
-                    </table>
-                    <br/><br/>
-                    <div style="font-size: 11px; text-align: center">
-                    <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 300px;"/> <br/><br/><br/>
+                    </tbody>
+                </table>
+                 <br/>
+                <br/>
+                <div class="chart-container">
+                    <img src="data:image/png;base64,${chartBuffer.toString('base64')}" alt="Gráfico de distribución"/>
                 </div>
-              
-                    <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-                    <p style="text-align: center;font-size: 9px;"> ${nombres}</p>
-                    </body>
-                    </html>
-                    `;
+                   <br/>
+                <br/>
+                <br/>
+                <br/>
+                <div class="signature">
+                    <div class="signature-line">_________________________________________</div>
+                    <div class="signature-name">${nombres}</div>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+    
     const options = {
         format: 'A4',
         timeout: 60000,
         border: {
-            top: '1.0cm', // Margen superior
-            right: '1.5cm', // Margen derecho
-            bottom: '2.0cm', // Margen inferior
-            left: '1.5cm' // Margen izquierdo
+            top: '0.8cm',
+            right: '1.2cm',
+            bottom: '1.5cm',
+            left: '1.2cm'
         },
         header: {
-            height: '60px',
+            height: '50px',
             contents: tools.headerHtml()
         },
         footer: {
-            height: '30px',
+            height: '25px',
             contents: tools.footerHtml()
         },
-
     };
+    
     var htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
-    var base64 = await FunciongenerarPDF(htmlCompleto, options)
-    return base64
+    var base64 = await FunciongenerarPDF(htmlCompleto, options);
+    return base64;
 }
 // Función para generar el PDF
 async function generatePDF2(listado, carrera, nombres, asignatura, nivel, paralelo, periodo) {
@@ -459,161 +708,658 @@ async function generatePDF2(listado, carrera, nombres, asignatura, nivel, parale
     var periodo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
     var bodylistado = "";
     var contadot = 0;
+    
     for (let estudiantes of listado) {
         contadot = contadot + 1;
-        bodylistado += `<tr >
-            <td style="font-size: 9px; text-align: center"> ${contadot} </td>
-            <td style="font-size: 9px; text-align: center"> ${estudiantes.Descripcion} </td>
-            <td style="font-size: 9px; text-align: center"> ${estudiantes.Rango} </td>
-            <td style="font-size: 9px; text-align: center"> ${estudiantes.value} </td>
-            <td style="font-size: 9px; text-align: center"> ${estudiantes.ValorPorcentaje} % </td>
-            </tr>`
-                }
+        bodylistado += `<tr class="table-row">
+            <td class="cell-number"> ${contadot}  </td>
+            <td class="cell-description"> ${estudiantes.Descripcion}  </td>
+            <td class="cell-range"> ${estudiantes.Rango}  </td>
+            <td class="cell-quantity"> ${estudiantes.value}  </td>
+            <td class="cell-percentage"> ${estudiantes.ValorPorcentaje} %  </td>
+        </tr>`;
+    }
 
-                const htmlContent = `
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-            <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 5px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
-                </head>
-                <body>
-                <p style='text-align: center;font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong>  </p><p style='text-align: center;font-size: 10px'> <strong>FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</strong> </p><p style='text-align: center;font-size: 10px'><strong>CARRERA: ${datosCarrera.data[0].strNombreCarrera}</strong> </p>
-            <p style='font-size: 9px'> <strong>PAO :</strong> ${nivel}</p>
-            <p style='font-size: 9px'> <strong>PARALELO :</strong> ${paralelo}</p>
-            <p style='font-size: 9px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
-            <p style='font-size: 9px'> <strong>PROFESOR :</strong>${nombres} </p>
-            <p style='font-size: 9px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
-        
-                <table border=2>
-                <thead>
-                <tr>
-                        <th colspan="12" style="text-align: center; font-size: 9px"> INFORMACIÓN CICLO 2. </th>
-                    </tr>
-                    <tr>
-                    <th style="font-size: 9px;text-align: center;">N°</th>
-                    <th style="font-size: 9px;text-align: center;">DESCRIPCION</th>
-                    <th  style="font-size: 9px;text-align: center;">RANGO</th>
-                    <th  style="font-size: 9px;text-align: center;">CANTIDAD</th>
-                    <th style="font-size: 9px;text-align: center;">PORCENTAJE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${bodylistado}
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Helvetica', 'Arial', sans-serif;
+                    background-color: #ffffff;
+                    color: #333333;
+                    line-height: 1.3;
+                }
+                
+                /* Encabezado principal */
+                .main-header {
+                    text-align: center;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid #2c3e50;
+                }
+                
+                .university-title {
+                    font-size: 12px;
+                    font-weight: bold;
+                    color: #1a3e60;
+                    letter-spacing: 1px;
+                    margin-bottom: 3px;
+                }
+                
+                .faculty-title {
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin-bottom: 2px;
+                }
+                
+                .career-title {
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: #34495e;
+                    margin-bottom: 2px;
+                }
+                
+                /* Contenedor de información en dos columnas - VERSIÓN CORREGIDA */
+                .info-container {
+                    background: #f8f9fa;
+                    padding: 12px 15px;
+                    margin: 10px 0;
+                    border-left: 4px solid #3498db;
+                    border-radius: 4px;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 8px 20px;
+                }
+                
+                /* Cada item de información */
+                .info-item {
+                    display: flex;
+                    align-items: baseline;
+                    font-size: 9px;
+                    padding: 3px 0;
+                }
+                
+                .info-label {
+                    font-weight: bold;
+                    min-width: 75px;
+                    color: #2c3e50;
+                    font-size: 9px;
+                }
+                
+                .info-value {
+                    color: #555;
+                    flex: 1;
+                    font-size: 9px;
+                    font-weight: 500;
+                }
+                
+                /* Tabla mejorada y compacta */
+                .data-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 12px 0;
+                    font-size: 8px;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+                }
+                
+                .data-table th {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 6px 4px;
+                    font-weight: bold;
+                    text-align: center;
+                    border: 1px solid #5a67d8;
+                    font-size: 8px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                }
+                
+                .data-table td {
+                    padding: 5px 4px;
+                    text-align: center;
+                    border: 1px solid #e2e8f0;
+                    font-size: 8px;
+                }
+                
+                .data-table tbody tr:nth-child(even) {
+                    background-color: #f8fafc;
+                }
+                
+                /* Estilos específicos para celdas */
+                .cell-number {
+                    font-weight: bold;
+                    color: #4a5568;
+                    text-align: center;
+                }
+                
+                .cell-description {
+                    text-align: left;
+                    font-weight: 500;
+                    color: #2d3748;
+                }
+                
+                .cell-range {
+                    text-align: center;
+                    color: #4a5568;
+                }
+                
+                .cell-quantity {
+                    text-align: center;
+                    font-weight: bold;
+                    color: #2c5282;
+                }
+                
+                .cell-percentage {
+                    text-align: center;
+                    font-weight: bold;
+                    color: #38a169;
+                }
+                
+                /* Contenedor del gráfico */
+                .chart-container {
+                    text-align: center;
+                    margin: 15px 0 10px 0;
+                    padding: 10px;
+                    background: #ffffff;
+                    border-radius: 6px;
+                }
+                
+                .chart-container img {
+                    max-width: 100%;
+                    height: auto;
+                    max-height: 180px;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+                    border-radius: 4px;
+                }
+                
+                /* Firma compacta */
+                .signature {
+                    text-align: center;
+                    margin-top: 15px;
+                    padding-top: 12px;
+                    border-top: 1px solid #cbd5e0;
+                }
+                
+                .signature-line {
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin-bottom: 4px;
+                    font-size: 9px;
+                }
+                
+                .signature-name {
+                    font-size: 8px;
+                    color: #4a5568;
+                    font-style: italic;
+                }
+                
+                /* Título de la tabla */
+                .table-title {
+                    text-align: center;
+                    font-size: 9px;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin: 8px 0 6px 0;
+                    padding: 5px;
+                    background: #ecf0f1;
+                    border-radius: 3px;
+                }
+                
+                /* Ajustes para asegurar una sola página */
+                @media print {
+                    body {
+                        background: white;
+                    }
+                    
+                    .chart-container, .signature {
+                        page-break-inside: avoid;
+                    }
+                    
+                    .data-table {
+                        page-break-inside: auto;
+                    }
+                    
+                    tr {
+                        page-break-inside: avoid;
+                        page-break-after: auto;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="page-content">
+                <div class="main-header">
+                    <div class="university-title">ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO</div>
+                    <div class="faculty-title">FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</div>
+                    <div class="career-title">CARRERA: ${datosCarrera.data[0].strNombreCarrera}</div>
+                </div>
+                
+                <!-- Información en dos columnas - ESTRUCTURA CORREGIDA -->
+                <div class="info-container">
+                 <div class="info-item">
+                        <div class="info-label">PERIODO:</div>
+                        <div class="info-value">${periodo.data[0].strDescripcion}</div>
+                    </div>
+                      <div class="info-item">
+                        <div class="info-label">PROFESOR:</div>
+                        <div class="info-value">${nombres}</div>
+                    </div>
+                       <div class="info-item">
+                        <div class="info-label">ASIGNATURA:</div>
+                        <div class="info-value">${asignatura}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">PAO:</div>
+                        <div class="info-value">${nivel}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">PARALELO:</div>
+                        <div class="info-value">${paralelo}</div>
+                    </div>
+                 
+                  
+                   
+                </div>
+                
+                <div class="table-title">
+                    📊 NIVEL DE CUMPLIMIENTO DE LOS RESULTADOS DE APRENDIZAJES - CICLO 2
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%">N°</th>
+                            <th style="width: 42%">DESCRIPCIÓN</th>
+                            <th style="width: 20%">RANGO</th>
+                            <th style="width: 15%">CANTIDAD</th>
+                            <th style="width: 15%">PORCENTAJE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${bodylistado}
                     </tbody>
                 </table>
-                <br/><br/>
-                <div style="font-size: 9px; text-align: center">
-                <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 300px;"/> <br/><br/><br/>
+                 <br/>
+                <br/>
+                <div class="chart-container">
+                    <img src="data:image/png;base64,${chartBuffer.toString('base64')}" alt="Gráfico de distribución"/>
+                </div>
+                  <br/>
+                <br/>
+                <br/>
+                <br/>
+                <div class="signature">
+                    <div class="signature-line">_________________________________________</div>
+                    <div class="signature-name">${nombres}</div>
+                </div>
             </div>
-            <br/>
-                <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-                <p style="text-align: center;font-size: 9px;"> ${nombres}</p>
-                </body>
-                </html>
-                `;
+        </body>
+        </html>
+    `;
+    
     const options = {
         format: 'A4',
         timeout: 60000,
         border: {
-            top: '1.0cm', // Margen superior
-            right: '1.5cm', // Margen derecho
-            bottom: '2.0cm', // Margen inferior
-            left: '1.5cm' // Margen izquierdo
+            top: '0.8cm',
+            right: '1.2cm',
+            bottom: '1.5cm',
+            left: '1.2cm'
         },
         header: {
-            height: '60px',
+            height: '50px',
             contents: tools.headerHtml()
         },
         footer: {
-            height: '30px',
+            height: '25px',
             contents: tools.footerHtml()
         },
-
     };
+    
     var htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
-    var base64 = await FunciongenerarPDF(htmlCompleto, options)
-    return base64
+    var base64 = await FunciongenerarPDF(htmlCompleto, options);
+    return base64;
 }
 async function generatePDFR(listado, carrera, nombres, asignatura, nivel, paralelo, periodo) {
+
     const chartBuffer = await generatePieChart(listado);
     var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
     var periodo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
     var bodylistado = "";
     var contadot = 0;
+    
     for (let estudiantes of listado) {
         contadot = contadot + 1;
-        bodylistado += `<tr >
-        <td style="font-size: 10px; text-align: center"> ${contadot} </td>
-        <td style="font-size: 11px; text-align: center"> ${estudiantes.Descripcion} </td>
-        <td style="font-size: 11px; text-align: center"> ${estudiantes.Rango} </td>
-        <td style="font-size: 11px; text-align: center"> ${estudiantes.value} </td>
-        <td style="font-size: 11px; text-align: center"> ${estudiantes.ValorPorcentaje} % </td>
-        </tr>`
+        bodylistado += `<tr class="table-row">
+            <td class="cell-number"> ${contadot}  </td>
+            <td class="cell-description"> ${estudiantes.Descripcion}  </td>
+            <td class="cell-range"> ${estudiantes.Rango}  </td>
+            <td class="cell-quantity"> ${estudiantes.value}  </td>
+            <td class="cell-percentage"> ${estudiantes.ValorPorcentaje} %  </td>
+        </tr>`;
     }
 
     const htmlContent = `
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-            <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 5px; text-align: left; } th { background-color: #f2f2f2; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
-                </head>
-                <body>
-                <p style='text-align: center;font-size: 11px'> <strong>ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO</strong>  </p><p style='text-align: center;font-size: 10px'> <strong>FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</strong> </p><p style='text-align: center;font-size: 10px'><strong>CARRERA: ${datosCarrera.data[0].strNombreCarrera}</strong> </p>
-            <p style='font-size: 9px'> <strong>PAO :</strong> ${nivel}</p>
-            <p style='font-size: 9px'> <strong>PARALELO :</strong> ${paralelo}</p>
-            <p style='font-size: 9px'> <strong>ASIGNARURA :</strong> ${asignatura}</p>
-            <p style='font-size: 9px'> <strong>PROFESOR :</strong>${nombres} </p>
-            <p style='font-size: 9px'> <strong>PERIODO :</strong> ${periodo.data[0].strDescripcion}</p>
-            <p>CICLO 2 </p>
-                <table border=2>
-                <thead>
-                <tr>
-                        <th colspan="12" style="text-align: center; font-size: 9px"> INFORMACIÓN RECUPERACIÓN. </th>
-                    </tr>
-                    <tr>
-                    <th style="font-size: 9px;text-align: center;">N°</th>
-                    <th style="font-size: 9px;text-align: center;">DESCRIPCION</th>
-                    <th  style="font-size: 9px;text-align: center;">RANGO</th>
-                    <th  style="font-size: 9px;text-align: center;">CANTIDAD</th>
-                    <th style="font-size: 9px;text-align: center;">PORCENTAJE</th>
-                    </tr>
-                </thead>
-                <tbody>
-         ${bodylistado}
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Helvetica', 'Arial', sans-serif;
+                    background-color: #ffffff;
+                    color: #333333;
+                    line-height: 1.3;
+                }
+                
+                /* Encabezado principal */
+                .main-header {
+                    text-align: center;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid #2c3e50;
+                }
+                
+                .university-title {
+                    font-size: 12px;
+                    font-weight: bold;
+                    color: #1a3e60;
+                    letter-spacing: 1px;
+                    margin-bottom: 3px;
+                }
+                
+                .faculty-title {
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin-bottom: 2px;
+                }
+                
+                .career-title {
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: #34495e;
+                    margin-bottom: 2px;
+                }
+                
+                /* Contenedor de información en dos columnas - VERSIÓN CORREGIDA */
+                .info-container {
+                    background: #f8f9fa;
+                    padding: 12px 15px;
+                    margin: 10px 0;
+                    border-left: 4px solid #3498db;
+                    border-radius: 4px;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 8px 20px;
+                }
+                
+                /* Cada item de información */
+                .info-item {
+                    display: flex;
+                    align-items: baseline;
+                    font-size: 9px;
+                    padding: 3px 0;
+                }
+                
+                .info-label {
+                    font-weight: bold;
+                    min-width: 75px;
+                    color: #2c3e50;
+                    font-size: 9px;
+                }
+                
+                .info-value {
+                    color: #555;
+                    flex: 1;
+                    font-size: 9px;
+                    font-weight: 500;
+                }
+                
+                /* Tabla mejorada y compacta */
+                .data-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 12px 0;
+                    font-size: 8px;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+                }
+                
+                .data-table th {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 6px 4px;
+                    font-weight: bold;
+                    text-align: center;
+                    border: 1px solid #5a67d8;
+                    font-size: 8px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                }
+                
+                .data-table td {
+                    padding: 5px 4px;
+                    text-align: center;
+                    border: 1px solid #e2e8f0;
+                    font-size: 8px;
+                }
+                
+                .data-table tbody tr:nth-child(even) {
+                    background-color: #f8fafc;
+                }
+                
+                /* Estilos específicos para celdas */
+                .cell-number {
+                    font-weight: bold;
+                    color: #4a5568;
+                    text-align: center;
+                }
+                
+                .cell-description {
+                    text-align: left;
+                    font-weight: 500;
+                    color: #2d3748;
+                }
+                
+                .cell-range {
+                    text-align: center;
+                    color: #4a5568;
+                }
+                
+                .cell-quantity {
+                    text-align: center;
+                    font-weight: bold;
+                    color: #2c5282;
+                }
+                
+                .cell-percentage {
+                    text-align: center;
+                    font-weight: bold;
+                    color: #38a169;
+                }
+                
+                /* Contenedor del gráfico */
+                .chart-container {
+                    text-align: center;
+                    margin: 15px 0 10px 0;
+                    padding: 10px;
+                    background: #ffffff;
+                    border-radius: 6px;
+                }
+                
+                .chart-container img {
+                    max-width: 100%;
+                    height: auto;
+                    max-height: 180px;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+                    border-radius: 4px;
+                }
+                
+                /* Firma compacta */
+                .signature {
+                    text-align: center;
+                    margin-top: 15px;
+                    padding-top: 12px;
+                    border-top: 1px solid #cbd5e0;
+                }
+                
+                .signature-line {
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin-bottom: 4px;
+                    font-size: 9px;
+                }
+                
+                .signature-name {
+                    font-size: 8px;
+                    color: #4a5568;
+                    font-style: italic;
+                }
+                
+                /* Título de la tabla */
+                .table-title {
+                    text-align: center;
+                    font-size: 9px;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    margin: 8px 0 6px 0;
+                    padding: 5px;
+                    background: #ecf0f1;
+                    border-radius: 3px;
+                }
+                
+                /* Ajustes para asegurar una sola página */
+                @media print {
+                    body {
+                        background: white;
+                    }
+                    
+                    .chart-container, .signature {
+                        page-break-inside: avoid;
+                    }
+                    
+                    .data-table {
+                        page-break-inside: auto;
+                    }
+                    
+                    tr {
+                        page-break-inside: avoid;
+                        page-break-after: auto;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="page-content">
+                <div class="main-header">
+                    <div class="university-title">ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO</div>
+                    <div class="faculty-title">FACULTAD: ${datosCarrera.data[0].strNombreFacultad}</div>
+                    <div class="career-title">CARRERA: ${datosCarrera.data[0].strNombreCarrera}</div>
+                </div>
+                
+                <!-- Información en dos columnas - ESTRUCTURA CORREGIDA -->
+                <div class="info-container">
+                 <div class="info-item">
+                        <div class="info-label">PERIODO:</div>
+                        <div class="info-value">${periodo.data[0].strDescripcion}</div>
+                    </div>
+                      <div class="info-item">
+                        <div class="info-label">PROFESOR:</div>
+                        <div class="info-value">${nombres}</div>
+                    </div>
+                       <div class="info-item">
+                        <div class="info-label">ASIGNATURA:</div>
+                        <div class="info-value">${asignatura}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">PAO:</div>
+                        <div class="info-value">${nivel}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">PARALELO:</div>
+                        <div class="info-value">${paralelo}</div>
+                    </div>
+                 
+                  
+                   
+                </div>
+                
+                <div class="table-title">
+                    📊 NIVEL DE CUMPLIMIENTO DE LOS RESULTADOS DE APRENDIZAJES - RECUPERACIÓN
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%">N°</th>
+                            <th style="width: 42%">DESCRIPCIÓN</th>
+                            <th style="width: 20%">RANGO</th>
+                            <th style="width: 15%">CANTIDAD</th>
+                            <th style="width: 15%">PORCENTAJE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${bodylistado}
                     </tbody>
                 </table>
-                <br/><br/>
-                <div style="font-size: 9px; text-align: center">
-                <img src="data:image/png;base64,${chartBuffer.toString('base64')}" style="width: 300px;"/> <br/><br/><br/>
+                 <br/>
+                <br/>
+                <div class="chart-container">
+                    <img src="data:image/png;base64,${chartBuffer.toString('base64')}" alt="Gráfico de distribución"/>
+                </div>
+                 <br/>
+                <br/>
+                <br/>
+                <br/>
+                <div class="signature">
+                    <div class="signature-line">_________________________________________</div>
+                    <div class="signature-name">${nombres}</div>
+                </div>
             </div>
-            <br/>
-                <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-                <p style="text-align: center;font-size: 9px;"> ${nombres}</p>
-                </body>
-                </html>
-                `;
+        </body>
+        </html>
+    `;
+    
     const options = {
         format: 'A4',
         timeout: 60000,
         border: {
-            top: '1.0cm', // Margen superior
-            right: '1.5cm', // Margen derecho
-            bottom: '2.0cm', // Margen inferior
-            left: '1.5cm' // Margen izquierdo
+            top: '0.8cm',
+            right: '1.2cm',
+            bottom: '1.5cm',
+            left: '1.2cm'
         },
         header: {
-            height: '60px',
+            height: '50px',
             contents: tools.headerHtml()
         },
         footer: {
-            height: '30px',
+            height: '25px',
             contents: tools.footerHtml()
         },
-
     };
+    
     var htmlCompleto = tools.headerOcultoHtml() + htmlContent + tools.footerOcultoHtml();
-    var base64 = await FunciongenerarPDF(htmlCompleto, options)
-    return base64
+    var base64 = await FunciongenerarPDF(htmlCompleto, options);
+    return base64;
 }
 async function generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedula) {
       var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
