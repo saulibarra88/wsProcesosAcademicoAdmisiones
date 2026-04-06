@@ -35,6 +35,7 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
             const content = {
                 cusId: objCarreraOferta.cupCusId,
                 estId: idestado,
+                perNomenclatura: periodo
             }
             ListadoEstudiantes = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/list_carrera_cusid_estado", content, { httpsAgent: agent });
             if (ListadoEstudiantes.data.length > 0) {
@@ -60,18 +61,16 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
                         obj.minsCarrera = false
                     }
                     ListadoEstudiantesProceso.push(obj);
-
                 }
             }
             }
-         
             return ListadoEstudiantesProceso;
         } catch (error) {
             console.error(error);
             return 'ERROR';
         }
     } catch (err) {
-        console.log(error);
+        console.error(error);
         return 'ERROR';
     }
 }
@@ -106,7 +105,7 @@ module.exports.ListadoEstadosAdmisiones = async function (strBaseCarrera, period
             return 'ERROR';
         }
     } catch (err) {
-        console.log(error);
+        console.error(error);
         return 'ERROR';
     }
 }
@@ -155,7 +154,7 @@ module.exports.ListadoAspiranteAdmisiones = async function (strBaseCarrera, peri
             return 'ERROR';
         }
     } catch (err) {
-        console.log(error);
+        console.error(error);
         return 'ERROR';
     }
 }
@@ -177,7 +176,7 @@ module.exports.ObtenerPeriodoVigenteAdmisiones = async function () {
             return 'ERROR';
         }
     } catch (err) {
-        console.log(error);
+        console.error(error);
         return 'ERROR';
     }
 }
@@ -192,7 +191,7 @@ module.exports.pdfComprobanteCupo = async function (acuId) {
             return 'ERROR';
         }
     } catch (err) {
-        console.log(error);
+        console.error(error);
         return 'ERROR';
     }
 }
@@ -229,7 +228,7 @@ module.exports.ListadoHomologacionesCarreras = async function () {
             return 'ERROR';
         }
     } catch (err) {
-        console.log(error);
+        console.error(error);
         return 'ERROR';
     }
 }
