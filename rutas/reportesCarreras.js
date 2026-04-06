@@ -2138,8 +2138,8 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
 
       // Guardar archivo Excel
-      // const fs = require('fs');
-     //  fs.writeFileSync('ListadoMatriculasInstitucionalNivelacion'+periodo+'.xlsx', buffer);
+       const fs = require('fs');
+       fs.writeFileSync('ListadoMatriculasInstitucionalNivelacion'+periodo+'.xlsx', buffer);
       return base64;
 
     } catch (error) {
