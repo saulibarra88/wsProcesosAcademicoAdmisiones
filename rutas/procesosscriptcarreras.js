@@ -13,6 +13,7 @@ const procesoscriptcarrera = require('../modelo/modeloscriptcarreras');
 const procesoCarrera = require('../modelo/procesocarrera');
 const procesoReportesCarrera = require('./reportesCarreras');
 const procesonotasacademicos = require('../modelo/procesonotasacademicos');
+
 const Chart = require('chart.js');
 const crypto = require("crypto");
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
@@ -68,6 +69,53 @@ module.exports.ProcesoVerificacionMatriculaAsignaturas = async function (carrera
         console.log(error);
         return { blProceso: false, mensaje: "Error :" + error }
 
+    }
+}
+module.exports.ReporteExcelActasNoGenradas = async function (carrera, periodo) {
+    console.log('ReporteExcelActasNoGenradas', { carrera: carrera, periodo: periodo });
+    try {
+        var ListadoDocumentos = [];
+        var ListadoActas = await procesoCarrera.ListadoDocenteActasNoGeneradas(carrera, 2, periodo);
+        var ListadoActasRecuperacion = await ObtenerListadoActasRecuperacionNoGeneradas(carrera, periodo);
+        if (ListadoActas.count > 0) {
+            for (var elementos1 of ListadoActas.data) {
+                ListadoDocumentos.push(elementos1)
+            }
+            for (var elementos of ListadoActasRecuperacion) {
+                ListadoDocumentos.push(elementos)
+            }
+            var ReporteActaExcel = await procesoReportesCarrera.ExcelListadoActasNoGeneradasCarreras(carrera, periodo, ListadoDocumentos);
+            return ReporteActaExcel
+        } else {
+            ListadoDocumentos = []
+        }
+
+        return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
+    }
+}
+module.exports.ListadoActasCalificacionesActasNoGenradas = async function (carrera, periodo) {
+    try {
+        var ListadoDocumentos = [];
+        var ListadoActas = await procesoCarrera.ListadoDocenteActasNoGeneradas(carrera, 2, periodo);
+        var ListadoActasRecuperacion = await ObtenerListadoActasRecuperacionNoGeneradas(carrera, periodo);
+        if (ListadoActas.count > 0) {
+            for (var elementos1 of ListadoActas.data) {
+                ListadoDocumentos.push(elementos1)
+            }
+            for (var elementos of ListadoActasRecuperacion) {
+                ListadoDocumentos.push(elementos)
+            }
+        } else {
+            ListadoDocumentos = []
+        }
+
+        return ListadoDocumentos
+    } catch (err) {
+        console.log(err);
+        return 'ERROR';
     }
 }
 async function FuncionActivacionBotonCrearPeriodo(periodo) {
@@ -220,3 +268,46 @@ var matriculaEstudiantesCarrera = await procesonotasacademicos.ListadoEstudiante
         await pool.close();
     }
 }
+
+async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
+    try {
+        var listadoNomina = [];
+        var ListadoDictadoMateriasCarrera = await procesoCarrera.ListadoDictadoMateriasCarrera(carrera, periodo);
+        var ListadoActasGeneradasRecuperacion = await procesoCarrera.ListadoActasGeneradasTipo( carrera, periodo,8);
+        if (ListadoDictadoMateriasCarrera.count > 0) {
+            for (var materia of ListadoDictadoMateriasCarrera.data) {
+                var DatosRecuperacion = await procesoCarrera.ListadoEstudiantesRecuperacionAsignaturas( carrera, periodo,materia.strCodNivel,materia.strCodParalelo,materia.strCodMateria);
+                if (DatosRecuperacion.count > 0) {
+                    var blverificaracta=false;
+                    for (var actas of ListadoActasGeneradasRecuperacion.data) 
+                        {
+                            if (actas.strCodMateria== materia.strCodMateria && actas.strCodParalelo== materia.strCodParalelo && actas.strCodNivel== materia.strCodNivel && actas.strCodDocente== materia.strCodDocente) {
+                                blverificaracta=true 
+                            }
+                        }
+                        if(!blverificaracta){
+                            var elemento ={
+                                "strdescripcionacta": "ACTA DE RECUPERACION",
+                                "strCedula": materia.strCedula,
+                                "strApellidos": materia.strApellidos,
+                                "strNombres": materia.strNombres,
+                                "strTel":  materia.strTel,
+                                "strNombre": materia.strNombre,
+                                "strCodNivel": materia.strCodNivel,
+                                "strCodParalelo": materia.strCodParalelo,
+                                "strCodPeriodo":periodo
+                            }
+                            listadoNomina.push(elemento)
+                        }
+                 
+                }
+            }
+            return listadoNomina;
+        }
+    } catch (err) {
+      
+        console.error(err);
+        return 'ERROR';
+    }
+}
+

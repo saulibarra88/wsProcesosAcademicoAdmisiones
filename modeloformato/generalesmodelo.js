@@ -58,3 +58,20 @@ module.exports.ActualizarDocumentosfirmadosLegalizadosRuta = async function (car
     return sendResponseModelo(false, [], error.message)
   }
 }
+
+
+module.exports.EstadisticasMatriculasPeriodo = async function (carrera, periodo) {
+  var sentencia = "";
+  sentencia = "SELECT SUM(CASE WHEN [strCodEstado] = 'DEF' THEN 1 ELSE 0 END) AS MatriculasDefinitivas, SUM(CASE WHEN [strCodEstado] = 'PEN' THEN 1 ELSE 0 END) AS MatriculasPendientes, SUM(CASE WHEN [strCodEstado] NOT IN ('PEN','DEF')  THEN 1 ELSE 0 END) AS MatriculasOtras, COUNT(*) AS TotalMatriculas, CAST( SUM(CASE WHEN [strCodEstado] = 'DEF' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS DECIMAL(5,2) ) AS PorcentajeDefinitivas, CAST( SUM(CASE WHEN [strCodEstado] = 'PEN' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS DECIMAL(5,2) ) AS PorcentajePendientes, CAST( SUM(CASE WHEN [strCodEstado] NOT IN ('PEN','DEF') THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS DECIMAL(5,2) ) AS PorcentajeOtras FROM [" + carrera + "].[dbo].[Matriculas] WHERE [strCodPeriodo] = '" + periodo + "'"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error EstadisticasMatriculasPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}

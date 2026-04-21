@@ -475,9 +475,18 @@ module.exports.ProcesoActualizarEstuidanteCarrera = async function (objDatos, ca
         return 'ERROR' + error
     }
 }
+module.exports.ProcesoEncontrarEstudianteMatriculado = async function (carrera,periodo,cedula) {
+    try {
+        var resultado = await funcionesmodelocupos.EncontrarEstudianteMatriculado(carrera,periodo,funcionestools.CedulaConGuion(cedula) );
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
 module.exports.ProcesoListadosInscrionestodasEstudiante = async function (cedula) {
     try {
-        var resultado = await funcionesmodelomovilidad.ObenterTodasEstudianteIncripcion('OAS_Master', cedula);
+        var resultado = await funcionesmodelomovilidad.EncontrarEstudianteMatriculado('OAS_Master', cedula);
         return resultado
     } catch (error) {
         console.log(error);
