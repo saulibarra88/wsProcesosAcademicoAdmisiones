@@ -337,30 +337,7 @@ module.exports.ListadoActasFinCicloNoGenerada = async function (carrera, periodo
     }
 }
 
-module.exports.ReporteExcelActasNoGenradas = async function (carrera, periodo) {
-    try {
-        var ListadoDocumentos = [];
-        var ListadoActas = await modeloprocesocarreras.ListadoDocenteActasNoGeneradas(carrera, 2, periodo);
-        var ListadoActasRecuperacion = await ObtenerListadoActasRecuperacionNoGeneradas(carrera, periodo);
-        if (ListadoActas.count > 0) {
-            for (var elementos1 of ListadoActas.data) {
-                ListadoDocumentos.push(elementos1)
-            }
-            for (var elementos of ListadoActasRecuperacion) {
-                ListadoDocumentos.push(elementos)
-            }
-            var ReporteActaExcel = await reportescarreras.ExcelListadoActasNoGeneradasCarreras(carrera, periodo, ListadoDocumentos);
-            return ReporteActaExcel
-        } else {
-            ListadoDocumentos = []
-        }
 
-        return ListadoDocumentos
-    } catch (err) {
-        console.log(err);
-        return 'ERROR';
-    }
-}
 module.exports.ProcesoActivacionBotonCreacionPerioodo = async function (carrera, periodo, pensum) {
     try {
         var resultado = await FuncionActivacionBotonCreacionPeriodo(carrera, periodo, pensum);

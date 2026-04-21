@@ -34,5 +34,16 @@ router.get('/VerifocarRutasMatriculasNuevoAlmacenamiento/:carrera/:periodo',asyn
     }
 
 });
+router.get('/EstadisitcasMatriculasPeriodoCarrera/:carrera/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoEstadisticasMatriculasPeriodo(carrera,periodo);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error EstadisitcasMatriculasPeriodoCarrera', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
 
+});
 module.exports = router;

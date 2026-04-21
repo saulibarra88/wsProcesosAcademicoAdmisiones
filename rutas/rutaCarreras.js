@@ -11,6 +11,7 @@ const procesosAdministrativo = require('../procesos/Procesosadministrativos');
 const reportesexcelcarreras = require('../procesos/reportesexcelcarreras');
 const procesosmatricula = require('../procesos/procesosmatricula');
 const pruebasInformacion = require('./procesosespochcarrera');
+const procesosscriptcarrera = require('./procesosscriptcarreras');
 
 router.get('/ListadoPensumCarrera/:carrera/',async (req, res) => {
     const carrera = req.params.carrera;
@@ -95,7 +96,7 @@ router.get('/ReporteExcelActasNoGeneradas/:carrera/:periodo',async (req, res) =>
     const carrera = req.params.carrera;
     const periodo = req.params.periodo;
     try {
-        var Informacion=await  carrerasprocesosInformacion.ReporteExcelActasNoGenradas(carrera,periodo);
+        var Informacion=await  procesosscriptcarrera.ReporteExcelActasNoGenradas(carrera,periodo);
         res.json({
             success: true,
             Informacion:Informacion,
@@ -112,6 +113,26 @@ router.get('/ReporteExcelActasNoGeneradas/:carrera/:periodo',async (req, res) =>
  
 });
 
+router.get('/ListadoActasCalificacionesActasNoGeneradas/:carrera/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  procesosscriptcarrera.ListadoActasCalificacionesActasNoGenradas(carrera,periodo);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 router.get('/ActivacionBotonCreacionPeriodo/:carrera/:periodo/:pemsun',async (req, res) => {
     const carrera = req.params.carrera;
     const periodo = req.params.periodo;

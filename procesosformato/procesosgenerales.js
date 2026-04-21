@@ -55,3 +55,18 @@ module.exports.ProcesoVerificarRutasMatriculasAlmacenamiento = async function (c
         return sendResponseProcesos(false, [], error.message)
     }
 }
+
+module.exports.ProcesoEstadisticasMatriculasPeriodo = async function (carrera, periodo) {
+    try {
+       
+        var Informacion = await sqlmodelogenerales.EstadisticasMatriculasPeriodo(carrera, periodo);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoEstadisticasMatriculasPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}

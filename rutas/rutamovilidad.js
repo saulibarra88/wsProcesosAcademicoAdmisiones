@@ -1238,4 +1238,24 @@ router.post('/ActulizarDocumentoSolicitud', async (req, res) => {
 
     }
 });
+router.get('/MatriculaEstuidanteCarreraPeriodo/:carrera/:periodo/:cedula/', async (req, res) => {
+        const periodo = req.params.periodo;
+        const carrera = req.params.carrera;
+        const cedula = req.params.cedula;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoEncontrarEstudianteMatriculado(carrera, periodo, cedula);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
 module.exports = router;
