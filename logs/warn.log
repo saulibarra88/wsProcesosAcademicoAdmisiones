@@ -5,3 +5,4 @@
 [error] [2026-03-20 16:40:57]  : Error ProcesoListadoRecordEstadoPeriodo Informacion.datos is not iterable
 [error] [2026-03-20 16:41:23]  : Error ProcesoListadoRecordEstadoPeriodo Informacion.datos is not iterable
 [error] [2026-03-23 09:37:32]  : Error EliminarSolicitudRecord strperiodo is not defined
+[error] [2026-04-22 08:40:01]  : Error ProcesoTotalDefinitivaCarrera Cannot read properties of undefined (reading 'datos')
