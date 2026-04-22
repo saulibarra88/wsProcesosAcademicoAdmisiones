@@ -486,7 +486,8 @@ module.exports.ProcesoEncontrarEstudianteMatriculado = async function (carrera,p
 }
 module.exports.ProcesoListadosInscrionestodasEstudiante = async function (cedula) {
     try {
-        var resultado = await funcionesmodelomovilidad.EncontrarEstudianteMatriculado('OAS_Master', cedula);
+                var resultado = await funcionesmodelomovilidad.ObenterTodasEstudianteIncripcion('OAS_Master', cedula);
+
         return resultado
     } catch (error) {
         console.log(error);
