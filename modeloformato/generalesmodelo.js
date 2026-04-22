@@ -75,3 +75,20 @@ module.exports.EstadisticasMatriculasPeriodo = async function (carrera, periodo)
     return sendResponseModelo(false, [], error.message)
   }
 }
+
+module.exports.TotalMatriculaDefinitvaCarrera = async function (carrera, periodo) {
+  var sentencia = "";
+  //sentencia = "SELECT COUNT(*) AS TotalDEF, SUM(CASE WHEN [strCodNivel] = '1' THEN 1 ELSE 0 END) AS TotalDEF_Nivel1 FROM [" + carrera + "].[dbo].[Matriculas] WHERE [strCodPeriodo] = '" + periodo + "' AND [strCodEstado] = 'DEF'"
+  sentencia = "SELECT ISNULL(COUNT(*), 0) AS TotalDEF, ISNULL(SUM(CASE WHEN [strCodNivel] = '1' THEN 1 ELSE 0 END), 0) AS TotalDEF_Nivel1 FROM [" + carrera + "].[dbo].[Matriculas] WHERE [strCodPeriodo] = '" + periodo + "' AND [strCodEstado] = 'DEF'"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error EstadisticasMatriculasPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}

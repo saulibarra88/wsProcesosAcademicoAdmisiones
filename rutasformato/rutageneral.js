@@ -46,4 +46,16 @@ router.get('/EstadisitcasMatriculasPeriodoCarrera/:carrera/:periodo',async (req,
     }
 
 });
+
+router.get('/TotalDefinitivasCarrerasInstitucional/:periodo',async (req, res) => {
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoTotalDefinitivaCarrera(periodo);
+           return sendResponseServicios(res, true, Informacion,'OK');
+    }catch (error) {
+       logger.error('Error TotalDefinitivasCarrerasInstitucional', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
 module.exports = router;
