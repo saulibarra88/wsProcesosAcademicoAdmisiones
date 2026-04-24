@@ -569,6 +569,49 @@ module.exports.ProcesoActualizarEstadoSolicitudAcademica = async function (perio
         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
+module.exports.DocumentosMatriculasPeriosdos = async function (strBaseCarrera, periodo) {
+    try {
+        var ListadoDocumentos = [];
+        var ListadoEstudiantesProceso = [];
+   
+        var datosDocumentos = await funcionesmodelocarrera.ObtenerDocumentosMatriculas(strBaseCarrera, periodo);
+        var TotalDocumentosPendiente = await funcionesmodelocarrera.TotalDocumentoPendientes(strBaseCarrera, periodo);
+        var TotalDocumentosFirmados = await funcionesmodelocarrera.TotalDocumentoFirmados(strBaseCarrera, periodo);
+        if (datosDocumentos.count > 0) {
+            for (var info of datosDocumentos.data) {
+                if (info.estado == 2) {
+                    info.estadodescripcion = 'PENDIENTE FIRMAR'
+
+                }
+                if (info.estado == 1) {
+                    info.estadodescripcion = 'PENDIENTE FIRMAR'
+                }
+                if (info.estado == 3) {
+                    info.estadodescripcion = 'ACTA FIRMADA'
+                }
+                ListadoDocumentos.push(info)
+            }
+            var respuesta = {
+                TotalPendientes: TotalDocumentosPendiente.count > 0 ? TotalDocumentosPendiente.data[0].total : 0,
+                TotalFirmados: TotalDocumentosPendiente.count > 0 ? TotalDocumentosFirmados.data[0].total : 0,
+                Listado: ListadoDocumentos,
+            }
+
+        }else{
+               var respuesta = {
+                TotalPendientes:  0,
+                TotalFirmados: 0,
+                Listado: ListadoDocumentos,
+            }
+        }
+
+        return respuesta;
+
+    } catch (err) {
+        console.log(error);
+        return 'ERROR';
+    }
+}
 async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel, periodo, cedula) {
     try {
         var respuesta = {};
