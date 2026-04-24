@@ -8,6 +8,7 @@ const reportes = require('../rutas/reportesadmisiones');
 const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
 const procesosCarrerasFunciones = require('./procesoscarrerasespoch');
 const procesosReportesFunciones = require('./procesosreportescarreras');
+const procesosMovilidad = require('./../procesos/procesosmovilidad');
 const pruebasInformacion = require('./procesosespochcarrera');
 
 router.get('/ProcesoConfirmacionCupoInscripcion/:periodo/:cedula/',async (req, res) => {
@@ -484,7 +485,7 @@ router.get('/DocumentosMatriculasPeriodos/:BaseCarrera/:periodo',async (req, res
     const periodo = req.params.periodo;
     const BaseCarrera = req.params.BaseCarrera;
     try {
-        var Informacion = await procesosCarrerasFunciones.DocumentosMatriculasPeriosdos(BaseCarrera,periodo);
+        var Informacion = await procesosMovilidad.DocumentosMatriculasPeriosdos(BaseCarrera,periodo);
         res.json({
             success: true,
             Informacion
