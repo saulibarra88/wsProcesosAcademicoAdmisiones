@@ -545,6 +545,7 @@ router.get('/PDFListadoEstudianteMatriculasTerceraSegunda/:carrera/:periodo/:tip
     const carrera = req.params.carrera;
     const cedula = req.params.cedula;
     const tipo = req.params.tipo;
+    
     try {
         var Informacion = await procesosCarrerasFunciones.pdfListadoEstudianteTerceraSegundaMatricula(carrera,periodo,cedula,tipo);
         res.json({

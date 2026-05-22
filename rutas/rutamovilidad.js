@@ -1119,6 +1119,25 @@ router.get('/ListadoCarrerasTraspaso/:dbBase/:periodo', async (req, res) => {
         );
     }
 });
+router.get('/ObtenerHomologacionCarrera/:dbBase/:periodo', async (req, res) => {
+        const dbBase = req.params.dbBase;
+        const periodo = req.params.periodo;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoObenterHomologacionCarrera(dbBase,periodo);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
 router.get('/ListadoCarrerasSolicitudAprobadasPeriodo/:periodo', async (req, res) => {
         const periodo = req.params.periodo;
     try {
@@ -1244,6 +1263,25 @@ router.get('/MatriculaEstuidanteCarreraPeriodo/:carrera/:periodo/:cedula/', asyn
         const cedula = req.params.cedula;
     try {
         var respuesta = await funcionesprocesosmovilidad.ProcesoEncontrarEstudianteMatriculado(carrera, periodo, cedula);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+router.get('/RetirosAsignaturasTodasEstudiantes/:carrera/:cedula/', async (req, res) => {
+        const carrera = req.params.carrera;
+        const cedula = req.params.cedula;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoRetirosAsignaturasEstudiante(carrera, cedula);
         res.json({
             success: true,
             Informacion: respuesta

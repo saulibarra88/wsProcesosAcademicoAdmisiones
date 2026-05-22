@@ -137,7 +137,7 @@ module.exports.pdfListadoEstudianteTerceraSegundaMatricula = async function (car
 
 
     } catch (err) {
-        console.log(error);
+        console.log(err);
         return 'ERROR';
     }
 }

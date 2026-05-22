@@ -484,6 +484,15 @@ module.exports.ProcesoEncontrarEstudianteMatriculado = async function (carrera,p
         return 'ERROR' + error
     }
 }
+module.exports.ProcesoListadoRetirosAsignaturasEstudiante = async function (carrera,cedula) {
+    try {
+        var resultado = await funcionesmodelocupos.ListadoRetirosEstudiantesTodas(carrera,funcionestools.CedulaConGuion(cedula) );
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
 module.exports.ProcesoListadosInscrionestodasEstudiante = async function (cedula) {
     try {
                 var resultado = await funcionesmodelomovilidad.ObenterTodasEstudianteIncripcion('OAS_Master', cedula);
@@ -549,7 +558,7 @@ module.exports.ProcesoPdfCarrerasSolcitudesAprobadasPeriodosTipos = async functi
         console.log(error);
         return 'ERROR' + error
     }
-}
+}  
 module.exports.ProcesoListadoEstadoSolicitudes = async function () {
 
     try {
@@ -560,7 +569,16 @@ module.exports.ProcesoListadoEstadoSolicitudes = async function () {
         return 'ERROR' + error
     }
 }
+module.exports.ProcesoObenterHomologacionCarrera = async function (carrera, periodo) {
 
+    try {
+        var resultado = await funcionesmodelomovilidad.ObenterHomologacionCarrera('OAS_Master', carrera, periodo);
+        return resultado
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error
+    }
+}
 module.exports.ProcesoActualizarEstadoSolicitudAcademica = async function (periodo,cedula,idsolicitud,observacion,estado) {
     try {
  var resultado = await funcionesmodelomovilidad.ActualizarEstadoSolicitud('OAS_Master',periodo,cedula,idsolicitud,observacion,estado);  

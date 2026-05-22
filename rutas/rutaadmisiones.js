@@ -6,12 +6,13 @@ const ProcesosAdmisiones = require('../rutas/ProcesosAdmisiones');
 const ReportesAdmisiones = require('../rutas/reportesadmisiones');
 
 
-router.get('/ObtenerListadoEstudianteAdmisiones/:dbBaseCarrera/:periodo/:idestado',async (req, res) => {
+router.get('/ObtenerListadoEstudianteAdmisiones/:dbBaseCarrera/:periodo/:idestado/:percodigoadmision',async (req, res) => {
     const dbBaseCarrera = req.params.dbBaseCarrera;
     const periodo = req.params.periodo;
     const idestado = req.params.idestado;
+    const percodigoadmision = req.params.percodigoadmision;
     try {
-        var respuesta=await  ProcesosAdmisiones.ListadoEstudiantes(dbBaseCarrera,periodo,idestado);
+        var respuesta=await  ProcesosAdmisiones.ListadoEstudiantes(dbBaseCarrera,periodo,idestado,percodigoadmision);
      
         if (respuesta.length>0) {
             return res.json({
