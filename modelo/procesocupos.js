@@ -961,3 +961,21 @@ try {
 }
 
   }
+
+    module.exports.ListadoRetirosEstudiantesTodas = async function (carrera,cedula) {
+ var sentencia="";
+  sentencia="SELECT R.*,MA.*,P.* FROM [" + carrera + "].[dbo].[Retiros] AS R INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS M ON M.sintCodigo=R.sintCodMatricula AND M.strCodPeriodo=R.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias] AS MA ON MA.strCodigo=R.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=M.strCodEstud INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=R.strCodPeriodo WHERE E.strCedula='" + cedula + "' AND M.strCodEstado='DEF' ORDER BY R.dtFechaAprob DESC"
+ 
+try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
+  
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
+
+  }

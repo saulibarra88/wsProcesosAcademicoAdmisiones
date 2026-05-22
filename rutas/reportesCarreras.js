@@ -372,30 +372,30 @@ async function ProcesoPdfTerceraSegundaMatriculaCarreraGeneral(listado, carrera,
       for (let carreras of listado) {
         contadot = contadot + 1;
         bodylistado += `<tr >
-                              <td style="font-size: 10px; text-align: center">
+                              <td style="font-size: 9px; text-align: center">
                               ${contadot}
                             </td>
-                            <td style="font-size: 11px; text-align: left">
+                            <td style="font-size: 9px; text-align: left">
                               ${carreras.strApellidos}    ${carreras.strNombres}
                               
                             </td>
-                             <td style="font-size: 11px; text-align: left">
+                             <td style="font-size: 9px; text-align: left">
                               ${carreras.strCedula}
                               
                             </td>
-                            <td style="font-size: 11px; text-align: center">
+                            <td style="font-size: 9px; text-align: center">
                               ${carreras.strCodNivel}  
                             </td>
-                            <td style="font-size: 11px; text-align: center">
+                            <td style="font-size: 9px; text-align: center">
                               ${carreras.cantidadprimera}  
                             </td>
-     <td style="font-size: 11px; text-align: center">
+     <td style="font-size: 9px; text-align: center">
                               ${carreras.cantidadsegunda}  
                             </td>
-                               <td style="font-size: 11px; text-align: center">
+                               <td style="font-size: 9px; text-align: center">
                               ${carreras.cantidadtercera}  
                             </td>
-                              <td style="font-size: 11px; text-align: center">
+                              <td style="font-size: 9px; text-align: center">
                               ${carreras.cantidadtotal}  
                             </td>
                            </tr>`
@@ -421,7 +421,7 @@ async function ProcesoPdfTerceraSegundaMatriculaCarreraGeneral(listado, carrera,
                 <tr>
                   <th style="font-size: 10px;text-align: center;">N°</th>
                   <th style="font-size: 10px;text-align: center;">ESTUDIANTES</th>
-                  <th style="font-size: 10px;text-align: center;">CÉDULA</th>
+                  <th style="font-size: 10px;text-align: center;">CÉDULA_IDENTIDAD</th>
                   <th style="font-size: 10px;text-align: center;">NIVEL</th>
                   <th  style="font-size: 10px;text-align: center;">1RA</th>
                   <th  style="font-size: 10px;text-align: center;">2DA </th>

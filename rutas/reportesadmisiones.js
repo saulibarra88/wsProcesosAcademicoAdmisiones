@@ -224,30 +224,30 @@ async function ProcesoPdfListadosEstudiantesAdmisiones(listado, strBaseCarrera, 
     <td style="font-size: 10px; text-align: center">
      ${contadot}
    </td>
-   <td style="font-size: 11px; text-align: center">
+   <td style="font-size: 9px; text-align: left">
      <strong>CÉDULA: </strong>  ${estudiantes.AspirantePostulacion.Persona.perCedula}<br/>
      <strong>CELULAR: </strong>  ${estudiantes.AspirantePostulacion.Persona.perCelular}<br/>
      <strong>CORREO: </strong>  ${estudiantes.AspirantePostulacion.Persona.perEmailAlternativo}
    </td>
-   <td style="font-size: 11px; text-align: center">
+   <td style="font-size: 9px; text-align: left">
      ${estudiantes.AspirantePostulacion.Persona.perApellidos}   ${estudiantes.AspirantePostulacion.Persona.perNombres}
    </td>
-   <td style="font-size: 11px; text-align: center">
+   <td style="font-size: 9px; text-align: left">
      <strong>MATRICULA: </strong>  <span [ngStyle]="{'color':estudiantes.habilitarMatricula==true?'green':'orange'}">${estudiantes.habilitarMatricula == true ? 'HABILITADA' : 'NO HABILITADA'} </span>  <br/>
      <strong> FECHA:</strong>  ${estudiantes.minsFecha == '' ? 'NO REGISTRO' : estudiantes.minsFecha} <br/>
      <strong> INGRESA A :</strong>  ${estudiantes.minsCarrera == false ? 'NIVELACIÓN' : 'CARRERA'} 
     </td>
-   <td style="font-size: 11px; text-align: center">
+   <td style="font-size: 9px; text-align: left">
     ${estudiantes.AspirantePostulacion.Fase.croNombre} POSTULACIÓN<br/>
     NOTA: <strong>${estudiantes.acuNota}</strong> 
    </td>
 
-   <td style="font-size: 11px; text-align: center">
+   <td style="font-size: 9px; text-align: left">
    <strong>CARRERA :</strong>  ${estudiantes.AspirantePostulacion.Carrera.carNombre}<br/>
    <strong>SEDE :</strong>   ${estudiantes.AspirantePostulacion.Carrera.Sede.sedNombre}
    </td>
 
-   <td style="font-size: 11px; text-align: center; width: 200px;"  >
+   <td style="font-size: 9px; text-align: left; width: 200px;"  >
      <strong style="'color':estudiantes.Estado.estDescripcion=='ACEPTADO'?'green':'orange'}">${estudiantes.Estado.estDescripcion}</strong>  <br/>
      <strong >CONFIRMACIÓN :</strong>  ${estudiantes.acuFechaConfirmacion}  
    </td>

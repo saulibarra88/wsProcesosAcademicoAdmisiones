@@ -38,7 +38,7 @@ module.exports.ListarConfiguracionesHomoCarrerasHistoral = async function (bdcar
 }
 module.exports.ProcesoObtenerCarreraVigenteHomologacion = async function (bdcarrera,periodo) {
     try {
-        var resultado = await FuncionoObtenerCarreraVigenteHomologacion(bdcarrera,periodo);//Buscar estudiantes matriculasdos definitivos para insertar el cupo
+        var resultado = await FuncionoObtenerCarreraVigenteHomologacion(bdcarrera,periodo);
         return { resultado }
 
     } catch (error) {
