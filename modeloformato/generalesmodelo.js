@@ -88,7 +88,39 @@ module.exports.TotalMatriculaDefinitvaCarrera = async function (carrera, periodo
       return sendResponseModelo(false, [], 'VACIO SQL')
     }
   } catch (error) {
-    logger.error('Error EstadisticasMatriculasPeriodo', { message: error.message, stack: error.stack });
+    logger.error('Error TotalMatriculaDefinitvaCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.DocenteDictadoAsignaturas = async function (carrera, cedula) {
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Dictado_Materias] AS DM INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=DM.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Docentes] AS D ON D.strCodigo=DM.strCodDocente INNER JOIN [" + carrera + "].[dbo].[Materias] AS M ON M.strCodigo=DM.strCodMateria WHERE D.strCedula='" + cedula + "' ORDER BY P.dtFechaInic DESC"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error DocenteDictadoAsignaturas', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.DictadoAsignaturasPeriodo = async function (carrera, periodo) {
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Dictado_Materias] AS DM INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=DM.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Docentes] AS D ON D.strCodigo=DM.strCodDocente INNER JOIN [" + carrera + "].[dbo].[Materias] AS M ON M.strCodigo=DM.strCodMateria WHERE p.strCodigo='" + periodo + "' ORDER BY DM.strCodNivel,M.strNombre"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error DictadoAsignaturasPeriodo', { message: error.message, stack: error.stack });
     return sendResponseModelo(false, [], error.message)
   }
 }
