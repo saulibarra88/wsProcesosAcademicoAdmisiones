@@ -4,6 +4,8 @@ const pathimage = require('path');
 const nomenclatura = require('../config/nomenclatura');
 const procesoCupo = require('../modelo/procesocupos');
 const procesonotasacademicos = require('../modelo/procesonotasacademicos');
+const pdfmakegenerar = require('../reportesmake/reportescarrerasmake');
+
 const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
@@ -56,7 +58,19 @@ module.exports.ProcesoListadoCalificacionesEstudiantedadoDocente = async functio
 module.exports.ProcesoReporteListadoCalificacionesEstudiantedadoDocente = async function (carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento, cedulaUsuario) {
     try {
         var Asignaturas = await ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento);
-        var base64 = await generarReporteNotasCalificaciones(Asignaturas, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario);
+        //var base64 = await generarReporteNotasCalificaciones(Asignaturas, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario);
+        var base64 = await pdfmakegenerar.pdfmakegenerarReporteNotasCalificaciones(Asignaturas, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario);
+  
+
+        return { base64 }
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports.ProcesoReporteListadoCalificacionesEstudiantedadoDocenteTres = async function (listado, carrera, periodo,nivel,paralelo,CodMateria, cedula, cedulaUsuario) {
+    try {
+        var base64 = await pdfmakegenerar.pdfmakegenerarReporteNotasCalificacionesTres(listado, carrera, periodo,nivel,paralelo,CodMateria, cedula, cedulaUsuario);
+  
 
         return { base64 }
     } catch (error) {
