@@ -5,7 +5,7 @@ require('moment/locale/es');
 const https = require('https');
 const crypto = require("crypto");
 const pdf = require('html-pdf');
-  
+  const PdfPrinter = require('pdfmake');
       // Función para convertir una imagen a base64
   function imageToBase64(imagePath) {
     const imageData = fs.readFileSync(imagePath);
@@ -658,4 +658,26 @@ module.exports.generarCodigo8Digitos=async function() {
     
     // Asegura que siempre tenga exactamente 8 dígitos
     return codigo.slice(0, 8);
+}
+
+
+module.exports.pdfMakeDocumento = function (docDefinition, fontConfig )  {
+  return new Promise((resolve, reject) => {
+    try {
+      const printer = new PdfPrinter(fontConfig);
+      const pdfDoc = printer.createPdfKitDocument(docDefinition);
+      const chunks = [];
+
+      pdfDoc.on('data', (chunk) => chunks.push(chunk));
+      pdfDoc.on('end', () => {
+        const result = Buffer.concat(chunks);
+        const base64 = result.toString('base64');
+        resolve(base64);
+      });
+      pdfDoc.on('error', reject);
+      pdfDoc.end();
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

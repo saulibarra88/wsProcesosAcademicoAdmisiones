@@ -4,6 +4,7 @@ const pathimage = require('path');
 const nomenclatura = require('../config/nomenclatura');
 const modeloprocesocarreras = require('../modelo/procesocarrera');
 const reportescarreras = require('../rutas/reportesCarreras');
+const reportespdfmakes = require('../reportesmake/reportescarrerasmake');
 
 const tools = require('./tools');
 const fs = require("fs");
@@ -60,13 +61,13 @@ module.exports.pdfPerdidaAsignaturasEstudiantesporParalelos = async function (ca
                 }
                 asignaturasTodas.listadoparalelos = ListadoDocumentos
                 ListadoEstudiantesProceso.push(asignaturasTodas)
-                  //var base64 = await reportescarreras.PdfListadoEstudiantesAsignaturaApruebanNivelParalelo(ListadoEstudiantesProceso, carrera, cedula, periodo)
-               // return ListadoEstudiantesProceso
+              
             }
         }
 
 
-          var base64 = await reportescarreras.PdfListadoEstudiantesAsignaturaApruebanNivelParalelo(ListadoEstudiantesProceso, carrera, cedula, periodo)
+        //  var base64 = await reportescarreras.PdfListadoEstudiantesAsignaturaApruebanNivelParalelo(ListadoEstudiantesProceso, carrera, cedula, periodo)
+          var base64 = await reportespdfmakes.pdfmakeProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(ListadoEstudiantesProceso, carrera, cedula, periodo)
 
         return base64
 

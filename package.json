@@ -50,6 +50,7 @@
     "pdf-to-excel": "^0.3.2",
     "pdfkit": "^0.13.0",
     "pdfkit-construct": "^1.2.3",
+    "pdfmake": "^0.2.20",
     "pg": "^8.7.3",
     "pm2": "^2.4.6",
     "puppeteer": "^22.10.0",

@@ -86,6 +86,7 @@ router.get('/ProcesoReporteListadoCalificacionesEstudiantedadoDocente/:carrera/:
     const cedulaUsuario = req.params.cedulaUsuario;
     const CodMateria = req.params.CodMateria;
     const idreglamento = req.params.idreglamento;
+
     try {
         var respuesta=await  procesoAcadeicoNotas.ProcesoReporteListadoCalificacionesEstudiantedadoDocente(carrera, periodo,nivel,paralelo,CodMateria, cedula, idreglamento,cedulaUsuario);
         res.json({
@@ -102,6 +103,26 @@ router.get('/ProcesoReporteListadoCalificacionesEstudiantedadoDocente/:carrera/:
         );
     }
  
+});
+
+router.post('/ProcesoReporteListadoCalificacionesEstudiantedadoDocenteTres', async (req, res) => {
+    try {
+        const { listado, carrera, periodo,nivel,paralelo,CodMateria, cedula, cedulaUsuario } = req.body;
+        const Informacion = await procesoAcadeicoNotas.ProcesoReporteListadoCalificacionesEstudiantedadoDocenteTres(listado, carrera, periodo,nivel,paralelo,CodMateria, cedula, cedulaUsuario);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
 });
 router.get('/ObtenerlinkActaCalificaciones/:carrera/:periodo/:nivel/:paralelo/:CodMateria/:codDocente/:idtipoacta',async (req, res) => {
     const periodo = req.params.periodo;

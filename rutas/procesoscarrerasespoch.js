@@ -8,6 +8,7 @@ const procesoadministrativo = require('../modelo/procesoadministrativo');
 const procesoacademiconotas = require('../rutas/ProcesoNotasAcademico');
 const funcionesmodelomovilidad = require('../modelo/modelomovilidad');
 const reportescarreras = require('../rutas/reportesCarreras');
+const reprotepdfmakes = require('../reportesmake/reportescarrerasmake');
 const reportesExcelcarreras = require('../procesos/reportesexcelcarreras');
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { iniciarMasterTransaccion, iniciarMasterPool } = require("./../config/execSQLMaster.helper");
@@ -176,7 +177,8 @@ var Repitencia=0;
                 ListadoDocumentos.push(resultado)
             }
         }
-        var base64 = await reportescarreras.PdfListadoEstudiantesAsignaturaAprueban(ListadoDocumentos, carrera, cedula, periodo)
+      //  var base64 = await reportescarreras.PdfListadoEstudiantesAsignaturaAprueban(ListadoDocumentos, carrera, cedula, periodo)
+        var base64 = await reprotepdfmakes.pdfmakeProcesoPdfEstudianteAsignaturaAprueban(ListadoDocumentos, carrera, cedula, periodo)
 
         return base64
 
