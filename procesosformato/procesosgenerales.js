@@ -9,6 +9,7 @@ const https = require('https');
 const crypto = require("crypto");
 
 const sqlmodelogenerales = require('../modeloformato/generalesmodelo');
+const funcionesgenerales = require('../rutas/tools');
 const sqlmodelomovilidad = require('../modelo/modelomovilidad');
 const { sendResponseProcesos } = require('../herramientas/responseservice');
 const logger = require('./../herramientas/logger');
@@ -36,7 +37,34 @@ module.exports.ProcesoListadoCarrerasDadoFacultad = async function (codigofacult
         return sendResponseProcesos(false, [], error.message)
     }
 }
+module.exports.ProcesoDocenteDictadoAsignatura = async function (carrera,cedula) {
+    try {
 
+        var Informacion = await sqlmodelogenerales.DocenteDictadoAsignaturas(carrera, funcionesgenerales.CedulaConGuion(cedula));
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoDocenteDictadoAsignatura', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+module.exports.ProcesoDictadoAsignaturaPeriodo = async function (carrera,periodo) {
+    try {
+
+        var Informacion = await sqlmodelogenerales.DictadoAsignaturasPeriodo(carrera, periodo);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoDictadoAsignaturaPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
 module.exports.ProcesoVerificarRutasMatriculasAlmacenamiento = async function (carrera, periodo) {
     try {
         var ListadoDocumentos = [];

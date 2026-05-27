@@ -9,6 +9,7 @@ const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
 const procesosCarrerasFunciones = require('./procesoscarrerasespoch');
 const procesosReportesFunciones = require('./procesosreportescarreras');
 const procesosMovilidad = require('./../procesos/procesosmovilidad');
+const procesosgraficoscarrera = require('./../rutas/ProcesosGraficos');
 const pruebasInformacion = require('./procesosespochcarrera');
 
 router.get('/ProcesoConfirmacionCupoInscripcion/:periodo/:cedula/',async (req, res) => {
@@ -648,6 +649,27 @@ router.get('/ProcesosPruebas/:periodo/',async (req, res) => {
     }
  
 });
-
+router.get('/PDFEvaluacionesRecuperacionCarrera/:carrera/:periodo/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        console.log(carrera,periodo,cedula)
+        var Informacion = await procesosgraficoscarrera.pdfEvaluacionesRecuperacionCarrera(carrera,periodo,cedula);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
 
 module.exports = router;

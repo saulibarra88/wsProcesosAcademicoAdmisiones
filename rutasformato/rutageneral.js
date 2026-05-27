@@ -58,4 +58,28 @@ router.get('/TotalDefinitivasCarrerasInstitucional/:periodo',async (req, res) =>
     }
 
 });
+router.get('/ListadoAsignaturasDictadoDocente/:carrera/:cedula',async (req, res) => {
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoDocenteDictadoAsignatura(carrera,cedula);
+           return sendResponseServicios(res, true, Informacion,'OK');
+    }catch (error) {
+       logger.error('Error ListadoASignaturasDictadoDocente', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.get('/ListadoAsignaturasDictadoPeriodo/:carrera/:periodo',async (req, res) => {
+    const carrera = req.params.carrera;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoDictadoAsignaturaPeriodo(carrera,periodo);
+           return sendResponseServicios(res, true, Informacion,'OK');
+    }catch (error) {
+       logger.error('Error ListadoAsignaturasDictadoPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
 module.exports = router;

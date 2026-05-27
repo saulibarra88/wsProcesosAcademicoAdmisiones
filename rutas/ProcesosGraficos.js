@@ -15,6 +15,7 @@ const ChartDataLabels = require('chartjs-plugin-datalabels');
 const crypto = require("crypto");
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const reportespdfmaker = require("./../reportesmake/reportescarrerasmake");
+const sqlmodeloformato = require("./../modeloformato/generalesmodelo.js");
 Chart.register(ChartDataLabels);
 const PdfPrinter = require('pdfmake');
 const { createBaseLayout } = require('../reportesmake/pdf-layout.js');
@@ -68,6 +69,17 @@ module.exports.ReporteNoMatriculado = async function (carrera, periodo1, periodo
         return base64
     } catch (error) {
         console.log(error);
+    }
+}
+module.exports.pdfEvaluacionesRecuperacionCarrera = async function (carrera, periodo, cedula) {
+    try {
+
+        const listadoInformacion = await sqlmodeloformato.DictadoAsignaturasPeriodo(carrera, periodo);
+          var base64 = await reportespdfmaker.pdfmakegenerarReporteEvaluacionesRecuperacionCarrera(listadoInformacion.datos.data, carrera, periodo, cedula)
+        return base64
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error;
     }
 }
 async function ProcesoGraficosParciales1(carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento) {

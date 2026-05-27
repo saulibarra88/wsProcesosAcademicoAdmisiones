@@ -3,6 +3,7 @@ const cron = require('node-cron');
 const pathimage = require('path');
 const nomenclatura = require('../config/nomenclatura');
 const modeloprocesocarreras = require('../modelo/procesocarrera');
+const sqlmodeloformato = require('../modeloformato/generalesmodelo');
 const reportescarreras = require('../rutas/reportesCarreras');
 const reportespdfmakes = require('../reportesmake/reportescarrerasmake');
 
@@ -126,3 +127,4 @@ module.exports.pdfMatriculasEstadosEstudiantesporParalelos = async function (car
         return 'ERROR' + error;
     }
 }
+

@@ -58,6 +58,14 @@ try {
     console.log(error);
   }
 }
+module.exports.pdfmakegenerarReporteEvaluacionesRecuperacionCarrera=async function(listado, carrera, periodo, cedulaUsuario) {
+try {
+    var resultado = await generarReporteEvaluacionesRecuperacionCarrera(listado, carrera, periodo, cedulaUsuario);
+    return resultado
+  } catch (error) {
+    console.log(error);
+  }
+}
 async function generarReporteNotasCalificaciones( listado, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario ) {
   try {
     // Obtener datos necesarios
@@ -926,6 +934,281 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
     console.error('Error generando el reporte de asignaturas por nivel y paralelo:', error);
     return 'ERROR';
   }
+}
+
+async function generarReporteEvaluacionesRecuperacionCarrera( listado, carrera, periodo, cedulaUsuario ) {
+  try {
+    // 1. Obtener datos necesarios en paralelo para mejorar rendimiento
+    const [ datosCarrera, datosPeriodo, ObtenerPersona ] = await Promise.all([ procesoCupo.ObtenerDatosBase(carrera) , procesoCupo.PeriodoDatos(carrera, periodo), axios.get( `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent } ) ]);
+
+    // 2. Extraer y formatear datos básicos
+    const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
+    
+    const periodoInfo = {
+      descripcion: datosPeriodo.data[0].strDescripcion,
+      codigo: periodo
+    };
+
+    // 3. Función auxiliar para valores nulos
+    const getValor = (valor, defaultValue = 'SIN REGISTRO') => {
+      return valor !== null && valor !== undefined && valor !== '' ? valor : defaultValue;
+    };
+
+    // 4. Función para formatear fecha
+const formatearFecha = (fecha) => {
+  if (!fecha) return 'SIN REGISTRO';
+  
+  const date = new Date(fecha);
+  
+  // Verificar si la fecha es válida
+  if (isNaN(date.getTime())) return 'SIN REGISTRO';
+  
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+    // 5. Agrupar materias por nivel
+    const materiasPorNivel = agruparPorNivel(listado);
+
+    // 6. Generar contenido del PDF con múltiples tablas agrupadas
+    const content = await generarContenidoPDF({
+      materiasPorNivel,
+      periodoInfo,
+      datosCarrera,
+      getValor,
+      formatearFecha
+    });
+
+    // 7. Configuración del layout base
+    const layoutOptions = {
+      title: 'FECHAS DE EVALUACIONES RECUPERACIÓN',
+      subtitle: `CARRERA: ${datosCarrera.data[0].strNombreCarrera}`,
+      pageMargins: [40, 120, 40, 70],
+      pageOrientation: 'portrait'
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+
+    // 8. Agregar firma al final
+    content.push(crearFirmaPDF(strNombres));
+
+    // 9. Construir documento final
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        ...obtenerEstilosPDF()
+      }
+    };
+
+    const base64PDF = await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+    return base64PDF;
+
+  } catch (error) {
+    console.error('Error generando el reporte:', error);
+    throw error;
+  }
+}
+
+// ==================== FUNCIONES AUXILIARES ====================
+
+/**
+ * Agrupa las materias por nivel
+ */
+function agruparPorNivel(listado) {
+  const grupos = new Map();
+
+  listado.forEach(materia => {
+    const nivel = materia.strCodNivel;
+    if (!grupos.has(nivel)) {
+      grupos.set(nivel, []);
+    }
+    grupos.get(nivel).push(materia);
+  });
+
+  // Convertir a array ordenado por nivel
+  return Array.from(grupos.entries())
+    .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+    .map(([nivel, materias]) => ({
+      nivel,
+      materias
+    }));
+}
+
+/**
+ * Genera el contenido del PDF con tablas por cada nivel
+ */
+async function generarContenidoPDF({
+  materiasPorNivel,
+  periodoInfo,
+  datosCarrera,
+  getValor,
+  formatearFecha
+}) {
+  const content = [];
+
+  // Encabezado del profesor (común para todo el reporte)
+  content.push(crearEncabezadoProfesor(periodoInfo));
+
+  // Generar una tabla por cada nivel
+  for (const grupo of materiasPorNivel) {
+    // Título del nivel
+    content.push({
+      text: `PAO: ${grupo.nivel}`,
+      style: 'nivelTitle',
+      margin: [0, 20, 0, 10]
+    });
+
+    // Generar tabla para este nivel
+    const tablaNivel = await generarTablaPorNivel(grupo.materias, getValor, formatearFecha);
+    content.push(tablaNivel);
+  }
+
+  return content;
+}
+
+/**
+ * Genera la tabla para un nivel específico
+ */
+async function generarTablaPorNivel(materias, getValor, formatearFecha) {
+  // Definir columnas de la tabla
+  const tableColumns = [
+    { text: '#', style: 'tableHeader' },
+    { text: 'ASIGNATURA', style: 'tableHeader' },
+    { text: 'PAO', style: 'tableHeader' },
+    { text: 'PARALELO', style: 'tableHeader' },
+    { text: 'DOCENTE', style: 'tableHeader' },
+    { text: 'FECHA EX. RECUPERACIÓN', style: 'tableHeader' }
+  ];
+
+  const tableWidths = ['auto', '*', 'auto', 'auto', '*', 'auto'];
+
+  // Construir cuerpo de la tabla
+  const tableBody = materias.map((materia, index) => {
+    const contador = index + 1;
+    const nombreDocente = `${materia.strApellidos || ''} ${materia.strNombres || ''}`.trim();
+    return [
+      { text: contador.toString(), style: 'tableCellCenter' },
+      { text: getValor(materia.strNombre), style: 'tableCellLeft' },
+      { text: getValor(materia.strCodNivel), style: 'tableCellCenter' },
+      { text: getValor(materia.strCodParalelo), style: 'tableCellCenter' },
+      { text: getValor(nombreDocente, 'SIN ASIGNAR'), style: 'tableCellLeft' },
+      { text: formatearFecha(materia.dtFechaExSusp), style: 'tableCellCenter' }
+    ];
+  });
+
+  return {
+    layout: obtenerLayoutTabla(),
+    table: {
+      headerRows: 1,
+      widths: tableWidths,
+      body: [tableColumns.map(col => col), ...tableBody]
+    },
+    margin: [0, 0, 0, 20]
+  };
+}
+
+/**
+ * Crea el encabezado con información del profesor y periodo
+ */
+function crearEncabezadoProfesor( periodoInfo) {
+  return {
+    margin: [0, 0, 0, 20],
+    stack: [
+     
+      { 
+        text: [
+          { text: 'PERIODO: ', bold: true },
+          { text: `${periodoInfo.descripcion} (${periodoInfo.codigo})` }
+        ], 
+        style: 'subtituloLeft' 
+      }
+    ]
+  };
+}
+
+/**
+ * Crea la sección de firma al final del documento
+ */
+function crearFirmaPDF(nombreCompleto) {
+  return {
+    margin: [0, 40, 0, 0],
+    alignment: 'center',
+    stack: [
+      { text: '----------------------------------------', style: 'signatureLine' },
+      { text: 'GENERADO POR:', style: 'signatureLabel' },
+      { text: nombreCompleto, style: 'signatureName' }
+    ]
+  };
+}
+
+/**
+ * Configuración del layout de la tabla
+ */
+function obtenerLayoutTabla() {
+  return {
+    hLineWidth: () => 1,
+    vLineWidth: () => 1,
+    hLineColor: () => '#000000',
+    vLineColor: () => '#000000',
+    paddingLeft: () => 4,
+    paddingRight: () => 4,
+    paddingTop: () => 4,
+    paddingBottom: () => 4
+  };
+}
+
+/**
+ * Estilos del PDF
+ */
+function obtenerEstilosPDF() {
+  return {
+    nivelTitle: {
+      fontSize: 12,
+      bold: true,
+      alignment: 'left',
+      margin: [0, 15, 0, 5],
+      fillColor: '#f0f0f0'
+    },
+    tableHeader: {
+      bold: true,
+      fontSize: 9,
+      alignment: 'center',
+      fillColor: '#eeeeee'
+    },
+    tableCellCenter: {
+      fontSize: 8,
+      alignment: 'center'
+    },
+    tableCellLeft: {
+      fontSize: 8,
+      alignment: 'left'
+    },
+    subtituloLeft: {
+      fontSize: 11,
+      alignment: 'left'
+    },
+    signatureLine: {
+      fontSize: 10,
+      margin: [0, 0, 0, 5]
+    },
+    signatureLabel: {
+      fontSize: 9,
+      margin: [0, 5, 0, 2]
+    },
+    signatureName: {
+      fontSize: 9,
+      bold: true,
+      margin: [0, 2, 0, 0]
+    }
+  };
 }
 
 
