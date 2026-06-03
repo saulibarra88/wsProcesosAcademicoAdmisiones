@@ -9,6 +9,7 @@ const axios = require('axios');
 const https = require('https');
 const crypto = require("crypto");
 const funcionesmodelomovilidad = require('../modelo/modelomovilidad');
+const sqlmodelogenerales = require('../modeloformato/generalesmodelo');
 const funcionesmodelomovilidadconfiguraciones = require('../modelo/modelomovilidadconfiguraciones');
 const funcionestools = require('../rutas/tools');
 const funcionesmodelocarrera = require('../modelo/procesocarrera');
@@ -487,7 +488,7 @@ module.exports.ProcesoListarFechasCalificacionesCarreras = async function () {
 
 module.exports.ProcesoActualizarFechasCalificacionesCarreras = async function (objFechas, listadoCarrera, tipo) {
     try {
-        if (tipo == 0) {
+        if (tipo == 0) {//Actualizacion Todas las carrerras
             var ListadoCarreras = await funcionesmodelomovilidadconfiguraciones.ListadosTodasCarrerasAcademica('OAS_Master');
             if (ListadoCarreras.count > 0) {
                 for (var carreras of ListadoCarreras.data) {
@@ -497,7 +498,7 @@ module.exports.ProcesoActualizarFechasCalificacionesCarreras = async function (o
                 }
             }
         }
-        if (tipo == 1) {
+        if (tipo == 1) {//Actualizacion Seleccionada Carrera
             if (listadoCarrera.length > 0) {
                 for (var carreras of listadoCarrera) {
                      var ActualizarFecha1 = await funcionesmodelomovilidadconfiguraciones.ActualizarFechasCalificacionesCarrera(carreras.strBaseDatos, objFechas.strCodigoParcial1,objFechas.strFechaParcial1);
@@ -506,7 +507,7 @@ module.exports.ProcesoActualizarFechasCalificacionesCarreras = async function (o
                 }
             }
         }
-        if (tipo == 2) {
+        if (tipo == 2) {//Actualizacion Master
             var ActualizarFecha1 = await funcionesmodelomovilidadconfiguraciones.ActualizarFechasCalificacionesAcademico('SistemaAcademico', objFechas.strCodigoParcial1,objFechas.strFechaParcial1,objFechas.idreglamento);
             var ActualizarFecha2 = await funcionesmodelomovilidadconfiguraciones.ActualizarFechasCalificacionesAcademico('SistemaAcademico', objFechas.strCodigoParcial2,objFechas.strFechaParcial2,objFechas.idreglamento);
             var ActualizarFecha3 = await funcionesmodelomovilidadconfiguraciones.ActualizarFechasCalificacionesAcademico('SistemaAcademico', objFechas.strCodigoRecuperación,objFechas.strFechaRecuperacion,objFechas.idreglamento);
