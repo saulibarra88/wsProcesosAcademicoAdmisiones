@@ -13,7 +13,14 @@ const agent = new https.Agent({
       secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 
 });
-
+const defaultFonts = {
+   Roboto: {
+      normal: 'Helvetica',
+      bold: 'Helvetica-Bold',
+      italics: 'Helvetica-Oblique',
+      bolditalics: 'Helvetica-BoldOblique',
+   },
+};
 /**
  * Genera un reporte de notas y calificaciones en PDF
  */
@@ -25,14 +32,7 @@ try {
     console.log(error);
   }
 }
-const defaultFonts = {
-   Roboto: {
-      normal: 'Helvetica',
-      bold: 'Helvetica-Bold',
-      italics: 'Helvetica-Oblique',
-      bolditalics: 'Helvetica-BoldOblique',
-   },
-};
+
 module.exports.pdfmakegenerarReporteNotasCalificacionesTres=async function(listado, carrera, periodo,nivel,paralelo,CodMateria, cedula, cedulaUsuario) {
 try {
     var resultado = await generarReporteNotasCalificacionesTres(listado, carrera, periodo,nivel,paralelo,CodMateria, cedula, cedulaUsuario);
@@ -61,6 +61,14 @@ try {
 module.exports.pdfmakegenerarReporteEvaluacionesRecuperacionCarrera=async function(listado, carrera, periodo, cedulaUsuario) {
 try {
     var resultado = await generarReporteEvaluacionesRecuperacionCarrera(listado, carrera, periodo, cedulaUsuario);
+    return resultado
+  } catch (error) {
+    console.log(error);
+  }
+}
+module.exports.pdfmakegenerarReporteHomologacionCarrera=async function(listado, carrera, cedulaUsuario) {
+try {
+    var resultado = await generarReporteHomologacionCarrera(listado, carrera, cedulaUsuario);
     return resultado
   } catch (error) {
     console.log(error);
@@ -1005,6 +1013,183 @@ const formatearFecha = (fecha) => {
       styles: {
         ...baseLayout.styles,
         ...obtenerEstilosPDF()
+      }
+    };
+
+    const base64PDF = await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+    return base64PDF;
+
+  } catch (error) {
+    console.error('Error generando el reporte:', error);
+    throw error;
+  }
+}
+
+async function generarReporteHomologacionCarrera(listado, carrera, cedulaUsuario) {
+
+  try {
+    // 1. Obtener datos necesarios en paralelo para mejorar rendimiento
+    const [datosCarrera, obtenerPersona] = await Promise.all([
+      procesoCupo.ObtenerDatosBase(carrera),
+      axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent })
+    ]);
+
+    // 2. Extraer y formatear datos básicos
+    const strNombres = `${obtenerPersona.data.listado[0].per_nombres} ${obtenerPersona.data.listado[0].per_primerApellido} ${obtenerPersona.data.listado[0].per_segundoApellido}`;
+
+
+    // 3. Función auxiliar para valores nulos
+    const getValor = (valor, defaultValue = 'SIN REGISTRO') => {
+      return valor !== null && valor !== undefined && valor !== '' ? valor : defaultValue;
+    };
+
+    // 4. Función para formatear fecha
+    const formatearFecha = (fecha) => {
+      if (!fecha) return 'SIN REGISTRO';
+      
+      const date = new Date(fecha);
+      if (isNaN(date.getTime())) return 'SIN REGISTRO';
+      
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(date.getUTCDate()).padStart(2, '0');
+      const hours = String(date.getUTCHours()).padStart(2, '0');
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}`;
+    };
+
+    // 5. Función para obtener el estado formateado
+    const formatearEstado = (estado) => {
+      return estado === 'A' ? 'ACTIVO' : 'INACTIVO';
+    };
+
+    const obtenerClaseEstado = (estado) => {
+      return estado === 'A' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+    };
+
+    // 6. Generar contenido del PDF con estructura de tabla
+    const content = [
+   
+      // Tabla principal
+      {
+        table: {
+          headerRows: 2,
+          widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+          body: [
+            // Primera fila de headers con colores
+            [
+              { text: 'DATOS', colSpan: 6, style: 'tableHeaderBlue', alignment: 'center' },
+              {}, {},{},{},{}
+            
+            ],
+            // Segunda fila de headers
+            [
+              { text: '#', style: 'tableHeader', alignment: 'center' },
+              { text: 'ASIGNATURA ANTERIOR', style: 'tableHeader', alignment: 'center' },
+              { text: 'ASIGNATURA ACREDITADA/HOMOLOGADA', style: 'tableHeader', alignment: 'center' },
+              { text: 'MALLA', style: 'tableHeader', alignment: 'center' },
+              { text: 'FECHA_REGISTRO', style: 'tableHeader', alignment: 'center' },
+              { text: 'ESTADO', style: 'tableHeader', alignment: 'center' }
+
+            ],
+            // Filas de datos
+            ...listado.map((item, index) => [
+              { text: (index + 1).toString(), alignment: 'center' },
+              {
+                stack: [
+                  { text: `CÓDIGO: ${getValor(item.hommateriaant)}`, fontSize: 8 },
+                  { text: `ASIGNATURA: ${getValor(item.homnombremateriaant)}`, fontSize: 8, margin: [0, 2, 0, 0] }
+                ],
+                alignment: 'left'
+              },
+              {
+                stack: [
+                  { text: `CÓDIGO: ${getValor(item.hommaterianew)}`, fontSize: 8 },
+                  { text: `ASIGNATURA: ${getValor(item.homnombrematerianew)}`, fontSize: 8, margin: [0, 2, 0, 0] }
+                ],
+                alignment: 'left'
+              },
+              { text: getValor(item.pensumvigente), alignment: 'center', fontSize: 8 },
+              { text: formatearFecha(item.homfechacreacion), alignment: 'center', fontSize: 8 },
+              {
+                text: formatearEstado(item.homestado),
+                alignment: 'center', fontSize: 8,
+                fillColor: item.homestado === 'A' ? '#dcfce7' : '#fee2e2',
+                color: item.homestado === 'A' ? '#166534' : '#991b1b'
+              },
+             
+            ])
+          ]
+        },
+        layout: {
+          fillColor: (rowIndex, node, columnIndex) => {
+            if (rowIndex === 0 || rowIndex === 1) return null;
+            return rowIndex % 2 === 0 ? '#f9fafb' : null;
+          },
+          hLineWidth: (i, node) => {
+            return (i === 0 || i === node.table.body.length) ? 1 : 0.5;
+          },
+          vLineWidth: () => 0.5,
+          hLineColor: (i) => '#e5e7eb',
+          vLineColor: () => '#e5e7eb',
+          paddingLeft: () => 5,
+          paddingRight: () => 5,
+          paddingTop: () => 5,
+          paddingBottom: () => 5
+        }
+      },
+      // Espacio antes de la firma
+      { text: '', margin: [0, 30, 0, 0] },
+      // Firma
+      crearFirmaPDF(strNombres)
+    ];
+
+    // 7. Configuración del layout base
+    const layoutOptions = {
+      title: 'HOMOLOGACIÓN DE ASIGNATURAS',
+      subtitle: `CARRERA: ${datosCarrera.data[0].strNombreCarrera}`,
+      pageMargins: [40, 120, 40, 70],
+  pageOrientation: 'landscape'  // ← Cambiado a horizontal
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+
+    // 8. Construir documento final
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        ...obtenerEstilosPDF(),
+       tableHeader: {
+          bold: true,
+          fontSize: 8,
+          alignment: 'center',
+          fillColor: '#eeeeee'
+        },
+        tableHeaderBlue: {
+          bold: true,
+          fontSize: 10,
+          fillColor: '#eff6ff',
+          color: '#1e3a8a',
+          alignment: 'center'
+        },
+        tableHeaderGreen: {
+          bold: true,
+          fontSize: 10,
+          fillColor: '#f0fdf4',
+          color: '#14532d',
+          alignment: 'center'
+        },
+        tableHeaderRed: {
+          bold: true,
+          fontSize: 10,
+          fillColor: '#fef2f2',
+          color: '#991b1b',
+          alignment: 'center'
+        }
       }
     };
 

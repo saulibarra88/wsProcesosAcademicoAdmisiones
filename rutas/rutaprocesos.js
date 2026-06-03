@@ -11,6 +11,7 @@ const procesosReportesFunciones = require('./procesosreportescarreras');
 const procesosMovilidad = require('./../procesos/procesosmovilidad');
 const procesosgraficoscarrera = require('./../rutas/ProcesosGraficos');
 const pruebasInformacion = require('./procesosespochcarrera');
+const pdfreportescarrerasmake = require('./../reportesmake/reportescarrerasmake');
 
 router.get('/ProcesoConfirmacionCupoInscripcion/:periodo/:cedula/',async (req, res) => {
     const periodo = req.params.periodo;
@@ -671,5 +672,23 @@ router.get('/PDFEvaluacionesRecuperacionCarrera/:carrera/:periodo/:cedula',async
     }
  
 });
+router.post('/PdfReporteHomologacionesCarrera', async (req, res) => {
+    try {
+   const { listado, carrera, cedulaUsuario } = req.body;
+        const Informacion = await pdfreportescarrerasmake.pdfmakegenerarReporteHomologacionCarrera(listado, carrera, cedulaUsuario);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en la proceso' + err
+            }
+        );
 
+    }
+});
 module.exports = router;
