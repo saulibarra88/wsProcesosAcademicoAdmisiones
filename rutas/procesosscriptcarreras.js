@@ -72,7 +72,6 @@ module.exports.ProcesoVerificacionMatriculaAsignaturas = async function (carrera
     }
 }
 module.exports.ReporteExcelActasNoGenradas = async function (carrera, periodo) {
-    console.log('ReporteExcelActasNoGenradas', { carrera: carrera, periodo: periodo });
     try {
         var ListadoDocumentos = [];
         var ListadoActas = await procesoCarrera.ListadoDocenteActasNoGeneradas(carrera, 2, periodo);
@@ -142,12 +141,7 @@ async function FuncionCalifacionesRecuperacion() {
 
         if (ListadoRegistro.count > 0) {
             for (var informacion of ListadoRegistro.data) {
-                /*   console.log(informacion.autdescripcionproceso)
-                   var formatocalificaciones = await tools.FormatoCalificacionesRecuperacion(informacion.autdescripcionproceso);    
-                  let f = 0;
-                   console.log(formatocalificaciones)*/
-                // var Actualizacion = await procesoCarrera.ActualizacionCalifacionRecuperacion(formatocalificaciones.database,formatocalificaciones.enrollment,formatocalificaciones.grade,formatocalificaciones.subject); 
-
+             
                 if (informacion.nota !== 'undefined' || informacion.nota !== 'null' || informacion.nota !== 'NaN.00')
                     if (informacion.bd !== 'OAS_TelecomunicacionesR') {
                         var Actualizacion = await procesoCarrera.ActualizacionCalifacionRecuperacion(informacion.bd, informacion.matricula, informacion.nota, informacion.materia);
@@ -171,11 +165,9 @@ async function FuncionListadoEstudianteConIrregularidadMatricula(carrera3, perio
         var listado = [];
         var DatosPeriodo = await procesonotasacademicos.PeriodoDatosCarrera(transaction, 'OAS_Master', peridoanterior);
         var ListadoCarreras = await procesonotasacademicos.ListadoCarreraTodas(transaction, 'OAS_Master');
-        console.log('Listado Carreras: ' + ListadoCarreras.count);
         if (ListadoCarreras.count > 0) {
             for (var objcarrera of ListadoCarreras.data) {
                 var carrera = objcarrera.strBaseDatos;
-                console.log('Carrera: ' + carrera);
              //   if (carrera == 'OAS_AgroindustriaR') {
 var matriculaEstudiantesCarrera = await procesonotasacademicos.ListadoEstudiantePeriodoMatricula(transaction, carrera, peridoanterior, 'DEF');
                 var numero = 0;
@@ -185,7 +177,6 @@ var matriculaEstudiantesCarrera = await procesonotasacademicos.ListadoEstudiante
                     for (var matriculas of matriculaEstudiantesCarrera.data) {
                         blcontrol = false;
                         numero = numero + 1;
-                        console.log('Estudiante: ' + matriculas.strCodEstud + ' - ' + numero + ' de ' + matriculaEstudiantesCarrera.count);
                         var ListadoAsignaturas = [];
                         //  if (Number(matriculas.strCodEstud) == 7525) {
                             var  materiaactual = '';
@@ -206,18 +197,9 @@ var matriculaEstudiantesCarrera = await procesonotasacademicos.ListadoEstudiante
                                                     if (asignaturaactual.strCodMateria == asignatura.strCodMateria) {
                                                         if (asignaturaactual.bytNumMat == asignatura.bytNumMat) {
                                                             blcontrol = true;
-                                                            console.log('Caso Especial')
-                                                            console.log('asignatura',asignatura)
-                                                            console.log('asignaturaactual',asignaturaactual)
                                                             materiaactual = materiaactual + 'Codigo:' + asignaturaactual.strCodMateria  + ' - Nombre:' + asignaturaactual.strNombre +' - Periodo:' + asignaturaactual.strCodPeriodoMatricula + ' -# Matricula:  ' + asignaturaactual.bytNumMat +'// ';
                                                             materiaanterior = materiaanterior+ 'Codigo:' + asignatura.strCodMateria + ' - Nombre:' + asignatura.strNombre + ' - Periodo:' + asignatura.strCodPeriodo + ' - # Matricula: ' + asignatura.bytNumMat +'// ' ;
-                                                            console.log('Matricula Anterior: ' + materiaanterior);
-                                                            console.log('Matricula Actual: ' + materiaactual);
-                                                            console.log('---------************')
-                                                         
-                                                            console.log('Asignatura Matriculada en el periodo anterior: ' + matriculas.strCodEstud + ' - ' + asignatura.strCodMateria + ' - ' + asignatura.strCodPeriodo + ' - ' + asignatura.bytNumMat);
-                                                            console.log('Asignatura Matriculada en el periodo actual: ' + matriculas.strCodEstud + ' - ' + asignaturaactual.strCodMateria + ' - ' + asignaturaactual.strCodPeriodo + ' - ' + asignaturaactual.bytNumMat);
-                                                            console.log('---------************')
+                                                     
                                                            var datos = {
                                                                 actual:materiaactual,
                                                                 anteriror: materiaanterior

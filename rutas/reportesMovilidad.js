@@ -60,6 +60,7 @@ module.exports.PdfCurriculumEstuidantilConsultor = async function (cedula, perso
     console.log(error);
   }
 }
+
 module.exports.PdfSolcitudesAprobadasCarreraPeriodo = async function (listado, periodo,strCarrera,strNombre) {
   try {
     var resultado = await ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strCarrera,strNombre);

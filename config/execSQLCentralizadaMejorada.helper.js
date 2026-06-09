@@ -13,7 +13,7 @@ const execCentralizadaMejorada = async (SQL, OK = "", msgVacio = "", msgError = 
         const result = await client.query(SQL);
       return buildResponse(result, OK, msgVacio, msgError);
     } catch (err) {
-      console.log("Error conexion Base Centralizada:" + err);
+      console.error("Error conexion Base Centralizada:" + err);
       return handleDatabaseError(err, msgError);
     } finally {
       if (client) {

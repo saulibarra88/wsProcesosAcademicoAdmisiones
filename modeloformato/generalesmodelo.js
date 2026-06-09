@@ -124,3 +124,128 @@ module.exports.DictadoAsignaturasPeriodo = async function (carrera, periodo) {
     return sendResponseModelo(false, [], error.message)
   }
 }
+
+module.exports.PromediosGeneralesParcialesPorAsignatura = async function (carrera, periodo, nivel, paralelo, CodMateria) {
+  var sentencia = "";
+  sentencia = "SELECT CAST(ROUND(AVG(ISNULL(np.dcParcial1, 0)), 2) AS DECIMAL(10,2)) AS PromedioGeneral_Parcial1, CAST(ROUND(AVG(ISNULL(np.dcParcial2, 0)), 2) AS DECIMAL(10,2)) AS PromedioGeneral_Parcial2, CAST(ROUND(AVG((ISNULL(np.dcParcial1, 0) + ISNULL(np.dcParcial2, 0)) / 2.0), 2) AS DECIMAL(10,2)) AS PromedioGeneral_Total FROM [" + carrera + "].[dbo].[Dictado_MateriasDocentes] AS md INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS ma ON ma.strCodMateria = md.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m ON m.sintCodigo = ma.sintCodMatricula LEFT JOIN [" + carrera + "].[dbo].[Notas_Parciales] AS np ON np.strCodPeriodo = ma.strCodPeriodo AND np.strCodMateria = ma.strCodMateria AND np.sintCodMatricula = m.sintCodigo WHERE md.strCodNivel = '" + nivel + "' AND md.strCodMateria = '" + CodMateria + "' AND md.strCodParalelo = '" + paralelo + "' AND md.strCodPeriodo = '" + periodo + "' AND ma.strCodPeriodo = '" + periodo + "' AND ma.strCodNivel = '" + nivel + "' AND ma.strCodParalelo = '" + paralelo + "' AND ma.strCodMateria = '" + CodMateria + "' AND m.strCodPeriodo = '" + periodo + "' AND m.strCodEstado = 'DEF' AND (ma.strObservaciones NOT LIKE '%VALIDA%') AND (ma.strObservaciones NOT LIKE '%RETIRA%');"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error DictadoAsignaturasPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ListadoCarrerasMovilidadesPeriodo = async function (carrera, periodo) {
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] AS MC  WHERE MC.msca_periodo='" + periodo + "' AND  [msm_estado]=1 ORDER BY MC.msca_tipo DESC"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ListadoCarrerasMovilidadesPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ListadoCarrerasHomologacionPeriodo = async function (carrera, periodo) {
+  var sentencia = "";
+  sentencia = "SELECT HC.*,C.strNombre AS nombrecarrera, C.strCodigo AS codigocarrera,CN.strNombre AS nombrenivelacion,  CN.strCodigo AS codigonivelacion FROM [" + carrera + "].[dbo].[homologacioncarreras] AS HC INNER JOIN [" + carrera + "].[dbo].[Carreras] AS C ON C.strBaseDatos=HC.hmbdbasecar INNER JOIN [" + carrera + "].[dbo].[Carreras] AS CN ON CN.strBaseDatos=HC.hmbdbaseniv WHERE [periodo]='" + periodo + "' ORDER BY C.strNombre"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ListadoCarrerasHomologacionPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ObtenerModilidadCarreraPeriodoBase = async function (carrera, periodo,dbcarreaactual,dbcarreramovilidad, tipo) {
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] WHERE [msca_dbcarreraactual] ='" + dbcarreaactual + "' AND [msca_periodo]='" + periodo + "' AND [msca_dbcarreramovilidad]='" + dbcarreramovilidad + "' AND [msca_tipo]='" + tipo + "' "
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ObtenerModilidadCarreraPeriodoBase', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+module.exports.IngresarMoviliadCarrera = async function (carrera, objmovilidad) {
+  var sentencia = "";
+  sentencia = "INSERT INTO [" + carrera + "].[dbo].[tb_movilidad_carreras]([msca_codigocarreraactual],[msca_dbcarreraactual], [msca_admisionesactual],[msca_nombrecarreraactual],[msca_codigocarreramovilidad],[msca_dbcarreramovilidad], [msca_admisionesmovilidad],[msca_nombrecarreramovilidad],[msca_periodo],[msca_tipo],[msca_codfacultad],[msca_campo],[msca_campo_descripcion]) VALUES('" + objmovilidad.msca_codigocarreraactual + "','" + objmovilidad.msca_dbcarreraactual + "','" + objmovilidad.msca_admisionesactual + "','" + objmovilidad.msca_nombrecarreraactual + "','" + objmovilidad.msca_codigocarreramovilidad + "','" + objmovilidad.msca_dbcarreramovilidad + "','" + objmovilidad.msca_admisionesmovilidad + "','" + objmovilidad.msca_nombrecarreramovilidad + "','" + objmovilidad.msca_periodo + "','" + objmovilidad.msca_tipo + "','" + objmovilidad.msca_codfacultad + "','" + objmovilidad.msca_campo + "','" + objmovilidad.msca_campo_descripcion + "')"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error IngresarMoviliadCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+module.exports.ClonarCarrerasMoviliadPeriodo = async function (carrera, periodonuevo,periodoanterior) {
+  var sentencia = "";
+  sentencia = "IF NOT EXISTS (SELECT 1 FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] WHERE [msca_periodo] = '" + periodonuevo + "') BEGIN INSERT INTO [" + carrera + "].[dbo].[tb_movilidad_carreras]( [msca_codigocarreraactual], [msca_dbcarreraactual], [msca_admisionesactual], [msca_nombrecarreraactual], [msca_codigocarreramovilidad], [msca_dbcarreramovilidad], [msca_admisionesmovilidad], [msca_nombrecarreramovilidad], [msca_periodo], [msca_tipo], [msca_codfacultad], [msca_campo], [msca_campo_descripcion] ) SELECT t.[msca_codigocarreraactual], t.[msca_dbcarreraactual], (SELECT TOP 1 hmbdbaseinsc FROM [" + carrera + "].[dbo].[homologacioncarreras] h WHERE h.[hmbdbasecar] = t.[msca_dbcarreraactual] AND h.[periodo] = '" + periodonuevo + "') AS [msca_admisionesactual], t.[msca_nombrecarreraactual], t.[msca_codigocarreramovilidad], t.[msca_dbcarreramovilidad], (SELECT TOP 1 hmbdbaseinsc FROM [" + carrera + "].[dbo].[homologacioncarreras] h WHERE h.[hmbdbasecar] = t.[msca_dbcarreramovilidad] AND h.[periodo] = '" + periodonuevo + "') AS [msca_admisionesmovilidad], t.[msca_nombrecarreramovilidad], '" + periodonuevo + "', t.[msca_tipo], t.[msca_codfacultad], t.[msca_campo], t.[msca_campo_descripcion] FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] t WHERE t.[msca_periodo] = '" + periodoanterior + "' PRINT 'Registros duplicados exitosamente del periodo P0045 al P0046' END ELSE BEGIN PRINT 'Ya existen registros con el periodo P0046. No se realizó la inserción para evitar duplicados.' END"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error IngresarMoviliadCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+module.exports.ClonarCarrerasHomologacionGeneralPeriodo = async function (carrera, periodonuevo,periodoanterior) {
+  var sentencia = "";
+  sentencia = " IF NOT EXISTS (SELECT 1 FROM [OAS_Master].[dbo].[homologacioncarreras] WHERE [periodo] = '" + periodonuevo + "') BEGIN INSERT INTO [OAS_Master].[dbo].[homologacioncarreras]( [hmbdbasecar],[hmbdbaseniv],[hmbdbaseinsc],[homfechainicio], [homfechacreacion],[homfechafin],[periodo],[periodonivelacion],[homestado] ) SELECT t.[hmbdbasecar], t.[hmbdbaseniv], ISNULL( (SELECT TOP 1 AD.cca_cus_id FROM [SAI_Admision].[admision].[cuposcarrera] ad WHERE t.[hmbdbasecar] COLLATE Modern_Spanish_CI_AS = ad.cca_db_carrera AND ad.percodigo=t.[periodonivelacion]), 0  -- o algún valor por defecto válido ) AS hmbdbaseinsc, (SELECT TOP 1 [dtFechaInic] FROM [OAS_Master].[dbo].[Periodos] WHERE [strCodigo]='" + periodonuevo + "'), GETDATE(), (SELECT TOP 1 [dtFechaFin] FROM [OAS_Master].[dbo].[Periodos] WHERE [strCodigo]='" + periodonuevo + "'), '" + periodonuevo + "', t.[periodonivelacion] + 1, 1 FROM [OAS_Master].[dbo].[homologacioncarreras] t WHERE t.[periodo] = '" + periodoanterior + "' PRINT 'Registros duplicados exitosamente del periodo P0045 al P0046' END ELSE BEGIN PRINT 'Ya existen registros con el periodo P0046. No se realizó la inserción para evitar duplicados.' END "
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ClonarCarrerasHomologacionGeneralPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ActualizarDatosHomologacionesCarrera = async function (carrera, objDatos) {
+  var sentencia = "";
+  sentencia = "UPDATE [" + carrera + "].[dbo].[homologacioncarreras] SET [hmbdbaseinsc]='" + objDatos.hmbdbaseinsc + "',[homestado]='" + objDatos.homestado + "' WHERE [homid]='" + objDatos.homid + "' AND [periodo]='" + objDatos.periodo + "'"
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ActualizarDatosHomologacionesCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}

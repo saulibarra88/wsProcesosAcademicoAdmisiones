@@ -122,8 +122,6 @@ module.exports.ProcesoTotalDefinitivaCarrera = async function (periodo) {
                 contadortotalNivel=contadortotalNivel+Informacion.datos.data[0].TotalDEF_Nivel1
 
                 }
-
-                
             }
         }
         var resultado={
@@ -136,6 +134,96 @@ module.exports.ProcesoTotalDefinitivaCarrera = async function (periodo) {
       
     } catch (error) {
         logger.error('Error ProcesoTotalDefinitivaCarrera', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoListadoCarrerasMovilidadesPeriodo = async function (periodo) {
+    try {
+
+        var Informacion = await sqlmodelogenerales.ListadoCarrerasMovilidadesPeriodo('OAS_Master', periodo);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoListadoCarrerasMovilidadesPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoListadoCarrerasHomologacionesPeriodo = async function (periodo) {
+    try {
+
+        var Informacion = await sqlmodelogenerales.ListadoCarrerasHomologacionPeriodo('OAS_Master', periodo);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoListadoCarrerasHomologacionesPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+module.exports.ProcesoClonacionCarreraMovilidadPeriodo = async function (periodonuevo,periodoanterior) {
+    try {
+
+        var Informacion = await sqlmodelogenerales.ClonarCarrerasMoviliadPeriodo('OAS_Master', periodonuevo,periodoanterior);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoListadoCarrerasHomologacionesPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+module.exports.ProcesoClonacionCarreraHomologacionGeneralPeriodo = async function (periodonuevo,periodoanterior) {
+    try {
+
+        var Informacion = await sqlmodelogenerales.ClonarCarrerasHomologacionGeneralPeriodo('OAS_Master', periodonuevo,periodoanterior);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ClonarCarrerasHomologacionGeneralPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+module.exports.ProcesoIngresoCarrerasMovilidad = async function (listado) {
+    console.log(listado)
+    try {
+         for (var carreras of listado) {
+        var VerificacionDatos = await sqlmodelogenerales.ObtenerModilidadCarreraPeriodoBase('OAS_Master', carreras.msca_periodo,carreras.msca_dbcarreraactual,carreras.msca_dbcarreramovilidad,carreras.msca_tipo);
+         console.log(VerificacionDatos)
+        if(VerificacionDatos.datos.count==0){
+                var IngresoDatos = await sqlmodelogenerales.IngresarMoviliadCarrera('OAS_Master', carreras);
+            }
+         }
+      
+          return sendResponseProcesos(true, [], 'OK')
+    } catch (error) {
+        logger.error('Error ProcesoIngresoCarrerasMovilidad', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+    }
+
+    module.exports.ProcesoActualizacionDatosHomologacionesCarreras = async function (objDatos) {
+    try {
+
+        var Informacion = await sqlmodelogenerales.ActualizarDatosHomologacionesCarrera('OAS_Master', objDatos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoActualizacionDatosHomologacionesCarreras', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
     }
 }
