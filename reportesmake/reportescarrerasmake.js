@@ -66,9 +66,26 @@ try {
     console.log(error);
   }
 }
+
+module.exports.pdfmakegenerarPromediosGeneralesAsignaturas=async function(listado, carrera, periodo, cedulaUsuario) {
+try {
+    var resultado = await generarReportePromediosGeneralesAsignaturas(listado, carrera, periodo, cedulaUsuario);
+    return resultado
+  } catch (error) {
+    console.log(error);
+  }
+}
 module.exports.pdfmakegenerarReporteHomologacionCarrera=async function(listado, carrera, cedulaUsuario) {
 try {
     var resultado = await generarReporteHomologacionCarrera(listado, carrera, cedulaUsuario);
+    return resultado
+  } catch (error) {
+    console.log(error);
+  }
+}
+module.exports.pdfmakegenerarReporteNoMatriculados=async function(listado, listadoperiodo,carrera,cedula) {
+try {
+    var resultado = await generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedula);
     return resultado
   } catch (error) {
     console.log(error);
@@ -749,6 +766,7 @@ async function ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera, cedula, 
     return 'ERROR';
   }
 }
+
 async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carrera, cedula, periodo) {
   try {
     // Obtener datos necesarios
@@ -1202,6 +1220,163 @@ async function generarReporteHomologacionCarrera(listado, carrera, cedulaUsuario
   }
 }
 
+
+async function generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedula) {
+  try {
+    // Obtener datos necesarios
+    const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedula}`, { httpsAgent: agent });
+    
+    const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
+    const Cedula = ObtenerPersona.data.listado[0].pid_valor;
+
+    // Preparar columnas dinámicas para los periodos
+    const periodoColumns = listadoperiodo.map(periodo => ({
+      text: periodo,
+      style: 'tableHeader'
+    }));
+
+    // Preparar datos para la tabla
+    const tableBody = listado.map((estudiante, index) => {
+      const contadot = index + 1;
+      
+      // Crear celdas para cada periodo
+      const periodoCells = estudiante.Periodos.map(periodo => ({
+        stack: [
+          { text: `MATRICULA: ${periodo.matricula ? 'SI' : 'NO'}`, style: 'periodoText' },
+          { text: `PERIODO: ${periodo.periodo}`, style: 'periodoText' },
+          { text: `PAO: ${periodo.Nivel}`, style: 'periodoText' }
+        ],
+        style: 'tableCellCenter'
+      }));
+      
+      return [
+        { text: contadot.toString(), style: 'tableCellCenter' },
+        { text: estudiante.strCodigo || '', style: 'tableCellCenter' },
+        { text: `${estudiante.strApellidos || ''} ${estudiante.strNombres || ''}`, style: 'tableCellLeft' },
+        { text: estudiante.strCedula || '', style: 'tableCellCenter' },
+        ...periodoCells
+      ];
+    });
+
+    // Definir columnas de la tabla
+    const tableColumns = [
+      { text: '#', style: 'tableHeader' },
+      { text: 'CÓDIGO', style: 'tableHeader' },
+      { text: 'ESTUDIANTES', style: 'tableHeader' },
+      { text: 'CÉDULA', style: 'tableHeader' },
+      ...periodoColumns
+    ];
+
+    // Calcular widths de columnas
+    const columnWidths = ['auto', 'auto', '*', 'auto', ...periodoColumns.map(() => '*')];
+
+    // Contenido principal del PDF
+    const content = [
+      {
+        margin: [0, 0, 0, 15],
+        alignment: 'center',
+        stack: [
+          { text: 'INFORMACIÓN ESTUDIANTES MATRICULADOS', style: 'titleCenter' }
+        ]
+      },
+      {
+        layout: {
+          hLineWidth: () => 1,
+          vLineWidth: () => 1,
+          hLineColor: () => '#000000',
+          vLineColor: () => '#000000',
+          paddingLeft: () => 4,
+          paddingRight: () => 4,
+          paddingTop: () => 4,
+          paddingBottom: () => 4
+        },
+        table: {
+          headerRows: 1,
+          widths: columnWidths,
+          body: [
+            tableColumns.map(col => ({ text: col.text, style: col.style })),
+            ...tableBody
+          ]
+        }
+      },
+      {
+        margin: [0, 40, 0, 0],
+        alignment: 'center',
+        stack: [
+          { text: '----------------------------------------', style: 'signatureLine' },
+          { text: 'GENERADO POR:', style: 'signatureLabel' },
+          { text: strNombres, style: 'signatureName' }
+        ]
+      }
+    ];
+
+    // Configurar opciones del layout base con orientación horizontal
+    const layoutOptions = {
+      title: 'REPORTE DE ESTUDIANTES COMPARATIVAS DE MATRICULADOS',
+      subtitle: `CARRERA: ${datosCarrera.data[0].strNombreCarrera}`,
+      pageMargins: [30, 100, 30, 60],
+      pageOrientation: 'landscape'
+    };
+
+    // Crear layout base
+    const baseLayout = createBaseLayout(layoutOptions);
+
+    // Construir el documento PDF
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        titleCenter: {
+          fontSize: 11,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 0, 0, 5]
+        },
+        tableHeader: {
+          bold: true,
+          fontSize: 8,
+          alignment: 'center',
+          fillColor: '#eeeeee'
+        },
+        tableCellCenter: {
+          fontSize: 8,
+          alignment: 'center'
+        },
+        tableCellLeft: {
+          fontSize: 8,
+          alignment: 'left'
+        },
+        periodoText: {
+          fontSize: 7,
+          alignment: 'left',
+          margin: [0, 1, 0, 1]
+        },
+        signatureLine: {
+          fontSize: 10,
+          margin: [0, 0, 0, 5]
+        },
+        signatureLabel: {
+          fontSize: 9,
+          margin: [0, 5, 0, 2]
+        },
+        signatureName: {
+          fontSize: 9,
+          bold: true,
+          margin: [0, 2, 0, 0]
+        }
+      }
+    };
+
+    const base64PDF = await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+    return base64PDF;
+
+  } catch (error) {
+    console.error('Error generando el reporte de estudiantes no matriculados:', error);
+    return 'ERROR';
+  }
+}
 // ==================== FUNCIONES AUXILIARES ====================
 
 /**
@@ -1218,6 +1393,7 @@ function agruparPorNivel(listado) {
     grupos.get(nivel).push(materia);
   });
 
+  
   // Convertir a array ordenado por nivel
   return Array.from(grupos.entries())
     .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
@@ -1227,37 +1403,7 @@ function agruparPorNivel(listado) {
     }));
 }
 
-/**
- * Genera el contenido del PDF con tablas por cada nivel
- */
-async function generarContenidoPDF({
-  materiasPorNivel,
-  periodoInfo,
-  datosCarrera,
-  getValor,
-  formatearFecha
-}) {
-  const content = [];
 
-  // Encabezado del profesor (común para todo el reporte)
-  content.push(crearEncabezadoProfesor(periodoInfo));
-
-  // Generar una tabla por cada nivel
-  for (const grupo of materiasPorNivel) {
-    // Título del nivel
-    content.push({
-      text: `PAO: ${grupo.nivel}`,
-      style: 'nivelTitle',
-      margin: [0, 20, 0, 10]
-    });
-
-    // Generar tabla para este nivel
-    const tablaNivel = await generarTablaPorNivel(grupo.materias, getValor, formatearFecha);
-    content.push(tablaNivel);
-  }
-
-  return content;
-}
 
 /**
  * Genera la tabla para un nivel específico
@@ -1300,6 +1446,35 @@ async function generarTablaPorNivel(materias, getValor, formatearFecha) {
   };
 }
 
+
+async function generarContenidoPDF({
+  materiasPorNivel,
+  periodoInfo,
+  datosCarrera,
+  getValor,
+  formatearFecha
+}) {
+  const content = [];
+
+  // Encabezado del profesor (común para todo el reporte)
+  content.push(crearEncabezadoProfesor(periodoInfo));
+
+  // Generar una tabla por cada nivel
+  for (const grupo of materiasPorNivel) {
+    // Título del nivel
+    content.push({
+      text: `PAO: ${grupo.nivel}`,
+      style: 'nivelTitle',
+      margin: [0, 20, 0, 10]
+    });
+
+    // Generar tabla para este nivel
+    const tablaNivel = await generarTablaPorNivel(grupo.materias, getValor, formatearFecha);
+    content.push(tablaNivel);
+  }
+
+  return content;
+}
 /**
  * Crea el encabezado con información del profesor y periodo
  */
@@ -1310,8 +1485,8 @@ function crearEncabezadoProfesor( periodoInfo) {
      
       { 
         text: [
-          { text: 'PERIODO: ', bold: true },
-          { text: `${periodoInfo.descripcion} (${periodoInfo.codigo})` }
+          { text: 'PERIODO: ', bold: true ,fontSize: 12, alignment: 'center'},
+          { text: `${periodoInfo.descripcion} (${periodoInfo.codigo})` ,fontSize: 12, alignment: 'center'}
         ], 
         style: 'subtituloLeft' 
       }
@@ -1397,4 +1572,354 @@ function obtenerEstilosPDF() {
 }
 
 
+// ==========================================
+// 1. FUNCIONES AUXILIARES REUTILIZABLES
+// ==========================================
+
+const Utils = {
+  // Manejo de valores nulos
+  getValor: (valor, defaultValue = 'SIN REGISTRO') => {
+    return valor !== null && valor !== undefined && valor !== '' ? valor : defaultValue;
+  },
+
+  // Formateo de fecha UTC
+  formatearFechaUTC: (fecha) => {
+    if (!fecha) return 'SIN REGISTRO';
+    const date = new Date(fecha);
+    if (isNaN(date.getTime())) return 'SIN REGISTRO';
+    
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  },
+
+  // Calcular promedio de un array de números
+  calcularPromedio: (valores) => {
+    const numeros = valores.filter(v => typeof v === 'number' && !isNaN(v));
+    if (numeros.length === 0) return 0;
+    const suma = numeros.reduce((acc, val) => acc + val, 0);
+    return +(suma / numeros.length).toFixed(2);
+  },
+
+  // Formatear nombre completo
+  formatearNombreCompleto: (persona) => {
+    if (!persona?.listado?.[0]) return 'SIN REGISTRO';
+    const { per_nombres, per_primerApellido, per_segundoApellido } = persona.listado[0];
+    return `${per_nombres || ''} ${per_primerApellido || ''} ${per_segundoApellido || ''}`.trim();
+  },
+
+  // Extraer valores numéricos de un array de materias
+  extraerValoresNumericos: (materias) => {
+    const parciales1 = [];
+    const parciales2 = [];
+    const generales = [];
+    
+    materias.forEach(materia => {
+      if (typeof materia.promedioParcial1 === 'number') parciales1.push(materia.promedioParcial1);
+      if (typeof materia.promedioParcial2 === 'number') parciales2.push(materia.promedioParcial2);
+      if (typeof materia.promedioGeneral === 'number') generales.push(materia.promedioGeneral);
+    });
+    
+    return { parciales1, parciales2, generales };
+  }
+};
+
+// ==========================================
+// 2. FUNCIÓN PRINCIPAL REFACTORIZADA
+// ==========================================
+
+async function generarReportePromediosGeneralesAsignaturas(listado, carrera, periodo, cedulaUsuario) {
+  try {
+    // 1. Obtener datos en paralelo
+    const [datosCarrera, datosPeriodo, persona] = await Promise.all([
+      procesoCupo.ObtenerDatosBase(carrera),
+      procesoCupo.PeriodoDatos(carrera, periodo),
+      axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent })
+    ]);
+
+    // 2. Extraer información básica
+    const strNombres = Utils.formatearNombreCompleto(persona.data);
+    const periodoInfo = {
+      descripcion: datosPeriodo.data[0]?.strDescripcion || 'SIN DESCRIPCIÓN',
+      codigo: periodo
+    };
+
+    // 3. Agrupar materias por nivel
+    const materiasPorNivel = agruparPorNivelPromedio(listado);
+
+    // 4. Calcular promedios totales globales
+    const valoresGlobales = Utils.extraerValoresNumericos(listado);
+    const totalesGlobales = {
+      promedioParcial1: Utils.calcularPromedio(valoresGlobales.parciales1),
+      promedioParcial2: Utils.calcularPromedio(valoresGlobales.parciales2),
+      promedioGeneral: Utils.calcularPromedio(valoresGlobales.generales)
+    };
+
+    // 5. Generar contenido del PDF
+    const content = await generarContenidoPDFPromedios({
+      materiasPorNivel,
+      periodoInfo,
+      datosCarrera,
+      totalesGlobales
+    });
+
+    // 6. Configurar y generar PDF
+    const layoutOptions = {
+      title: 'PROMEDIOS GENERALES POR ASIGNATURA AGRUPADOS POR NIVEL',
+      subtitle: `CARRERA: ${datosCarrera.data[0]?.strNombreCarrera || 'SIN CARRERA'}`,
+      pageMargins: [40, 120, 40, 70],
+        pageOrientation: 'landscape'  // ← Cambiado a horizontal
+
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+    content.push(crearFirmaPDF(strNombres));
+
+    const docDefinition = {
+      ...baseLayout,
+      content,
+      styles: { ...baseLayout.styles, ...obtenerEstilosPDF() }
+    };
+
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+
+  } catch (error) {
+    console.error('Error generando el reporte:', error);
+    throw error;
+  }
+}
+
+// ==========================================
+// 3. AGRUPACIÓN POR NIVEL
+// ==========================================
+
+function agruparPorNivelPromedio(listado) {
+  const grupos = new Map();
+
+  listado.forEach(materia => {
+    const nivel = materia.strCodNivel;
+    if (!grupos.has(nivel)) grupos.set(nivel, []);
+    grupos.get(nivel).push(materia);
+  });
+
+  return Array.from(grupos.entries())
+    .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+    .map(([nivel, materias]) => ({ nivel, materias }));
+}
+
+// ==========================================
+// 4. GENERACIÓN DE CONTENIDO DEL PDF
+// ==========================================
+
+async function generarContenidoPDFPromedios({ materiasPorNivel, periodoInfo, datosCarrera, totalesGlobales }) {
+  const content = [];
+
+  // Encabezado del profesor
+  content.push(crearEncabezadoProfesor(periodoInfo));
+
+  // Generar una tabla por cada nivel con sus promedios
+  for (const grupo of materiasPorNivel) {
+    // Título del nivel
+    content.push({
+      text: `PAO: ${grupo.nivel}`,
+      style: 'nivelTitle',
+      margin: [0, 10, 0, 5]
+    });
+
+    // Generar tabla para este nivel
+    const tablaNivel = await generarTablaPorNivelPromedioGenerales(grupo.materias);
+    content.push(tablaNivel);
+
+    // Calcular y agregar promedios de este PAO específico
+    const promediosPAO = calcularPromediosPorPAO(grupo.materias, grupo.nivel);
+    content.push(crearTablaPromediosPAO(promediosPAO));
+  }
+
+  // ==========================================
+  // 5. TABLA DE TOTALES GENERALES
+  // ==========================================
+  
+  content.push({
+    text: 'TOTALES GENERALES DEL REPORTE',
+    style: 'resumenTitle',
+    margin: [0, 30, 0, 15],
+    alignment: 'center',
+    bold: true
+  });
+
+  content.push(crearTablaTotalesGenerales(totalesGlobales));
+
+  return content;
+}
+
+// ==========================================
+// 6. CÁLCULO DE PROMEDIOS POR PAO
+// ==========================================
+
+function calcularPromediosPorPAO(materias, nivel) {
+  const valores = Utils.extraerValoresNumericos(materias);
+  
+  return {
+    nivel: nivel,
+    promedioParcial1: Utils.calcularPromedio(valores.parciales1),
+    promedioParcial2: Utils.calcularPromedio(valores.parciales2),
+    promedioGeneral: Utils.calcularPromedio(valores.generales),
+    totalMaterias: materias.length,
+    materiasConDatos: {
+      parcial1: valores.parciales1.length,
+      parcial2: valores.parciales2.length,
+      general: valores.generales.length
+    }
+  };
+}
+
+// ==========================================
+// 7. TABLA DE PROMEDIOS POR PAO (para mostrar debajo de cada agrupación)
+// ==========================================
+
+function crearTablaPromediosPAO(promediosPAO) {
+  // Solo mostrar la tabla si hay al menos un promedio calculado
+  if (promediosPAO.promedioParcial1 === 0 && 
+      promediosPAO.promedioParcial2 === 0 && 
+      promediosPAO.promedioGeneral === 0) {
+    return {
+      text: 'No hay datos de promedio disponibles para este PAO',
+      style: 'sinDatos',
+      margin: [0, 5, 0, 5],
+      italics: true
+    };
+  }
+
+  const tableColumns = [
+    { text: 'RESUMEN PAO', style: 'tableHeaderResumen', colSpan: 4, alignment: 'center' },
+    {}, {}, {}
+  ];
+
+  const tableBody = [
+    tableColumns.map(col => col),
+    [
+      { text: 'PROMEDIO PARCIAL 1', style: 'tableCellResumen' },
+      { text: 'PROMEDIO PARCIAL 2', style: 'tableCellResumen' },
+      { text: 'PROMEDIO GENERAL', style: 'tableCellResumen' },
+      { text: 'TOTAL ASIGNATURAS', style: 'tableCellResumen' }
+    ],
+    [
+      { text: promediosPAO.promedioParcial1.toString(), style: 'tableCellResumenValor', bold: true },
+      { text: promediosPAO.promedioParcial2.toString(), style: 'tableCellResumenValor', bold: true },
+      { text: promediosPAO.promedioGeneral.toString(), style: 'tableCellResumenValor', bold: true },
+      { text: promediosPAO.totalMaterias.toString(), style: 'tableCellResumenValor', bold: true }
+    ]
+  ];
+
+  // Agregar fila informativa de materias con datos
+  if (promediosPAO.materiasConDatos.parcial1 < promediosPAO.totalMaterias ||
+      promediosPAO.materiasConDatos.parcial2 < promediosPAO.totalMaterias ||
+      promediosPAO.materiasConDatos.general < promediosPAO.totalMaterias) {
+    tableBody.push([
+      { 
+        text: `* Datos disponibles: Parcial1 (${promediosPAO.materiasConDatos.parcial1}/${promediosPAO.totalMaterias}), ` +
+              `Parcial2 (${promediosPAO.materiasConDatos.parcial2}/${promediosPAO.totalMaterias}), ` +
+              `General (${promediosPAO.materiasConDatos.general}/${promediosPAO.totalMaterias})`,
+        style: 'tableCellNota',
+        colSpan: 4
+      },
+      {}, {}, {}
+    ]);
+  }
+
+  return {
+    layout: 'lightHorizontalLines',
+    table: {
+      headerRows: 2,
+      widths: ['*', '*', '*', 'auto'],
+      body: tableBody
+    },
+    margin: [0, 5, 0, 5]
+  };
+}
+
+// ==========================================
+// 8. TABLA DE TOTALES GENERALES
+// ==========================================
+
+function crearTablaTotalesGenerales(totalesGlobales) {
+  const tableColumns = [
+    { text: 'TOTALES GLOBALES CARRERAS', style: 'tableHeaderResumen', colSpan: 3, alignment: 'center' },
+    {}, {}
+  ];
+
+  const tableBody = [
+    tableColumns.map(col => col),
+    [
+      { text: 'PROMEDIO PARCIAL 1', style: 'tableCellResumen' },
+      { text: 'PROMEDIO PARCIAL 2', style: 'tableCellResumen' },
+      { text: 'PROMEDIO GENERAL', style: 'tableCellResumen' }
+    ],
+    [
+      { text: totalesGlobales.promedioParcial1.toString(), style: 'tableCellResumenValor', bold: true, fontSize: 12 },
+      { text: totalesGlobales.promedioParcial2.toString(), style: 'tableCellResumenValor', bold: true, fontSize: 12 },
+      { text: totalesGlobales.promedioGeneral.toString(), style: 'tableCellResumenValor', bold: true, fontSize: 12 }
+    ]
+  ];
+
+  return {
+    layout: 'lightHorizontalLines',
+    table: {
+      headerRows: 2,
+      widths: ['*', '*', '*'],
+      body: tableBody
+    },
+    margin: [0, 5, 0, 20]
+  };
+}
+
+// ==========================================
+// 9. GENERACIÓN DE TABLA POR NIVEL (DETALLE DE MATERIAS)
+// ==========================================
+
+async function generarTablaPorNivelPromedioGenerales(materias) {
+  const tableColumns = [
+    { text: '#', style: 'tableHeader' },
+    { text: 'ASIGNATURAS', style: 'tableHeader' },
+    { text: 'PAO', style: 'tableHeader' },
+    { text: 'PARALELO', style: 'tableHeader' },
+    { text: 'DOCENTES', style: 'tableHeader' },
+    { text: 'PARCIAL_1', style: 'tableHeader' },
+    { text: 'PARCIAL_2', style: 'tableHeader' },
+    { text: 'PROMEDIO', style: 'tableHeader' }
+  ];
+
+  const tableWidths = ['auto', '*', 'auto', 'auto', '*', 'auto', 'auto', 'auto'];
+
+  const tableBody = materias.map((materia, index) => {
+    const contador = index + 1;
+    const nombreDocente = `${materia.strApellidos || ''} ${materia.strNombres || ''}`.trim();
+    
+    return [
+      { text: contador.toString(), style: 'tableCellCenter' },
+      { text: Utils.getValor(materia.strNombre), style: 'tableCellLeft' },
+      { text: Utils.getValor(materia.strCodNivel), style: 'tableCellCenter' },
+      { text: Utils.getValor(materia.strCodParalelo), style: 'tableCellCenter' },
+      { text: Utils.getValor(nombreDocente, 'SIN ASIGNAR'), style: 'tableCellLeft' },
+      { text: Utils.getValor(materia.promedioParcial1), style: 'tableCellCenter' },
+      { text: Utils.getValor(materia.promedioParcial2), style: 'tableCellCenter' },
+      { text: Utils.getValor(materia.promedioGeneral), style: 'tableCellCenter' }
+    ];
+  });
+
+  return {
+    layout: obtenerLayoutTabla(),
+    table: {
+      headerRows: 1,
+      widths: tableWidths,
+      body: [tableColumns.map(col => col), ...tableBody]
+    },
+    margin: [0, 0, 0, 10]
+  };
+}
 

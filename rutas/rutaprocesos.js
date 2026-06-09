@@ -5,6 +5,7 @@ const Request = require("request");
 const procesoMigracion = require('../rutas/ProcesosMigracionNivelacion');
 const procesoCupo = require('../modelo/procesocupos');
 const reportes = require('../rutas/reportesadmisiones');
+const procesoscentralidadas = require('../procesos/procesoscentralizadas');
 const procesosadmisiones = require('../rutas/ProcesosAdmisiones');
 const procesosCarrerasFunciones = require('./procesoscarrerasespoch');
 const procesosReportesFunciones = require('./procesosreportescarreras');
@@ -655,8 +656,29 @@ router.get('/PDFEvaluacionesRecuperacionCarrera/:carrera/:periodo/:cedula',async
     const carrera = req.params.carrera;
     const cedula = req.params.cedula;
     try {
-        console.log(carrera,periodo,cedula)
         var Informacion = await procesosgraficoscarrera.pdfEvaluacionesRecuperacionCarrera(carrera,periodo,cedula);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
+
+router.get('/PDFEPromediosGeneralesAsignaturas/:carrera/:periodo/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion = await procesosgraficoscarrera.pdfPromediosGeneralesAsignaturasCarreras(carrera,periodo,cedula);
         res.json({
             success: true,
             Informacion
@@ -676,6 +698,26 @@ router.post('/PdfReporteHomologacionesCarrera', async (req, res) => {
     try {
    const { listado, carrera, cedulaUsuario } = req.body;
         const Informacion = await pdfreportescarrerasmake.pdfmakegenerarReporteHomologacionCarrera(listado, carrera, cedulaUsuario);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en la proceso' + err
+            }
+        );
+
+    }
+});
+
+router.post('/ActualizacionCentralizadaDatos', async (req, res) => {
+    try {
+   const { objDatos } = req.body;
+        const Informacion = await procesoscentralidadas.ProcesoActualizacionDatosPersonaCentral(objDatos);
         res.json({
             success: true,
             Informacion

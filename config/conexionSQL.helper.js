@@ -36,7 +36,7 @@ class DatabaseSingleton {
       await this.pool.connect();
 
     } catch (error) {
-      console.log(
+      console.error(
         `Error conectando a la base de datos SQL SERVER ${sqlConfig.database}, ${error}`
       );
       await this.pool.close();

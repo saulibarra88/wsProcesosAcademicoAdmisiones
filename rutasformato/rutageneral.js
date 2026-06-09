@@ -82,4 +82,77 @@ router.get('/ListadoAsignaturasDictadoPeriodo/:carrera/:periodo',async (req, res
     }
 
 });
+
+router.get('/ListadoCarrerasMovilidadesPeriodo/:periodo',async (req, res) => {
+    const periodo = req.params.periodo;
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoListadoCarrerasMovilidadesPeriodo(periodo);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoCarrerasMovilidadesPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.get('/ListadoCarrerasHomologacionPeriodo/:periodo',async (req, res) => {
+    const periodo = req.params.periodo;
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoListadoCarrerasHomologacionesPeriodo(periodo);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoCarrerasHomologacionPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.post('/InsertarCarreraMovilidad/', async (req, res) => {
+
+        const { listado } = req.body;
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoIngresoCarrerasMovilidad(listado);
+           return sendResponseServicios(res, true, [],'OK');
+    }catch (error) {
+       logger.error('Error InsertarCarreraMovilidad', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.post('/ClonacionCarreraPeriodo/', async (req, res) => {
+
+        const { periodonuevo,periodoanterior } = req.body;
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoClonacionCarreraMovilidadPeriodo(periodonuevo,periodoanterior);
+           return sendResponseServicios(res, true, [],'OK');
+    }catch (error) {
+       logger.error('Error InsertarCarreraMovilidad', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.post('/ClonacionCarreraHomologacionGeneralPeriodo/', async (req, res) => {
+
+        const { periodonuevo,periodoanterior } = req.body;
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoClonacionCarreraHomologacionGeneralPeriodo(periodonuevo,periodoanterior);
+           return sendResponseServicios(res, true, [],'OK');
+    }catch (error) {
+       logger.error('Error ClonacionCarreraHomologacionGeneralPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.post('/ActualizacionDatosHomologacionesCarreras/', async (req, res) => {
+
+        const { objDatos } = req.body;
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoActualizacionDatosHomologacionesCarreras(objDatos);
+           return sendResponseServicios(res, true, [],'OK');
+    }catch (error) {
+       logger.error('Error ActualizacionDatosHomologacionesCarreras', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
 module.exports = router;

@@ -41,7 +41,7 @@ module.exports.ProcesoInsertarAsignaturaMovilidad = async function( datos ) {
       };
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return "ERROR" + error;
   }
 };
@@ -51,7 +51,7 @@ module.exports.ProcesoObtenerAsignaturaMovilidadDocente = async function( datos 
     var datos = await modelomovilidadasignaturasprocesos.ObtenerAsignaturaMovilidadDocente( "OAS_Master", datos );
     return datos.data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return "ERROR" + error;
   }
 };
@@ -61,7 +61,7 @@ module.exports.ProcesoObtenerAsignaturaMovilidadNivelParalelo = async function( 
     var datos = await modelomovilidadasignaturasprocesos.ObtenerAsignaturaMovilidadNivelParalelo( carrera, datos );
     return datos.data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return "ERROR" + error;
   }
 };
@@ -70,7 +70,7 @@ module.exports.ProcesoEliminarAsignaturaMovilidadDocente = async function( carre
     var datos = await modelomovilidadasignaturasprocesos.EliminarAsignaturaMovilidadDocente( carrera, datos );
     return datos;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return "ERROR" + error;
   }
 };
@@ -80,7 +80,7 @@ module.exports.ProcesoDesactivarAsignaturaMovilidadDocente = async function( dat
     var datos = await modelomovilidadasignaturasprocesos.DesactivarAsignaturaMovilidadDocente( "OAS_Master", datos );
     return datos;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return "ERROR" + error;
   }
 };
@@ -90,7 +90,7 @@ module.exports.ProcesoObtenerAsignaturasCarreraDocente = async function( carrera
     var datos = await modelomovilidadasignaturasprocesos.ObtenerDatosASignaturasCarreraDocente( carrera,tools.CedulaConGuion(cedula),periodo );
     return datos.data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return "ERROR" + error;
   }
 };

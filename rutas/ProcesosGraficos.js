@@ -64,7 +64,8 @@ module.exports.ReporteNoMatriculado = async function (carrera, periodo1, periodo
     try {
         var ListaRangoPeriodo = await calcularValoresIntermedios(periodo1, periodo2);
         var listado = await ProcesoReporteNoMatriculado(carrera, periodo1, periodo2);
-        var base64 = await generarReporteNoMatriculados(listado, ListaRangoPeriodo,carrera,cedula);
+     //   var base64 = await generarReporteNoMatriculados(listado, ListaRangoPeriodo,carrera,cedula);
+          var base64 = await reportespdfmaker.pdfmakegenerarReporteNoMatriculados(listado, ListaRangoPeriodo,carrera,cedula);
 
         return base64
     } catch (error) {
@@ -77,6 +78,26 @@ module.exports.pdfEvaluacionesRecuperacionCarrera = async function (carrera, per
         const listadoInformacion = await sqlmodeloformato.DictadoAsignaturasPeriodo(carrera, periodo);
           var base64 = await reportespdfmaker.pdfmakegenerarReporteEvaluacionesRecuperacionCarrera(listadoInformacion.datos.data, carrera, periodo, cedula)
         return base64
+    } catch (error) {
+        console.log(error);
+        return 'ERROR' + error;
+    }
+}
+module.exports.pdfPromediosGeneralesAsignaturasCarreras = async function (carrera, periodo, cedula) {
+    try {
+
+        const listadoInformacion = await sqlmodeloformato.DictadoAsignaturasPeriodo(carrera, periodo);
+        for (var index = 0; index < listadoInformacion.datos.data.length; index++) {
+            const element = listadoInformacion.datos.data[index];
+                    const DatosCalificaciones = await sqlmodeloformato.PromediosGeneralesParcialesPorAsignatura(carrera, periodo, element.strCodNivel, element.strCodParalelo, element.strCodMateria);
+element.promedioParcial1 = DatosCalificaciones.datos.data[0].PromedioGeneral_Parcial1;
+element.promedioParcial2 = DatosCalificaciones.datos.data[0].PromedioGeneral_Parcial2;
+element.promedioGeneral = DatosCalificaciones.datos.data[0].PromedioGeneral_Total;
+
+        }
+        var base64 = await reportespdfmaker.pdfmakegenerarPromediosGeneralesAsignaturas(listadoInformacion.datos.data, carrera, periodo, cedula)
+        return base64
+      //  return listadoInformacion
     } catch (error) {
         console.log(error);
         return 'ERROR' + error;

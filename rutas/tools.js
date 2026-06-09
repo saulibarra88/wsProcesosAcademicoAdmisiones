@@ -681,3 +681,106 @@ module.exports.pdfMakeDocumento = function (docDefinition, fontConfig )  {
     }
   });
 }
+
+module.exports.pdfMakeDocumentoCurriculum = function (docDefinition, fontConfig )  {
+ return new Promise((resolve, reject) => {
+        try {
+            // Validar y limpiar el docDefinition antes de usarlo
+            const docDefinitionLimpio = validarDocDefinition(JSON.parse(JSON.stringify(docDefinition)));            
+            const printer = new PdfPrinter(fontConfig);
+            const pdfDoc = printer.createPdfKitDocument(docDefinitionLimpio);
+            const chunks = [];
+
+            pdfDoc.on('data', (chunk) => chunks.push(chunk));
+            pdfDoc.on('end', () => {
+                const result = Buffer.concat(chunks);
+                const base64 = result.toString('base64');
+                resolve(base64);
+            });
+            pdfDoc.on('error', (error) => {
+                console.error('Error en pdfDoc:', error);
+                reject(error);
+            });
+            pdfDoc.end();
+        } catch (error) {
+            console.error('Error en pdfMakeDocumento:', error);
+            reject(error);
+        }
+    });
+}
+
+function validarDocDefinition(docDefinition) {
+    // Función para validar números
+    const isValidNumber = (n) => typeof n === 'number' && !isNaN(n) && isFinite(n);
+    
+    // Validar y corregir márgenes
+    if (docDefinition.pageMargins) {
+        docDefinition.pageMargins = docDefinition.pageMargins.map(m => 
+            isValidNumber(m) ? m : 40
+        );
+    }
+    
+    // Validar y corregir estilos
+    if (docDefinition.styles) {
+        Object.keys(docDefinition.styles).forEach(styleName => {
+            const style = docDefinition.styles[styleName];
+            
+            // Validar margin
+            if (style.margin && Array.isArray(style.margin)) {
+                style.margin = style.margin.map(m => 
+                    isValidNumber(m) ? m : 0
+                );
+            }
+            
+            // Validar fontSize
+            if (style.fontSize && !isValidNumber(style.fontSize)) {
+                delete style.fontSize;
+            }
+        });
+    }
+    
+    // Validar contenido recursivamente
+    function validarContenido(content) {
+        if (!content) return;
+        
+        if (Array.isArray(content)) {
+            content.forEach(item => validarContenido(item));
+        } else if (typeof content === 'object') {
+            // Validar margins en tablas
+            if (content.margin && Array.isArray(content.margin)) {
+                content.margin = content.margin.map(m => 
+                    isValidNumber(m) ? m : 0
+                );
+            }
+            
+            // Validar widths en tablas
+            if (content.table && content.table.widths) {
+                content.table.widths = content.table.widths.map(w => {
+                    if (w === '*') return '*';
+                    if (w === 'auto') return 'auto';
+                    return isValidNumber(w) ? w : '*';
+                });
+            }
+            
+            // Validar column widths
+            if (content.columns) {
+                content.columns.forEach(col => {
+                    if (col.width && !isValidNumber(col.width) && col.width !== '*') {
+                        col.width = '*';
+                    }
+                });
+            }
+            
+            // Recursivamente validar objetos anidados
+            Object.keys(content).forEach(key => {
+                if (typeof content[key] === 'object') {
+                    validarContenido(content[key]);
+                }
+            });
+        }
+    }
+    
+    validarContenido(docDefinition.content);
+    
+    return docDefinition;
+}

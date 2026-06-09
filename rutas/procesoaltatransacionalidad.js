@@ -1,6 +1,9 @@
 const modeloprocesocarreras = require('../modelo/sqlaltatransacionalidad');
+const sqlprocesocarreras = require('../modelo/procesocarrera');
 const axios = require('axios');
 const reportescarreras = require('../rutas/reportesCarreras');
+const sqlprocesoCupo = require('../modelo/procesocupos');
+
 const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
@@ -116,13 +119,13 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
         var listadoNomina = [];
         var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera, periodo, estado);
         var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera);
-         for (var matricula of datosMatriculas.data) {
+        for (var matricula of datosMatriculas.data) {
             const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
             var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
             var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
             var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
             var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
-            var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera, periodo, matricula.sintCodigo) :await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
+            var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera, periodo, matricula.sintCodigo) : await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
             const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
             const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
             // Datos personales
@@ -173,8 +176,8 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
             matricula.aprobacion = aprobacion.data[0]?.Reprueba == 0 ? 'APROBADO' : 'REPROBADO';
             listadoNomina.push(matricula);
 
-         }
-      
+        }
+
         var base64 = await reportescarreras.ExcelReporteMaticulasCarrerasIndividual(carrera, periodo, listadoNomina);
         return base64
     }
@@ -201,21 +204,21 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
         const limitSQL = pLimit(10);
 
         for (var carrera of ListadoCarrera.data) {
-          
- var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbasecar, periodo, estado);
-        var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera.hmbdbasecar);
+
+            var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbasecar, periodo, estado);
+            var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera.hmbdbasecar);
             for (var matricula of datosMatriculas.data) {
                 console.log(matricula.strCedula + " - " + carrera.hmbdbasecar)
-       const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-            var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
-            var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
-            var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
-            var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
-            var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo) :await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
-            const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
-            const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
+                const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
+                var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
+                var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
+                var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
+                var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
+                var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo) : await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
+                const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
+                const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
 
-   
+
                 // Datos personales
                 matricula.per_nombres = safe(persona?.per_nombres, matricula.strNombres);
                 matricula.per_primerApellido = safe(`${persona?.per_primerApellido || ''} ${persona?.per_segundoApellido || ''}`, matricula.strApellidos);
@@ -266,8 +269,6 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
             }
 
         }
-
-
         const base64 = await reportescarreras.ExcelReporteMaticulasCarrerasInstitucional(periodo, listadoNomina);
 
         return base64;
@@ -293,22 +294,19 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
         const limitHTTP = pLimit(10); // Limita a 10 peticiones simultáneas
         const limitSQL = pLimit(10);
         for (var carrera of ListadoCarrera.data) {
-
-
- var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbaseniv, periodo, estado);
-        var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera.hmbdbaseniv);
+            var datosMatriculas = await modeloprocesocarreras.ListadoMatriculasCarrerasPeriodosTransaccion(transaction, carrera.hmbdbaseniv, periodo, estado);
+            var DatosCarreras = await modeloprocesocarreras.ObtenerDatosBaseTransaccion(transaction, "OAS_Master", carrera.hmbdbaseniv);
             for (var matricula of datosMatriculas.data) {
 
-              const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-  console.log(matricula.strCedula + " - " + carrera.hmbdbaseniv)
-  var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
-            var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
-            var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
-            var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
-            var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo) :await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
-            const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
-            const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
-
+                const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
+                console.log(matricula.strCedula + " - " + carrera.hmbdbaseniv)
+                var personaResponse = await axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent });
+                var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
+                var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
+                var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
+                var aprobacion = await tools.VerificacionPeriodoTresCalificaciones(periodo) ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo) : await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
+                const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
+                const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
 
                 // Datos personales
                 matricula.per_nombres = safe(persona?.per_nombres, matricula.strNombres);
@@ -356,7 +354,7 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                     matricula.valorpago = 0;
                 }
                 matricula.aprobacion = aprobacion.data[0]?.Reprueba == 0 ? 'APROBADO' : 'REPROBADO';
-    
+
                 listadoNomina.push(matricula);
 
             }
@@ -374,182 +372,319 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
     }
 }
 
-
 async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(periodo) {
-    const limitHTTP = pLimit(10);
-    const limitSQL = pLimit(10);
+    const pool = await iniciarMasterPool("OAS_Master");
+    await pool.connect();
+    const transaction = await iniciarMasterTransaccion(pool);
+    await transaction.begin();
     try {
-        const listadoNomina = [];
-        const Lstestudiantes = await modeloprocesocarreras.ListadoEstudiantesConfirmadoMatrizSenecyt("OAS_Cupos_Institucionales", periodo);
+        var listadoNomina = [];
+        var ListadoEstudiantes = await sqlprocesocarreras.ListadoEstudiantesConfirmadoMatrizSenecytTransaccion(transaction, "OAS_Cupos_Institucionales", periodo);
+        var i = 0;
+        if (ListadoEstudiantes.count > 0) {
+            for (var estudiante of ListadoEstudiantes.data) {
 
-        await Promise.all(Lstestudiantes.data.map(async (estudiante, i) => {
+                var content = { "perNomenclatura": periodo, "cusId": estudiante.c_cus_id }
 
-            const cedula = tools.CedulaSinGuion(estudiante.c_identificacion);
-            const [DatosCarreraNivelacion, DatosEstudiantes] = await Promise.all([
-                limitHTTP(() => axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", { perNomenclatura: periodo, cusId: estudiante.c_cus_id }, { httpsAgent: agent })),
-                limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedula}`, { httpsAgent: agent })),
+                var DatosCarreraNivelacion = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", content, { httpsAgent: agent });
+                if (Object.keys(DatosCarreraNivelacion.data).length > 0) {
+                    var DatosEstudiantes = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), { httpsAgent: agent });
+                    var ObjEstudianteMatriculadoNivelacion = await sqlprocesocarreras.EncontrarEstudianteMatriculadoTransaccion(transaction, estudiante.c_dbnivelacion, estudiante.c_periodo, estudiante.c_identificacion);
+                    i = i + 1
 
-            ]);
-            await limitSQL(async () => {
-                const [ObjMatriculadoNivelacion, ObjMatriculadoCarrera, DatosCarreraSQL] = await Promise.all([
-                    modeloprocesocarreras.EncontrarEstudianteMatriculado(estudiante.c_dbnivelacion, estudiante.c_periodo, estudiante.c_identificacion),
-                    modeloprocesocarreras.EncontrarEstudianteMatriculado(estudiante.c_dbcarrera, estudiante.c_periodo, estudiante.c_identificacion),
-                    modeloprocesocarreras.ObtenerDatosBase("OAS_Master", estudiante.c_dbcarrera)
-                ]);
+                    var ObjEstudianteMatriculadoCarrera = await sqlprocesocarreras.EncontrarEstudianteMatriculadoTransaccion(transaction, estudiante.c_dbcarrera, estudiante.c_periodo, estudiante.c_identificacion);
+                    if (ObjEstudianteMatriculadoCarrera.count > 0) {
+                        var DatosCarreras = await sqlprocesoCupo.ObtenerDatosBase(estudiante.c_dbcarrera);
+
+                        var listadoRetiros = await modeloreporteexcelcarrera.ProcesoListadoRetirosEstudiantePeriodoTrnsaccion(transaction, estudiante.c_dbcarrera, periodo, estudiante.c_identificacion, ObjEstudianteMatriculadoCarrera.data[0].strCodEstud);
+
+                        var PagoMatriculaestudiante = await sqlprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, tools.CedulaSinGuion(estudiante.c_identificacion));
+                        var AsignaturasMatriculadas = await sqlprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTrasaccion(transaction, estudiante.c_dbcarrera, periodo, ObjEstudianteMatriculadoCarrera.data[0].sintCodigo);
+                        var CalulosEstuidantesRegulares = await sqlprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, estudiante.c_dbcarrera, periodo, ObjEstudianteMatriculadoCarrera.data[0].sintCodigo);
+                        var strEstadoAprobacion = 'REPROBADO'
+                        if (listadoRetiros.length == 0) {
+                            if (await tools.VerificacionPeriodoTresCalificaciones(periodo)) {
+                                var datosAprobacion = await sqlprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, estudiante.c_dbcarrera, periodo, ObjEstudianteMatriculadoCarrera.data[0].sintCodigo);
+                            } else {
+                                var datosAprobacion = await sqlprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, estudiante.c_dbcarrera, periodo, ObjEstudianteMatriculadoCarrera.data[0].sintCodigo);
+                            }
+                            estudiante.aprobacion = datosAprobacion.data[0].Reprueba == 0 ? 'APROBADO' : 'REPROBADO'
+                        }
+                        if (AsignaturasMatriculadas.count) {
+                            estudiante.primera = AsignaturasMatriculadas.data[0].Primera > 0 ? 'SI' : 'NO'
+                            estudiante.cantidadprimera = AsignaturasMatriculadas.data[0].Primera
+                            estudiante.segunda = AsignaturasMatriculadas.data[0].Segunda > 0 ? 'SI' : 'NO'
+                            estudiante.cantidadsegunda = AsignaturasMatriculadas.data[0].Segunda
+                            estudiante.repetidor = AsignaturasMatriculadas.data[0].Tercera > 0 ? 'SI' : AsignaturasMatriculadas.data[0].Segunda > 0 ? 'SI' : 'NO'
+                            estudiante.tercera = AsignaturasMatriculadas.data[0].Tercera > 0 ? 'SI' : 'NO'
+                            estudiante.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
+                        }
+                        if (CalulosEstuidantesRegulares.count > 0) {
+                            estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                        }
+                        if (PagoMatriculaestudiante.count > 0) {
+                            estudiante.gratuidad = 'NO'
+                            estudiante.valorpago = PagoMatriculaestudiante.data[0].fltTotal
+                        } else {
+                            estudiante.gratuidad = 'SI'
+                            estudiante.valorpago = 0
+                        }
+                        estudiante.dc_idcupo = estudiante.c_id,
+                            estudiante.dc_idestado = 2,
+                            estudiante.dc_periodo = estudiante.c_periodo,
+                            estudiante.dc_dbcarrera = estudiante.c_dbcarrera,
+                            estudiante.dc_dbnivelacion = estudiante.c_dbnivelacion,
+                            estudiante.dc_observacion = "PROCESO MIGRACION // MATRICULADO EN CARRERA//",
+                            estudiante.dc_matriculacion = "MATRICULADO",
+                            estudiante.dc_sede = DatosCarreras.data[0].strSede,
+                            estudiante.dc_institucion = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO',
+                            estudiante.dc_provincia = DatosCarreras.data[0].strSede == 'MATRIZ' ? 'CHIMBORAZO' : DatosCarreras.data[0].strSede == 'MORONA' ? 'MORONA SANTIAGO' : 'ORELLANA',
+                            estudiante.dc_canton = DatosCarreras.data[0].strSede == 'MATRIZ' ? 'RIOBAMBA' : DatosCarreras.data[0].strSede == 'MORONA' ? 'MORONA' : 'ORELLANA',
+                            estudiante.dc_parroquia = "",
+                            estudiante.dc_per_id = 0,
+                            estudiante.dc_ofaid = DatosCarreraNivelacion.data.cupOfaId,
+                            estudiante.dc_modalidad = DatosCarreraNivelacion.data.Modalidad.modNombre,
+                            estudiante.dc_jornada = DatosCarreraNivelacion.data.Jornada.jorNombre,
+                            estudiante.dc_periodo_admision = DatosCarreraNivelacion.data.Periodo.perNombre,
+                            estudiante.dc_tipocupo = 'NIVELACION CARRERA',
+                            estudiante.dc_matricula = 'ORDINARIA',
+                            estudiante.dc_cupo_aceptado = DatosCarreraNivelacion.data.Periodo.perNombre,
+                            estudiante.dc_fecha_matricula = tools.ConvertirFechaMatricula(ObjEstudianteMatriculadoCarrera.data[0].dtFechaAutorizada),
+                            estudiante.dc_estado_matricula = 'PRIMERA MATRICULA',
+                            estudiante.dc_cupo_admision = estudiante.c_cupo_admision,
+                            estudiante.dc_cusid = estudiante.c_cus_id,
+                            estudiante.dc_carrera = DatosCarreraNivelacion.data.Carrera.carNombre,
+                            estudiante.dc_facultad = DatosCarreraNivelacion.data.Carrera.Facultad.facNombre,
+                            estudiante.dc_nombres = DatosEstudiantes.data.listado[0].per_nombres,
+                            estudiante.dc_apellidos = DatosEstudiantes.data.listado[0].per_primerApellido + ' ' + DatosEstudiantes.data.listado[0].per_segundoApellido,
+                            estudiante.dc_cedula = estudiante.c_identificacion,
+                            estudiante.dc_ies_id = 0,
+                            estudiante.dc_estado_fin_curso = listadoRetiros.length > 0 ? 'RETIRO PARCIAL VOLUNTARIO' : strEstadoAprobacion,
+                            estudiante.dc_reubicado_primer_nivel = 'SI',
+                            estudiante.dc_oficio_notificacion_retiro = 'NINGUNO',
+                            estudiante.dc_fecha_notificacion_retiro = 'NINGUNO',
 
 
-                const datosEst = DatosEstudiantes.data.listado[0];
-                const estudianteBase = {
-                    ...estudiante,
-                    dc_idcupo: estudiante.c_id,
-                    dc_idestado: 2,
-                    dc_periodo: estudiante.c_periodo,
-                    dc_dbcarrera: estudiante.c_dbcarrera,
-                    dc_dbnivelacion: estudiante.c_dbnivelacion,
-                    dc_observacion: '',
-                    dc_matriculacion: '',
-                    dc_sede: '',
-                    dc_institucion: 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO',
-                    dc_provincia: '',
-                    dc_canton: '',
-                    dc_parroquia: '',
-                    dc_per_id: datosEst.per_id || 0,
-                    dc_ofaid: DatosCarreraNivelacion.data.cupOfaId,
-                    dc_modalidad: DatosCarreraNivelacion.data.Modalidad.modNombre,
-                    dc_jornada: DatosCarreraNivelacion.data.Jornada.jorNombre,
-                    dc_periodo_admision: DatosCarreraNivelacion.data.Periodo.perNombre,
-                    dc_tipocupo: '',
-                    dc_matricula: 'ORDINARIA',
-                    dc_cupo_aceptado: DatosCarreraNivelacion.data.Periodo.perNombre,
-                    dc_fecha_matricula: '',
-                    dc_estado_matricula: '',
-                    dc_cupo_admision: estudiante.c_cupo_admision,
-                    dc_cusid: estudiante.c_cus_id,
-                    dc_carrera: DatosCarreraNivelacion.data.Carrera.carNombre,
-                    dc_facultad: DatosCarreraNivelacion.data.Carrera.Facultad.facNombre,
-                    dc_nombres: datosEst.per_nombres,
-                    dc_apellidos: `${datosEst.per_primerApellido} ${datosEst.per_segundoApellido}`,
-                    dc_cedula: estudiante.c_identificacion,
-                    dc_ies_id: 0,
-                    dc_estado_fin_curso: '',
-                    dc_reubicado_primer_nivel: '',
-                    dc_oficio_notificacion_retiro: 'NINGUNO',
-                    dc_fecha_notificacion_retiro: 'NINGUNO',
-                    per_nombres: datosEst.per_nombres,
-                    per_primerApellido: `${datosEst.per_primerApellido} ${datosEst.per_segundoApellido}`,
-                    procedencia: datosEst.procedencia || 'NINGUNO',
-                    nac_nombre: datosEst.nac_nombre || 'NINGUNO',
-                    per_email: datosEst.per_email || 'NINGUNO',
-                    per_emailAlternativo: datosEst.per_emailAlternativo || 'NINGUNO',
-                    per_telefonoCelular: datosEst.per_telefonoCelular || 'NINGUNO',
-                    per_telefonoCasa: datosEst.per_telefonoCasa || 'NINGUNO',
-                    per_fechaNacimiento: datosEst.per_fechaNacimiento ? tools.formatearFechaNacimiento(datosEst.per_fechaNacimiento) : 'NINGUNO',
-                    eci_nombre: datosEst.eci_nombre || 'NINGUNO',
-                    etn_nombre: datosEst.etn_nombre || 'NINGUNO',
-                    gen_nombre: datosEst.gen_nombre || 'NINGUNO',
-                    prq_nombre: datosEst.prq_nombre || 'NINGUNO',
-                    strCedula: estudiante.c_identificacion,
-                    strCodEstud: 0,
-                    descripcionestado: '',
-                    descripcioninscripcion: 'ADMISION',
-                    strCodNivel: 'NINGUNO',
-                    dir_callePrincipal: datosEst.dir_callePrincipal || 'NINGUNO',
-                    sexo: datosEst.sexo || 'NINGUNO',
-                };
+                            estudiante.per_nombres = DatosEstudiantes.data.listado[0].per_nombres
+                        estudiante.per_primerApellido = DatosEstudiantes.data.listado[0].per_primerApellido + " " + DatosEstudiantes.data.listado[0].per_segundoApellido
+                        estudiante.procedencia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].procedencia
+                        estudiante.nac_nombre = DatosEstudiantes.data.listado[0].nac_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].nac_nombre
+                        estudiante.per_email = DatosEstudiantes.data.listado[0].per_email == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_email
+                        estudiante.per_emailAlternativo = DatosEstudiantes.data.listado[0].per_emailAlternativo == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_emailAlternativo
+                        estudiante.per_telefonoCelular = DatosEstudiantes.data.listado[0].per_telefonoCelular == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_telefonoCelular
+                        estudiante.per_telefonoCasa = DatosEstudiantes.data.listado[0].per_telefonoCasa == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_telefonoCasa
+                        estudiante.per_fechaNacimiento = DatosEstudiantes.data.listado[0].per_fechaNacimiento == null ? 'NINGUNO' : tools.formatearFechaNacimiento(DatosEstudiantes.data.listado[0].per_fechaNacimiento)
+                        estudiante.eci_nombre = DatosEstudiantes.data.listado[0].eci_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].eci_nombre
+                        estudiante.etn_nombre = DatosEstudiantes.data.listado[0].etn_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].etn_nombre
+                        estudiante.gen_nombre = DatosEstudiantes.data.listado[0].gen_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].gen_nombre
+                        estudiante.prq_nombre = DatosEstudiantes.data.listado[0].prq_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].prq_nombre
+                        estudiante.strCedula = estudiante.c_identificacion
+                        estudiante.strCodEstud = ObjEstudianteMatriculadoCarrera.data[0].strCodEstud
+                        estudiante.descripcionestado = ObjEstudianteMatriculadoCarrera.data[0].strCodEstado
+                        estudiante.descripcioninscripcion = 'ADMISION'
 
-                const [prov, cant, parr] = (datosEst.procedencia || 'NINGUNO/NINGUNO/NINGUNO').split('/');
-                estudianteBase.provincia = prov;
-                estudianteBase.canton = cant;
-                estudianteBase.parroquia = parr;
-
-
-                estudianteBase.sede = DatosCarreraSQL.data[0].strSede;
-                estudianteBase.facultad = DatosCarreraSQL.data[0].strNombreFacultad;
-                estudianteBase.carrera = DatosCarreraSQL.data[0].strNombreCarrera;
-                estudianteBase.dc_sede = DatosCarreraSQL.data[0].strSede;
-                estudianteBase.dc_provincia = estudianteBase.dc_sede === 'MATRIZ' ? 'CHIMBORAZO' : estudianteBase.dc_sede === 'MORONA' ? 'MORONA SANTIAGO' : 'ORELLANA';
-                estudianteBase.dc_canton = estudianteBase.dc_sede === 'MATRIZ' ? 'RIOBAMBA' : estudianteBase.dc_sede === 'MORONA' ? 'MORONA' : 'ORELLANA';
-
-                const estadoCarrera = ObjMatriculadoCarrera.count > 0;
-                const estadoNivelacion = ObjMatriculadoNivelacion.count > 0;
-
-                if (estadoCarrera || estadoNivelacion) {
-                    estudianteBase.dc_observacion = 'PROCESO MIGRACION // MATRICULADO EN CARRERA//';
-                    estudianteBase.dc_matriculacion = 'MATRICULADO';
-                    estudianteBase.dc_estado_matricula = 'PRIMERA MATRICULA';
-                    estudianteBase.dc_reubicado_primer_nivel = 'SI';
-                    estudianteBase.strCodEstud = estadoCarrera ? ObjMatriculadoCarrera.data[0].strCodEstud : ObjMatriculadoNivelacion.data[0].strCodEstud;
-                    estudianteBase.strCodNivel = estadoCarrera ? ObjMatriculadoCarrera.data[0].strCodNivel : ObjMatriculadoNivelacion.data[0].strCodNivel;
-                    estudianteBase.descripcionestado = estadoCarrera ? ObjMatriculadoCarrera.data[0].strCodEstado : ObjMatriculadoNivelacion.data[0].strCodEstado;
-                    estudianteBase.dc_fecha_matricula = tools.ConvertirFechaMatricula(
-                        estadoCarrera ? ObjMatriculadoCarrera.data[0].dtFechaAutorizada : ObjMatriculadoNivelacion.data[0].dtFechaAutorizada
-                    );
-
-                    const dbTarget = estadoCarrera ? estudiante.c_dbcarrera : estudiante.c_dbnivelacion;
-                    const codTarget = estadoCarrera ? ObjMatriculadoCarrera.data[0].sintCodigo : ObjMatriculadoNivelacion.data[0].sintCodigo;
-
-                    const [listadoRetiros, pago, asignaturas, calculoRegulares, verifPeriodo] = await Promise.all([
-                        await FuncionEstudiantesRetirosPeriodoCarreraCedula(dbTarget, periodo, estudiante.c_identificacion, estudianteBase.strCodEstud),
-                        modeloprocesocarreras.ObtenerPagoMatriculaEstudiante("pagosonline_db", periodo, cedula),
-                        modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidad(dbTarget, periodo, codTarget),
-                        modeloprocesocarreras.CalculoEstudiantesRegulares60PorCiento(dbTarget, periodo, codTarget),
-                        await tools.VerificacionPeriodoTresCalificaciones(periodo)
-                    ]);
-
-                    if (listadoRetiros.length === 0) {
-                        const datosAprob = verifPeriodo ? await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudiante(dbTarget, periodo, codTarget) : await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudiante(dbTarget, periodo, codTarget);
-                        estudianteBase.aprobacion = datosAprob.data[0].Reprueba === 0 ? 'APROBADO' : 'REPROBADO';
-                    } else {
-                        estudianteBase.dc_estado_fin_curso = 'RETIRO PARCIAL VOLUNTARIO';
+                        estudiante.strCodNivel = ObjEstudianteMatriculadoCarrera.data[0].strCodNivel
+                        estudiante.dir_callePrincipal = DatosEstudiantes.data.listado[0].dir_callePrincipal == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].dir_callePrincipal
+                        estudiante.sexo = DatosEstudiantes.data.listado[0].sexo == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].sexo
+                        const [provincia, canton, parroquia] = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].procedencia.split("/");
+                        estudiante.provincia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : provincia
+                        estudiante.canton = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : canton
+                        estudiante.parroquia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : parroquia
+                        estudiante.sede = DatosCarreras.data[0].strSede,
+                            estudiante.facultad = DatosCarreras.data[0].strNombreFacultad,
+                            estudiante.carrera = DatosCarreras.data[0].strNombreCarrera
+                        listadoNomina.push(estudiante)
+                        // return base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
                     }
+                    if (ObjEstudianteMatriculadoNivelacion.count > 0) {
+                        var DatosCarreras = await sqlprocesoCupo.ObtenerDatosBaseTransaccion(transaction, 'OAS_Master', estudiante.c_dbnivelacion);
 
-                    if (asignaturas.count > 0) {
-                        const data = asignaturas.data[0];
-                        estudianteBase.primera = data.Primera > 0 ? 'SI' : 'NO';
-                        estudianteBase.segunda = data.Segunda > 0 ? 'SI' : 'NO';
-                        estudianteBase.tercera = data.Tercera > 0 ? 'SI' : 'NO';
-                        estudianteBase.repetidor = data.Tercera > 0 || data.Segunda > 0 ? 'SI' : 'NO';
-                        estudianteBase.cantidadprimera = data.Primera;
-                        estudianteBase.cantidadsegunda = data.Segunda;
-                        estudianteBase.cantidadtercera = data.Tercera;
+                        var listadoRetiros = await modeloreporteexcelcarrera.ProcesoListadoRetirosEstudiantePeriodoTrnsaccion(transaction, estudiante.c_dbnivelacion, periodo, estudiante.c_identificacion, ObjEstudianteMatriculadoNivelacion.data[0].strCodEstud);
+                        var PagoMatriculaestudiante = await sqlprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, tools.CedulaSinGuion(estudiante.c_identificacion));
+                        var AsignaturasMatriculadas = await sqlprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTrasaccion(transaction, estudiante.c_dbnivelacion, periodo, ObjEstudianteMatriculadoNivelacion.data[0].sintCodigo);
+                        var CalulosEstuidantesRegulares = await sqlprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, estudiante.c_dbnivelacion, periodo, ObjEstudianteMatriculadoNivelacion.data[0].sintCodigo);
+                        var strEstadoAprobacion = 'REPROBADO'
+                        if (listadoRetiros.length == 0) {
+                            if (await tools.VerificacionPeriodoTresCalificaciones(periodo)) {
+                                var datosAprobacion = await sqlprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction, estudiante.c_dbnivelacion, periodo, ObjEstudianteMatriculadoNivelacion.data[0].sintCodigo);
+                            } else {
+                                var datosAprobacion = await sqlprocesocarreras.ObternerAsignaturasAprobadasReprobadasCincoNotasEstudianteTransaccion(transaction, estudiante.c_dbnivelacion, periodo, ObjEstudianteMatriculadoNivelacion.data[0].sintCodigo);
+                            }
+                            // var datosAprobacion = await modeloprocesocarreras.ObternerAsignaturasAprobadasReprobadasEstudianteTransaccion(transaction,estudiante.c_dbnivelacion, periodo, ObjEstudianteMatriculadoNivelacion.data[0].sintCodigo);
+                            estudiante.aprobacion = datosAprobacion.data[0].Reprueba == 0 ? 'APROBADO' : 'REPROBADO'
+                        }
+                        if (AsignaturasMatriculadas.count) {
+                            estudiante.primera = AsignaturasMatriculadas.data[0].Primera > 0 ? 'SI' : 'NO'
+                            estudiante.cantidadprimera = AsignaturasMatriculadas.data[0].Primera
+                            estudiante.segunda = AsignaturasMatriculadas.data[0].Segunda > 0 ? 'SI' : 'NO'
+                            estudiante.cantidadsegunda = AsignaturasMatriculadas.data[0].Segunda
+                            estudiante.repetidor = AsignaturasMatriculadas.data[0].Tercera > 0 ? 'SI' : AsignaturasMatriculadas.data[0].Segunda > 0 ? 'SI' : 'NO'
+                            estudiante.tercera = AsignaturasMatriculadas.data[0].Tercera > 0 ? 'SI' : 'NO'
+                            estudiante.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
+                        }
+                        if (CalulosEstuidantesRegulares.count > 0) {
+                            estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                        }
+                        if (PagoMatriculaestudiante.count > 0) {
+                            estudiante.gratuidad = 'NO'
+                            estudiante.valorpago = PagoMatriculaestudiante.data[0].fltTotal
+                        } else {
+                            estudiante.gratuidad = 'SI'
+                            estudiante.valorpago = 0
+                        }
+                        estudiante.dc_idcupo = estudiante.c_id,
+                            estudiante.dc_idestado = 2,
+                            estudiante.dc_periodo = estudiante.c_periodo,
+                            estudiante.dc_dbcarrera = estudiante.c_dbcarrera,
+                            estudiante.dc_dbnivelacion = estudiante.c_dbnivelacion,
+                            estudiante.dc_observacion = "PROCESO MIGRACION // MATRICULADO EN CARRERA//",
+                            estudiante.dc_matriculacion = "MATRICULADO",
+                            estudiante.dc_sede = DatosCarreras.data[0].strSede,
+                            estudiante.dc_institucion = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO',
+                            estudiante.dc_provincia = DatosCarreras.data[0].strSede == 'MATRIZ' ? 'CHIMBORAZO' : DatosCarreras.data[0].strSede == 'MORONA' ? 'MORONA SANTIAGO' : 'ORELLANA',
+                            estudiante.dc_canton = DatosCarreras.data[0].strSede == 'MATRIZ' ? 'RIOBAMBA' : DatosCarreras.data[0].strSede == 'MORONA' ? 'MORONA' : 'ORELLANA',
+                            estudiante.dc_parroquia = "",
+                            estudiante.dc_per_id = 0,
+                            estudiante.dc_ofaid = DatosCarreraNivelacion.data.cupOfaId,
+                            estudiante.dc_modalidad = DatosCarreraNivelacion.data.Modalidad.modNombre,
+                            estudiante.dc_jornada = DatosCarreraNivelacion.data.Jornada.jorNombre,
+                            estudiante.dc_periodo_admision = DatosCarreraNivelacion.data.Periodo.perNombre,
+                            estudiante.dc_tipocupo = 'NIVELACION CARRERA',
+                            estudiante.dc_matricula = 'ORDINARIA',
+                            estudiante.dc_cupo_aceptado = DatosCarreraNivelacion.data.Periodo.perNombre,
+                            estudiante.dc_fecha_matricula = tools.ConvertirFechaMatricula(ObjEstudianteMatriculadoNivelacion.data[0].dtFechaAutorizada),
+                            estudiante.dc_estado_matricula = 'PRIMERA MATRICULA',
+                            estudiante.dc_cupo_admision = estudiante.c_cupo_admision,
+                            estudiante.dc_cusid = estudiante.c_cus_id,
+                            estudiante.dc_carrera = DatosCarreraNivelacion.data.Carrera.carNombre,
+                            estudiante.dc_facultad = DatosCarreraNivelacion.data.Carrera.Facultad.facNombre,
+                            estudiante.dc_nombres = DatosEstudiantes.data.listado[0].per_nombres,
+                            estudiante.dc_apellidos = DatosEstudiantes.data.listado[0].per_primerApellido + ' ' + DatosEstudiantes.data.listado[0].per_segundoApellido,
+                            estudiante.dc_cedula = estudiante.c_identificacion,
+                            estudiante.dc_ies_id = 0,
+                            estudiante.dc_estado_fin_curso = listadoRetiros.length > 0 ? 'RETIRO PARCIAL VOLUNTARIO' : strEstadoAprobacion,
+                            estudiante.dc_reubicado_primer_nivel = 'SI',
+                            estudiante.dc_oficio_notificacion_retiro = 'NINGUNO',
+                            estudiante.dc_fecha_notificacion_retiro = 'NINGUNO',
+                            estudiante.per_nombres = DatosEstudiantes.data.listado[0].per_nombres
+                        estudiante.per_primerApellido = DatosEstudiantes.data.listado[0].per_primerApellido + " " + DatosEstudiantes.data.listado[0].per_segundoApellido
+                        estudiante.procedencia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].procedencia
+                        estudiante.nac_nombre = DatosEstudiantes.data.listado[0].nac_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].nac_nombre
+                        estudiante.per_email = DatosEstudiantes.data.listado[0].per_email == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_email
+                        estudiante.per_emailAlternativo = DatosEstudiantes.data.listado[0].per_emailAlternativo == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_emailAlternativo
+                        estudiante.per_telefonoCelular = DatosEstudiantes.data.listado[0].per_telefonoCelular == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_telefonoCelular
+                        estudiante.per_telefonoCasa = DatosEstudiantes.data.listado[0].per_telefonoCasa == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_telefonoCasa
+                        estudiante.per_fechaNacimiento = DatosEstudiantes.data.listado[0].per_fechaNacimiento == null ? 'NINGUNO' : tools.formatearFechaNacimiento(DatosEstudiantes.data.listado[0].per_fechaNacimiento)
+                        estudiante.eci_nombre = DatosEstudiantes.data.listado[0].eci_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].eci_nombre
+                        estudiante.etn_nombre = DatosEstudiantes.data.listado[0].etn_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].etn_nombre
+                        estudiante.gen_nombre = DatosEstudiantes.data.listado[0].gen_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].gen_nombre
+                        estudiante.prq_nombre = DatosEstudiantes.data.listado[0].prq_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].prq_nombre
+                        estudiante.strCedula = estudiante.c_identificacion
+                        estudiante.strCodEstud = ObjEstudianteMatriculadoNivelacion.data[0].strCodEstud
+                        estudiante.descripcionestado = ObjEstudianteMatriculadoNivelacion.data[0].strCodEstado
+                        estudiante.descripcioninscripcion = 'ADMISION'
+                        estudiante.strCodNivel = ObjEstudianteMatriculadoNivelacion.data[0].strCodNivel
+                        estudiante.dir_callePrincipal = DatosEstudiantes.data.listado[0].dir_callePrincipal == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].dir_callePrincipal
+                        estudiante.sexo = DatosEstudiantes.data.listado[0].sexo == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].sexo
+                        const [provincia, canton, parroquia] = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].procedencia.split("/");
+                        estudiante.provincia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : provincia
+                        estudiante.canton = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : canton
+                        estudiante.parroquia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : parroquia
+                        estudiante.sede = DatosCarreras.data[0].strSede,
+                            estudiante.facultad = DatosCarreras.data[0].strNombreFacultad,
+                            estudiante.carrera = DatosCarreras.data[0].strNombreCarrera
+                        listadoNomina.push(estudiante)
+                        // return base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
                     }
+                    if (ObjEstudianteMatriculadoNivelacion.count == 0 && ObjEstudianteMatriculadoCarrera.count == 0) {
+                        var DatosCarreras = await sqlprocesoCupo.ObtenerDatosBaseTransaccion(transaction, 'OAS_Master', estudiante.c_dbcarrera);
+                        var DatosNivelacion = await sqlprocesoCupo.ObtenerDatosBaseTransaccion(transaction, 'OAS_Master', estudiante.c_dbnivelacion);
 
-                    if (calculoRegulares.count > 0) {
-                        estudianteBase.regular = calculoRegulares.data[0].Estudiante;
+
+                        estudiante.dc_idcupo = estudiante.c_id,
+                            estudiante.dc_idestado = 2,
+                            estudiante.dc_periodo = estudiante.c_periodo,
+                            estudiante.dc_dbcarrera = estudiante.c_dbcarrera,
+                            estudiante.dc_dbnivelacion = estudiante.c_dbnivelacion,
+                            estudiante.dc_observacion = "PROCESO MIGRACION // NO MATRICULADO//",
+                            estudiante.dc_matriculacion = "NO MATRICULADO",
+                            estudiante.dc_sede = DatosCarreras.data[0].strSede,
+                            estudiante.dc_institucion = 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO',
+                            estudiante.dc_provincia = DatosCarreras.data[0].strSede == 'MATRIZ' ? 'CHIMBORAZO' : DatosCarreras.data[0].strSede == 'MORONA' ? 'MORONA SANTIAGO' : 'ORELLANA',
+                            estudiante.dc_canton = DatosCarreras.data[0].strSede == 'MATRIZ' ? 'RIOBAMBA' : DatosCarreras.data[0].strSede == 'MORONA' ? 'MORONA' : 'ORELLANA',
+                            estudiante.dc_parroquia = "",
+                            estudiante.dc_per_id = DatosEstudiantes.data.listado[0].per_id,
+                            estudiante.dc_ofaid = DatosCarreraNivelacion.data.cupOfaId,
+                            estudiante.dc_modalidad = DatosCarreraNivelacion.data.Modalidad.modNombre,
+                            estudiante.dc_jornada = DatosCarreraNivelacion.data.Jornada.jorNombre,
+                            estudiante.dc_tipocupo = 'NINGUNA',
+                            estudiante.dc_matricula = 'ORDINARIA',
+                            estudiante.dc_cupo_aceptado = DatosCarreraNivelacion.data.Periodo.perNombre,
+                            estudiante.dc_fecha_matricula = 'NINGUNA',
+                            estudiante.dc_estado_matricula = 'NO INGRESO A LA INSTITUCION',
+                            estudiante.dc_cupo_admision = estudiante.c_cupo_admision,
+                            estudiante.dc_cusid = estudiante.c_cus_id,
+                            estudiante.dc_carrera = DatosCarreraNivelacion.data.Carrera.carNombre,
+                            estudiante.dc_facultad = DatosCarreraNivelacion.data.Carrera.Facultad.facNombre,
+                            estudiante.dc_nombres = DatosEstudiantes.data.listado[0].per_nombres,
+                            estudiante.dc_apellidos = DatosEstudiantes.data.listado[0].per_primerApellido + ' ' + DatosEstudiantes.data.listado[0].per_segundoApellido,
+                            estudiante.dc_cedula = estudiante.c_identificacion,
+                            estudiante.dc_ies_id = 0,
+                            estudiante.dc_estado_fin_curso = 'REPROBADO',
+                            estudiante.dc_reubicado_primer_nivel = 'NO',
+                            estudiante.dc_oficio_notificacion_retiro = 'NINGUNO',
+                            estudiante.dc_fecha_notificacion_retiro = 'NINGUNO',
+
+                            estudiante.per_nombres = DatosEstudiantes.data.listado[0].per_nombres
+                        estudiante.per_primerApellido = DatosEstudiantes.data.listado[0].per_primerApellido + " " + DatosEstudiantes.data.listado[0].per_segundoApellido
+                        estudiante.procedencia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].procedencia
+                        estudiante.nac_nombre = DatosEstudiantes.data.listado[0].nac_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].nac_nombre
+                        estudiante.per_email = DatosEstudiantes.data.listado[0].per_email == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_email
+                        estudiante.per_emailAlternativo = DatosEstudiantes.data.listado[0].per_emailAlternativo == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_emailAlternativo
+                        estudiante.per_telefonoCelular = DatosEstudiantes.data.listado[0].per_telefonoCelular == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_telefonoCelular
+                        estudiante.per_telefonoCasa = DatosEstudiantes.data.listado[0].per_telefonoCasa == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].per_telefonoCasa
+                        estudiante.per_fechaNacimiento = DatosEstudiantes.data.listado[0].per_fechaNacimiento == null ? 'NINGUNO' : tools.formatearFechaNacimiento(DatosEstudiantes.data.listado[0].per_fechaNacimiento)
+                        estudiante.eci_nombre = DatosEstudiantes.data.listado[0].eci_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].eci_nombre
+                        estudiante.etn_nombre = DatosEstudiantes.data.listado[0].etn_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].etn_nombre
+                        estudiante.gen_nombre = DatosEstudiantes.data.listado[0].gen_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].gen_nombre
+                        estudiante.prq_nombre = DatosEstudiantes.data.listado[0].prq_nombre == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].prq_nombre
+                        estudiante.strCedula = estudiante.c_identificacion
+                        estudiante.strCodEstud = 0
+                        estudiante.descripcionestado = 'NO INGRESO A LA INSTITUCION',
+                            estudiante.descripcioninscripcion = 'ADMISION'
+                        estudiante.strCodNivel = 'NINGUNO'
+                        estudiante.dir_callePrincipal = DatosEstudiantes.data.listado[0].dir_callePrincipal == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].dir_callePrincipal
+                        estudiante.sexo = DatosEstudiantes.data.listado[0].sexo == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].sexo
+                        const [provincia, canton, parroquia] = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : DatosEstudiantes.data.listado[0].procedencia.split("/");
+                        estudiante.provincia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : provincia
+                        estudiante.canton = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : canton
+                        estudiante.parroquia = DatosEstudiantes.data.listado[0].procedencia == null ? 'NINGUNO' : parroquia
+                        estudiante.sede = DatosCarreras.data[0].strSede,
+                            estudiante.facultad = DatosCarreras.data[0].strNombreFacultad,
+                            estudiante.carrera = DatosCarreras.data[0].strNombreCarrera
+                        listadoNomina.push(estudiante)
+                        // return base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
                     }
-
-                    if (pago.count > 0) {
-                        estudianteBase.gratuidad = 'NO';
-                        estudianteBase.valorpago = pago.data[0].fltTotal;
-                    } else {
-                        estudianteBase.gratuidad = 'SI';
-                        estudianteBase.valorpago = 0;
-                    }
-
                 } else {
-                    estudianteBase.dc_observacion = 'PROCESO MIGRACION // NO MATRICULADO//';
-                    estudianteBase.dc_matriculacion = 'NO MATRICULADO';
-                    estudianteBase.dc_estado_matricula = 'NO INGRESO A LA INSTITUCION';
-                    estudianteBase.dc_reubicado_primer_nivel = 'NO';
-                    estudianteBase.dc_fecha_matricula = 'NINGUNA';
-                    estudianteBase.dc_estado_fin_curso = 'REPROBADO';
                 }
 
-                listadoNomina.push(estudianteBase);
-            })
 
-        }));
+            }
+            var base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
+            return base64
+        } else { return null }
 
-        const base64 = await reportescarreras.ExcelReporteMaticulasAdmisionesInstitucional(periodo, listadoNomina);
 
-        return base64;
     } catch (err) {
+        await transaction.rollback();
         console.error(err);
-        return 'ERROR: ' + err.message;
+        return 'ERROR';
     } finally {
-        await closeAllPools();
+        await transaction.commit();
+        await pool.close();
     }
 }
+
 
 async function FuncionListadoEstudiantePeriodos(carrera, periodo) {
     const limitSQL = pLimit(10);
@@ -766,24 +901,23 @@ async function FuncionuUsuariosDatos() {
     try {
         const listadoNomina = [];
         const ListadoCarrera = await modelocentralizada.UsuariosOrdenesPagos();
-        console.log(ListadoCarrera)
         const limitHTTP = pLimit(10); // Limita a 10 peticiones simultáneas
         const limitSQL = pLimit(10);
         await Promise.all(ListadoCarrera.data.map(async (info, i) => {
 
-           // const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.usu_strCedula}`, { httpsAgent: agent }));
+            // const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.usu_strCedula}`, { httpsAgent: agent }));
             const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objetopersonalizadodadoid/${info.lngusr_id}`, { httpsAgent: agent }));
             const [personaResponse] = await Promise.all([personaPromise.catch(() => null),]);
 
             const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
             const safe = (val, def = 'NINGUNO') => (val == null || val === '') ? def : val;
-            info.cedula =safe(persona?.pid_valor); 
+            info.cedula = safe(persona?.pid_valor);
             info.nombres = safe(persona?.per_nombres);
             info.apellidos = safe(persona?.per_primerApellido + " " + persona?.per_segundoApellido);
             info.correo = safe(persona?.per_email);
             info.rol = info.strnombre;
             info.sistema = 'SEGUIMIENTO GRADUADOS';
-          
+
 
             listadoNomina.push(info);
 
