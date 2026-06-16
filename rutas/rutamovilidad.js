@@ -4,6 +4,7 @@ const Request = require("request");
 
 const funcionesprocesosmovilidad = require('../procesos/procesosmovilidad');
 const funcionesprocesosrecordmallaestuidante = require('../procesos/procesorecordmallaestuidante');
+const funcionesprocesomallaestuidante = require('../procesos/procesorecordmallaestudiantecarrera');
 
 
 
@@ -919,6 +920,26 @@ router.get('/CurriculumEstuidanteConsultor/:carrera/:cedula/',async (req, res) =
     const cedula = req.params.cedula;
     try {
         var Informacion=await  funcionesprocesosrecordmallaestuidante.ProcesoGeneracionCurriculumEstuidanteConsultor(carrera,cedula);
+        res.json({
+            success: true,
+            Informacion:Informacion,
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
+router.get('/CurriculumEstudianteCarreras/:carrera/:cedula/',async (req, res) => {
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion=await  funcionesprocesomallaestuidante.ProcesoGeneracionCurriculumEstuidanteCarrera(carrera,cedula);
         res.json({
             success: true,
             Informacion:Informacion,

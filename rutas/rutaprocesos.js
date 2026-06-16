@@ -672,7 +672,27 @@ router.get('/PDFEvaluacionesRecuperacionCarrera/:carrera/:periodo/:cedula',async
     }
  
 });
-
+router.get('/PDFAsignaturasPaoTipoCarrera/:carrera/:periodo/:cedula',async (req, res) => {
+    const periodo = req.params.periodo;
+    const carrera = req.params.carrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion = await procesosgraficoscarrera.pdfListadoAsignaturasCarreraMovilidad(carrera,periodo,cedula);
+        res.json({
+            success: true,
+            Informacion
+        });
+    }catch (err) {
+        console.log('Error: ' + err);
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en la consulta' + err
+            }
+        );
+    }
+ 
+});
 router.get('/PDFEPromediosGeneralesAsignaturas/:carrera/:periodo/:cedula',async (req, res) => {
     const periodo = req.params.periodo;
     const carrera = req.params.carrera;

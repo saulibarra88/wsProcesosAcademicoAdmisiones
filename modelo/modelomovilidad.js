@@ -848,6 +848,33 @@ module.exports.ObtnerExcepcionEstudianteMovilidad = async function (carrera, ced
     return { data: "Error: " + error }
   }
 }
+module.exports.ObtnerMallaDadoPeriodoCarrera = async function (carrera,periodo) {
+  const sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Materias_Pensum] AS PE INNER JOIN [" + carrera + "].[dbo].[Materias] AS M ON M.strCodigo=PE.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Niveles] AS N ON N.strCodigo=PE.strCodNivel WHERE [strCodPensum]=(SELECT [strCodPensum] FROM [" + carrera + "].[dbo].[Periodos] WHERE [strCodigo]='" + periodo + "') "; 
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return (sqlConsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}
+
+module.exports.ObtenerHomologacionesUnoaUnoRecursiva = async function (carrera,dbcarrera,codmateria) {
+  const sentencia = "WITH RecursiveHomologacion AS ( SELECT homid, hommateriaant, homnombremateriaant, hommaterianew, homnombrematerianew, pensumvigente, homcodcarreraunica, hombd, homfechacreacion, homusuariocreacion, homestado, 0 AS nivel, CAST(hommaterianew AS VARCHAR(MAX)) AS codigos_concatenados, CAST(homnombrematerianew AS VARCHAR(MAX)) AS nombres_concatenados FROM [" + carrera + "].[homologaciones].[materiahomologar] WHERE hombd = '" + dbcarrera + "' AND hommaterianew =  '" + codmateria + "' UNION ALL SELECT mh.homid, mh.hommateriaant, mh.homnombremateriaant, mh.hommaterianew, mh.homnombrematerianew, mh.pensumvigente, mh.homcodcarreraunica, mh.hombd, mh.homfechacreacion, mh.homusuariocreacion, mh.homestado, rh.nivel + 1, CAST(mh.hommateriaant + ' <- ' + rh.codigos_concatenados AS VARCHAR(MAX)) AS codigos_concatenados, CAST(mh.homnombremateriaant + ' <- ' + rh.nombres_concatenados AS VARCHAR(MAX)) AS nombres_concatenados FROM [" + carrera + "].[homologaciones].[materiahomologar] mh INNER JOIN RecursiveHomologacion rh ON mh.hommaterianew = rh.hommateriaant WHERE mh.hombd = '" + dbcarrera + "' ) SELECT nivel, hommaterianew AS materia_actual, hommateriaant AS materia_anterior, homnombrematerianew AS nombre_actual, homnombremateriaant AS nombre_anterior, codigos_concatenados, nombres_concatenados, hombd, homcodcarreraunica, pensumvigente, homfechacreacion, homusuariocreacion, homestado FROM RecursiveHomologacion ORDER BY nivel;"; 
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return (sqlConsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}
 module.exports.ActualizarExcepcionEstudianteMovilidad = async function (carrera, cedula, periodo) {
   const sentencia = "UPDATE [" + carrera + "].[dbo].[tb_movilidad_estudiante_excepcion] SET mee_estado=0 WHERE mee_srtcedula='" + cedula + "' AND mee_periodo= '" + periodo + "'";
   try {
