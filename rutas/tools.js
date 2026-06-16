@@ -12,6 +12,21 @@ const pdf = require('html-pdf');
     return Buffer.from(imageData).toString('base64');
 }
 
+module.exports.extraerCodigoYDescripcion = function (frase)  {
+
+    // Buscar el patrón: letra + números (ejemplo: P0033)
+    const match = frase.match(/^([A-Z]\d+)/);
+    
+    if (!match) {
+        return { codigo: null, descripcion: frase };
+    }
+    
+    const codigo = match[1];
+    const descripcion = frase.substring(codigo.length).trim();
+    
+    return { codigo, descripcion };
+}
+
 function FechaActual(){
   var date = new Date();
   var hour = date.getHours();

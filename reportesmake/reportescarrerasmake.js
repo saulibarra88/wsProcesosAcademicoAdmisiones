@@ -66,7 +66,14 @@ try {
     console.log(error);
   }
 }
-
+module.exports.pdfmakegenerarAsignaturasTipoMovilidad=async function(listado, carrera, periodo, cedulaUsuario) {
+try {
+    var resultado = await generarReporteAsignaturasTipoMovilidadCarrera(listado, carrera, periodo, cedulaUsuario);
+    return resultado
+  } catch (error) {
+    console.log(error);
+  }
+}
 module.exports.pdfmakegenerarPromediosGeneralesAsignaturas=async function(listado, carrera, periodo, cedulaUsuario) {
 try {
     var resultado = await generarReportePromediosGeneralesAsignaturas(listado, carrera, periodo, cedulaUsuario);
@@ -1042,7 +1049,84 @@ const formatearFecha = (fecha) => {
     throw error;
   }
 }
+async function generarReporteAsignaturasTipoMovilidadCarrera( listado, carrera, periodo, cedulaUsuario ) {
+  try {
+    // 1. Obtener datos necesarios en paralelo para mejorar rendimiento
+    const [ datosCarrera, datosPeriodo, ObtenerPersona ] = await Promise.all([ procesoCupo.ObtenerDatosBase(carrera) , procesoCupo.PeriodoDatos(carrera, periodo), axios.get( `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent } ) ]);
 
+    // 2. Extraer y formatear datos básicos
+    const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
+    
+    const periodoInfo = {
+      descripcion: datosPeriodo.data[0].strDescripcion,
+      codigo: periodo
+    };
+
+    // 3. Función auxiliar para valores nulos
+    const getValor = (valor, defaultValue = 'SIN REGISTRO') => {
+      return valor !== null && valor !== undefined && valor !== '' ? valor : defaultValue;
+    };
+
+    // 4. Función para formatear fecha
+const formatearFecha = (fecha) => {
+  if (!fecha) return 'SIN REGISTRO';
+  
+  const date = new Date(fecha);
+  
+  // Verificar si la fecha es válida
+  if (isNaN(date.getTime())) return 'SIN REGISTRO';
+  
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+    // 5. Agrupar materias por nivel
+    const materiasPorNivel = agruparPorNivel(listado);
+
+    // 6. Generar contenido del PDF con múltiples tablas agrupadas
+    const content = await generarContenidoPDFAsignaturaMovilidad({
+      materiasPorNivel,
+      periodoInfo,
+      datosCarrera,
+      getValor    });
+
+    // 7. Configuración del layout base
+    const layoutOptions = {
+      title: 'DICTADO ASIGNATURA CARRERA ',
+      subtitle: `CARRERA: ${datosCarrera.data[0].strNombreCarrera}`,
+      pageMargins: [40, 120, 40, 70],
+      pageOrientation: 'landscape'
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+
+    // 8. Agregar firma al final
+    content.push(crearFirmaPDF(strNombres));
+
+    // 9. Construir documento final
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        ...obtenerEstilosPDF()
+      }
+    };
+
+    const base64PDF = await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+    return base64PDF;
+
+  } catch (error) {
+    console.error('Error generando el reporte:', error);
+    throw error;
+  }
+}
 async function generarReporteHomologacionCarrera(listado, carrera, cedulaUsuario) {
 
   try {
@@ -1445,7 +1529,45 @@ async function generarTablaPorNivel(materias, getValor, formatearFecha) {
     margin: [0, 0, 0, 20]
   };
 }
+async function generarTablaPorNivelAsignaturaMovilidad(materias, getValor) {
+  // Definir columnas de la tabla
+  const tableColumns = [
+    { text: '#', style: 'tableHeader' },
+    { text: 'ASIGNATURA', style: 'tableHeader' },
+    { text: 'PAO', style: 'tableHeader' },
+    { text: 'PARALELO', style: 'tableHeader' },
+    { text: 'DOCENTE', style: 'tableHeader' },
+    { text: 'TIPO', style: 'tableHeader' },
+    { text: 'MOVILIDAD', style: 'tableHeader' }
+  ];
 
+  const tableWidths = ['auto', '*', 'auto', 'auto', '*', 'auto','auto'];
+
+  // Construir cuerpo de la tabla
+  const tableBody = materias.map((materia, index) => {
+    const contador = index + 1;
+    const nombreDocente = `${materia.strApellidos || ''} ${materia.strNombres || ''}`.trim();
+    return [
+      { text: contador.toString(), style: 'tableCellCenter' },
+      { text: getValor(materia.strNombre), style: 'tableCellLeft' },
+      { text: getValor(materia.strCodNivel), style: 'tableCellCenter' },
+      { text: getValor(materia.strCodParalelo), style: 'tableCellCenter' },
+      { text: getValor(nombreDocente, 'SIN ASIGNAR'), style: 'tableCellLeft' },
+      { text: getValor(materia.tipo), style: 'tableCellCenter' },
+      { text: getValor(materia.carreramovilidad), style: 'tableCellCenter' }
+    ];
+  });
+
+  return {
+    layout: obtenerLayoutTabla(),
+    table: {
+      headerRows: 1,
+      widths: tableWidths,
+      body: [tableColumns.map(col => col), ...tableBody]
+    },
+    margin: [0, 0, 0, 20]
+  };
+}
 
 async function generarContenidoPDF({
   materiasPorNivel,
@@ -1470,6 +1592,32 @@ async function generarContenidoPDF({
 
     // Generar tabla para este nivel
     const tablaNivel = await generarTablaPorNivel(grupo.materias, getValor, formatearFecha);
+    content.push(tablaNivel);
+  }
+
+  return content;
+}
+async function generarContenidoPDFAsignaturaMovilidad({
+  materiasPorNivel,
+  periodoInfo,
+  datosCarrera,
+  getValor}) {
+  const content = [];
+
+  // Encabezado del profesor (común para todo el reporte)
+  content.push(crearEncabezadoProfesor(periodoInfo));
+
+  // Generar una tabla por cada nivel
+  for (const grupo of materiasPorNivel) {
+    // Título del nivel
+    content.push({
+      text: `PAO: ${grupo.nivel}`,
+      style: 'nivelTitle',
+      margin: [0, 5, 0, 0]
+    });
+
+    // Generar tabla para este nivel
+    const tablaNivel = await generarTablaPorNivelAsignaturaMovilidad(grupo.materias, getValor);
     content.push(tablaNivel);
   }
 
