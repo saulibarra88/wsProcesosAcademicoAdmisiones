@@ -964,6 +964,23 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   
   }
+
+    module.exports.EncontrarEstudiantesConfirmadoMatrizSenecytTransaccion = async function (transaccion,carrera,cedula,periodo) {
+    var sentencia="";
+  
+    sentencia="SELECT * FROM [" + carrera + "].[cupos].[tb_cupos] AS C INNER JOIN [" + carrera + "].[cupos].[tb_detalle_cupo] AS DC ON DC.dc_idcupo=C.c_id WHERE C.c_periodo='" + periodo + "' AND DC.dc_idestado=1 AND DC.dc_periodo='" + periodo + "' AND C.c_identificacion='" + cedula + "' "
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamicoTransaccion(transaccion,carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  
+  }
   module.exports.ListadoEstudiantesConfirmadoMatrizSenecyt = async function (carrera,periodo) {
     var sentencia="";
   

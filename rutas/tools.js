@@ -236,6 +236,14 @@ module.exports.FechaActualCupo = function () {
   
     return `${dia}/${mes}/${anio}`;
   }
+    module.exports.compararPeriodos = function (periodo1, periodo2) {
+   // Extraer los números de los períodos
+    const num1 = parseInt(periodo1.replace('P', ''));
+    const num2 = parseInt(periodo2.replace('P', ''));
+    
+    // Retornar true si periodo1 es mayor que periodo2
+    return num1 > num2;
+  }
   module.exports.CedulaConGuion=function (strcedula) {
     if ((strcedula.length > 9) && (strcedula.indexOf("-") < 0)) {
       strcedula = strcedula.substring(0, 9) + "-" + strcedula.substring(9);
