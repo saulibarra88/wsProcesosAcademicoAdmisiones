@@ -38,6 +38,20 @@ const path = require('path');
     return {data:"Error: "+ error}
   }
   }
+   module.exports.ListadoCarreraNivelacionMasterTransacciones = async function (transaction,carrera,periodo) {
+    var sentencia="";
+    sentencia=" select * from [" + carrera + "].[dbo].[Carreras] where [strBaseDatos] like '%OAS_Niv%' "
+      try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMasterTransaccion(transaction,carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
     module.exports.ListadoMatriculasCarrerasPeriodos = async function (carrera,periodo,estado) {
     var sentencia="";
     sentencia = "select *,fi.strDescripcion as descripcioninscripcion,n.strDescripcion as descripcionnivel,em.strDescripcion as descripcionestado from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud inner join [" + carrera + "].[dbo].[Sexos] as sex on sex.strCodigo=e.strCodSexo inner join [" + carrera + "].[dbo].[Formas de Inscripcion] as fi on fi.strCodigo=e.strFormaIns inner join [" + carrera + "].[dbo].[Niveles] as n on n.strCodigo=m.strCodNivel inner join [" + carrera + "].[dbo].[Estados_Matriculas] as em on em.strCodigo=m.strCodEstado where m.[strCodPeriodo]='" + periodo + "' and m.strCodEstado='" + estado + "' order by n.strCodigo desc ,e.strApellidos asc";
