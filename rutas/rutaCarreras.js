@@ -201,26 +201,7 @@ router.get('/ReporteExcelUltimoNivelCarrerasTodasInstitucional/:periodo/:estado'
  
 });
 
-router.get('/ReporteExcelMatriculasAdmisionesInstitucional/:periodo',async (req, res) => {
-    const periodo = req.params.periodo;
-    try {
-      
-        var Informacion= await pruebasInformacion.ProcesoReporteExcelMatriculasAdmisionesnstitucional(periodo);
-        res.json({
-            success: true,
-            Informacion:Informacion,
-        });
-    }catch (err) {
-        console.log('Error: ' + err);
-        return res.json(
-             {
-                success: false,
-                mensaje:'Error en el registro' + err
-            }
-        );
-    }
- 
-});
+
 
 router.get('/ListadoPeriodosCarreras/:carrera/',async (req, res) => {
     const carrera = req.params.carrera;

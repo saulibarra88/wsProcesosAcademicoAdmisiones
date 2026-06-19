@@ -3,28 +3,32 @@ const CONFIGACADEMICO = require('./../config/databaseDinamico');
 const sql = require('mssql');
 const { Connection, Request } = require('mssql');
 
+// Caché exclusivo para bases "Académicas"
+const poolsAcademicoCache = new Map();
+const getPoolAcademico = async (carrera) => {
+    if (poolsAcademicoCache.has(carrera)) {
+        return poolsAcademicoCache.get(carrera);
+    }
+    
+    // Clonamos la configuración para no mutar CONFIGACADEMICO
+    const configClonada = { ...CONFIGACADEMICO, database: carrera };
+    const pool = new sql.ConnectionPool(configClonada);
+    const connectPromise = pool.connect();
+    
+    poolsAcademicoCache.set(carrera, connectPromise);
+    return connectPromise;
+};
 const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
-
-  var conex = CONFIGACADEMICO;
-  conex.database = carrera;
-  let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
-  try {
-    if (!pool) {
-      pool = await new sql.ConnectionPool(conex).connect();
-    }
-    // Obtener una conexión del grupo de conexiones
-    const conn = pool.request();
-    // Ejecutar la consulta
-    const result = await conn.query(SQL);
-    return buildResponse(result, OK, msgVacio, msgError);
-  } catch (err) {
-    console.log("Error conexion Base Academico:" + err);
-    return handleDatabaseError(err, msgError);
-  } finally {
-    if (pool) {
-      await pool.close();
-    }
-  }
+    try {
+        const pool = await getPoolAcademico(carrera);
+        const conn = pool.request();
+        const result = await conn.query(SQL);
+        return buildResponse(result, OK, msgVacio, msgError);
+    } catch (err) {
+        console.error(`Error conexion Base Academico (Carrera: ${carrera}):`, err);
+        return handleDatabaseError(err, msgError);
+    } 
+    // Recuerda: SIN FINALLY CON pool.close()
 };
 
 

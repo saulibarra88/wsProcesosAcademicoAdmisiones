@@ -2,26 +2,34 @@
 const CONFIGCENTRALIZADA = require('./../config/databaseCentral');
 const { Client } = require('pg');
 const execCentralizada = async (SQL, OK = "", msgVacio = "", msgError = null) => {
-
-    var conex = CONFIGCENTRALIZADA;
-    var client = new Client(conex);
+    // Usar const en lugar de var
+    const conex = CONFIGCENTRALIZADA;
+    const client = new Client(conex);
   
     try {
-       
-        client.connect();
-      //  const client = await Client.connect(CONFIGCENTRALIZADA);
+        // 1. FUNDAMENTAL: Esperar a que la conexión se establezca
+        await client.connect(); 
+        
         const result = await client.query(SQL);
-      return buildResponse(result, OK, msgVacio, msgError);
+        return buildResponse(result, OK, msgVacio, msgError);
+        
     } catch (err) {
-      console.log("Error conexion Base Centralizada:" + err);
-      return handleDatabaseError(err, msgError);
+        // Usar console.error para mejor trazabilidad en logs
+        console.error("Error conexion Base Centralizada:", err); 
+        return handleDatabaseError(err, msgError);
+        
     } finally {
-      if (client) {
-        await client.end();
-      }
+        // Asegurarnos de que cerramos la conexión de forma segura
+        if (client) {
+            try {
+                await client.end();
+            } catch (closeErr) {
+                // Capturamos cualquier error al intentar cerrar para que no rompa el flujo
+                console.error("Error al intentar cerrar la conexión Base Centralizada:", closeErr);
+            }
+        }
     }
-
-  };
+};
 
 
   const execCentralizadaTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
