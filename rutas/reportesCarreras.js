@@ -868,32 +868,40 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
   function generarPDF(htmlCompleto, options) {
     return new Promise((resolve, reject) => {
-      pdf.create(htmlCompleto, options).toFile("ReporteEstudiantesASignaturasPerdidas.pdf", function (err, res) {
-        if (err) {
-          reject(err);
-        } else {
-          fs.readFile(res.filename, (err, data) => {
-            if (err) {
-              reject(err);
-            } else {
-              // Convertir a base64
-              const base64Data = Buffer.from(data).toString('base64');
-
-              // Eliminar el archivo PDF generado (opcional)
-             fs.unlink(res.filename, (err) => {
-                if (err) {
-                  console.error('Error al eliminar el archivo PDF:', err);
-                } else {
-                  console.log('Archivo PDF eliminado.');
-                }
-              });
-
-              // Resolver la promesa con base64Data
-              resolve(base64Data);
-            }
-          });
-        }
-      });
+      try {
+        const htmlToPdfmake = require('html-to-pdfmake');
+        const { JSDOM } = require('jsdom');
+        const { window } = new JSDOM("");
+        const pdfMakeContent = htmlToPdfmake(htmlCompleto, { window: window });
+        
+        const docDefinition = { 
+          content: pdfMakeContent, 
+          pageOrientation: options.orientation || 'portrait',
+          pageMargins: [ 40, 60, 40, 60 ]
+        };
+        
+        const PdfPrinter = require('pdfmake');
+        const fonts = {
+          Roboto: {
+            normal: 'Helvetica',
+            bold: 'Helvetica-Bold',
+            italics: 'Helvetica-Oblique',
+            bolditalics: 'Helvetica-BoldOblique'
+          }
+        };
+        const printer = new PdfPrinter(fonts);
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        
+        let chunks = [];
+        pdfDoc.on('data', chunk => chunks.push(chunk));
+        pdfDoc.on('end', () => {
+          resolve(Buffer.concat(chunks).toString('base64'));
+        });
+        pdfDoc.on('error', err => reject(err));
+        pdfDoc.end();
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 
