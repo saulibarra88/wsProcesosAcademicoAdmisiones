@@ -107,6 +107,49 @@ try {
     
   }
 }
+module.exports.pdfmakeProcesoPdfListadoDocumentosCarreras = async function(listado, cedulaUsuario, periodo) {
+  try {
+    var resultado = await ProcesoPdfListadoDocumentosCarreras(listado, cedulaUsuario, periodo);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
+module.exports.pdfmakeProcesoPdfTerceraSegundaMatriculaCarrera = async function(listado, carrera, cedulaUsuario, periodo, tipo) {
+  try {
+    var resultado = await ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera, cedulaUsuario, periodo, tipo);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
+module.exports.pdfmakeProcesoPdfTerceraSegundaMatriculaCarreraGeneral = async function(listado, carrera, cedulaUsuario, periodo) {
+  try {
+    var resultado = await ProcesoPdfTerceraSegundaMatriculaCarreraGeneral(listado, carrera, cedulaUsuario, periodo);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
+module.exports.pdfmakeProcesoPdfMatriculasEstadosNivelParalelo = async function(listado, carrera, cedulaUsuario, periodo) {
+  try {
+    var resultado = await ProcesoPdfMatriculasEstadosNivelParalelo(listado, carrera, cedulaUsuario, periodo);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
+module.exports.pdfmakeProcesoPdfListadoEstudiantesCuposEstados = async function(listado, cedulaUsuario, periodo, estado) {
+  try {
+    var resultado = await ProcesoPdfListadoEstudiantesCuposEstados(listado, cedulaUsuario, periodo, estado);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
+module.exports.pdfmakeProcesoPdfEstudianteAsignaturaAprueban = async function(listado, carrera, cedulaUsuario, periodo) {
+  try {
+    var resultado = await ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera, cedulaUsuario, periodo);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
+module.exports.pdfmakeProcesoPdfEstudianteAsignaturaApruebanNivelParalelo = async function(listado, carrera, cedulaUsuario, periodo) {
+  try {
+    var resultado = await ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carrera, cedulaUsuario, periodo);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
+
 async function generarReporteNotasCalificaciones( listado, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario ) {
   try {
     // Obtener datos necesarios
@@ -2089,3 +2132,622 @@ async function generarTablaPorNivelPromedioGenerales(materias) {
   };
 }
 
+async function generarReporteRetiros(listado, carrera, periodo, cedulaUsuario) {
+  try {
+    const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+    const datosPeriodo = await procesoCupo.PeriodoDatos(carrera, periodo);
+    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent });
+    const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
+    
+    const getValor = (valor, defaultValue = 'SIN REGISTRO') => {
+      return valor !== null && valor !== undefined && valor !== '' ? valor : defaultValue;
+    };
+
+    const tableBody = listado.map((asignaturas, index) => {
+      const contadot = index + 1;
+      return [
+        { text: contadot.toString(), style: 'tableCellCenter' },
+        { text: getValor(asignaturas.strCodEstud), style: 'tableCellCenter' },
+        { text: getValor(asignaturas.strCedula), style: 'tableCellCenter' },
+        { text: `${asignaturas.strApellidos} ${asignaturas.strNombres}`, style: 'tableCellLeft' },
+        { text: getValor(asignaturas.strtipo), style: 'tableCellCenter' },
+        { text: getValor(asignaturas.strnombreTipo), style: 'tableCellCenter' }
+      ];
+    });
+
+    const tableColumns = [
+      { text: '#', style: 'tableHeader' },
+      { text: 'MATRÍCULA', style: 'tableHeader' },
+      { text: 'CÉDULA', style: 'tableHeader' },
+      { text: 'ESTUDIANTE', style: 'tableHeader' },
+      { text: 'RETIRO', style: 'tableHeader' },
+      { text: 'TIPO RETIRO', style: 'tableHeader' }
+    ];
+
+    const tableWidths = ['auto', 'auto', 'auto', '*', 'auto', 'auto'];
+
+    const content = [
+      {
+        text: 'LISTADO DE ESTUDIANTES RETIRADOS',
+        style: 'tableTitle',
+        alignment: 'center',
+        margin: [0, 10, 0, 5]
+      },
+      {
+        text: `PERIODO: ${datosPeriodo.data[0].strDescripcion} (${periodo})`,
+        style: 'tableTitle',
+        alignment: 'center',
+        margin: [0, 0, 0, 10]
+      },
+      {
+        layout: {
+          hLineWidth: () => 1,
+          vLineWidth: () => 1,
+          hLineColor: () => '#000000',
+          vLineColor: () => '#000000',
+          paddingLeft: () => 4,
+          paddingRight: () => 4,
+          paddingTop: () => 4,
+          paddingBottom: () => 4
+        },
+        table: {
+          headerRows: 2,
+          widths: tableWidths,
+          body: [
+            [ { text: 'INFORMACIÓN', colSpan: 6, style: 'tableHeaderCenter' }, {}, {}, {}, {}, {} ],
+            tableColumns.map(col => col)
+          ].concat(tableBody)
+        }
+      },
+      {
+        margin: [0, 50, 0, 0],
+        alignment: 'center',
+        stack: [
+          { text: '----------------------------------------', style: 'signatureLine' },
+          { text: 'GENERADO POR:', style: 'signatureName' },
+          { text: strNombres, style: 'signatureName' }
+        ]
+      }
+    ];
+
+    const layoutOptions = {
+      title: 'LISTADO DE ESTUDIANTES RETIRADOS',
+      subtitle: `CARRERA: ${datosCarrera.data[0].strNombreCarrera}`,
+      pageMargins: [40, 120, 40, 70],
+      pageOrientation: 'portrait'
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        tableTitle: {
+          fontSize: 9,
+          bold: true,
+          color: '#2c3e50',
+          margin: [0, 8, 0, 8],
+          alignment: 'center'
+        },
+        tableHeader: {
+          bold: true,
+          fontSize: 8,
+          alignment: 'center',
+          fillColor: '#eeeeee'
+        },
+        tableHeaderCenter: {
+          bold: true,
+          fontSize: 8,
+          alignment: 'center',
+          fillColor: '#eeeeee'
+        },
+        tableCellCenter: {
+          fontSize: 8,
+          alignment: 'center'
+        },
+        tableCellLeft: {
+          fontSize: 8,
+          alignment: 'left'
+        },
+        signatureLine: {
+          fontSize: 10,
+          margin: [0, 0, 0, 5]
+        },
+        signatureName: {
+          fontSize: 9,
+          bold: true,
+          margin: [0, 2, 0, 0]
+        }
+      },
+      defaultStyle: {
+        font: 'Roboto'
+      }
+    };
+
+    const base64PDF = await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+    return base64PDF;
+
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async function ProcesoPdfListadoDocumentosCarreras(listado, cedula, periodo) {
+  try {
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
+    const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
+
+    const tableBody = listado.map((carreras, index) => [
+      { text: (index + 1).toString(), style: 'tableCellCenter' },
+      { text: carreras.Carrera, style: 'tableCellLeft' },
+      { text: carreras.CantidadPendientes.toString(), style: 'tableCellCenter' },
+      { text: carreras.CantidadFirmadas.toString(), style: 'tableCellCenter' }
+    ]);
+
+    const content = [
+      {
+        margin: [0, 0, 0, 15],
+        alignment: 'center',
+        stack: [
+          { text: 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO', style: 'subtitleCenter' },
+          { text: 'INFORMACIÓN DE DOCUMENTOS LEGALIZADOS MATRICULAS', style: 'subtitleCenter' },
+          { text: `PERIODO: ${periodoinfo.data[0].strDescripcion}`, style: 'subtitleCenter' }
+        ]
+      },
+      {
+        layout: {
+          hLineWidth: () => 1, vLineWidth: () => 1,
+          hLineColor: () => '#000000', vLineColor: () => '#000000',
+          paddingLeft: () => 4, paddingRight: () => 4,
+          paddingTop: () => 4, paddingBottom: () => 4
+        },
+        table: {
+          headerRows: 2,
+          widths: ['auto', '*', 'auto', 'auto'],
+          body: [
+            [{ text: 'INFORMACIÓN', colSpan: 4, style: 'tableHeaderCenter' }, {}, {}, {}],
+            [
+              { text: 'N°', style: 'tableHeader' },
+              { text: 'CARRERA', style: 'tableHeader' },
+              { text: 'DOC. PEDIENTES', style: 'tableHeader' },
+              { text: 'DOC. FIRMADOS', style: 'tableHeader' }
+            ],
+            ...tableBody
+          ]
+        }
+      },
+      {
+        margin: [0, 40, 0, 0],
+        alignment: 'center',
+        stack: [
+          { text: '----------------------------------------', style: 'signatureLine' },
+          { text: 'GENERADO POR:', style: 'signatureLabel' },
+          { text: strNombres, style: 'signatureName' }
+        ]
+      }
+    ];
+
+    const layoutOptions = {
+      title: 'DOCUMENTOS MATRICULAS',
+      subtitle: '',
+      pageMargins: [40, 80, 40, 60],
+      pageOrientation: 'portrait'
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        subtitleCenter: { fontSize: 11, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+        tableHeader: { bold: true, fontSize: 10, alignment: 'center', fillColor: '#eeeeee' },
+        tableHeaderCenter: { bold: true, fontSize: 10, alignment: 'center', fillColor: '#eeeeee' },
+        tableCellCenter: { fontSize: 10, alignment: 'center' },
+        tableCellLeft: { fontSize: 10, alignment: 'left' },
+        signatureLine: { fontSize: 10, margin: [0, 0, 0, 5] },
+        signatureLabel: { fontSize: 9, margin: [0, 5, 0, 2] },
+        signatureName: { fontSize: 9, bold: true, margin: [0, 2, 0, 0] }
+      }
+    };
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
+
+async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera, cedula, periodo, tipo) {
+  try {
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+    const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
+    const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
+
+    let titulo = '';
+    if (tipo == 3) titulo = 'ESTUDIANTES CON TERCERAS MATRÍCULAS';
+    if (tipo == 2) titulo = 'ESTUDIANTES CON SEGUNDAS MATRÍCULAS';
+
+    const tableBody = listado.map((carreras, index) => [
+      { text: (index + 1).toString(), style: 'tableCellCenter' },
+      { text: `${carreras.strApellidos}   ${carreras.strNombres}`, style: 'tableCellLeft' },
+      { text: carreras.strCedula, style: 'tableCellLeft' },
+      { text: carreras.strCodNivel, style: 'tableCellCenter' },
+      { text: carreras.CantidadMaterias.toString(), style: 'tableCellCenter' }
+    ]);
+
+    const content = [
+      {
+        margin: [0, 0, 0, 15],
+        alignment: 'center',
+        stack: [
+          { text: titulo, style: 'subtitleCenter' },
+          { text: `PERIODO:   ${periodoinfo.data[0].strDescripcion}`, style: 'subtitleCenter' }
+        ]
+      },
+      {
+        layout: {
+          hLineWidth: () => 1, vLineWidth: () => 1,
+          hLineColor: () => '#000000', vLineColor: () => '#000000',
+          paddingLeft: () => 4, paddingRight: () => 4,
+          paddingTop: () => 4, paddingBottom: () => 4
+        },
+        table: {
+          headerRows: 2,
+          widths: ['auto', '*', 'auto', 'auto', 'auto'],
+          body: [
+            [{ text: 'INFORMACIÓN.', colSpan: 5, style: 'tableHeaderCenter' }, {}, {}, {}, {}],
+            [
+              { text: 'N°', style: 'tableHeader' },
+              { text: 'ESTUDIANTES', style: 'tableHeader' },
+              { text: 'CÉDULA', style: 'tableHeader' },
+              { text: 'NIVEL', style: 'tableHeader' },
+              { text: 'CANTIDAD ASIGNATURAS', style: 'tableHeader' }
+            ],
+            ...tableBody
+          ]
+        }
+      },
+      {
+        margin: [0, 40, 0, 0],
+        alignment: 'center',
+        stack: [
+          { text: '----------------------------------------', style: 'signatureLine' },
+          { text: 'GENERADO POR:', style: 'signatureLabel' },
+          { text: strNombres, style: 'signatureName' }
+        ]
+      }
+    ];
+
+    const layoutOptions = {
+      title: 'INFORMACIÓN MATRÍCULAS',
+      subtitle: `CARRERA: ${datosCarrera.data[0].strNombreCarrera}`,
+      pageMargins: [40, 80, 40, 60],
+      pageOrientation: 'portrait'
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        subtitleCenter: { fontSize: 11, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+        tableHeader: { bold: true, fontSize: 10, alignment: 'center', fillColor: '#eeeeee' },
+        tableHeaderCenter: { bold: true, fontSize: 10, alignment: 'center', fillColor: '#eeeeee' },
+        tableCellCenter: { fontSize: 10, alignment: 'center' },
+        tableCellLeft: { fontSize: 10, alignment: 'left' },
+        signatureLine: { fontSize: 10, margin: [0, 0, 0, 5] },
+        signatureLabel: { fontSize: 9, margin: [0, 5, 0, 2] },
+        signatureName: { fontSize: 9, bold: true, margin: [0, 2, 0, 0] }
+      }
+    };
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
+
+async function ProcesoPdfTerceraSegundaMatriculaCarreraGeneral(listado, carrera, cedula, periodo) {
+  try {
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+    const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
+    const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
+
+    const tableBody = listado.map((carreras, index) => [
+      { text: (index + 1).toString(), style: 'tableCellCenter' },
+      { text: `${carreras.strApellidos}   ${carreras.strNombres}`, style: 'tableCellLeft' },
+      { text: carreras.strCedula, style: 'tableCellLeft' },
+      { text: carreras.strCodNivel, style: 'tableCellCenter' },
+      { text: carreras.cantidadprimera.toString(), style: 'tableCellCenter' },
+      { text: carreras.cantidadsegunda.toString(), style: 'tableCellCenter' },
+      { text: carreras.cantidadtercera.toString(), style: 'tableCellCenter' },
+      { text: carreras.cantidadtotal.toString(), style: 'tableCellCenter' }
+    ]);
+
+    const content = [
+      {
+        margin: [0, 0, 0, 15],
+        alignment: 'center',
+        stack: [
+          { text: 'LISTADO DE ESTUDIANTE ASIGNATURAS CON MATRÍCULAS', style: 'subtitleCenter' },
+          { text: `PERIODO:   ${periodoinfo.data[0].strDescripcion}`, style: 'subtitleCenter' }
+        ]
+      },
+      {
+        layout: {
+          hLineWidth: () => 1, vLineWidth: () => 1,
+          hLineColor: () => '#000000', vLineColor: () => '#000000',
+          paddingLeft: () => 4, paddingRight: () => 4,
+          paddingTop: () => 4, paddingBottom: () => 4
+        },
+        table: {
+          headerRows: 2,
+          widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+          body: [
+            [{ text: 'INFORMACIÓN MATRÍCULAS ASIGNATURAS.', colSpan: 8, style: 'tableHeaderCenter' }, ...Array(7).fill({})],
+            [
+              { text: 'N°', style: 'tableHeader' },
+              { text: 'ESTUDIANTES', style: 'tableHeader' },
+              { text: 'CÉDULA_IDENTIDAD', style: 'tableHeader' },
+              { text: 'NIVEL', style: 'tableHeader' },
+              { text: '1RA', style: 'tableHeader' },
+              { text: '2DA', style: 'tableHeader' },
+              { text: '3RA', style: 'tableHeader' },
+              { text: 'TOTAL', style: 'tableHeader' }
+            ],
+            ...tableBody
+          ]
+        }
+      },
+      {
+        margin: [0, 40, 0, 0],
+        alignment: 'center',
+        stack: [
+          { text: '----------------------------------------', style: 'signatureLine' },
+          { text: 'GENERADO POR:', style: 'signatureLabel' },
+          { text: strNombres, style: 'signatureName' }
+        ]
+      }
+    ];
+
+    const layoutOptions = {
+      title: 'INFORMACIÓN MATRÍCULAS',
+      subtitle: `CARRERA: ${datosCarrera.data[0].strNombreCarrera}`,
+      pageMargins: [40, 80, 40, 60],
+      pageOrientation: 'portrait'
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        subtitleCenter: { fontSize: 11, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+        tableHeader: { bold: true, fontSize: 9, alignment: 'center', fillColor: '#eeeeee' },
+        tableHeaderCenter: { bold: true, fontSize: 9, alignment: 'center', fillColor: '#eeeeee' },
+        tableCellCenter: { fontSize: 9, alignment: 'center' },
+        tableCellLeft: { fontSize: 9, alignment: 'left' },
+        signatureLine: { fontSize: 10, margin: [0, 0, 0, 5] },
+        signatureLabel: { fontSize: 9, margin: [0, 5, 0, 2] },
+        signatureName: { fontSize: 9, bold: true, margin: [0, 2, 0, 0] }
+      }
+    };
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
+
+async function ProcesoPdfMatriculasEstadosNivelParalelo(listado, carrera, cedula, periodo) {
+  try {
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
+    const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
+    const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
+
+    const content = [
+      {
+        margin: [0, 0, 0, 15],
+        alignment: 'center',
+        stack: [
+          { text: `PERIODO: ${periodoinfo.data[0].strDescripcion}`, style: 'subtitleCenter' }
+        ]
+      }
+    ];
+
+    listado.forEach(datoslistado => {
+      content.push({
+        margin: [0, 10, 0, 5],
+        stack: [
+          { text: `ASIGNATURA: ${datoslistado.strNombre}`, style: 'tableCellLeft' },
+          { text: `CODIGO: ${datoslistado.strCodMateria}`, style: 'tableCellLeft' }
+        ]
+      });
+
+      const tableBody = datoslistado.listadoparalelos.map((paralelodatos, index) => [
+        { text: (index + 1).toString(), style: 'tableCellCenter' },
+        { text: paralelodatos.strCodNivel, style: 'tableCellCenter' },
+        { text: paralelodatos.strCodParalelo, style: 'tableCellCenter' },
+        { text: paralelodatos.cantidadtotal?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.cantidaddef?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.cantidadpen?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.cantidadsol?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.cantidadpre?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.cantidaddefva?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.cantidadpenva?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.cantidadsolva?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.cantidadpreva?.toString() || '0', style: 'tableCellCenter' },
+        { text: paralelodatos.docente || '', style: 'tableCellCenterDocente' }
+      ]);
+
+      content.push({
+        layout: {
+          hLineWidth: () => 1, vLineWidth: () => 1,
+          hLineColor: () => '#000000', vLineColor: () => '#000000',
+          paddingLeft: () => 2, paddingRight: () => 2,
+          paddingTop: () => 2, paddingBottom: () => 2
+        },
+        table: {
+          headerRows: 1,
+          widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', '*'],
+          body: [
+            [
+              { text: 'N°', style: 'tableHeader' },
+              { text: 'PAO', style: 'tableHeader' },
+              { text: 'PARALELO', style: 'tableHeader' },
+              { text: 'MATRICULAS', style: 'tableHeader' },
+              { text: 'DEFINITIVA', style: 'tableHeader' },
+              { text: 'PENDIENTE', style: 'tableHeader' },
+              { text: 'SOLICITADA', style: 'tableHeader' },
+              { text: 'PRESOL', style: 'tableHeader' },
+              { text: 'VA_DEF', style: 'tableHeader' },
+              { text: 'VA_PEN', style: 'tableHeader' },
+              { text: 'VA_SOL', style: 'tableHeader' },
+              { text: 'VA_PRE', style: 'tableHeader' },
+              { text: 'DOCENTES_NOMBRES', style: 'tableHeader' }
+            ],
+            ...tableBody
+          ]
+        }
+      });
+    });
+
+    content.push({
+      margin: [0, 40, 0, 0],
+      alignment: 'center',
+      stack: [
+        { text: '----------------------------------------', style: 'signatureLine' },
+        { text: 'GENERADO POR:', style: 'signatureLabel' },
+        { text: strNombres, style: 'signatureName' }
+      ]
+    });
+
+    const layoutOptions = {
+      title: 'LISTADO DE ASIGNATURAS POR CARRERAS INFORMACIÓN MATRÍCULAS',
+      subtitle: `CARRERA: ${datosCarrera.data[0].strNombreCarrera}`,
+      pageMargins: [30, 80, 30, 60],
+      pageOrientation: 'landscape'
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        subtitleCenter: { fontSize: 10, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+        tableHeader: { bold: true, fontSize: 7, alignment: 'center', fillColor: '#eeeeee' },
+        tableCellCenter: { fontSize: 8, alignment: 'center' },
+        tableCellCenterDocente: { fontSize: 7, alignment: 'center' },
+        tableCellLeft: { fontSize: 9, alignment: 'left', bold: true },
+        signatureLine: { fontSize: 10, margin: [0, 0, 0, 5] },
+        signatureLabel: { fontSize: 9, margin: [0, 5, 0, 2] },
+        signatureName: { fontSize: 9, bold: true, margin: [0, 2, 0, 0] }
+      }
+    };
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
+
+async function ProcesoPdfListadoEstudiantesCuposEstados(listado, cedula, periodo, estado) {
+  try {
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
+    const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
+
+    const tableBody = listado.map((carreras, index) => [
+      { text: (index + 1).toString(), style: 'tableCellCenter' },
+      { text: carreras.identificacion, style: 'tableCellLeft' },
+      { text: `${carreras.Estudiante.strNombres}   ${carreras.Estudiante.strApellidos}`, style: 'tableCellLeft' },
+      { text: carreras.Carrera.strNombreCarrera, style: 'tableCellLeft' },
+      { text: carreras.dcupobservacion, style: 'tableCellCenter' },
+      { text: carreras.Estado.estnombre, style: 'tableCellCenter' }
+    ]);
+
+    const content = [
+      {
+        margin: [0, 0, 0, 15],
+        alignment: 'center',
+        stack: [
+          { text: 'ESCUELA SUPERIOR POLITECNICA DE CHIMBORAZO', style: 'subtitleCenter' },
+          { text: 'INFORMACIÓN ESTUDIANTE CUPOS', style: 'subtitleCenter' },
+          { text: `ESTADO CUPO ACADÉMICO: ${estado.estnombre}`, style: 'subtitleCenter' },
+          { text: `PERIODO: ${periodoinfo.data[0].strDescripcion}`, style: 'subtitleCenter' }
+        ]
+      },
+      {
+        layout: {
+          hLineWidth: () => 1, vLineWidth: () => 1,
+          hLineColor: () => '#000000', vLineColor: () => '#000000',
+          paddingLeft: () => 4, paddingRight: () => 4,
+          paddingTop: () => 4, paddingBottom: () => 4
+        },
+        table: {
+          headerRows: 2,
+          widths: ['auto', 'auto', '*', '*', 'auto', 'auto'],
+          body: [
+            [{ text: 'INFORMACIÓN.', colSpan: 6, style: 'tableHeaderCenter' }, ...Array(5).fill({})],
+            [
+              { text: 'N°', style: 'tableHeader' },
+              { text: 'CEDULA EST.', style: 'tableHeader' },
+              { text: 'NOMBRES Y APELLIDOS', style: 'tableHeader' },
+              { text: 'CARRERA', style: 'tableHeader' },
+              { text: 'DESCRIPCIÓN', style: 'tableHeader' },
+              { text: 'CUPO', style: 'tableHeader' }
+            ],
+            ...tableBody
+          ]
+        }
+      },
+      {
+        margin: [0, 40, 0, 0],
+        alignment: 'center',
+        stack: [
+          { text: '----------------------------------------', style: 'signatureLine' },
+          { text: 'GENERADO POR:', style: 'signatureLabel' },
+          { text: strNombres, style: 'signatureName' }
+        ]
+      }
+    ];
+
+    const layoutOptions = {
+      title: 'INFORMACIÓN ESTUDIANTE CUPOS',
+      subtitle: '',
+      pageMargins: [40, 80, 40, 60],
+      pageOrientation: 'portrait'
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+    const docDefinition = {
+      ...baseLayout,
+      content: content,
+      styles: {
+        ...baseLayout.styles,
+        subtitleCenter: { fontSize: 9, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+        tableHeader: { bold: true, fontSize: 8, alignment: 'center', fillColor: '#eeeeee' },
+        tableHeaderCenter: { bold: true, fontSize: 8, alignment: 'center', fillColor: '#eeeeee' },
+        tableCellCenter: { fontSize: 8, alignment: 'center' },
+        tableCellLeft: { fontSize: 8, alignment: 'left' },
+        signatureLine: { fontSize: 9, margin: [0, 0, 0, 5] },
+        signatureLabel: { fontSize: 9, margin: [0, 5, 0, 2] },
+        signatureName: { fontSize: 9, bold: true, margin: [0, 2, 0, 0] }
+      }
+    };
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}

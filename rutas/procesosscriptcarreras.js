@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require('fs');
 const axios = require('axios');
 const https = require('https');
-const puppeteer = require('puppeteer');
 const tools = require('./tools');
-const pdf = require('html-pdf');
 const procesoAcadeicoNotas = require('../rutas/ProcesoNotasAcademico');
 const procesoCupo = require('../modelo/procesocupos');
 const procesoscriptcarrera = require('../modelo/modeloscriptcarreras');

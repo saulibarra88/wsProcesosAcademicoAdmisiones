@@ -1,7 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const procesosfuncionesrecord = require('../procesosformato/procesosrecord');
 const { sendResponseServicios } = require('../herramientas/responseservice'); 
 const logger = require('./../herramientas/logger');

@@ -4,7 +4,7 @@ const moment = require('moment');
 require('moment/locale/es');
 const https = require('https');
 const crypto = require("crypto");
-const pdf = require('html-pdf');
+
   const PdfPrinter = require('pdfmake');
       // Función para convertir una imagen a base64
   function imageToBase64(imagePath) {
@@ -280,35 +280,7 @@ let invalidCount = 0;
 
 
 
-module.exports.FunciongenerarPDF=function (htmlCompleto, options) {
-    return new Promise((resolve, reject) => {
-        pdf.create(htmlCompleto, options).toFile("NominaGenerada.pdf", function (err, res) {
-            if (err) {
-                reject(err);
-            } else {
-                fs.readFile(res.filename, (err, data) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        const base64Data = Buffer.from(data).toString('base64');
-                        // Eliminar el archivo PDF generado (opcional)
-                       fs.unlink(res.filename, (err) => {
-                            if (err) {
-                                console.error('Error al eliminar el archivo PDF:', err);
-                            } else {
-                                console.log('Archivo PDF eliminado.');
-                            }
-                        });
 
-                        // Resolver la promesa con base64Data
-                        resolve(base64Data);
-                    }
-                });
-            }
-        });
-    });
-}
-  
 
 module.exports.ConvertirFechaMatricula=function(isoDate) {
   const date = new Date(isoDate);

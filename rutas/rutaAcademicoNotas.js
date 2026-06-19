@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const procesoAcadeicoNotas = require('../rutas/ProcesoNotasAcademico');
 const procesoreportecarrera = require('../rutas/reportesCarreras');
 

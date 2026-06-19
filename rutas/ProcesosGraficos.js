@@ -1,19 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require('fs');
 const axios = require('axios');
 const https = require('https');
-const puppeteer = require('puppeteer');
 const tools = require('./tools');
-const pdf = require('html-pdf');
 const procesoAcadeicoNotas = require('../rutas/ProcesoNotasAcademico');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const procesoCupo = require('../modelo/procesocupos');
-const Chart = require('chart.js');
+const { Chart } = require('chart.js');
 const ChartDataLabels = require('chartjs-plugin-datalabels');
 const crypto = require("crypto");
-const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const reportespdfmaker = require("./../reportesmake/reportescarrerasmake");
 const sqlmodeloformato = require("./../modeloformato/generalesmodelo.js");
 Chart.register(ChartDataLabels);
@@ -377,7 +374,7 @@ async function generatePieChart(listado) {
     plugins: [drawLabelsPlugin]
   };
 
-  const image = await chartJSNodeCanvas.renderToBuffer(chartConfig);
+  const image = chartJSNodeCanvas.renderToBufferSync(chartConfig);
   return image;
 }
 
@@ -1223,7 +1220,7 @@ async function generatePieChart(listado) {
     plugins: [drawLabelsPlugin]
   };
 
-  const image = await chartJSNodeCanvas.renderToBuffer(chartConfig);
+  const image = chartJSNodeCanvas.renderToBufferSync(chartConfig);
   return image;
 }
 const drawLabelsPlugin = {

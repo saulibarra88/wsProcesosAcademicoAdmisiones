@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 
 const funcionesprocesosmovilidadconfiguraciones = require('../procesos/procesosmovilidadconfiguraciones');
 
