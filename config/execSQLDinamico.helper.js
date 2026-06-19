@@ -7,7 +7,15 @@ const { Connection, Request } = require('mssql');
 const poolsAcademicoCache = new Map();
 const getPoolAcademico = async (carrera) => {
     if (poolsAcademicoCache.has(carrera)) {
-        return poolsAcademicoCache.get(carrera);
+        try {
+            const pool = await poolsAcademicoCache.get(carrera);
+            if (pool && pool.connected) {
+                return pool;
+            }
+        } catch (e) {
+            // Si la promesa falló, limpiamos el caché
+        }
+        poolsAcademicoCache.delete(carrera);
     }
     const configClonada = { ...CONFIGACADEMICO, database: carrera };
     const pool = new sql.ConnectionPool(configClonada);
@@ -19,7 +27,7 @@ const getPoolAcademico = async (carrera) => {
     poolsAcademicoCache.set(carrera, connectPromise);
     return connectPromise;
 };
-const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
+const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = null, isRetry = false) => {
     let pool;
     try {
         pool = await getPoolAcademico(carrera);
@@ -28,9 +36,20 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
         return buildResponse(result, OK, msgVacio, msgError);
     } catch (err) {
         console.error(`Error conexion Base Academico (Carrera: ${carrera}):`, err);
-        if (err && (err.code === 'ECONNCLOSED' || err.code === 'ETIMEOUT' || err.code === 'ESOCKET')) {
+        const isConnErr = err && (
+            err.code === 'ECONNCLOSED' || 
+            err.code === 'ENOTOPEN' || 
+            err.code === 'ETIMEOUT' || 
+            err.code === 'ESOCKET' || 
+            (err.message && err.message.toLowerCase().includes('closed'))
+        );
+        if (isConnErr) {
             if (pool) pool.close().catch(() => {});
             poolsAcademicoCache.delete(carrera);
+            if (!isRetry) {
+                console.warn(`[RETRY] Reintentando consulta en Base Academico para Carrera: ${carrera}`);
+                return execDinamico(carrera, SQL, OK, msgVacio, msgError, true);
+            }
         }
         return handleDatabaseError(err, msgError);
     } 
@@ -39,7 +58,6 @@ const execDinamico = async (carrera, SQL, OK = "", msgVacio = "", msgError = nul
 
 const execDinamicoTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
   try {
-    // Ejecuta el SQL personalizado con los parámetros
     var res=  await transaction.request().query(SQL);
     return buildResponse(res, OK, msgVacio, msgError);
   } catch (error) {

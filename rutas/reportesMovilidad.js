@@ -25,7 +25,8 @@ module.exports.ExcelExcelListadoSolicitudes = async function (listado, periodo) 
     var resultado = await ProcesoExcelListadoSolicitudes(listado, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfListadoSolicitudesAprobadasCarreras = async function (listado, periodo) {
@@ -33,7 +34,8 @@ module.exports.PdfListadoSolicitudesAprobadasCarreras = async function (listado,
     var resultado = await ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfCertificadoMovilidadEstuidante = async function (solicitud, objpersona, objperiodo) {
@@ -41,7 +43,8 @@ module.exports.PdfCertificadoMovilidadEstuidante = async function (solicitud, ob
     var resultado = await ProcesoPdfCertificadoMovilidadEstudiante(solicitud, objpersona, objperiodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfCurriculumEstuidantil = async function (cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas) {
@@ -49,7 +52,8 @@ module.exports.PdfCurriculumEstuidantil = async function (cedula, persona, carre
     var resultado = await ProcesoPdfCurriculumEstudiantil(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfCurriculumEstuidantilConsultor = async function (cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo) {
@@ -57,7 +61,8 @@ module.exports.PdfCurriculumEstuidantilConsultor = async function (cedula, perso
     var resultado = await ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 
@@ -66,7 +71,8 @@ module.exports.PdfSolcitudesAprobadasCarreraPeriodo = async function (listado, p
     var resultado = await ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strCarrera,strNombre);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 async function ProcesoExcelListadoSolicitudes(listado, periodo) {
@@ -162,6 +168,7 @@ async function ProcesoExcelListadoSolicitudes(listado, periodo) {
 
   } catch (error) {
     console.error(error);
+    
     return 'ERROR';
   }
 }
@@ -256,6 +263,7 @@ async function ProcesoPdfListadoEstudiantesSolicitudes(listado, periodo) {
     return base64
   } catch (error) {
     console.error(error);
+    
     return 'ERROR';
   }
 }
@@ -356,6 +364,7 @@ async function ProcesoPdfSolcitudesAprobadasCarreraPeriodo(listado, periodo,strC
     return base64
   } catch (error) {
     console.error(error);
+    
     return 'ERROR';
   }
 }
@@ -481,6 +490,7 @@ async function ProcesoPdfCertificadoMovilidadEstudiante(objsolicitud, objpersona
     return base64
   } catch (error) {
     console.error(error);
+    
     return 'ERROR';
   }
 }
@@ -994,6 +1004,7 @@ async function ProcesoPdfCurriculumEstudiantil(cedula, persona, carrera, listado
     return base64
   } catch (error) {
     console.error(error);
+    
     return 'ERROR';
   }
 }
@@ -1037,7 +1048,8 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera
     const base64 = await generarPDF(htmlCompleto, options);
     return base64;
   } catch (error) {
-    console.error('Error en ProcesoPdfCurriculumEstudiantilConsultor:', error);
+    console.error(error);
+    
     return 'ERROR';
   }
 }

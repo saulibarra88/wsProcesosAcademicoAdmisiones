@@ -11,16 +11,6 @@ const https = require('https');
 const {  iniciarDinamicoPool,iniciarDinamicoTransaccion} = require("./../config/execSQLDinamico.helper");
 const {  iniciarMasterTransaccion,iniciarMasterPool} = require("./../config/execSQLMaster.helper");
 
-module.exports.ProcesoVerificarMatriculasIncripciones = async function (periodo, cedula) {
-    try {
-        var resultado = await FuncionVerificarMatriculaInscripcion(periodo);//Buscar estudiantes matriculasdos definitivos para insertar el cupo
-        return { blProceso: true, mensaje: "Se ejecuto el proceso con exitos  periodo" + periodo, Informacion: resultado }
-
-    } catch (error) {
-        return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
-    }
-}
 
 
 module.exports.ProcesoMatriculadosDefinitivas = async function (periodo, cedula) {
@@ -29,8 +19,9 @@ module.exports.ProcesoMatriculadosDefinitivas = async function (periodo, cedula)
         return { blProceso: true, mensaje: "Se ejecuto el proceso con exitos  periodo" + periodo, Informacion: resultado }
 
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 async function FuncionVerificarMatriculaInscripcion(periodo) {
@@ -102,8 +93,9 @@ async function FuncionVerificarMatriculaInscripcion(periodo) {
             console.log("******************PROCESO FINALIZADO******************")
             return ListadoEstudiantes;
         } catch (err) {
-            await transaction.rollback();
             console.error(err);
+            await transaction.rollback();
+            
             return 'ERROR';
         } finally {
             await transaction.commit();
@@ -183,8 +175,9 @@ async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
             console.log("******************PROCESO FINALIZADO******************")
             return ListadoEstudiantes;
         } catch (err) {
-            await transaction.rollback();
             console.error(err);
+            await transaction.rollback();
+            
             return 'ERROR';
         } finally {
             await transaction.commit();

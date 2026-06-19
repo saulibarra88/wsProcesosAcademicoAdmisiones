@@ -23,7 +23,8 @@ router.get('/ProcesosPruebas/:periodo/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -44,7 +45,8 @@ router.get('/ProcesosNotasRecuperacion/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -65,7 +67,8 @@ router.get('/ProcesosEliminacionMatriculasPendientes/:periodo',async (req, res) 
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -89,7 +92,8 @@ router.get('/ProcesosVerificacionInconsistenciaMatricula/:carrera/:periodoactual
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,

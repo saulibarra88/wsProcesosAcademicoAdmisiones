@@ -17,7 +17,8 @@ module.exports.PdfListadosEstudiantesAdmisiones = async function (listado, strBa
         var resultado = await ProcesoPdfListadosEstudiantesAdmisiones(listado, strBaseCarrera, cedulaUsuario);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.PdfListadosaspiranteAdmisiones = async function (listado, strBaseCarrera, cedulaUsuario) {
@@ -25,7 +26,8 @@ module.exports.PdfListadosaspiranteAdmisiones = async function (listado, strBase
       var resultado = await ProcesoPdfListadosAspiranteAdmisiones(listado, strBaseCarrera, cedulaUsuario);
       return resultado
   } catch (error) {
-      console.log(error);
+      console.error(error);
+      
   }
 }
 module.exports.ExcelListadosEstudiantesAdmisiones = async function (listado, strBaseCarrera, cedulaUsuario) {
@@ -33,7 +35,8 @@ module.exports.ExcelListadosEstudiantesAdmisiones = async function (listado, str
         var resultado = await ProcesoExcelListadosEstudiantesAdmisiones(listado, strBaseCarrera, cedulaUsuario);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ExcelListadosAspiranteAdmisiones = async function (listado, strBaseCarrera, cedulaUsuario) {
@@ -41,7 +44,8 @@ module.exports.ExcelListadosAspiranteAdmisiones = async function (listado, strBa
       var resultado = await ProcesoExcelListadosAspiranteAdmisiones(listado, strBaseCarrera, cedulaUsuario);
       return resultado
   } catch (error) {
-      console.log(error);
+      console.error(error);
+      
   }
 }
 module.exports.ExcelListadosEstudianteMatriculasdosNivel = async function (listado) {
@@ -49,7 +53,8 @@ module.exports.ExcelListadosEstudianteMatriculasdosNivel = async function (lista
       var resultado = await ProcesoExcelListadosEstudianteMatriculadosNivel(listado);
       return resultado
   } catch (error) {
-      console.log(error);
+      console.error(error);
+      
   }
 }
 module.exports.ExcelListadosEstudianteMatriculasdosNivelCupo = async function (listado) {
@@ -57,7 +62,8 @@ module.exports.ExcelListadosEstudianteMatriculasdosNivelCupo = async function (l
       var resultado = await ProcesoExcelListadosEstudianteMatriculadosNivelCupo(listado);
       return resultado
   } catch (error) {
-      console.log(error);
+      console.error(error);
+      
   }
 }
 
@@ -201,10 +207,12 @@ async function ProcesoPdfListadosAspiranteAdmisiones(listado, strBaseCarrera, ce
           return base64
       } catch (error) {
           console.error(error);
+          
           return 'ERROR';
       }
   } catch (err) {
-      console.log(error);
+      console.error(err);
+      
       return 'ERROR';
   }
 }
@@ -343,10 +351,12 @@ async function ProcesoPdfListadosEstudiantesAdmisiones(listado, strBaseCarrera, 
             return base64
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -545,10 +555,12 @@ return fileData;
             return null
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -745,10 +757,12 @@ return fileData;
           return null
       } catch (error) {
           console.error(error);
+          
           return 'ERROR';
       }
   } catch (err) {
-      console.log(error);
+      console.error(err);
+      
       return 'ERROR';
   }
 }
@@ -943,10 +957,12 @@ return fileData;
           return null
       } catch (error) {
           console.error(error);
+          
           return 'ERROR';
       }
   } catch (err) {
-      console.log(error);
+      console.error(err);
+      
       return 'ERROR';
   }
 }
@@ -1155,10 +1171,12 @@ return fileData;
           return null
       } catch (error) {
           console.error(error);
+          
           return 'ERROR';
       }
   } catch (err) {
-      console.log(error);
+      console.error(err);
+      
       return 'ERROR';
   }
 }

@@ -7,7 +7,15 @@ const { Connection, Request } = require('mssql');
 const poolsCache = new Map();
 const getPoolParaCarrera = async (carrera) => {
   if (poolsCache.has(carrera)) {
-    return poolsCache.get(carrera);
+    try {
+      const pool = await poolsCache.get(carrera);
+      if (pool && pool.connected) {
+        return pool;
+      }
+    } catch (e) {
+      // Si la promesa falló, limpiamos el caché
+    }
+    poolsCache.delete(carrera);
   }
   const configClonada = { ...CONFIGMASTER, database: carrera };
   const pool = new sql.ConnectionPool(configClonada);
@@ -18,7 +26,7 @@ const getPoolParaCarrera = async (carrera) => {
   poolsCache.set(carrera, connectPromise);
   return connectPromise;
 };
-const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
+const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null, isRetry = false) => {
   let pool;
   try {
     pool = await getPoolParaCarrera(carrera);
@@ -27,9 +35,20 @@ const execMaster = async (carrera, SQL, OK = "", msgVacio = "", msgError = null)
     return buildResponse(result, OK, msgVacio, msgError);
   } catch (err) {
     console.error(`Error conexion Base Master (Carrera: ${carrera}):`, err);
-    if (err && (err.code === 'ECONNCLOSED' || err.code === 'ETIMEOUT' || err.code === 'ESOCKET')) {
+    const isConnErr = err && (
+      err.code === 'ECONNCLOSED' || 
+      err.code === 'ENOTOPEN' || 
+      err.code === 'ETIMEOUT' || 
+      err.code === 'ESOCKET' || 
+      (err.message && err.message.toLowerCase().includes('closed'))
+    );
+    if (isConnErr) {
       if (pool) pool.close().catch(() => {});
       poolsCache.delete(carrera);
+      if (!isRetry) {
+        console.warn(`[RETRY] Reintentando consulta en Base Master para Carrera: ${carrera}`);
+        return execMaster(carrera, SQL, OK, msgVacio, msgError, true);
+      }
     }
     return handleDatabaseError(err, msgError);
   }
@@ -82,9 +101,7 @@ const iniciarMasterTransaccion = async (poolejcucion) => {
 // Función para iniciar un pool master
 const iniciarMasterPool = async (carrera) => {
   try {
-    const configClonada = { ...CONFIGMASTER, database: carrera };
-    const pool = new sql.ConnectionPool(configClonada);
-    return pool;
+    return await getPoolParaCarrera(carrera);
   } catch (error) {
     throw error;
   }

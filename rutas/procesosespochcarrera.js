@@ -26,7 +26,8 @@ module.exports.ProcesoReporteExcelMatriculasCarrerasIndividual = async function 
 
         return resultado
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -38,7 +39,8 @@ var resultado = await FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTra
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -51,7 +53,8 @@ module.exports.ProcesoReporteExcelMatriculasNivelacionInstitucional = async func
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
       
     }
@@ -63,7 +66,8 @@ module.exports.ProcesoReporteExcelMatriculasAdmisionesnstitucional = async funct
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
       
     }
@@ -210,8 +214,9 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
                 return base64
         }
          catch (err) {
-                await transaction.rollback();
                 console.error(err);
+                await transaction.rollback();
+                
                 return 'ERROR';
             } finally {
                 await transaction.commit();
@@ -354,7 +359,8 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, e
         return base64
 
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        
         return { "error: ": err }
     }
 }
@@ -510,8 +516,9 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
                 return base64
         }
          catch (err) {
-                await transaction.rollback();
                 console.error(err);
+                await transaction.rollback();
+                
                 return 'ERROR';
             } finally {
                 await transaction.commit();
@@ -658,7 +665,8 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucional(periodo
         return base64
 
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        
         return { "error: ": err }
     }
 }
@@ -805,8 +813,9 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                 return base64
         }
          catch (err) {
-                await transaction.rollback();
                 console.error(err);
+                await transaction.rollback();
+                
                 return 'ERROR';
             } finally {
                 await transaction.commit();
@@ -1115,6 +1124,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinal(periodo) {
     } catch (err) {
 
         console.error(err);
+
+        
         return 'ERROR' +err;
     }
 }
@@ -1416,8 +1427,9 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
        return base64
 
     } catch (err) {
-                await transaction.rollback();
                 console.error(err);
+                await transaction.rollback();
+                
                 return 'ERROR';
             } finally {
                 await transaction.commit();

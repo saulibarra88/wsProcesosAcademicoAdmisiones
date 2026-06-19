@@ -30,7 +30,8 @@ module.exports.ProcesoListadoFacultadesAdministracion = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoFacultadesAdministracion('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -39,7 +40,8 @@ module.exports.ProcesoListadoFacultadesActivas = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoFacultadesActivas('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -49,7 +51,8 @@ module.exports.ProcesoListadoEscuelaAdministracion = async function (facultad) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoEscuelaAdministracion('OAS_Master', facultad);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -58,7 +61,8 @@ module.exports.Proceso = async function (facultad) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoEscuelaAdministracion('OAS_Master', facultad);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -83,7 +87,8 @@ module.exports.ProcesoPropuestaCodigoPensumCarrera = async function (carrera) {
 
         return respuesta
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR: ' + err;
     }
 }
@@ -93,7 +98,8 @@ module.exports.ProcesoInsertarFacultad = async function (facultad) {
         var resultado = await funcionesmodelomovilidad.InsertarFacultad('OAS_Master', facultad);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -102,7 +108,8 @@ module.exports.ProcesoObtenerInformacionAcademicaEstudiante = async function (ce
         var resultado = await funcionesmodelomovilidadconfiguraciones.ObtenerInformacionAcademicaEstudiante('OAS_Master', cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -111,7 +118,8 @@ module.exports.ProcesoActualizarFacultad = async function (facultad) {
         var resultado = await funcionesmodelomovilidad.ActualizarFacultad('OAS_Master', facultad);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -120,7 +128,8 @@ module.exports.ProcesoCambiarEstadoFacultad = async function (codigo, estado) {
         var resultado = await funcionesmodelomovilidad.CambiarEstadoFacultad('OAS_Master', codigo, estado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -129,7 +138,8 @@ module.exports.ProcesoInsertarEscuela = async function (Escuela) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.InsertarEscuela('OAS_Master', Escuela);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -138,7 +148,8 @@ module.exports.ProcesoActualizarEscuela = async function (Escuela) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ActualizarEscuela('OAS_Master', Escuela);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -147,7 +158,8 @@ module.exports.ProcesoCambiarEstadoEscuela = async function (codigo, facultad, e
         var resultado = await funcionesmodelomovilidadconfiguraciones.CambiarEstadoEscuela('OAS_Master', codigo, facultad, estado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -156,7 +168,8 @@ module.exports.ProcesoInsertarCarrera = async function (carrera) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.InsertarCarrera('OAS_Master', carrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -165,7 +178,8 @@ module.exports.ProcesoActualizarCarrera = async function (carrera) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ActualizarCarrera('OAS_Master', carrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -174,7 +188,8 @@ module.exports.ProcesoCambiarEstadoCarrera = async function (codigo, escuela, es
         var resultado = await funcionesmodelomovilidadconfiguraciones.CambiarEstadoCarrera('OAS_Master', codigo, escuela, estado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -183,7 +198,8 @@ module.exports.ProcesoListadoCarreraaAdministracion = async function (escuela) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoCarrerasAdministracion('OAS_Master', escuela);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -193,7 +209,8 @@ module.exports.ProcesoListadoSede = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoSedes('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -210,7 +227,8 @@ module.exports.ProcesoCodigoSeguridadCarrera = async function (escuela) {
         }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -219,7 +237,8 @@ module.exports.ProcesoInsertarPais = async function (strCodigo, strNombre) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.InsertarPais('OAS_Master', strCodigo, strNombre);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -228,7 +247,8 @@ module.exports.ProcesoActualizarPais = async function (strCodigo, strNombre) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ActualizarPais('OAS_Master', strCodigo, strNombre);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -237,7 +257,8 @@ module.exports.ProcesoInsertarProvincia = async function (strCodigo, strNombre, 
         var resultado = await funcionesmodelomovilidadconfiguraciones.InsertarProvincia('OAS_Master', strCodigo, strNombre, strCodPais);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -246,7 +267,8 @@ module.exports.ProcesoActualizarProvincia = async function (strCodigo, strNombre
         var resultado = await funcionesmodelomovilidadconfiguraciones.ActulizarProvincia('OAS_Master', strCodigo, strNombre, strCodPais);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -256,7 +278,8 @@ module.exports.ProcesoInsertarCiudad = async function (strCodigo, strNombre, str
         var resultado = await funcionesmodelomovilidadconfiguraciones.InsertarCiudad('OAS_Master', strCodigo, strNombre, strCodProv);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -265,7 +288,8 @@ module.exports.ProcesoActualizarCiudad = async function (strCodigo, strNombre, s
         var resultado = await funcionesmodelomovilidadconfiguraciones.ActulizarCiudad('OAS_Master', strCodigo, strNombre, strCodProv);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -275,7 +299,8 @@ module.exports.ProcesoListadoTiposInstituciones = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoTiposInstituciones('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -284,7 +309,8 @@ module.exports.ProcesoListadoInstitucionesTodas = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoInstitucionesMasterTodas('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -294,7 +320,8 @@ module.exports.ProcesoInsertarInstituciones = async function (strCodigo, strNomb
         var resultado = await funcionesmodelomovilidadconfiguraciones.InsertarInstitucion('OAS_Master', strCodigo, strNombre, strCodCiudad, strCodTipo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -303,7 +330,8 @@ module.exports.ProcesoActualizarInstituciones = async function (strCodigo, strNo
         var resultado = await funcionesmodelomovilidadconfiguraciones.ActulizarInstituciones('OAS_Master', strCodigo, strNombre, strCodCiudad, strCodTipo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -312,7 +340,8 @@ module.exports.ProcesoListadoTitulosMaster = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoTitulosMaster('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -322,7 +351,8 @@ module.exports.ProcesoInsertarTitulo = async function (strCodigo, strNombre, bln
         var resultado = await funcionesmodelomovilidadconfiguraciones.InsertarTitulo('OAS_Master', strCodigo, strNombre, blnProfesional);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -331,7 +361,8 @@ module.exports.ProcesoActualizarTitulo = async function (strCodigo, strNombre, b
         var resultado = await funcionesmodelomovilidadconfiguraciones.ActulizarTitulo('OAS_Master', strCodigo, strNombre, blnProfesional);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -340,7 +371,8 @@ module.exports.ProcesoObteberDatosInstitucion = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ObtenerDatosInstitucion('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -349,7 +381,8 @@ module.exports.ProcesoActualizarDatosInstitucion = async function (objDatos) {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ActualizarDatosInstitucion('OAS_Master', objDatos);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -359,7 +392,8 @@ module.exports.ProcesoObtenerNuevoCodigoPeriodoRemedial = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ObtenerNuevoCodigoPeriodoRemedial('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -368,7 +402,8 @@ module.exports.ProcesoObtenerNuevoCodigoPeriodoOrdinario = async function () {
         var resultado = await funcionesmodelomovilidadconfiguraciones.ObtenerNuevoCodigoPeriodoOrdinario('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -396,7 +431,8 @@ module.exports.ProcesoObtenerFechasCalificacionesSistemaAcademico = async functi
         }
         return Datos
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -405,7 +441,8 @@ module.exports.ProcesoInsertarNuevoPeriodoAcademico = async function (objPeriodo
         var resultado = await funcionesmodelomovilidadconfiguraciones.InsertarPeridoAcademicoMaster('OAS_Master', objPeriodo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -414,7 +451,8 @@ module.exports.ProcesoObtenerUsuarioPorIdRolyBaseCarrera = async function (idrol
         var resultado = await funcionesmodelomovilidadconfiguraciones.ObtenerUsuarioPorIdRolyBaseCarrera('SistemaAcademico', idrol,dbcarrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -441,7 +479,8 @@ module.exports.ProcesoActualizarPeriodosCarreras = async function (objPeriodo, l
 
         return 'OK'
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -481,7 +520,8 @@ module.exports.ProcesoListarFechasCalificacionesCarreras = async function () {
 
         return listado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -515,7 +555,8 @@ module.exports.ProcesoActualizarFechasCalificacionesCarreras = async function (o
 
         return 'OK'
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -525,7 +566,8 @@ module.exports.ProcesoListadoTitulodadoInstitucion = async function (codigoInsti
         var resultado = await funcionesmodelomovilidadconfiguraciones.ListadoTituloInstitucion('OAS_Master', codigoInstitucion);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }
@@ -535,7 +577,8 @@ module.exports.ProcesoIngresoTitulodadoInstitucion = async function (codigoInsti
         var resultado = await funcionesmodelomovilidadconfiguraciones.IngresarTituloInstitucion('OAS_Master', codigoInstitucion,codigoTitulo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR: ' + error;
     }
 }

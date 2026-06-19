@@ -29,7 +29,8 @@ module.exports.ProcesoRegistroRetiroSinmatricula = async function (datos) {
         var resultado = await FuncionRegistroRetiroSinmatricula(datos);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoVerificarEstudianteGraduado = async function (cedula) {
@@ -54,7 +55,8 @@ module.exports.ProcesoVerificarEstudianteGraduado = async function (cedula) {
         }
 
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -64,7 +66,8 @@ module.exports.ProcesoGraduadosCarreraFechas = async function (fechaInicio, fech
         var resultado = await procesocarreras.ListadoGraduadosCarreraFechas(carrera, fechaInicio, fechaFin);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoObtenerNivelEstudiante = async function (carrera, cedula) {
@@ -72,7 +75,8 @@ module.exports.ProcesoObtenerNivelEstudiante = async function (carrera, cedula) 
         var resultado = await procesomodelomovilidad.ObenterNivelEstuidanteCarrera(carrera, cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 
@@ -89,7 +93,8 @@ async function FuncionRegistroRetiroSinmatricula(datos) {
 
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }

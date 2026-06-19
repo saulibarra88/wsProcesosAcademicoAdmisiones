@@ -14,8 +14,9 @@ const execCentralizada = async (SQL, OK = "", msgVacio = "", msgError = null) =>
         return buildResponse(result, OK, msgVacio, msgError);
         
     } catch (err) {
+        console.error(err);
         // Usar console.error para mejor trazabilidad en logs
-        console.error("Error conexion Base Centralizada:", err); 
+         
         return handleDatabaseError(err, msgError);
         
     } finally {
@@ -24,8 +25,9 @@ const execCentralizada = async (SQL, OK = "", msgVacio = "", msgError = null) =>
             try {
                 await client.end();
             } catch (closeErr) {
+                console.error(closeErr);
                 // Capturamos cualquier error al intentar cerrar para que no rompa el flujo
-                console.error("Error al intentar cerrar la conexión Base Centralizada:", closeErr);
+                
             }
         }
     }

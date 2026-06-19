@@ -30,6 +30,7 @@ module.exports.ProcesoActualizacionDatosPersonaCentral = async function (datos) 
         return resultado
     } catch (error) {
         console.error(error);
+        
             return 'ERROR';
     }
 }

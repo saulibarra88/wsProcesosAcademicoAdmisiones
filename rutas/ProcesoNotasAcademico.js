@@ -26,7 +26,8 @@ module.exports.ProcesoObtenerPeriodoDadoCodigo = async function (periodo) {
         }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoAcademicoCalificaciones = async function (periodo, acta) {
@@ -35,7 +36,8 @@ module.exports.ProcesoAcademicoCalificaciones = async function (periodo, acta) {
         var resultado = await ActualizarNotaExonerados(periodo, "ABI");//Numero de periodos a restas , estado de carrera
         // var resultado = await ActualizarActasParcialesCambiosFechas(periodo, acta);//Numero de periodos a restas , tipo de acta a actualizar
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoObtenerCalificacionesEstudiantes = async function (carrera, periodo, cedula, idreglamento) {
@@ -43,7 +45,8 @@ module.exports.ProcesoObtenerCalificacionesEstudiantes = async function (carrera
         var Asignaturas = await ObtenerListadoCalificacionesEstudiantes(carrera, periodo, cedula, idreglamento);
         return { Asignaturas }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoCalificacionesEstudiantedadoDocente = async function (carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento) {
@@ -51,7 +54,8 @@ module.exports.ProcesoListadoCalificacionesEstudiantedadoDocente = async functio
         var Asignaturas = await ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento);
         return { Asignaturas }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoReporteListadoCalificacionesEstudiantedadoDocente = async function (carrera, periodo, nivel, paralelo, CodMateria, cedula, idreglamento, cedulaUsuario) {
@@ -63,7 +67,8 @@ module.exports.ProcesoReporteListadoCalificacionesEstudiantedadoDocente = async 
 
         return { base64 }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoReporteListadoCalificacionesEstudiantedadoDocenteTres = async function (listado, carrera, periodo,nivel,paralelo,CodMateria, cedula, cedulaUsuario) {
@@ -73,7 +78,8 @@ module.exports.ProcesoReporteListadoCalificacionesEstudiantedadoDocenteTres = as
 
         return { base64 }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoObtenerLinkActacalificaciones = async function (carrera, periodo, nivel, paralelo, CodMateria, codDocente, idTipoActa) {
@@ -82,7 +88,8 @@ module.exports.ProcesoObtenerLinkActacalificaciones = async function (carrera, p
         var Asignaturas = await ObtenerActaLinkCalificaciones(carrera, periodo, nivel, paralelo, CodMateria, codDocente, idTipoActa);
         return { Asignaturas }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoObtenerMatriculasInternados = async function (carrera, cedula) {
@@ -91,7 +98,8 @@ module.exports.ProcesoObtenerMatriculasInternados = async function (carrera, ced
         var Asignaturas = await ObtenerMatriculasInternados(carrera, cedula);
         return { Asignaturas }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoObtenerRetirosInternados = async function (carrera, cedula) {
@@ -100,7 +108,8 @@ module.exports.ProcesoObtenerRetirosInternados = async function (carrera, cedula
         var Asignaturas = await ListadoRetirosInternados(carrera, cedula);
         return { Asignaturas }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ListadoConvalidacionesEstudiantes = async function (carrera, cedula) {
@@ -108,7 +117,8 @@ module.exports.ListadoConvalidacionesEstudiantes = async function (carrera, cedu
         var Asignaturas = await ListadosEstudianteConvalidaciones(carrera, cedula);
         return { Asignaturas }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ListadoEquivalenciaRelamentos = async function (idReglamento) {
@@ -116,7 +126,8 @@ module.exports.ListadoEquivalenciaRelamentos = async function (idReglamento) {
         var Equivalencias = await ListadoEquivalenciaRendimientoss(idReglamento);
         return { Equivalencias }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ListadoEstudiantesPeriodosCarrera = async function (carrera,periodo) {
@@ -124,7 +135,8 @@ module.exports.ListadoEstudiantesPeriodosCarrera = async function (carrera,perio
         var Datos = await FuncionListadoEstudiantePeriodos(carrera,periodo);
         return { Datos }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 
@@ -133,7 +145,8 @@ module.exports.ListadoEstudiantesAsignaturaDocente = async function (carrera, pe
         var Datos = await ObtenerListadoEstudiantedadoDocenteAsignatura(carrera, periodo,nivel,paralelo,CodMateria, cedula);
         return { Datos }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 async function ActualizarNotaExonerados(periodo, estado) {
@@ -153,10 +166,12 @@ async function ActualizarNotaExonerados(periodo, estado) {
             return listadoCarreras;
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
         console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -178,10 +193,12 @@ async function ActualizarActasParcialesCambiosFechas(periodo, tipo) {
             return listadoCarreras;
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
         console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -227,8 +244,9 @@ async function ObtenerListadoCalificacionesEstudiantes(carrera, periodo, cedula,
             return listadoAsignaturas;
         }
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -287,8 +305,9 @@ async function ObtenerListadoCalificacionesEstudiantedadoDocente(carrera, period
             return listadoNomina;
         }
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -312,8 +331,9 @@ async function ObtenerActaLinkCalificaciones(carrera, periodo, nivel, paralelo, 
             return listadoNomina;
         }
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -348,8 +368,9 @@ async function ListadosEstudianteConvalidaciones(carrera, cedula) {
             return listadoNomina;
         }
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -372,6 +393,8 @@ async function ListadoEquivalenciaRendimientoss(idReglamento) {
     } catch (err) {
 
         console.error(err);
+
+        
         return 'ERROR';
     }
 }
@@ -400,6 +423,8 @@ async function ObtenerMatriculasInternados(carrera, cedula) {
     } catch (err) {
 
         console.error(err);
+
+        
         return 'ERROR';
     }
 }
@@ -462,8 +487,9 @@ async function FuncionListadoEstudiantePeriodos(carrera,periodo) {
             return listado;
         }
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -497,6 +523,8 @@ async function ListadoRetirosInternados(carrera, cedula) {
     } catch (err) {
 
         console.error(err);
+
+        
         return 'ERROR';
     }
 }
@@ -716,8 +744,9 @@ async function ObtenerListadoEstudiantedadoDocenteAsignatura(carrera, periodo,ni
             return listadoNomina;
         }
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();

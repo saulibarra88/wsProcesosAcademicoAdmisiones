@@ -14,7 +14,8 @@ router.post('/InsertarAsignaturasMovilidad/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -35,7 +36,8 @@ router.post('/ObtenerAsignaturaMovilidadDocente/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -55,7 +57,8 @@ router.post('/ObtenerAsignaturaMovilidadNivelParalelo/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -75,7 +78,8 @@ router.post('/EliminarAsignaturaMovilidadDocente/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -95,7 +99,8 @@ router.post('/DesactivarAsignaturaMovilidadDocente/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -115,7 +120,8 @@ router.post('/ObtenerDatosDocenteAsignaturasCarrera/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,

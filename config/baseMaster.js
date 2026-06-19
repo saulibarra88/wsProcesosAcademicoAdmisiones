@@ -11,7 +11,7 @@ module.exports = {
   "port": parseInt(process.env.DB_PORTMASTER, 10),
   pool: {
     max: 100,
-    min: 10,
+    min: 0,
     idleTimeoutMillis: 30000 // Reducir el tiempo de espera en milisegundos
   },
   options: {

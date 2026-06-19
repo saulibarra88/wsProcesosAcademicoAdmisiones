@@ -25,7 +25,8 @@ module.exports.ProcesoReporteExcelMatriculasCarrerasIndividual = async function 
 
         return resultado
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -36,7 +37,8 @@ module.exports.ProcesoReporteExcelMatriculasCarrerasTodasInstitucionales = async
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -47,7 +49,8 @@ module.exports.ProcesoReporteExcelMatriculasNivelacionInstitucional = async func
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -59,7 +62,8 @@ module.exports.ProcesoFotoMatriculasNivelacionInstitucional = async function (pe
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -71,7 +75,8 @@ module.exports.ProcesoFinancieroDatos = async function () {
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -82,7 +87,8 @@ module.exports.ProcesoReporteExcelMatriculasAdmisionesnstitucional = async funct
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -93,7 +99,8 @@ module.exports.ListadoEstudiantesPeriodosCarrera = async function (carrera, peri
         var Datos = await FuncionListadoEstudiantePeriodos(carrera, periodo);
         return { Datos }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoInformacionUsuario = async function () {
@@ -102,7 +109,8 @@ module.exports.ProcesoInformacionUsuario = async function () {
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -181,8 +189,9 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
                 
                 await transaction.commit();
             } catch (err) {
+                console.error(err);
                 await transaction.rollback();
-                console.error("Error estudiante", err);
+                
             }
         })));
 
@@ -191,8 +200,9 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
         return base64
     }
     catch (err) {
-        if(transactionGlobal) await transactionGlobal.rollback();
         console.error(err);
+        if(transactionGlobal) await transactionGlobal.rollback();
+        
         return 'ERROR' + err;
     } finally {
         await pool.close();
@@ -278,8 +288,9 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
 
                     await transaction.commit();
                 } catch (err) {
+                    console.error(err);
                     await transaction.rollback();
-                    console.error("Error estudiante", err);
+                    
                 }
             })));
 
@@ -289,8 +300,9 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
 
         return base64;
     } catch (err) {
-        if(transactionGlobal) await transactionGlobal.rollback();
         console.error(err);
+        if(transactionGlobal) await transactionGlobal.rollback();
+        
         return 'ERROR' + err;
     } finally {
         await pool.close();
@@ -374,8 +386,9 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                         listadoNomina.push(matricula);
                         await transaction.commit();
                     } catch (err) {
-                        await transaction.rollback();
                         console.error(err);
+                        await transaction.rollback();
+                        
                     }
                 })));
             }
@@ -454,8 +467,9 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                         listadoNomina.push(matricula);
                         await transaction.commit();
                     } catch (err) {
-                        await transaction.rollback();
                         console.error(err);
+                        await transaction.rollback();
+                        
                     }
                 })));
             }
@@ -465,8 +479,9 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
         }
 
     } catch (err) {
-        if(transactionGlobal) await transactionGlobal.rollback();
         console.error(err);
+        if(transactionGlobal) await transactionGlobal.rollback();
+        
         return 'ERROR' + err;
     } finally {
         await pool.close();
@@ -794,8 +809,9 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
                     }
                     await transaction.commit();
                 } catch (error) {
+                    console.error(error);
                     await transaction.rollback();
-                    console.error("Error en procesamiento de estudiante:", error);
+                    
                 }
             })));
 
@@ -806,6 +822,7 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
         }
     } catch (err) {
         console.error(err);
+        
         return 'ERROR';
     } finally {
         await pool.close();
@@ -872,6 +889,7 @@ console.log('Proceso')
         return listadoResultado;
     } catch (err) {
         console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -948,7 +966,8 @@ async function FuncionEstudiantesRetirosPeriodoCarreraCedula(dbCarrera, periodo,
 
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -979,6 +998,7 @@ async function FuncionFotoMatriculasNivelacionTodasInstitucionalTransaccion(peri
         return 'OK';
     } catch (err) {
         console.error(err);
+        
         return 'ERROR' + err;
     } 
 }
@@ -1012,6 +1032,7 @@ async function FuncionFinancieroDatos() {
         return listadoNomina;
     } catch (err) {
         console.error(err);
+        
         return 'ERROR' + err;
     } 
 }
@@ -1049,6 +1070,7 @@ async function FuncionuUsuariosDatos() {
         return listadoNomina;
     } catch (err) {
         console.error(err);
+        
         return 'ERROR' + err;
     } 
 }

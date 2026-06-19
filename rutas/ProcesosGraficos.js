@@ -35,7 +35,8 @@ module.exports.Graficopdf1 = async function (carrera, periodo, nivel, paralelo, 
 
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.Graficopdf2 = async function (carrera, periodo, nivel, paralelo, codMateria, cedula, idreglamento, nombres, asignatura) {
@@ -46,7 +47,8 @@ module.exports.Graficopdf2 = async function (carrera, periodo, nivel, paralelo, 
 
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.GraficopdfR = async function (carrera, periodo, nivel, paralelo, codMateria, cedula, idreglamento, nombres, asignatura) {
@@ -57,7 +59,8 @@ module.exports.GraficopdfR = async function (carrera, periodo, nivel, paralelo, 
 
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ReporteNoMatriculado = async function (carrera, periodo1, periodo2, cedula) {
@@ -69,7 +72,8 @@ module.exports.ReporteNoMatriculado = async function (carrera, periodo1, periodo
 
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.pdfEvaluacionesRecuperacionCarrera = async function (carrera, periodo, cedula) {
@@ -79,7 +83,8 @@ module.exports.pdfEvaluacionesRecuperacionCarrera = async function (carrera, per
     var base64 = await reportespdfmaker.pdfmakegenerarReporteEvaluacionesRecuperacionCarrera(listadoInformacion.datos.data, carrera, periodo, cedula)
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
     return 'ERROR' + error;
   }
 }
@@ -102,7 +107,8 @@ module.exports.pdfListadoAsignaturasCarreraMovilidad = async function (carrera, 
     var base64 = await reportespdfmaker.pdfmakegenerarAsignaturasTipoMovilidad(listadoNuevo, carrera, periodo, cedula)
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
     return 'ERROR' + error;
   }
 }
@@ -123,7 +129,8 @@ module.exports.pdfPromediosGeneralesAsignaturasCarreras = async function (carrer
     return base64
     //  return listadoInformacion
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
     return 'ERROR' + error;
   }
 }
@@ -176,7 +183,8 @@ async function ProcesoGraficosParciales1(carrera, periodo, nivel, paralelo, CodM
     }
     return listado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 
 }
@@ -228,7 +236,8 @@ async function ProcesoGraficosParciales2(carrera, periodo, nivel, paralelo, CodM
     }
     return listado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 
 }
@@ -279,7 +288,8 @@ async function ProcesoGraficosParcialesR(carrera, periodo, nivel, paralelo, CodM
     }
     return listado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 
 }
@@ -319,8 +329,9 @@ async function ProcesoReporteNoMatriculado(carrera, periodo1, periodo2) {
     }
     return listado
   } catch (err) {
-    await transaction.rollback();
     console.error(err);
+    await transaction.rollback();
+    
     return 'ERROR';
   } finally {
     await transaction.commit();
@@ -741,7 +752,8 @@ async function generatePDF1(listado, carrera, nombres, asignatura, nivel, parale
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -957,7 +969,8 @@ async function generatePDF2(listado, carrera, nombres, asignatura, nivel, parale
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -1172,7 +1185,8 @@ async function generatePDFR(listado, carrera, nombres, asignatura, nivel, parale
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }

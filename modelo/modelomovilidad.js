@@ -245,21 +245,6 @@ module.exports.ObenterDatosCarreraCodigo = async function (carrera, codigocarrer
   }
 
 }
-module.exports.ObtnerDocumentosDadoIdSolicitud = async function (carrera, idSolicitud) {
-  var sentencia = "";
-  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud_documentos] WHERE [msd_idsolicitud]=" + idSolicitud + " AND [msd_estado]=1"
-  try {
-    if (sentencia != "") {
-      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
-      return (sqlConsulta)
-    } else {
-      return { data: "vacio sql" }
-    }
-  } catch (error) {
-    return { data: "Error: " + error }
-  }
-
-}
 module.exports.ObtnerDocumentosDadoIdSolicitudTipo = async function (carrera, idSolicitud, tipo) {
   var sentencia = "";
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_solicitud_documentos] WHERE [msd_idsolicitud]=" + idSolicitud + " AND [msd_estado]=1 AND [msd_strtipo]='" + tipo + "'"
@@ -1008,22 +993,6 @@ module.exports.ObtenerNivelesMallaDadoPeriodo = async function (carrera, periodo
   }
 }
 
-module.exports.ObtenerDatosBaseMovilidad = async function (dbcarrera, carrera) {
-  var sentencia = "";
-  sentencia = "SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + dbcarrera + "].[dbo].Facultades AS F INNER JOIN [" + dbcarrera + "].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [" + dbcarrera + "].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo  WHERE C.strBaseDatos='" + carrera + "' "
-
-  try {
-    if (sentencia != "") {
-      const sqlConsulta = await execDinamico(dbcarrera, sentencia, "OK", "OK");
-
-      return (sqlConsulta)
-    } else {
-      return { data: "vacio sql" }
-    }
-  } catch (error) {
-    return { data: "Error: " + error }
-  }
-}
 
 module.exports.ListadoEstadoSolicitud = async function (dbcarrera) {
   var sentencia = "";

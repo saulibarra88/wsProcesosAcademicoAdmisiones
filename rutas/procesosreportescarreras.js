@@ -72,7 +72,8 @@ module.exports.pdfPerdidaAsignaturasEstudiantesporParalelos = async function (ca
         return base64
 
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR' + error;
     }
 }
@@ -122,7 +123,8 @@ module.exports.pdfMatriculasEstadosEstudiantesporParalelos = async function (car
         return base64
 
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR' + error;
     }
 }

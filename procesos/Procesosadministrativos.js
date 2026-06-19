@@ -19,7 +19,8 @@ module.exports.ListarConfiguracionesActivasPeriodo = async function (periodo) {
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
       
     }
@@ -30,7 +31,8 @@ module.exports.ListarConfiguracionesHomoCarrerasHistoral = async function (bdcar
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
       
     }
@@ -41,7 +43,8 @@ module.exports.ProcesoObtenerCarreraVigenteHomologacion = async function (bdcarr
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
       
     }
@@ -52,7 +55,8 @@ module.exports.InsertarHomologacionFechas = async function (CarrerasListado,dato
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
       
     }
@@ -66,6 +70,7 @@ async function FuncionListarConfiguracionesActivasPeriodo(periodo) {
             return ListadoInformacion.data;
         } catch (err) {
             console.error(err);
+            
             return 'ERROR';
         }
 }
@@ -100,6 +105,7 @@ async function FuncionIngresarHomologacionesFechas(CarrerasListado,datos) {
             return 'OK';
         } catch (err) {
             console.error(err);
+            
             return 'ERROR';
         }
 }
@@ -111,6 +117,7 @@ async function FuncionListarConfiguracionesHomoCarrerasHistoral(bdcarrera) {
             return ListadoInformacion.data;
         } catch (err) {
             console.error(err);
+            
             return 'ERROR';
         }
 }
@@ -130,6 +137,7 @@ async function FuncionoObtenerCarreraVigenteHomologacion(bdcarrera,periodo) {
           
         } catch (err) {
             console.error(err);
+            
             return 'ERROR';
         }
 }

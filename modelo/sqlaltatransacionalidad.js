@@ -79,23 +79,7 @@ const path = require('path');
   }
   }
 
-    module.exports.execMasterMejorado = async function (carrera,periodo,cedula) {
-    var sentencia="";
-    sentencia="SELECT * FROM [" + carrera + "].[dbo].[PagosFacturaElectronico] WHERE strCodPeriodo='" + periodo + "' AND strCedula='" + cedula + "' AND strEstado='PAG'"
-   
-    try {
-    if (sentencia != "") {
-      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
     
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
-  }
-
    module.exports.AsignaturasMatriculadaEstudiantePeriodoCantidad = async function (carrera,periodo,intmatricula) {
     var sentencia="";
     sentencia="SELECT SUM(CASE WHEN bytNumMat = 1 THEN 1 ELSE 0 END) AS Primera, SUM(CASE WHEN bytNumMat = 2 THEN 1 ELSE 0 END) AS Segunda, SUM(CASE WHEN bytNumMat = 3 THEN 1 ELSE 0 END) AS Tercera FROM [" + carrera + "].[dbo].[Materias_Asignadas] WHERE sintCodMatricula = '" + intmatricula + "' AND strCodPeriodo ='" + periodo + "' AND (strObservaciones IS NULL OR (strObservaciones NOT LIKE '%VALIDADA%' AND strObservaciones NOT LIKE '%RETIRADO%'));"

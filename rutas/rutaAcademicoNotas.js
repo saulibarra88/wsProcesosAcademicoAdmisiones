@@ -17,7 +17,8 @@ router.get('/ListadoCalificacionesEstudiante/:carrera/:periodo/:cedula/:idreglam
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -43,7 +44,8 @@ router.get('/ListadosCalificacionesEstudiantedadoDocente/:carrera/:periodo/:nive
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -67,7 +69,8 @@ router.get('/ListadosEstudiantesAsignaturasDocenteExcel/:carrera/:periodo/:nivel
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -94,7 +97,8 @@ router.get('/ProcesoReporteListadoCalificacionesEstudiantedadoDocente/:carrera/:
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -114,7 +118,8 @@ router.post('/ProcesoReporteListadoCalificacionesEstudiantedadoDocenteTres', asy
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -139,7 +144,8 @@ router.get('/ObtenerlinkActaCalificaciones/:carrera/:periodo/:nivel/:paralelo/:C
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -159,7 +165,8 @@ router.get('/ListadoConvalidacionesEstudiantes/:carrera/:cedula',async (req, res
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -180,7 +187,8 @@ router.get('/ListadoEquivalenciaRendimento/:idReglamento',async (req, res) => {
             Informacion:  respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -201,7 +209,8 @@ router.get('/ActualizarActaGeneradaCambioFecha/:periodo/:acta',async (req, res) 
             Informacion:  respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -220,7 +229,8 @@ router.get('/ObtenerPeriodoDadoCodigo/:periodo/',async (req, res) => {
             Informacion:  respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -242,7 +252,8 @@ router.get('/ObtenerMatriculasInternadosDadoEstudiante/:carrera/:cedula',async (
             informacion:respuesta.Asignaturas
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -263,7 +274,8 @@ router.get('/ListadoRetirosInternadosDadoEstudiante/:carrera/:cedula',async (req
             informacion:respuesta.Asignaturas
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -285,7 +297,8 @@ router.get('/ListadoEstudiantesPeriodo/:carrera/:periodo',async (req, res) => {
             Informacion:  respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,

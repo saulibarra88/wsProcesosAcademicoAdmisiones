@@ -69,10 +69,12 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
             return ListadoEstudiantesProceso;
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
-        console.error(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -104,10 +106,12 @@ module.exports.ListadoEstadosAdmisiones = async function (strBaseCarrera, period
             return ListadoEstados;
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
-        console.error(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -153,10 +157,12 @@ module.exports.ListadoAspiranteAdmisiones = async function (strBaseCarrera, peri
             return ListadoEstados;
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
-        console.error(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -175,10 +181,12 @@ module.exports.ObtenerPeriodoVigenteAdmisiones = async function () {
             return ListadoEstados;
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
-        console.error(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -190,10 +198,12 @@ module.exports.pdfComprobanteCupo = async function (acuId) {
             return informacion.data;
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
-        console.error(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -226,10 +236,12 @@ module.exports.ListadoHomologacionesCarreras = async function () {
             return ListadoEstudiantesProceso;
         } catch (error) {
             console.error(error);
+            
             return 'ERROR';
         }
     } catch (err) {
-        console.error(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }

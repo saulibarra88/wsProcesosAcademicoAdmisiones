@@ -29,7 +29,8 @@ try {
     var resultado = await generarReporteNotasCalificaciones(Asignaturas, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 
@@ -38,7 +39,8 @@ try {
     var resultado = await generarReporteNotasCalificacionesTres(listado, carrera, periodo,nivel,paralelo,CodMateria, cedula, cedulaUsuario);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 
@@ -47,7 +49,8 @@ try {
     var resultado = await ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera, cedula, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.pdfmakeProcesoPdfEstudianteAsignaturaApruebanNivelParalelo=async function(ListadoEstudiantesProceso, carrera, cedula, periodo) {
@@ -55,7 +58,8 @@ try {
     var resultado = await ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(ListadoEstudiantesProceso, carrera, cedula, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.pdfmakegenerarReporteEvaluacionesRecuperacionCarrera=async function(listado, carrera, periodo, cedulaUsuario) {
@@ -63,7 +67,8 @@ try {
     var resultado = await generarReporteEvaluacionesRecuperacionCarrera(listado, carrera, periodo, cedulaUsuario);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.pdfmakegenerarAsignaturasTipoMovilidad=async function(listado, carrera, periodo, cedulaUsuario) {
@@ -71,7 +76,8 @@ try {
     var resultado = await generarReporteAsignaturasTipoMovilidadCarrera(listado, carrera, periodo, cedulaUsuario);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.pdfmakegenerarPromediosGeneralesAsignaturas=async function(listado, carrera, periodo, cedulaUsuario) {
@@ -79,7 +85,8 @@ try {
     var resultado = await generarReportePromediosGeneralesAsignaturas(listado, carrera, periodo, cedulaUsuario);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.pdfmakegenerarReporteHomologacionCarrera=async function(listado, carrera, cedulaUsuario) {
@@ -87,7 +94,8 @@ try {
     var resultado = await generarReporteHomologacionCarrera(listado, carrera, cedulaUsuario);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.pdfmakegenerarReporteNoMatriculados=async function(listado, listadoperiodo,carrera,cedula) {
@@ -95,7 +103,8 @@ try {
     var resultado = await generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedula);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 async function generarReporteNotasCalificaciones( listado, carrera, periodo, nivel, paralelo, CodMateria, cedula, cedulaUsuario ) {
@@ -316,7 +325,8 @@ async function generarReporteNotasCalificaciones( listado, carrera, periodo, niv
 const base64PDF = await funcionesgenerales.pdfMakeDocumento(docDefinition,defaultFonts);
 return base64PDF
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -613,7 +623,8 @@ async function generarReporteNotasCalificacionesTres(listado, carrera, periodo,n
     const base64PDF = await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
     return base64PDF;
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -769,7 +780,8 @@ async function ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera, cedula, 
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte de asignaturas que aprueban:', error);
+    console.error(error);
+    
     return 'ERROR';
   }
 }
@@ -964,7 +976,8 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte de asignaturas por nivel y paralelo:', error);
+    console.error(error);
+    
     return 'ERROR';
   }
 }
@@ -1045,7 +1058,8 @@ const formatearFecha = (fecha) => {
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -1123,7 +1137,8 @@ const formatearFecha = (fecha) => {
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -1299,7 +1314,8 @@ async function generarReporteHomologacionCarrera(listado, carrera, cedulaUsuario
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -1457,7 +1473,8 @@ async function generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedu
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte de estudiantes no matriculados:', error);
+    console.error(error);
+    
     return 'ERROR';
   }
 }
@@ -1837,7 +1854,8 @@ async function generarReportePromediosGeneralesAsignaturas(listado, carrera, per
     return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }

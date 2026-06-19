@@ -21,7 +21,8 @@ router.get('/ListadoConfigHomologacionesFechas/:periodo/',async (req, res) => {
             Informacion:Informacion.resultado,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -41,7 +42,8 @@ router.get('/ListadoConfigHomologacionesCarreras/:dbcarrera/',async (req, res) =
             Informacion:Informacion.resultado,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -62,7 +64,8 @@ router.get('/ObtenerCarreraVigenteHomologacion/:dbcarrera/:periodo',async (req, 
             Informacion:Informacion.resultado,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -82,7 +85,8 @@ router.get('/ListadoRetirosInstitucionales/:periodo/:cedula',async (req, res) =>
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -102,7 +106,8 @@ router.get('/RetirosEstudianteCarrerasCedula/:cedula/:dbCarrera',async (req, res
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -123,7 +128,8 @@ router.get('/ListadoRetirosCarreras/:periodo/:dbCarrera',async (req, res) => {
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -144,7 +150,8 @@ router.get('/ListadoRetirosCarrerasPdf/:periodo/:dbCarrera/:cedula',async (req, 
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -164,7 +171,8 @@ router.get('/ListadoRetirosCarrerasExcel/:periodo/:dbCarrera',async (req, res) =
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -204,7 +212,8 @@ router.post('/IngresoHomologacionFecha/',async (req, res) => {
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -226,7 +235,9 @@ router.post('/RetiroestudianteSinMatricula/',async (req, res) => {
         });
     }catch (err) {
 
-        console.log('Error: ' + err);
+        console.error(err);
+
+        
         return res.json(
              {
                 success: false,
@@ -264,7 +275,8 @@ router.post('/ListadoEstuidanteGraduadoCarreraFechas', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -302,7 +314,8 @@ router.get('/ListadoCarrerasDadoFacultad/:facultad',async (req, res) => {
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,

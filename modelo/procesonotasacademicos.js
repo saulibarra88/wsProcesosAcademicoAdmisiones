@@ -127,39 +127,6 @@ module.exports.ListadoEquivalenciaRendimentodadoReglamento = async function (car
 
 
 }
-module.exports.VerificacionEstudianteProcesosMatriculas = async function (transaction, carrera, periodo, idmatricula, CodMateria, codEstudiante) {
-  try {
-    var consultaconvalidacion = "";
-    var consultaretiros = ""
-    var consultamateriasintenerqueaprobar = "";
-    consultaconvalidacion = "SELECT * FROM [" + carrera + "].[dbo].[Convalidacion] WHERE sintCodMatricula=" + idmatricula + " and  strCodPeriodo='" + periodo + "' and  strCodMateria='" + CodMateria + "'"
-    const sqlconsultabasevalidacion = await execDinamicoTransaccion(transaction, carrera, consultaconvalidacion, "OK", "OK");
-    consultaretiros = "SELECT * FROM [" + carrera + "].[dbo].[Retiros] WHERE sintCodMatricula=" + idmatricula + " and  strCodPeriodo='" + periodo + "' and  strCodMateria='" + CodMateria + "'"
-    const sqlconsultabaseretiro = await execDinamicoTransaccion(transaction, carrera, consultaretiros, "OK", "OK");
-    //   consultasinaprobar = "SELECT * FROM [" + carrera + "].[dbo].[Materias_Sin_Tener_Aprobar] WHERE strCodEstud=" + codEstudiante + " and  strCodMat='" + CodMateria + "'"
-    //   const sqlconsultabaseconsultasinaprobar = await execDinamicoTransaccion(transaction, carrera, consultasinaprobar, "OK", "OK");
-    if (sqlconsultabasevalidacion.count == 0) {
-      if (sqlconsultabaseretiro.count == 0) {
-        /*  if (sqlconsultabamateriasintenerqueaprobar.count == 0) {
-            resultado = true
-          } else {
-            resultado = false
-          }*/
-        resultado = false
-      } else {
-        resultado = false
-      }
-    } else {
-      resultado = false
-    }
-    return resultado
-
-
-  } catch (error) {
-    return { data: "Error: " + error }
-    throw error;
-  }
-}
 
 module.exports.ObtenerConvalidacionesEstudiante = async function (transaction, carrera, periodo, idmatricula, CodMateria) {
   var sentencia = "";
@@ -342,21 +309,6 @@ module.exports.PeriodoDatosCarrera = async function (transaction,carrera,periodo
 }
 
 
-module.exports.ObtenerSolicitudesRectifiaciones = async function (transaction,carrera,periodo) {
-  var sentencia="";
-  sentencia=" SELECT * FROM [" + carrera + "].dbo.Periodos WHERE strCodigo='" + periodo + "' "
-    try {
-  if (sentencia != "") {
-    const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
-   return (sqlConsulta)
-  } else {
-    return {data:"vacio sql"}
-  }
-} catch (error) {
-  return {data:"Error: "+ error}
-}
-
-}
 
 module.exports.ObtenerMateriaConvalidacionConocimiento = async function (transaction, carrera, CodMateria, intMatricula,periodo) {
   var sentencia = "";

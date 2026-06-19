@@ -18,7 +18,8 @@ router.get('/CarrerasDadoFacultadHomologaciones/:periodo/:codFacultad', async (r
             informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -38,7 +39,8 @@ router.post('/DatosEstudiantesCambioCarreraProcesos/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -60,7 +62,8 @@ router.get('/ControlesCuposConfiguracionesMovilidad/:carreramovilidad/:periodo/:
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -80,7 +83,8 @@ router.post('/IngresarSolicitudMovilidadEstudiante', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -101,7 +105,8 @@ router.get('/ListadoSolicitudesMovilidadPorEstado/:estado/:periodo', async (req,
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -123,7 +128,8 @@ router.get('/ListadoSolicitudesMovilidadPorCarrera/:estado/:periodo/:carrera', a
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -144,7 +150,8 @@ router.get('/ObtenerFormatoTextoCodigo/:codigo', async (req, res) => {
             Informacion: respuesta.data[0]
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -163,7 +170,8 @@ router.get('/ListadoTipoInscripcion/', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -182,7 +190,8 @@ router.get('/TotalesCantidadesSolicitud/', async (req, res) => {
             Informacion: respuesta.data[0]
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -205,7 +214,8 @@ router.get('/ObnterHomologacionCarreraEstuidante/:carrera/:periodo/:cedula', asy
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -227,7 +237,8 @@ router.get('/ObtnerDocumentosSOlicitudesTipo/:idsolicitud/:tipo', async (req, re
             Informacion: respuesta.data[0]
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -251,7 +262,8 @@ router.get('/ObtnerSolicitudEstuidantePeriodo/:carrera/:cedula/:periodo', async 
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -270,7 +282,8 @@ router.post('/ActulizarEstadoSolicitud', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -289,7 +302,8 @@ router.post('/InsertarSolicitudAprobadaInscripcionMoviInterna', async (req, res)
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -308,7 +322,8 @@ router.post('/InsertarSolicitudAprobadaInscripcionMoviTraspaso', async (req, res
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -328,7 +343,8 @@ router.post('/InsertarInscripcionMoviExterna', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -347,7 +363,8 @@ router.post('/InsertarInscripcionAntigua', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -369,7 +386,8 @@ router.get('/InsertarCuposConfiguracionesCarreras/:periodo/:idusuario/', async (
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -390,7 +408,8 @@ router.get('/ListadoCuposConfiguracionesCarreras/:periodo/', async (req, res) =>
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -418,7 +437,8 @@ router.post('/ActuzalizarCarrerasConfiguracionesMovilidad', async (req, res) => 
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -437,7 +457,8 @@ router.get('/ListadoPaisesMaster/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -456,7 +477,8 @@ router.get('/ListadoProvinciasMaster/:codPais/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -475,7 +497,8 @@ router.get('/ListadoCiudadMaster/:codProvincia/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -494,7 +517,8 @@ router.get('/ListadoInstitucionesMaster/:codciudad/', async (req, res) => {
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -513,7 +537,8 @@ router.get('/ListadoestadoVida/', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -532,7 +557,8 @@ router.get('/ObnterDatosEstudianteMaster/:cedula', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -551,7 +577,8 @@ router.get('/ObnterDatosEstudianteCarrera/:cedula/:carrera', async (req, res) =>
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -569,7 +596,8 @@ router.get('/ObnterDatosCarreraCodigo/:carrera', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -587,7 +615,8 @@ router.get('/ObnterDatosCarreraFacultadCodigo/:carrera', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -637,7 +666,8 @@ router.post('/InserarEstudianteMaster', async (req, res) => {
         }
       
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -656,7 +686,8 @@ router.get('/ListadoTitulosInstitucion/:codInstitucion', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -683,7 +714,8 @@ router.post('/InserarGradoEstudianteMaster', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -702,7 +734,8 @@ router.get('/ListadoGradoEstudianteTodas/:cedula', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -727,7 +760,8 @@ router.post('/EliminarGradoEstuidante', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -755,7 +789,8 @@ router.post('/ActualizarradoEstuidante', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -775,7 +810,8 @@ router.post('/EliminacionInscripcionMovExterna', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -796,7 +832,8 @@ router.get('/ObtenerDatosEstuidanteCarrera/:dbcarrera/:cedula', async (req, res)
             Informacion: respuesta.data[0]
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -824,7 +861,8 @@ router.post('/ActulizarSolicitudesEstudiante', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -845,7 +883,8 @@ router.get('/ReporteExcelSolicitudesMovilidad/:periodo/:estado', async (req, res
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -864,7 +903,8 @@ router.get('/ReportePdfSolicitudesMovilidadAprobadas/:periodo', async (req, res)
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -884,7 +924,8 @@ router.get('/PdfCertificadoMovilidadEstudiante/:periodo/:cedula', async (req, re
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -905,7 +946,8 @@ router.get('/CurriculumEstuidante/:carrera/:cedula/:periodo',async (req, res) =>
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -925,7 +967,8 @@ router.get('/CurriculumEstuidanteConsultor/:carrera/:cedula/',async (req, res) =
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -945,7 +988,8 @@ router.get('/CurriculumEstudianteCarreras/:carrera/:cedula/',async (req, res) =>
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -964,7 +1008,8 @@ router.post('/IngresoDocumentosSolicitud', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -983,7 +1028,8 @@ router.post('/IngresoEstuidanteExcepcionMovilidad', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1002,7 +1048,8 @@ router.get('/ListadoEstadoCivilMaster/', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1019,7 +1066,8 @@ router.get('/ListadoSexoMaster/', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1036,7 +1084,8 @@ router.get('/ListadoCiudadTodasMaster/', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1055,7 +1104,8 @@ router.post('/ActualizarEstuidanteMaster', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1074,7 +1124,8 @@ router.post('/ActualizarEstuidanteCarrera', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1094,7 +1145,8 @@ router.get('/ListadoInscripcionesTodasEstudiante/:cedula', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1112,7 +1164,8 @@ router.get('/ObtenerDatosCarrera/:dbBase', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1131,7 +1184,8 @@ router.get('/ListadoCarrerasTraspaso/:dbBase/:periodo', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1150,7 +1204,8 @@ router.get('/ObtenerHomologacionCarrera/:dbBase/:periodo', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1168,7 +1223,8 @@ router.get('/ListadoCarrerasSolicitudAprobadasPeriodo/:periodo', async (req, res
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1189,7 +1245,8 @@ router.get('/PdfresporteSolicitudAprobadasCarreraPreiodo/:periodo/:carrera/:strn
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1210,7 +1267,8 @@ router.get('/PdfresporteSolicitudAprobadasCarreraTipo/:periodo/:carrera/:tipo/:s
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1228,7 +1286,8 @@ router.get('/ListadoEstadosSolicitudes/', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1248,7 +1307,8 @@ router.post('/ActualizarSolicitudEstadoAcademico', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1268,7 +1328,8 @@ router.post('/ActulizarDocumentoSolicitud', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1289,7 +1350,8 @@ router.get('/MatriculaEstuidanteCarreraPeriodo/:carrera/:periodo/:cedula/', asyn
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -1308,7 +1370,8 @@ router.get('/RetirosAsignaturasTodasEstudiantes/:carrera/:cedula/', async (req, 
             Informacion: respuesta
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,

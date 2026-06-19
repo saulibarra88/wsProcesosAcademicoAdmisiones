@@ -26,7 +26,8 @@ module.exports.ProcesoExcelListadoEstudiantesRetirosInstitucional = async functi
         var resultado = await FuncionExcelListadoEstudiantesRetirosInstitucional(periodo, cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoEstudiantesRetirosCarrera = async function (periodo,dbCarrera) {
@@ -34,7 +35,8 @@ module.exports.ProcesoListadoEstudiantesRetirosCarrera = async function (periodo
         var resultado = await FuncionListadoEstudiantesRetirosCarrera(periodo,dbCarrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoEstudiantesRetirosCarreraPdf = async function (periodo,dbCarrera,cedula) {
@@ -42,7 +44,8 @@ module.exports.ProcesoListadoEstudiantesRetirosCarreraPdf = async function (peri
         var resultado = await FuncionListadoEstudiantesRetirosCarreraPdf(periodo,dbCarrera,cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoEstudiantesRetirosCarreraCedula = async function (dbCarrera,cedula) {
@@ -50,7 +53,8 @@ module.exports.ProcesoEstudiantesRetirosCarreraCedula = async function (dbCarrer
         var resultado = await FuncionEstudiantesRetirosCarreraCedula(dbCarrera,cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoExcelListadoEstudiantesRetirosCarrerraExcel = async function (periodo, dbCarrera) {
@@ -58,7 +62,8 @@ module.exports.ProcesoExcelListadoEstudiantesRetirosCarrerraExcel = async functi
         var resultado = await FuncionExcelListadoEstudiantesRetirosCarreraExcel(periodo, dbCarrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 
@@ -67,7 +72,8 @@ module.exports.ProcesoListadoRetirosEstudiantePeriodoTrnsaccion = async function
         var resultado = await FuncionEstudiantesRetirosPeriodoCarreraCedulaTrandsaccion(transaccion,dbCarrera,periodo, cedula,codigo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoRetirosEstudiantePeriodo= async function (dbCarrera,periodo,cedula,codigo) {
@@ -75,7 +81,8 @@ module.exports.ProcesoListadoRetirosEstudiantePeriodo= async function (dbCarrera
         var resultado = await FuncionEstudiantesRetirosPeriodoCarreraCedula(dbCarrera,periodo, cedula,codigo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 async function FuncionExcelListadoEstudiantesRetirosInstitucional(periodo, cedula) {
@@ -133,7 +140,8 @@ async function FuncionExcelListadoEstudiantesRetirosInstitucional(periodo, cedul
         var resultado = await ProcesoRetirosInstitucionalExcel(periodo, cedula, lstResultado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -205,7 +213,8 @@ async function FuncionListadoEstudiantesRetirosCarrera(periodo, dbCarrera) {
       
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -277,7 +286,8 @@ async function FuncionListadoEstudiantesRetirosCarreraPdf(periodo, dbCarrera,ced
       var base64pdf= await generarReportListadoEstudiantesRetirosCarreraPdf(lstResultado,dbCarrera,periodo,cedula)
         return base64pdf
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -349,7 +359,8 @@ async function FuncionExcelListadoEstudiantesRetirosCarreraExcel(periodo, dbCarr
         var resultado = await ProcesoRetirosCarrerasExcel(periodo, dbCarrera, lstResultado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -453,6 +464,7 @@ async function ProcesoRetirosInstitucionalExcel(periodo, cedula, lstResultado) {
 
     } catch (error) {
         console.error(error);
+        
         return 'ERROR';
     }
 }
@@ -559,6 +571,7 @@ async function ProcesoRetirosCarrerasExcel(periodo,dbCarrera, lstResultado) {
 
     } catch (error) {
         console.error(error);
+        
         return 'ERROR';
     }
 }
@@ -770,7 +783,8 @@ async function FuncionEstudiantesRetirosCarreraCedula(dbCarrera,cedula) {
       
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -846,7 +860,8 @@ async function FuncionEstudiantesRetirosPeriodoCarreraCedulaTrandsaccion( transa
       
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -922,7 +937,8 @@ async function FuncionEstudiantesRetirosPeriodoCarreraCedula( dbCarrera,periodo,
       
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }

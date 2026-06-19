@@ -29,7 +29,8 @@ module.exports.ProcesoCarrerasDadoFacultadHomologacion = async function (Periodo
         var resultado = await funcionesmodelomovilidad.CarrerasDadoFacultadHomologacion('OAS_Master', PeriodoDatos, codfacultad);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 
@@ -38,7 +39,8 @@ module.exports.ProcesoDatosEstudianteCambioCarrera = async function (carrera, co
         var resultado = await FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel, periodo, cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoDatosConfiguracionesAprobacionSolicitudesCarreras = async function (carreramovilidad, periodo, puntaje) {
@@ -46,7 +48,8 @@ module.exports.ProcesoDatosConfiguracionesAprobacionSolicitudesCarreras = async 
         var resultado = await FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreramovilidad, periodo, puntaje);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 
@@ -55,7 +58,8 @@ module.exports.ProcesoIngresarSolicitudEstuidanteMovilidad = async function (sol
         var resultado = await FuncionInsertarSolicitudMovilidadEstudiante(solicitud, listadoDocumentos);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoObtnerFormatoTextoCodigo = async function (codigo) {
@@ -63,7 +67,8 @@ module.exports.ProcesoObtnerFormatoTextoCodigo = async function (codigo) {
         var resultado = await funcionesmodelomovilidad.ObtnerFormatoTextoDadoCodigo('OAS_Master', codigo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoTipoInscripcion = async function (codigo) {
@@ -71,7 +76,8 @@ module.exports.ProcesoListadoTipoInscripcion = async function (codigo) {
         var resultado = await funcionesmodelomovilidad.ListadoTipoInscripcion('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoTotalesCantidadesSolicitud = async function () {
@@ -79,7 +85,8 @@ module.exports.ProcesoTotalesCantidadesSolicitud = async function () {
         var resultado = await funcionesmodelomovilidad.TotalesCantidadesSolicitud('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoObtnerDocumentoTipo = async function (idSolicitud, tipo) {
@@ -87,7 +94,8 @@ module.exports.ProcesoObtnerDocumentoTipo = async function (idSolicitud, tipo) {
         var resultado = await funcionesmodelomovilidad.ObtnerDocumentosDadoIdSolicitudTipo('OAS_Master', idSolicitud, tipo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoActualizarEstadoSolicitud = async function (idsolicitud, estado, observacion, perautorizacion) {
@@ -95,7 +103,8 @@ module.exports.ProcesoActualizarEstadoSolicitud = async function (idsolicitud, e
         var resultado = await funcionesmodelomovilidad.ActualziarEstadoSolitiud('OAS_Master', idsolicitud, estado, observacion, perautorizacion);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoActualizarDocumentoSolicitud = async function (idsolicitud, iddocumento, tipo, url,periodo,cedula,observacion,estado) {
@@ -104,7 +113,8 @@ module.exports.ProcesoActualizarDocumentoSolicitud = async function (idsolicitud
          var ActualizacionSolicitud = await funcionesmodelomovilidad.ActualizarEstadoSolicitud('OAS_Master',periodo,cedula,idsolicitud,observacion,estado); 
           return { blProceso: true, mensaje: "Ok" , data: resultado }
     } catch (error) {
-         console.log(error);
+         console.error(error);
+         
         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
@@ -113,7 +123,8 @@ module.exports.ProcesoListadoSolicitudesMovilidadPorEstado = async function (est
         var resultado = await FuncionListadoSolicitudesMovilidadPorEstado(estado, periodo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoSolicitudesMovilidadPorCarrera = async function (estado, periodo,carrera) {
@@ -121,7 +132,8 @@ module.exports.ProcesoListadoSolicitudesMovilidadPorCarrera = async function (es
         var resultado = await FuncionListadoSolicitudesMovilidadPorCarrera(estado, periodo,carrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoDatosHomologacionCarreraEstudiante = async function (carrera, cedula, periodo) {
@@ -129,7 +141,8 @@ module.exports.ProcesoDatosHomologacionCarreraEstudiante = async function (carre
         var resultado = await FuncionDatosHomologacionCarreraEstudiante(carrera, cedula, periodo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoObtenerSolicitudesEstudiantes = async function (carrera, cedula, periodo) {
@@ -137,15 +150,8 @@ module.exports.ProcesoObtenerSolicitudesEstudiantes = async function (carrera, c
         var resultado = await FuncionObtenerSolicitudesEstudiantes(carrera, cedula, periodo);
         return resultado
     } catch (error) {
-        console.log(error);
-    }
-}
-module.exports.ProcesInsertarSolicitudAprobadaInscripcion = async function (carrera, cedula, periodo) {
-    try {
-        var resultado = await FuncionObtenerSolicitudesEstudiantes(carrera, cedula, periodo);
-        return resultado
-    } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesInsertarSolicitudAprobadaInscripcionMovilidadInterna = async function (idsolicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30) {
@@ -201,7 +207,8 @@ module.exports.ProcesoActualizarCarreraConfiguracion = async function (objConfig
         var resultado = await funcionesmodelomovilidad.ActulizarCupoCarreraConfiguraciones('SistemaAcademico', objConfiguracion);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -210,7 +217,8 @@ module.exports.ProcesoListadoPaises = async function () {
         var resultado = await funcionesmodelomovilidad.ListadoPaisesMaster('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -219,7 +227,8 @@ module.exports.ProcesoListadoProvincias = async function (codPais) {
         var resultado = await funcionesmodelomovilidad.ListadoProvinciaMaster('OAS_Master', codPais);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -228,7 +237,8 @@ module.exports.ProcesoListadoCiudad = async function (codProvincia) {
         var resultado = await funcionesmodelomovilidad.ListadoCiudadMaster('OAS_Master', codProvincia);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -237,7 +247,8 @@ module.exports.ProcesoListadoInstituciones = async function (codciudad) {
         var resultado = await funcionesmodelomovilidad.ListadoInstitucionesMaster('OAS_Master', codciudad);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -246,7 +257,8 @@ module.exports.ProcesoListadoEstadoVida = async function () {
         var resultado = await funcionesmodelomovilidad.ListadoEstadoVida('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -256,7 +268,8 @@ module.exports.ProcesodatosEstudianteMaster = async function (cedula) {
         var resultado = await funcionesmodelomovilidad.ObtnerEstuidanteMaster('OAS_Master', funcionestools.CedulaConGuion(cedula));
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -268,7 +281,8 @@ module.exports.ProcesodatosEstudianteCarrera = async function (cedula, carrera) 
 
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -277,7 +291,8 @@ module.exports.ProcesodatosDatosCarreraCodigo = async function (carrera) {
         var datos = await funcionesmodelomovilidad.ObenterDatosCarreraCodigo('OAS_Master', carrera);
         return datos
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -286,7 +301,8 @@ module.exports.ProcesodatosDatosCarreraFacultadCodigo = async function (carrera)
         var datos = await funcionesmodelomovilidad.ObenterDatosCarreraFacultadCodigo('OAS_Master', carrera);
         return datos
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -295,7 +311,8 @@ module.exports.ProcesoListadoTitulosColegios = async function (codigoInstitucion
         var resultado = await funcionesmodelomovilidad.TitulosColegios('OAS_Master', codigoInstitucion);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -304,7 +321,8 @@ module.exports.ProcesoListadoGradoEstuidanteTodas = async function (cedula) {
         var resultado = await funcionesmodelomovilidad.ObtenerGradoEstudianteTodas('OAS_Master', cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -313,7 +331,8 @@ module.exports.ProcesoEliminarGradoEstuidante = async function (cedula, codtitul
         var resultado = await funcionesmodelomovilidad.EliminarGradoEstudanteMaster('OAS_Master', cedula, codtitulo, codInstitucion);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -323,7 +342,8 @@ module.exports.ProcesoActulizarGradoEstuidante = async function (objEstudiante) 
         var resultado = await funcionesmodelomovilidad.ActualizarGradoEstudanteMaster('OAS_Master', objEstudiante);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -333,7 +353,8 @@ module.exports.ProcesoDatosEstuidanteCarrera = async function (dbcarrera, cedula
         var resultado = await funcionesmodelocarrera.ObtenerDatosEstudianteCarrera(dbcarrera, funcionestools.CedulaConGuion(cedula));
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -342,7 +363,8 @@ module.exports.ProcesoInsertarEstudianteMaster = async function (objEstudiante) 
         var resultado = await FuncionInsertarEstuidanteMaster(objEstudiante);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
          return { blProceso: false, mensaje: "Error :" + error }
     }
 }
@@ -351,7 +373,8 @@ module.exports.ProcesoInsertarGradoEstudianteMaster = async function (objGrado) 
         var resultado = await FuncionInsertarGradoEstuidanteMaster(objGrado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -360,7 +383,8 @@ module.exports.ProcesoEliminacionInscripcionMovExterna = async function (dbCarre
         var resultado = await FuncionEliminacionInscripcionMovilidadExterna(dbCarrera, cedula, periodo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -369,7 +393,8 @@ module.exports.ProcesoActulizarInscripcionesEstuidante = async function (objEstu
         var resultado = await funcionesmodelomovilidad.ActualizarInscripcionesEstudiante('OAS_Master', objEstudiante);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -379,7 +404,8 @@ module.exports.ProcesoGenerarExcelSolicitudes = async function (periodo, estado)
         var resultado = await FuncionReporteExcelSolicitudes(periodo, estado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -389,7 +415,8 @@ module.exports.ProcesoGenerarPdfSolicitudesAprbadas = async function (periodo) {
         var resultado = await FuncionReportePdfSolicitudes(periodo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -400,7 +427,8 @@ module.exports.ProcesoGeneracionCurriculumEstuidante = async function (carrera, 
 
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -411,7 +439,8 @@ module.exports.ProcesoIngresoDocumentoSolicitud = async function (listadoDocumen
 
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -425,7 +454,8 @@ module.exports.ProcesoIngresoEstuidanteExcepcionMovilidad = async function (objD
 
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -434,7 +464,8 @@ module.exports.ProcesoListadoEstadoCivilMaster = async function () {
         var resultado = await funcionesmodelomovilidad.EstadoCivilListadoMaster('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -443,7 +474,8 @@ module.exports.ProcesoListadoSexoMaster = async function () {
         var resultado = await funcionesmodelomovilidad.SexoListadoMaster('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -452,7 +484,8 @@ module.exports.ProcesoListadoCiudadTodasMaster = async function () {
         var resultado = await funcionesmodelomovilidad.ListadoCiudadTodasMaster('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -462,7 +495,8 @@ module.exports.ProcesoActualizarEstuidanteMaster = async function (objDatos, car
         var resultado = await funcionesmodelomovilidad.ActualizarEstudianteMaster(carrera, objDatos);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -471,7 +505,8 @@ module.exports.ProcesoActualizarEstuidanteCarrera = async function (objDatos, ca
         var resultado = await funcionesmodelomovilidad.ActualizarEstudianteCarrera(carrera, objDatos);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -480,7 +515,8 @@ module.exports.ProcesoEncontrarEstudianteMatriculado = async function (carrera,p
         var resultado = await funcionesmodelocupos.EncontrarEstudianteMatriculado(carrera,periodo,funcionestools.CedulaConGuion(cedula) );
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -489,7 +525,8 @@ module.exports.ProcesoListadoRetirosAsignaturasEstudiante = async function (carr
         var resultado = await funcionesmodelocupos.ListadoRetirosEstudiantesTodas(carrera,funcionestools.CedulaConGuion(cedula) );
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -499,7 +536,8 @@ module.exports.ProcesoListadosInscrionestodasEstudiante = async function (cedula
 
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -508,7 +546,8 @@ module.exports.ProcesoObtenerDatosCarrera = async function (bdcarrera) {
         var resultado = await funcionesmodelomovilidad.ObenterDatosCarrera('OAS_Master', bdcarrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -517,7 +556,8 @@ module.exports.ProcesoListadoCarrerasTraspaso = async function (bdcarreraactual,
         var resultado = await funcionesmodelomovilidad.ListadoCarreraTraspaso('OAS_Master', bdcarreraactual, periodo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -526,7 +566,8 @@ module.exports.ProcesoPdfCertificadoMovilidadEstuidante = async function (period
         var resultado = await FuncionPDFCertificadoMovilidadEstuidante(periodo, cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -535,7 +576,8 @@ module.exports.ProcesoListadoCarreraAprobadaSolicitudMovilidad = async function 
         var resultado = await FuncionListadoCarreraAprobadasSolicitudesMovilidad(periodo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -545,7 +587,8 @@ module.exports.ProcesoPdfCarrerasSolcitudesAprobadasPeriodos = async function (p
         var resultado = await FuncionReportePdfSolicitudesAprobadasCarreraPeriodo(periodo, carrera, strnombre);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -555,7 +598,8 @@ module.exports.ProcesoPdfCarrerasSolcitudesAprobadasPeriodosTipos = async functi
         var resultado = await FuncionReportePdfSolicitudesAprobadasCarreraPeriodoTipo(periodo, carrera, tipo, strNombre);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }  
@@ -565,7 +609,8 @@ module.exports.ProcesoListadoEstadoSolicitudes = async function () {
           var resultado = await funcionesmodelomovilidad.ListadoEstadoSolicitud('OAS_Master');
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -575,7 +620,8 @@ module.exports.ProcesoObenterHomologacionCarrera = async function (carrera, peri
         var resultado = await funcionesmodelomovilidad.ObenterHomologacionCarrera('OAS_Master', carrera, periodo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return 'ERROR' + error
     }
 }
@@ -626,7 +672,8 @@ module.exports.DocumentosMatriculasPeriosdos = async function (strBaseCarrera, p
         return respuesta;
 
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -731,7 +778,8 @@ async function FuncionDatosEstudianteCambioCarrera(carrera, codestudiante, nivel
         return respuesta;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -805,7 +853,8 @@ async function FuncionDatosEstudianteCambioCarreraMejorado(carrera, codestudiant
         return respuesta;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -901,7 +950,8 @@ async function FuncionDatosConfiguracionesAprobacionSolicitudesCarreras(carreram
         return respuesta;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -926,7 +976,8 @@ async function FuncionInsertarSolicitudMovilidadEstudiante(solicitud, listadoDoc
         return respuesta;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -941,7 +992,8 @@ async function FuncionInsertarDocumentosSolicitud(listadoDocumentos) {
         return 'OK';
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -966,7 +1018,8 @@ async function FuncionListadoSolicitudesMovilidadPorEstado(estado, periodo) {
         return listadoDocumentos;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -991,7 +1044,8 @@ async function FuncionListadoSolicitudesMovilidadPorCarrera(estado,periodo,carre
         return listadoDocumentos;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1035,7 +1089,8 @@ async function FuncionDatosHomologacionCarreraEstudiante(carrera, cedula, period
         return respuesta;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1069,7 +1124,8 @@ async function FuncionObtenerSolicitudesEstudiantes(carrera, cedula, periodo) {
         return respuesta;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1095,7 +1151,8 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadTraspaso(idso
         }
         return { blProceso: true, mensaje: "OK" }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
@@ -1129,7 +1186,8 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadInterna(idsol
         }
         return { blProceso: true, mensaje: "OK" }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
@@ -1149,7 +1207,8 @@ async function FuncionInsertarSolicitudAprobadaInscripcionMovilidadExterna(solic
         }
         return { blProceso: true, mensaje: "OK" }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
     }
 }
@@ -1220,7 +1279,8 @@ async function FuncionProcesoCupoCarreraActual(solicitud, idpersona, idCupoAdmis
         return { blProceso: true, mensaje: "OK", datoscarreraActual: datosCarreraActual }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1276,7 +1336,8 @@ async function FuncionProcesoCupoCarreraMovilidad(solicitud, idpersona, idCupoAd
         return { blProceso: true, mensaje: "OK" }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1331,7 +1392,8 @@ async function FuncionProcesoCupoCarreraMovilidadExterna(solicitud, idpersona, i
         return { blProceso: true, mensaje: "OK" }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1383,7 +1445,8 @@ async function FuncionInscripcionEstuidanteCarreraInterna(solicitud, datosCarrer
         return { blProceso: true, mensaje: "OK" }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1443,7 +1506,8 @@ async function FuncionInscripcionEstuidanteCarreraExterna(solicitud, datosCarrer
         return { blProceso: true, mensaje: "OK" }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1495,7 +1559,8 @@ async function FuncionInscripcionAntiguaEstuidante(objinscripcion) {//Inscripcio
         return { blProceso: true, mensaje: "OK" }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1534,7 +1599,8 @@ async function FuncionInsertarCuposMigracionPeriodoActual(periodo, idUsuario) {
         return { blProceso: true, mensaje: "OK" }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1557,7 +1623,8 @@ async function FuncionListadoConfiguracionesCarreras(periodo) {
         }
         return respuesta
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1574,7 +1641,8 @@ async function FuncionInsertarEstuidanteMaster(objEstuidante) {
         }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1588,7 +1656,8 @@ async function FuncionInsertarGradoEstuidanteMaster(objGradoEstuidante) {
         }
         return { blProceso: true, mensaje: "OK" }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1602,7 +1671,8 @@ async function FuncionEliminacionInscripcionMovilidadExterna(dbCarrera, cedula, 
         var EliminarCupos = await funcionesmodelomovilidad.EliminarCupoInscripcionEstuidante('OAS_Cupos_Institucionales', funcionestools.CedulaConGuion(cedula), periodo)
         return { blProceso: true, mensaje: "OK" }
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1631,7 +1701,8 @@ async function FuncionReporteExcelSolicitudes(periodo, estado) {
 
         return Base64;
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1665,7 +1736,8 @@ async function FuncionReportePdfSolicitudes(periodo) {
 
         return Base64;
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1774,7 +1846,8 @@ async function FuncionCurriculumEstudiantil(carrera, cedula, periodo) {
         return Base64;
         // return listado;
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1809,7 +1882,8 @@ async function FuncionPDFCertificadoMovilidadEstuidante(periodo, cedula) {
 
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1826,7 +1900,8 @@ async function FuncionListadoCarreraAprobadasSolicitudesMovilidad(periodo) {
         return { blProceso: true, mensaje: "OK", data: respuesta }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1862,7 +1937,8 @@ async function FuncionReportePdfSolicitudesAprobadasCarreraPeriodo(periodo, carr
         }
         return Base64;
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -1899,7 +1975,8 @@ async function FuncionReportePdfSolicitudesAprobadasCarreraPeriodoTipo(periodo, 
 
         return Base64;
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }

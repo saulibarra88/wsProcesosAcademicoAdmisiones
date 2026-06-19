@@ -23,7 +23,8 @@ module.exports.PdfListadoEstudiantesEstadoCupo = async function (listado, cedula
     var resultado = await ProcesoPdfListadoEstudiantesCuposEstados(listado, cedulaUsuario, periodo, estado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ExcelListadoEstudiantesCuposEstados = async function (listado) {
@@ -31,7 +32,8 @@ module.exports.ExcelListadoEstudiantesCuposEstados = async function (listado) {
     var resultado = await ProcesoExcelListadoEstudiantesCuposEstados(listado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfListadoDocumentosCarreras = async function (listado, cedulaUsuario, periodo) {
@@ -39,7 +41,8 @@ module.exports.PdfListadoDocumentosCarreras = async function (listado, cedulaUsu
     var resultado = await ProcesoPdfListadoDocumentosCarreras(listado, cedulaUsuario, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 
@@ -48,7 +51,8 @@ module.exports.PdfListadoEstudianteMatriculasTerceraySegunda = async function (l
     var resultado = await ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera, cedulaUsuario, periodo, tipo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfListadoEstudianteMatriculasTerceraySegundaGeneral = async function (listado, carrera, cedulaUsuario, periodo) {
@@ -56,7 +60,8 @@ module.exports.PdfListadoEstudianteMatriculasTerceraySegundaGeneral = async func
     var resultado = await ProcesoPdfTerceraSegundaMatriculaCarreraGeneral(listado, carrera, cedulaUsuario, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfListadoEstudiantesAsignaturaAprueban = async function (listado, carrera, cedulaUsuario, periodo) {
@@ -64,7 +69,8 @@ module.exports.PdfListadoEstudiantesAsignaturaAprueban = async function (listado
     var resultado = await ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera, cedulaUsuario, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfListadoEstudiantesAsignaturaApruebanNivelParalelo = async function (listado, carrera, cedulaUsuario, periodo) {
@@ -72,7 +78,8 @@ module.exports.PdfListadoEstudiantesAsignaturaApruebanNivelParalelo = async func
     var resultado = await ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carrera, cedulaUsuario, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.PdfListadoEstudiantesMatriculasEstadosASignaturas = async function (listado, carrera, cedulaUsuario, periodo) {
@@ -80,7 +87,8 @@ module.exports.PdfListadoEstudiantesMatriculasEstadosASignaturas = async functio
     var resultado = await ProcesoPdfMatriculasEstadosNivelParalelo(listado, carrera, cedulaUsuario, periodo);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ExcelListadoEstudiantesAsignaturDocente = async function (carrera, periodo, nivel, paralelo, CodMateria, cedula) {
@@ -88,7 +96,8 @@ module.exports.ExcelListadoEstudiantesAsignaturDocente = async function (carrera
     var resultado = await ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo, nivel, paralelo, CodMateria, cedula);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 
@@ -97,7 +106,8 @@ module.exports.ExcelListadoActasNoGeneradasCarreras = async function (carrera, p
     var resultado = await ProcesoExcelActasNoGeneradasCarreras(carrera, periodo, listado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ExcelReporteMaticulasCarrerasIndividual = async function (carrera, periodo, listado) {
@@ -105,7 +115,8 @@ module.exports.ExcelReporteMaticulasCarrerasIndividual = async function (carrera
     var resultado = await ProcesoExcelMatriculasCarrerasIndividual(carrera, periodo, listado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ExcelReporteMaticulasCarrerasInstitucional = async function (periodo, listado) {
@@ -113,7 +124,8 @@ module.exports.ExcelReporteMaticulasCarrerasInstitucional = async function (peri
     var resultado = await ProcesoExcelMatriculasCarrerasInstitucional(periodo, listado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ExcelReporteMaticulasNivelacionInstitucional = async function (periodo, listado) {
@@ -121,7 +133,8 @@ module.exports.ExcelReporteMaticulasNivelacionInstitucional = async function (pe
     var resultado = await ProcesoExcelMatriculasNivelacionInstitucional(periodo, listado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ExcelReporteMaticulasAdmisionesInstitucional = async function (periodo, listado) {
@@ -129,7 +142,8 @@ module.exports.ExcelReporteMaticulasAdmisionesInstitucional = async function (pe
     var resultado = await ProcesoExcelMatriculasAdminisionesInstitucional(periodo, listado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ExcelReporteFinanciero = async function (listado) {
@@ -137,7 +151,8 @@ module.exports.ExcelReporteFinanciero = async function (listado) {
     var resultado = await ProcesoDatosUsuarios(listado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ExcelInconsistenciaMatriculas = async function (listado) {
@@ -145,7 +160,8 @@ module.exports.ExcelInconsistenciaMatriculas = async function (listado) {
     var resultado = await ProcesoExcelMatriculasInconsistencia(listado);
     return resultado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 async function ProcesoPdfListadoDocumentosCarreras(listado, cedula, periodo) {
@@ -238,10 +254,12 @@ async function ProcesoPdfListadoDocumentosCarreras(listado, cedula, periodo) {
       return base64
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   } catch (err) {
-    console.log(error);
+    console.error(err);
+    
     return 'ERROR';
   }
 }
@@ -349,10 +367,12 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera, cedula
       return base64
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   } catch (err) {
-    console.log(error);
+    console.error(err);
+    
     return 'ERROR';
   }
 }
@@ -465,10 +485,12 @@ async function ProcesoPdfTerceraSegundaMatriculaCarreraGeneral(listado, carrera,
       return base64
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   } catch (err) {
-    console.log(error);
+    console.error(err);
+    
     return 'ERROR';
   }
 }
@@ -598,10 +620,12 @@ async function ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera, cedula, 
       return base64
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   } catch (err) {
-    console.log(error);
+    console.error(err);
+    
     return 'ERROR';
   }
 }
@@ -709,10 +733,12 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         return base64
       } catch (error) {
         console.error(error);
+        
         return 'ERROR';
       }
     } catch (err) {
-      console.log(error);
+      console.error(err);
+      
       return 'ERROR';
     }
   }
@@ -820,10 +846,12 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         return base64
       } catch (error) {
         console.error(error);
+        
         return 'ERROR';
       }
     } catch (err) {
-      console.log(error);
+      console.error(err);
+      
       return 'ERROR';
     }
   }
@@ -927,10 +955,12 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         return base64
       } catch (error) {
         console.error(error);
+        
         return 'ERROR';
       }
     } catch (err) {
-      console.log(error);
+      console.error(err);
+      
       return 'ERROR';
     }
   }
@@ -1089,10 +1119,12 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
         return null
       } catch (error) {
         console.error(error);
+        
         return 'ERROR';
       }
     } catch (err) {
-      console.log(error);
+      console.error(err);
+      
       return 'ERROR';
     }
   }
@@ -1294,6 +1326,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }
@@ -1399,6 +1432,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }
@@ -1638,6 +1672,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }
@@ -1892,6 +1927,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }
@@ -2144,6 +2180,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }
@@ -2420,6 +2457,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }
@@ -2514,6 +2552,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }
@@ -2604,6 +2643,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }
@@ -2697,6 +2737,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 
     } catch (error) {
       console.error(error);
+      
       return 'ERROR';
     }
   }

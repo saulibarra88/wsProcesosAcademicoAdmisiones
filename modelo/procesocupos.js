@@ -7,36 +7,6 @@ const sql = require("mssql");
 var os = require('os');
 
 
-module.exports.InsertarCupoConfirmado = async function (carrera,datosCupo,datosDetalle) {
-   
-   
-        var sentencia="";
-        var sentenciasecuencial=""
-        var sentenciadetalle="";
-       sentencia = "INSERT INTO [" + carrera + "].[dbo].[Cupo]([acu_id],[identificacion],[per_id],[tipoinsc],[per_niv],[per_carrera],[carrera],[fechacreacion],[cup_estado])"
-      + "VALUES('" + datosCupo.acu_id + "','" + datosCupo.identificacion + "','" + datosCupo.per_id + "','" + datosCupo.tipoinsc + "','" + datosCupo.per_niv + "','" + datosCupo.per_carrera + "','" + datosCupo.carrera + "','" + datosCupo.fechacreacion + "', '" + datosCupo.cup_estado + "');";
- 
-      sentenciasecuencial="SELECT TOP 1 * FROM [" + carrera + "].[dbo].[Cupo] ORDER BY cup_id DESC"
-     
-      try {
-          
-        if (sentencia != "") {
-          const IngresoCupo = await execDinamico(carrera,sentencia, "OK","OK");
-          const secuencial = await execDinamico(carrera,sentenciasecuencial, "OK","OK");
-
-          sentenciadetalle = "INSERT INTO [" + carrera + "].[dbo].[Detallecupo]([cup_id],[estcup_id],[per_carrera],[dcupfechacreacion],[dcupobservacion])"
-         + "VALUES('" + secuencial.data[0].cup_id + "','" + datosDetalle.estcup_id + "','" + datosDetalle.per_carrera + "','" + datosDetalle.dcupfechacreacion + "','" + datosDetalle.dcupobservacion + "');";
-         const IngresoDetalle = await execDinamico(carrera,sentenciadetalle, "OK","OK");
-       
-         return (IngresoDetalle)
-        } else {
-          return {data:"vacio sql"}
-        }
-      } catch (error) {
-        return {data:"Error: "+ error}
-      }
-  
-  }
   module.exports.InsertarCupoConfirmadoTrasnsaccion = async function (transaction,carrera,datosCupo,datosDetalle,strperiodo) {
     try {
         var sentencia="";
@@ -157,21 +127,6 @@ try {
 } catch (error) {
   return {data:"Error: "+ error}
 }
-}
-module.exports.ObenterEstudianteIncripcion = async function (carrera,cedula,periodo) {
-  var sentencia="";
-  sentencia=" SELECT* FROM [" + carrera + "].[dbo].[Inscripciones]  AS i INNER JOIN [" + carrera + "].[dbo].[Carreras] AS c on c.strCodigo=i.strCodCarrera INNER JOIN [" + carrera + "].[dbo].[homologacioncarreras] AS h on h.hmbdbaseniv=c.strBaseDatos where i.strCedEstud='" + cedula + "' and i.strCodPeriodo='" + periodo + "' and  h.periodo='" + periodo + "' "
-try {
-  if (sentencia != "") {
-    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
-   return (sqlConsulta)
-  } else {
-    return {data:"vacio sql"}
-  }
-} catch (error) {
-  return {data:"Error: "+ error}
-}
-
 }
 
 module.exports.ObenterEstudianteIncripcionP0039 = async function (transaction,carrera,cedula,periodo) {
@@ -400,21 +355,6 @@ try {
 }
 
 }
-module.exports.EncontrarEstudianteMatriculadoAsignaturas = async function (carrera,periodo,cedula) {
-    var sentencia="";
-    sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE e.strCedula='" + cedula + "' and  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' "
-  try {
-    if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
-
-}
 
 module.exports.InsertarDetalleCupo = async function (carrera,datosDetalle) {
     var sentenciadetalle="";
@@ -576,42 +516,7 @@ try {
 }
 
 }
-module.exports.InsertarCupoProceso = async function (idTipo,nombre,periodo) {
-  var sentencia="";
-//  sentencia="SELECT * FROM [OAS_Master].[dbo].[Cupo] WHERE identificacion='" + cedula + "' and per_carrera= '" + periodo + "' and cup_estado=1"
 
-  sentencia = "INSERT INTO [OAS_Master].[dbo].[Cupo]([acu_id],[identificacion],[per_id],[tipoinsc],[per_niv],[per_carrera],[carrera],[fechacreacion],[cup_estado])"
-      + "VALUES('" + datosCupo.acu_id + "','" + datosCupo.identificacion + "','" + datosCupo.per_id + "','" + datosCupo.tipoinsc + "','" + datosCupo.per_niv + "','" + datosCupo.per_carrera + "','" + datosCupo.carrera + "','" + datosCupo.fechacreacion + "', '" + datosCupo.cup_estado + "');";
- 
-try {
-  if (sentencia != "") {
-    const sqlConsulta = await execMaster("OAS_Master",sentencia, "OK","OK");
-   return (sqlConsulta)
-  } else {
-    return {data:"vacio sql"}
-  }
-} catch (error) {
-  return {data:"Error: "+ error}
-}
-
-}
-
-module.exports.ObtenerCusIdBaseNivelacion = async function (carrera,periodo) {
-  var sentencia="";
-  sentencia="SELECT * FROM [OAS_Master].[dbo].[homologacioncarreras] WHERE hmbdbaseniv='" + carrera + "' and periodo= '" + periodo + "' "
- 
-try {
-  if (sentencia != "") {
-    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
-   return (sqlConsulta)
-  } else {
-    return {data:"vacio sql"}
-  }
-} catch (error) {
-  return {data:"Error: "+ error}
-}
-
-}
 
 module.exports.ObtenerBaseNivelacionDadoCusidPeriodo = async function (transaction,carrera,cusid,periodo) {
   var sentencia="";
@@ -909,38 +814,7 @@ module.exports.PeriodoDatos = async function (carrera,periodo) {
 
 }
 
-module.exports.ListadoDetalleCuposporDescripcion = async function (carrera,periodo) {
-  var sentencia="";
-  sentencia=" SELECT * FROM [" + carrera + "].dbo.Periodos WHERE strCodigo='" + periodo + "' "
-    try {
-  if (sentencia != "") {
-    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
-   return (sqlConsulta)
-  } else {
-    return {data:"vacio sql"}
-  }
-} catch (error) {
-  return {data:"Error: "+ error}
-}
 
-}
-
-module.exports.ObtenerTituloCarrera = async function (carrera) {
-  var sentencia="";
-  sentencia="SELECT * FROM [" + carrera + "].[dbo].[Titulos] ORDER BY strNombre ASC"
- 
-try {
-  if (sentencia != "") {
-    const sqlConsulta = await execDinamico("OAS_Master",sentencia, "OK","OK");
-  
-   return (sqlConsulta)
-  } else {
-    return {data:"vacio sql"}
-  }
-} catch (error) {
-  return {data:"Error: "+ error}
-}
-}
 
   module.exports.ObtenerDatosEstudianteCarrera = async function (carrera,cedula) {
  var sentencia="";
