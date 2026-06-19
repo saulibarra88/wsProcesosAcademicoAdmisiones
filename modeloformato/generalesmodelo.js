@@ -253,7 +253,6 @@ module.exports.ActualizarDatosHomologacionesCarrera = async function (carrera, o
 module.exports.ObtenerAsignaturaMovilidadCarrera = async function (carrera,dbcarrera, objDatos) {
   var sentencia = "";
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Materias_Asignadas_Movilidad] WHERE [mam_bdorigen]='" + dbcarrera + "' AND  [mam_periodo]='" + objDatos.strCodPeriodo + "' AND [mam_nivelorigen]='" + objDatos.strCodNivel + "' AND [mam_paraleloorigen]='" + objDatos.strCodParalelo + "' AND [mam_codmateriaorigen]='" + objDatos.strCodMateria + "' AND [mam_estado]=1"
- //  console.log(sentencia)
   try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");

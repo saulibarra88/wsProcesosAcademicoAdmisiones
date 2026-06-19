@@ -112,8 +112,6 @@ module.exports.ProcesoTotalDefinitivaCarrera = async function (periodo) {
                 let contiene = carreras.strBaseDatos.includes("OAS_Niv");
                 var InformacionGeneral = await sqlmodelogenerales.TotalMatriculaDefinitvaCarrera(carreras.strBaseDatos, periodo);
                 contadortotalGeneral=contadortotalGeneral+InformacionGeneral.datos.data[0].TotalDEF
-
-                console.log(carreras.strBaseDatos)
                 if(contiene==true){
                 var Informacion = await sqlmodelogenerales.TotalMatriculaDefinitvaCarrera(carreras.strBaseDatos, periodo);
                 contadortotalNivelacion=contadortotalNivelacion+Informacion.datos.data[0].TotalDEF
@@ -129,7 +127,6 @@ module.exports.ProcesoTotalDefinitivaCarrera = async function (periodo) {
             contadortotalNivelacion:contadortotalNivelacion,
             contadortotalNivel:contadortotalNivel,
         }
-        console.log(resultado)
           return sendResponseProcesos(true, resultado, 'OK')
       
     } catch (error) {
@@ -196,11 +193,9 @@ module.exports.ProcesoClonacionCarreraHomologacionGeneralPeriodo = async functio
     }
 }
 module.exports.ProcesoIngresoCarrerasMovilidad = async function (listado) {
-    console.log(listado)
     try {
          for (var carreras of listado) {
         var VerificacionDatos = await sqlmodelogenerales.ObtenerModilidadCarreraPeriodoBase('OAS_Master', carreras.msca_periodo,carreras.msca_dbcarreraactual,carreras.msca_dbcarreramovilidad,carreras.msca_tipo);
-         console.log(VerificacionDatos)
         if(VerificacionDatos.datos.count==0){
                 var IngresoDatos = await sqlmodelogenerales.IngresarMoviliadCarrera('OAS_Master', carreras);
             }

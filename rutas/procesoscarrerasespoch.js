@@ -15,7 +15,7 @@ const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
 const crypto = require("crypto");
-const { console } = require('inspector');
+
 
 const agent = new https.Agent({
     rejectUnauthorized: false,
@@ -95,12 +95,12 @@ module.exports.pdfListadoEstudianteTerceraSegundaMatricula = async function (car
         var ListadoEstudiantesProceso = [];
         if (tipo == 3) {
             var ListadoDocumentos = await modeloprocesocarreras.ListadoEstudianteTerceraMatriculas(carrera, periodo);
-            var base64 = await modeloprocesocarreras.PdfListadoEstudianteMatriculasTerceraySegunda(ListadoDocumentos.data, carrera, cedula, periodo, tipo)
+            var base64 = await reportescarreras.PdfListadoEstudianteMatriculasTerceraySegunda(ListadoDocumentos.data, carrera, cedula, periodo, tipo)
             return base64;
         }
         if (tipo == 2) {
             var ListadoDocumentos = await modeloprocesocarreras.ListadoEstudianteSegundaMatriculas(carrera, periodo);
-            var base64 = await modeloprocesocarreras.PdfListadoEstudianteMatriculasTerceraySegunda(ListadoDocumentos.data, carrera, cedula, periodo, tipo)
+            var base64 = await reportescarreras.PdfListadoEstudianteMatriculasTerceraySegunda(ListadoDocumentos.data, carrera, cedula, periodo, tipo)
             return base64;
         }
         if (tipo == 4) {

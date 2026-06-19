@@ -335,7 +335,6 @@ router.post('/InsertarSolicitudAprobadaInscripcionMoviTraspaso', async (req, res
 });
 router.post('/InsertarInscripcionMoviExterna', async (req, res) => {
     try {
-        console.log('aqui ')
         const { solicitud, idpersona, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, idCupoAdmision, strFoto } = req.body;
         const Informacion = await funcionesprocesosmovilidad.ProcesInsertarSolicitudAprobadaInscripcionMovilidadExterna(solicitud, idpersona, idCupoAdmision, strRutadocumento, strFormaInscripcion, strObservaciones, blgratuidadT, blgratuidad30, strFoto);
         res.json({

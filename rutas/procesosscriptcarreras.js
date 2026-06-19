@@ -7,7 +7,7 @@ const https = require('https');
 const tools = require('./tools');
 const procesoAcadeicoNotas = require('../rutas/ProcesoNotasAcademico');
 const procesoCupo = require('../modelo/procesocupos');
-const procesoscriptcarrera = require('../modelo/modeloscriptcarreras');
+
 const procesoCarrera = require('../modelo/procesocarrera');
 const procesoReportesCarrera = require('./reportesCarreras');
 const procesonotasacademicos = require('../modelo/procesonotasacademicos');

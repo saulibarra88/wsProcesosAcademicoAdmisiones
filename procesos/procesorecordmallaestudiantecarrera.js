@@ -75,7 +75,6 @@ async function FuncionCurriculumEstudiantilCarrera(carrera, cedula) {
         // Procesar currículo mostrando la malla con asignaturas aprobadas
         const curriculumProcesado = await procesarCurriculumConMallaCompleta(mallaFiltrada, recordAcademicoNivel, carrera, datosEstudianteUltima.data[0], cedula, titulacion);
         // Generar PDF
-        console.log(curriculumProcesado[0].asignaturas[0])
         const pdfBase64 = await reportepdfmakecurriculuestudiante.PdfCurriculumEstuidantilCarrera(cedula, personaResponse.value.data.listado[0], datosCarrera.data[0], curriculumProcesado, foto, titulacion, listadoBecas, datosEstudianteUltima.data[0].strCodigo);
 
         return pdfBase64;

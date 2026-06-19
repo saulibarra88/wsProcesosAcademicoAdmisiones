@@ -13,7 +13,7 @@ const funcionesmodelomovilidad = require('../modelo/modelomovilidad');
 const procesoacademico = require('../rutas/ProcesoNotasAcademico');
 const xlsx = require('xlsx');
 const ExcelJS = require('exceljs');
-const { JSDOM } = require('jsdom');
+
 const path = require('path');
 const agent = new https.Agent({
   rejectUnauthorized: false,

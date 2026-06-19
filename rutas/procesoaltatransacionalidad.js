@@ -832,7 +832,6 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
 async function FuncionListadoEstudiantePeriodos(carrera, periodo) {
     const limitSQL = pLimit(10);
     const listadoResultado = [];
-console.log('Proceso')
     try {
         const matriculaEstudiantesCarrera = await modeloprocesocarreras.ListadoEstudiantePeriodoMatricula(carrera, periodo, 'DEF');
         const DatosPeriodo = await modeloprocesocarreras.PeriodoDatosCarrera(carrera, periodo);
