@@ -8,9 +8,9 @@ module.exports = {
   "password": process.env.DB_PASSWORDMASTER,
   "server": process.env.DB_SERVERMASTER,
   "database":process.env.DB_NAMEMASTER,
-  "portNumber": process.env.DB_PORTMASTER,
+  "port": parseInt(process.env.DB_PORTMASTER, 10),
   pool: {
-   max: 300000,
+    max: 100,
     min: 10,
     idleTimeoutMillis: 30000 // Reducir el tiempo de espera en milisegundos
   },

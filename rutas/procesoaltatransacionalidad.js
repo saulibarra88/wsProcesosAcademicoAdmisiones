@@ -10,7 +10,6 @@ const https = require('https');
 const crypto = require("crypto");
 const pLimit = require('p-limit');
 const limit = pLimit(10);
-const { closeAllPools } = require('./../config/dbPoolManager');
 const modeloreporteexcelcarrera = require('../procesos/reportesexcelcarreras');
 const modelocentralizada = require('../modelo/centralizada');
 const { iniciarMasterTransaccion, iniciarMasterPool } = require("./../config/execSQLMaster.helper");
@@ -981,9 +980,7 @@ async function FuncionFotoMatriculasNivelacionTodasInstitucionalTransaccion(peri
     } catch (err) {
         console.error(err);
         return 'ERROR' + err;
-    } finally {
-        await closeAllPools();
-    }
+    } 
 }
 
 async function FuncionFinancieroDatos() {
@@ -1016,9 +1013,7 @@ async function FuncionFinancieroDatos() {
     } catch (err) {
         console.error(err);
         return 'ERROR' + err;
-    } finally {
-        await closeAllPools();
-    }
+    } 
 }
 
 async function FuncionuUsuariosDatos() {
@@ -1055,7 +1050,5 @@ async function FuncionuUsuariosDatos() {
     } catch (err) {
         console.error(err);
         return 'ERROR' + err;
-    } finally {
-        await closeAllPools();
-    }
+    } 
 }

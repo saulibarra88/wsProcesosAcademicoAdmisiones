@@ -2,7 +2,6 @@ const modeloprocesocarreras = require('../modelo/procesocarrera');
 const axios = require('axios');
 const cron = require('node-cron');
 const pathimage = require('path');
-const nomenclatura = require('../config/nomenclatura');
 const modeloprocesoCupo = require('../modelo/procesocupos');
 const reportescarreras = require('../rutas/reportesCarreras');
 const modeloreporteexcelcarrera = require('../procesos/reportesexcelcarreras');
@@ -14,7 +13,6 @@ const pLimit = require('p-limit');
 const limit = pLimit(10);
 const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { iniciarMasterTransaccion, iniciarMasterPool } = require("./../config/execSQLMaster.helper");
-const { closeAllPools } = require('./../config/dbPoolManager');
 const agent = new https.Agent({
     rejectUnauthorized: false,
     // other options if needed

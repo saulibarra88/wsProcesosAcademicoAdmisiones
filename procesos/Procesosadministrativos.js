@@ -1,7 +1,6 @@
 const axios = require('axios');
 const cron = require('node-cron');
 const pathimage = require('path');
-const nomenclatura = require('../config/nomenclatura');
 const VariablesGlobales = require('../rutas/VariablesGlobales');
 const tools = require('../rutas/tools');
 const modeloNivelacion = require('../modelo/procesonivelacion');

@@ -1,7 +1,6 @@
 const axios = require('axios');
 const cron = require('node-cron');
 const pathimage = require('path');
-const nomenclatura = require('../config/nomenclatura');
 const modeloprocesoCupo = require('../modelo/procesocupos');
 const modeloprocesocarreras = require('../modelo/procesocarrera');
 const procesoadministrativo = require('../modelo/procesoadministrativo');

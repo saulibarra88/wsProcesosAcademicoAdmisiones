@@ -1,7 +1,5 @@
-const { connectionAcademico } = require('./../config/PollConexionesAcademico'); // Importa el pool de conexiones
 const { execDinamico, execDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { execMaster, execMasterTransaccion } = require("./../config/execSQLMaster.helper");
-const { execMasterMejorado} = require("./../config/execSQLMasterMejorado.helper");
 const CONFIGACADEMICO = require('./../config/databaseDinamico');
 const sql = require("mssql");
 var os = require('os');

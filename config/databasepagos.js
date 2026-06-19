@@ -5,9 +5,9 @@ module.exports = {
    password:process.env.DB_PASSWORDPAGOS,
   server:process.env.DB_SERVERPAGOS, 
   database:process.env.DB_NAMEPAGOS,
-  portNumber:process.env.DB_PORTPAGOS,
+  port: parseInt(process.env.DB_PORTPAGOS, 10),
   pool: {
-   max: 300000,
+    max: 100,
     min: 10,
     idleTimeoutMillis: 30000 // Reducir el tiempo de espera en milisegundos
   },
