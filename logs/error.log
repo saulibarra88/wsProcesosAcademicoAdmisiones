@@ -8,3 +8,19 @@
 [error] [2026-04-22 08:40:01]  : Error ProcesoTotalDefinitivaCarrera Cannot read properties of undefined (reading 'datos')
 [error] [2026-06-05 15:26:55]  : Error ProcesoListadoCarrerasHomologacionesPeriodo listado is not iterable
 [error] [2026-06-05 15:27:40]  : Error ProcesoIngresoCarrerasMovilidad listado is not iterable
+[error] [2026-06-22 16:03:26]  : Error ProcesoListadoCarrerasMovilidadesPeriodo sqlmodelogenerales.ObtenerMejorEstudianteDosCalificacionesAsignaturaCarrera is not a function
+[error] [2026-06-22 16:03:48]  : Error ProcesoListadoCarrerasMovilidadesPeriodo Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:03:55]  : Error ProcesoListadoCarrerasMovilidadesPeriodo Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:04:14]  : Error ProcesoListadoCarrerasMovilidadesPeriodo Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:04:23]  : Error ProcesoListadoCarrerasMovilidadesPeriodo Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:04:41]  : Error ProcesoListadoCarrerasMovilidadesPeriodo Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:04:43]  : Error ProcesoListadoCarrerasMovilidadesPeriodo Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:12:49]  : Error ProcesoListadoCarrerasMovilidadesPeriodo Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:13:39]  : Error ProcesoCertificadoMejorEstudianteAsignatura Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:14:24]  : Error ProcesoCertificadoMejorEstudianteAsignatura Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 16:15:00]  : Error ProcesoCertificadoMejorEstudianteAsignatura Cannot read properties of undefined (reading 'strNombres')
+[error] [2026-06-22 17:00:50]  : Error ProcesoCertificadoMejorEstudianteAsignatura asignatura is not defined
+[error] [2026-06-22 17:01:46]  : Error ProcesoCertificadoMejorEstudianteAsignatura asignatura is not defined
+[error] [2026-06-22 17:07:16]  : Error ProcesoCertificadoMejorEstudianteAsignatura datosAsignatura is not defined
+[error] [2026-06-23 08:31:38]  : Error ProcesoReporteMallaAcademicaCarrera base64 is not defined
+[error] [2026-06-23 08:32:03]  : Error ProcesoReporteMallaAcademicaCarrera base64 is not defined

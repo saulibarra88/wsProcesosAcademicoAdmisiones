@@ -813,7 +813,21 @@ module.exports.PeriodoDatos = async function (carrera,periodo) {
 }
 
 }
+module.exports.ObtenerPensumCarrera = async function (carrera,pesum) {
+  var sentencia="";
+  sentencia=" SELECT * FROM [" + carrera + "].[dbo].[Pensums] WHERE strCodigo='" + pesum + "' "
+    try {
+  if (sentencia != "") {
+    const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+   return (sqlConsulta)
+  } else {
+    return {data:"vacio sql"}
+  }
+} catch (error) {
+  return {data:"Error: "+ error}
+}
 
+}
 
 
   module.exports.ObtenerDatosEstudianteCarrera = async function (carrera,cedula) {

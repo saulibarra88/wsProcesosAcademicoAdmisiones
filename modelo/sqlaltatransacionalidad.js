@@ -303,7 +303,7 @@ try {
 
   module.exports.ListadoEstudiantePeriodoMatricula = async function ( carrera,periodo,estado) {
   var sentencia = "";
-  sentencia = " select * from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo where m.strCodPeriodo='" + periodo + "' and m.strCodEstado='" + estado + "' order by m.strCodNivel"
+  sentencia = " select * from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo where m.strCodPeriodo='" + periodo + "' and m.strCodEstado='" + estado + "' order by m.strCodNivel,m.strCodEstud"
 
   try {
     if (sentencia != "") {

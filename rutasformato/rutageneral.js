@@ -155,4 +155,62 @@ router.post('/ActualizacionDatosHomologacionesCarreras/', async (req, res) => {
     }
 
 });
+
+router.get('/CertificadoMejorEstudianteAsignaturaCarrera/:dbcarrera/:periodo/:asignatura',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const periodo = req.params.periodo;
+    const asignatura = req.params.asignatura;
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoCertificadoMejorEstudianteAsignatura(dbcarrera,periodo,asignatura);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoCarrerasHomologacionPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.get('/CertificadoCalificacionesEstudiantePeriodo/:dbcarrera/:periodo/:cedula',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const periodo = req.params.periodo;
+    const cedula = req.params.cedula;
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoCertificadoCalificacionesEstudiantePeriodoCarrera(dbcarrera,periodo,cedula);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoCarrerasHomologacionPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+
+router.get('/ReporteMAllaAcademicaCarrera/:dbcarrera/:periodo/',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const periodo = req.params.periodo;
+
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoReporteMallaAcademicaCarrera(dbcarrera,periodo);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ReporteMAllaAcademicaCarrera', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.get('/ReporteMAllaAcademicaCarreraPensum/:dbcarrera/:pensum/',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const pensum = req.params.pensum;
+
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoReporteMallaAcademicaCarreraPesum(dbcarrera,pensum);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ReporteMAllaAcademicaCarreraPensum', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
 module.exports = router;
