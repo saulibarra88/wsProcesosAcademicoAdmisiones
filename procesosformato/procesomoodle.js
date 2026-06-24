@@ -23,7 +23,16 @@ const agent = new https.Agent({
     secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
 
+module.exports.ProcesoModleCarreraHomologacion = async function (dbcarrera, periodo) {
+    try {
 
+        var informacion = await sqlmoodle.ObnterCarreraHomologacion('OAS_Master',dbcarrera, periodo);
+        return sendResponseProcesos(true, informacion.datos.data, 'OK')
+    } catch (error) {
+        logger.error('Error ProcesoModleMigracionDatosDictadoCarrera', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
 
 module.exports.ProcesoModleMigracionDatosDictadoCarrera = async function (carrera, periodo) {
     try {
