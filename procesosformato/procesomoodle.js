@@ -9,6 +9,7 @@ const axios = require('axios');
 const https = require('https');
 const crypto = require("crypto");
 const sqlmoodle = require('../modeloformato/moodlemodelo');
+const sqlcupos = require('../modelo/procesocupos');
 const logger = require('../herramientas/logger');
 const { sendResponseProcesos } = require('../herramientas/responseservice');
 
@@ -39,9 +40,12 @@ module.exports.ProcesoModleMigracionDatosDictadoCarrera = async function (carrer
 async function FuncionProcesoDictadoAsignaturaCarrera(dbcarrera, periodo) {
     try {
         var lstResultado = []
+        var lstResultadoGeneral = {}
         var informacion = await sqlmoodle.ListadoDictadoAsignaturaCarrera(dbcarrera, periodo);
+        var DatosCarrera = await sqlmoodle.ObternDatosCarreraFacultad('OAS_Master', dbcarrera);
         if (informacion.datos.count > 0) {
             for (var info of informacion.datos.data) {
+
                 var ListadoEstudiante = await sqlmoodle.ListadoEstudianteAsignatura(dbcarrera, periodo, info.strCodNivel, info.strCodParalelo);
                 if (ListadoEstudiante.datos.count > 0) {
                     info.lstEstudiantes = ListadoEstudiante.datos.data
@@ -51,8 +55,9 @@ async function FuncionProcesoDictadoAsignaturaCarrera(dbcarrera, periodo) {
                 lstResultado.push(info)
             }
         }
-
-        return lstResultado
+lstResultadoGeneral.lstResultado=lstResultado
+lstResultadoGeneral.Carrera=DatosCarrera.datos.data[0]
+        return lstResultadoGeneral
     } catch (error) {
         console.error(error);
 

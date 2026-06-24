@@ -41,3 +41,18 @@ module.exports.ListadoEstudianteAsignatura = async function (carrera,periodo,niv
     return sendResponseModelo(false, [], error.message)
   }
 }
+module.exports.ObternDatosCarreraFacultad = async function (carrera,dbcarrera) {
+  var sentencia = "";
+  sentencia ="SELECT F.*,C.*,F.strNombre as nombrefacultad,C.strNombre as nombrecarrera,F.strCodigo as codigofacultad,C.strCodigo as codigocarrera FROM [" + carrera + "].[dbo].[Facultades] AS F INNER JOIN [" + carrera + "].[dbo].[Escuelas] AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [" + carrera + "].[dbo].[Carreras] AS C ON C.strCodEscuela=E.strCodigo WHERE C.strBaseDatos='" + dbcarrera + "'"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ListadoApellidosDocentesCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
