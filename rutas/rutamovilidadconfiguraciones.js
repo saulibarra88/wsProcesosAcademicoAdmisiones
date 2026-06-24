@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 
 const funcionesprocesosmovilidadconfiguraciones = require('../procesos/procesosmovilidadconfiguraciones');
 
@@ -13,7 +13,8 @@ router.get('/ListadoFacultadesAdministracion/', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -32,7 +33,8 @@ router.get('/ListadoFacultadesActivas/', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -51,7 +53,8 @@ router.get('/ListadoEscuelaAdministracion/:facultad', async (req, res) => {
             Informacion: respuesta.data
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -70,7 +73,8 @@ router.get('/PrpuestaCodigoPensum/:carrera',async (req, res) => {
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -90,7 +94,8 @@ router.post('/IngresarFacultad', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -110,7 +115,8 @@ router.post('/ActualizarFacultad', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -130,7 +136,8 @@ router.post('/CambiarEstadoFacultad', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -149,7 +156,8 @@ router.post('/IngresarEscuela', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -169,7 +177,8 @@ router.post('/ActualizarEscuela', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -189,7 +198,8 @@ router.post('/CambiarEstadoEscuela', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -208,7 +218,8 @@ router.post('/IngresarCarrera', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -227,7 +238,8 @@ router.post('/ActualizarCarrera', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -247,7 +259,8 @@ router.post('/CambiarEstadoCarrera', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -266,7 +279,8 @@ router.get('/ListadoCarrerasAdministracion/:escuela',async (req, res) => {
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -285,7 +299,8 @@ router.get('/ListadoSedes/',async (req, res) => {
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -304,7 +319,8 @@ router.get('/CodigoSeguirdadCarrera/:escuela',async (req, res) => {
             Informacion: Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -323,7 +339,8 @@ router.post('/IngresarPais', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -342,7 +359,8 @@ router.post('/ActualizarPais', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -361,7 +379,8 @@ router.post('/IngresarProvincia', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -380,7 +399,8 @@ router.post('/ActualizarProvincia', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -399,7 +419,8 @@ router.post('/IngresarCiudad', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -418,7 +439,8 @@ router.post('/ActualizarCiudad', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -438,7 +460,8 @@ router.get('/ListadoTipoInstituciones/',async (req, res) => {
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -457,7 +480,8 @@ router.get('/ListadoInstitucionesTodas/',async (req, res) => {
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -477,7 +501,8 @@ router.post('/IngresarInstituciones', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -496,7 +521,8 @@ router.post('/ActualizarInstituciones', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -515,7 +541,8 @@ router.get('/ListadoTitulosTodos/',async (req, res) => {
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -534,7 +561,8 @@ router.post('/IngresarTitulo', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -553,7 +581,8 @@ router.post('/ActualizarTitulo', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -573,7 +602,8 @@ router.get('/ObtenerDatosInstitucion/',async (req, res) => {
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -592,7 +622,8 @@ router.post('/ActualizarDatosInstitucional', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -615,7 +646,8 @@ router.get('/ObtenerNuevoCodigoPeriodoAcademico/:tipo',async (req, res) => {
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -634,7 +666,8 @@ router.post('/IngresoNuevoPeriodoAcademico', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -653,7 +686,8 @@ router.post('/ActualizarPeriodoCarreras', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -672,7 +706,8 @@ router.get('/ListadoCarrerasCalificaciones/',async (req, res) => {
             Informacion: Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -691,7 +726,8 @@ router.get('/ObtenerFechasCalificacionesAcademico/',async (req, res) => {
             Informacion: Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -711,7 +747,8 @@ router.post('/ActualizarFechasCalificacionesCarreras', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -731,7 +768,8 @@ router.get('/ObtenerInformacionAcademicaEstudiante/:cedula',async (req, res) => 
             Informacion: Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -751,7 +789,8 @@ router.get('/ObtenerUsuarioPorIdRolyBaseCarrera/:idrol/:dbcarrera',async (req, r
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -770,7 +809,8 @@ router.get('/ListadoTitulosDadoInstitucion/:codInstitucion',async (req, res) => 
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -790,7 +830,8 @@ router.get('/IngresoTituloInstitucion/:codInstitucion/:codTitulo',async (req, re
             Informacion: Informacion.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,

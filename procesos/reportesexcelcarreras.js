@@ -1,9 +1,9 @@
 
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require("fs");
-const pdf = require('html-pdf');
+const reportespdfmaker = require('../reportesmake/reportescarrerasmake');
 const pathimage = require('path');
 const axios = require('axios');
 const https = require('https');
@@ -26,7 +26,8 @@ module.exports.ProcesoExcelListadoEstudiantesRetirosInstitucional = async functi
         var resultado = await FuncionExcelListadoEstudiantesRetirosInstitucional(periodo, cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoEstudiantesRetirosCarrera = async function (periodo,dbCarrera) {
@@ -34,7 +35,8 @@ module.exports.ProcesoListadoEstudiantesRetirosCarrera = async function (periodo
         var resultado = await FuncionListadoEstudiantesRetirosCarrera(periodo,dbCarrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoEstudiantesRetirosCarreraPdf = async function (periodo,dbCarrera,cedula) {
@@ -42,7 +44,8 @@ module.exports.ProcesoListadoEstudiantesRetirosCarreraPdf = async function (peri
         var resultado = await FuncionListadoEstudiantesRetirosCarreraPdf(periodo,dbCarrera,cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoEstudiantesRetirosCarreraCedula = async function (dbCarrera,cedula) {
@@ -50,7 +53,8 @@ module.exports.ProcesoEstudiantesRetirosCarreraCedula = async function (dbCarrer
         var resultado = await FuncionEstudiantesRetirosCarreraCedula(dbCarrera,cedula);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoExcelListadoEstudiantesRetirosCarrerraExcel = async function (periodo, dbCarrera) {
@@ -58,7 +62,8 @@ module.exports.ProcesoExcelListadoEstudiantesRetirosCarrerraExcel = async functi
         var resultado = await FuncionExcelListadoEstudiantesRetirosCarreraExcel(periodo, dbCarrera);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 
@@ -67,7 +72,8 @@ module.exports.ProcesoListadoRetirosEstudiantePeriodoTrnsaccion = async function
         var resultado = await FuncionEstudiantesRetirosPeriodoCarreraCedulaTrandsaccion(transaccion,dbCarrera,periodo, cedula,codigo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 module.exports.ProcesoListadoRetirosEstudiantePeriodo= async function (dbCarrera,periodo,cedula,codigo) {
@@ -75,7 +81,8 @@ module.exports.ProcesoListadoRetirosEstudiantePeriodo= async function (dbCarrera
         var resultado = await FuncionEstudiantesRetirosPeriodoCarreraCedula(dbCarrera,periodo, cedula,codigo);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 }
 async function FuncionExcelListadoEstudiantesRetirosInstitucional(periodo, cedula) {
@@ -133,7 +140,8 @@ async function FuncionExcelListadoEstudiantesRetirosInstitucional(periodo, cedul
         var resultado = await ProcesoRetirosInstitucionalExcel(periodo, cedula, lstResultado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -205,7 +213,8 @@ async function FuncionListadoEstudiantesRetirosCarrera(periodo, dbCarrera) {
       
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -277,7 +286,8 @@ async function FuncionListadoEstudiantesRetirosCarreraPdf(periodo, dbCarrera,ced
       var base64pdf= await generarReportListadoEstudiantesRetirosCarreraPdf(lstResultado,dbCarrera,periodo,cedula)
         return base64pdf
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -349,7 +359,8 @@ async function FuncionExcelListadoEstudiantesRetirosCarreraExcel(periodo, dbCarr
         var resultado = await ProcesoRetirosCarrerasExcel(periodo, dbCarrera, lstResultado);
         return resultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -453,6 +464,7 @@ async function ProcesoRetirosInstitucionalExcel(periodo, cedula, lstResultado) {
 
     } catch (error) {
         console.error(error);
+        
         return 'ERROR';
     }
 }
@@ -559,143 +571,18 @@ async function ProcesoRetirosCarrerasExcel(periodo,dbCarrera, lstResultado) {
 
     } catch (error) {
         console.error(error);
+        
         return 'ERROR';
     }
 }
 async function generarReportListadoEstudiantesRetirosCarreraPdf(listado, carrera, periodo,cedulaUsuario) {
-
-    var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
-    var datosPeriodo = await procesoCupo.PeriodoDatos(carrera, periodo);
-    var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedulaUsuario, { httpsAgent: agent });
-    var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
-    var cabeceralistado = "";
-    var bodylistado = "";
-    var contadot = 0;
-
-    var bodylistado = "";
-    var contadot = 0;
-    for (let asignaturas of listado) {
-
-        contadot = contadot + 1;
-        bodylistado += `<tr >
-<td style="font-size: 8px; text-align: center">
-${contadot}
-</td>
-<td style="font-size: 8px; text-align: center">
-${asignaturas.sintCodMatricula}
-</td>
-<td style="font-size: 8px; text-align: center">
-${asignaturas.strCedula}
-</td>
-<td style="font-size: 8px; text-align: left">
-${asignaturas.strApellidos} ${asignaturas.strNombres}
-</td>
-<td style="font-size: 8px; text-align: center">
-${asignaturas.strtipo}
-</td>
-<td style="font-size: 8px; text-align: center">
-${asignaturas.strnombreTipo}
-</td>
-
-
-</tr>`
-
+    try {
+        var base64 = await reportespdfmaker.pdfmakegenerarReporteRetiros(listado, carrera, periodo, cedulaUsuario);
+        return base64;
+    } catch (error) {
+        console.error(error);
+        return 'ERROR';
     }
-    const htmlContent = `
-  <!DOCTYPE html>
-  <html lang="es">
-  <head>
- <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 5px; text-align: left; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
-  </head>
-  <body>
-    <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
-    <br/>
-      <h6 style=" padding: 2px;margin:2px">LISTADO DE ESTUDIANTES RETIRADOS</h6>
-      <h6 style=" padding: 2px;margin:2px"><strong> PERIODO: </strong>${datosPeriodo.data[0].strDescripcion} (${periodo})</h6>
-       <br/>
-      
-    </div>
-    <table border=2>
-    <thead>
-    <tr>
-                 <th colspan="9" style="font-size: 8px; text-align: center"> INFORMACIÓN </th>
-       </tr>
-      <tr>
-                 <th style="font-size: 10px">#</th>
-                <th  style="font-size: 8px; text-align: center">MATRÍCULA</th>
-                <th  style="font-size: 8px; text-align: center">CÉDULA</th>
-                <th  style="font-size: 8px; text-align: center">ESTUDIANTE</th>
-                <th  style="font-size: 8px; text-align: center">RETIRO</th>
-                <th  style="font-size: 8px; text-align: center">TIPO RETIRO</th>
-      </tr>
-    </thead>
-
-    <tbody>
-       ${bodylistado}
-      </tbody>
-    </table>
-    <br/><br/>
-            <p style="text-align: center;"> <strong>----------------------------------------</strong></p>
-            <p style="text-align: center;font-size: 11px;"> GENERADO POR:</p>
-            <p style="text-align: center;font-size: 11px;"><strong>${strNombres}</strong> </p>
-  </body>
-  </html>
-  `;
-
-
-    const options = {
-        format: 'A4',
-        //orientation: 'landscape',
-        timeout: 60000,
-        border: {
-            top: '1.0cm', // Margen superior
-            right: '1.5cm', // Margen derecho
-            bottom: '2.0cm', // Margen inferior
-            left: '1.5cm' // Margen izquierdo
-        },
-        header: {
-            height: '60px',
-            contents: tools.headerHtmlCarreras(datosCarrera.data[0])
-        },
-        footer: {
-            height: '30px',
-            contents: tools.footerHtml()
-        },
-
-    };
-    var htmlCompleto = tools.headerOcultoHtmlCarreras(datosCarrera.data[0]) + htmlContent + tools.footerOcultoHtml();
-    var base64 = await tools.FunciongenerarPDF(htmlCompleto, options)
-    return base64
-
-
-}
-function FunciongenerarPDF(htmlCompleto, options) {
-    return new Promise((resolve, reject) => {
-        pdf.create(htmlCompleto, options).toFile("NominaGenerada.pdf", function (err, res) {
-            if (err) {
-                reject(err);
-            } else {
-                fs.readFile(res.filename, (err, data) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        const base64Data = Buffer.from(data).toString('base64');
-                        // Eliminar el archivo PDF generado (opcional)
-                        fs.unlink(res.filename, (err) => {
-                            if (err) {
-                                console.error('Error al eliminar el archivo PDF:', err);
-                            } else {
-                                console.log('Archivo PDF eliminado.');
-                            }
-                        });
-
-                        // Resolver la promesa con base64Data
-                        resolve(base64Data);
-                    }
-                });
-            }
-        });
-    });
 }
 
 async function FuncionEstudiantesRetirosCarreraCedula(dbCarrera,cedula) {
@@ -770,7 +657,8 @@ async function FuncionEstudiantesRetirosCarreraCedula(dbCarrera,cedula) {
       
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -846,7 +734,8 @@ async function FuncionEstudiantesRetirosPeriodoCarreraCedulaTrandsaccion( transa
       
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }
@@ -922,7 +811,8 @@ async function FuncionEstudiantesRetirosPeriodoCarreraCedula( dbCarrera,periodo,
       
         return lstResultado
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
     }
 
 }

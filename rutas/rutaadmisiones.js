@@ -1,7 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const ProcesosAdmisiones = require('../rutas/ProcesosAdmisiones');
 const ReportesAdmisiones = require('../rutas/reportesadmisiones');
 
@@ -27,7 +27,8 @@ router.get('/ObtenerListadoEstudianteAdmisiones/:dbBaseCarrera/:periodo/:idestad
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -57,7 +58,8 @@ router.get('/ObtenerListadoEstadosAdmisiones/:dbBaseCarrera/:periodo',async (req
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -79,7 +81,8 @@ router.get('/pdfComproanteCupoAdmisiones/:acuId',async (req, res) => {
         });
 
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -109,7 +112,8 @@ router.post('/ReportepdfListadoEstudiantesAdmisiones/',async (req, res) => {
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -139,7 +143,8 @@ router.post('/ReportepdfListadoAspiranteAdmisiones/',async (req, res) => {
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -169,7 +174,8 @@ router.post('/ReporteexcelListadoEstudiantesAdmisiones/',async (req, res) => {
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -199,7 +205,8 @@ router.post('/ReporteexcelListadoAspiranteAdmisiones/',async (req, res) => {
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -228,7 +235,8 @@ router.get('/ObtenerListadoAspiranteAdmisiones/:dbBaseCarrera/:periodo',async (r
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -256,7 +264,8 @@ router.get('/ObtenerPeriodoVigenteAdmisiones/',async (req, res) => {
             });
         }
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,

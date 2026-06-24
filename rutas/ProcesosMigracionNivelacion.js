@@ -1,7 +1,6 @@
 const axios = require('axios');
 const cron = require('node-cron');
 const pathimage = require('path');
-const nomenclatura = require('../config/nomenclatura');
 const VariablesGlobales = require('../rutas/VariablesGlobales');
 const procesoCupo = require('../modelo/procesocupos');
 const procesoCarrera = require('../modelo/procesocarrera');
@@ -67,8 +66,9 @@ module.exports.ProcesoVerificarRegistroIncripcionesEstudiantesAdmisiones = async
         }
         return { blProceso: true, Informacion: listadoMatriculas }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoConfirmacionCupoInscripcion = async function (periodo, cedula) {
@@ -93,8 +93,9 @@ module.exports.ProcesoConfirmacionCupoInscripcion = async function (periodo, ced
 
          //   return { blProceso: true, mensaje: "Se ejecuto el proceso CONFIRMACION CUPO INSCRIPCION con éxito en el " + periodo }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 
@@ -112,8 +113,9 @@ module.exports.ProcesoMatriculadosConfirmados = async function (periodo, cedula)
             return { blProceso: true, mensaje: "Se ejecuto el proceso MATRICULACION ACEPTACION CUPO con éxito en el " + periodo }
         }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoCasosEspecialRube = async function (periodo) {
@@ -126,8 +128,9 @@ module.exports.ProcesoCasosEspecialRube = async function (periodo) {
         return { blProceso: true, mensaje: "Se ejecuto el proceso MATRICULACION ACEPTACION CUPO con éxito en el " + periodo }
 
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoPruebas = async function (periodo) {
@@ -140,8 +143,9 @@ module.exports.ProcesoPruebas = async function (periodo) {
         return { blProceso: true, mensaje: "Se ejecuto el proceso MATRICULACION ACEPTACION CUPO con éxito en el " + periodo }
 
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoRetirosParciales = async function (periodo, cedula) {
@@ -156,8 +160,9 @@ module.exports.ProcesoRetirosParciales = async function (periodo, cedula) {
             return { blProceso: true, mensaje: "Se ejecuto el proceso RETIROS PARCIALES con éxito en el " + periodo }
         }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 
@@ -173,8 +178,9 @@ module.exports.ProcesoCalculoPerdidaCupo = async function (periodo, cedula) {
             return { blProceso: true, mensaje: "Se ejecuto el proceso PERDIDA CUPO PERIODOS ACUMULADOS con éxito en el " + periodo }
         }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoAprobacionNivelacionVerificarPasoCarrera = async function (periodo,) {
@@ -185,8 +191,9 @@ module.exports.ProcesoAprobacionNivelacionVerificarPasoCarrera = async function 
         return obtenerDatos;
 
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoActivarCupoRetirado = async function (periodo, cedula) {
@@ -201,8 +208,9 @@ module.exports.ProcesoActivarCupoRetirado = async function (periodo, cedula) {
             return { blProceso: true, mensaje: "Se ejecuto el proceso ACTIVACION CUPO RETIRO PARCIAL con éxito en el " + periodo }
         }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoImpedimentoAcademicoNivelacion = async function (periodo, cedula) {
@@ -211,18 +219,9 @@ module.exports.ProcesoImpedimentoAcademicoNivelacion = async function (periodo, 
         return { blProceso: true, mensaje: "Se ejecuto el proceso IMPEDIMENTO ACADEMICO NIVELACION CON EXITOS  periodo" + periodo, Informacion: resultado }
 
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
-    }
-}
-module.exports.ProcesoMatriculadosNivelacion = async function (periodo, cedula) {
-    try {
-        var resultado = await ProcesoImpedimentoAcademicoNivelacionn(periodo);//Estado de cupo a buscar para insertar
-        return { blProceso: true, mensaje: "Se ejecuto el proceso IMPEDIMENTO ACADEMICO NIVELACION CON EXITOS  periodo" + periodo, Informacion: resultado }
-
-    } catch (error) {
-        return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoMatriculadosDefinitivas = async function (periodo, cedula) {
@@ -231,8 +230,9 @@ module.exports.ProcesoMatriculadosDefinitivas = async function (periodo, cedula)
         return { blProceso: true, mensaje: "Se ejecuto el proceso con exitos  periodo" + periodo, Informacion: resultado }
 
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ListadoPeriodosEjecutados = async function (periodo, cedula) {
@@ -250,8 +250,9 @@ module.exports.ListadoPeriodosEjecutados = async function (periodo, cedula) {
             return { blProceso: true, Datos: listado }
         }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 
@@ -323,8 +324,9 @@ module.exports.InscripcionEstudianteNoregistradoCasoEspecialP0039 = async functi
         return { blProceso: true, Informacion: listadoMatriculas }
 
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -347,8 +349,9 @@ module.exports.ProcesoValidacionConocimientosMatriculasPeriodos = async function
         }
         return { blProceso: true, Informacion: listadoMatriculas }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoEstudianteMatriculadosNivel = async function (periodo, nivel) {
@@ -380,8 +383,9 @@ module.exports.ProcesoEstudianteMatriculadosNivel = async function (periodo, niv
         }
         return { blProceso: true, Informacion: listadoMatriculas }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 module.exports.ProcesoEstudianteMatriculadosNivelCupos = async function (periodo, nivel) {
@@ -430,8 +434,9 @@ module.exports.ProcesoEstudianteMatriculadosNivelCupos = async function (periodo
         }
         return { blProceso: true, Informacion: listadoMatriculas }
     } catch (error) {
+        console.error(error);
         return { blProceso: false, mensaje: "Error :" + error }
-        console.log(error);
+        
     }
 }
 
@@ -443,7 +448,8 @@ module.exports.ProcesoAdmisionesVerificacionRegistroCupo = async function (perio
         return obtenerDatos;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
        
     }
@@ -456,7 +462,8 @@ module.exports.ProcesoAdmisionesEstudiantesPerdidaCupo = async function (periodo
         return obtenerDatos;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
        
     }
@@ -469,7 +476,8 @@ module.exports.ProcesoListadoEstudianteCuposPorEstados = async function (periodo
         return obtenerDatos;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
         
     }
@@ -482,7 +490,8 @@ module.exports.ProcesoExcelListadoEstudianteCuposPorEstados = async function (pe
         return obtenerDatos;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
         
     }
@@ -494,7 +503,8 @@ module.exports.ListadoeEtadoCupos = async function () {
         return obtenerDatos.data;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
         
     }
@@ -551,8 +561,9 @@ async function ProcesoVerificacionConfirmacionCupoInscripcion(periodo) {
         return 'OK';
 
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -626,8 +637,9 @@ async function ProcesoVerificacionConfirmacionCupoInscripcionP0039(periodo) {
         console.log("***********PROCESO FINALIZADO CUPO INSCRIPCION**********")
         return ListadoEstudiantes;
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -686,8 +698,9 @@ async function ProcesodeVerificarMatriculadoConfirmados(periodo) {
         console.log("***********PROCESO FINALIZADO MATRICULACION CUPO**********")
         return ListadoEstudiantes;
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -775,6 +788,8 @@ async function ProcesodeVerificarMatriculadoConfirmadosCasoRuben(periodo) {
     } catch (err) {
 
         console.error(err);
+
+        
         return 'ERROR';
     }
 }
@@ -800,6 +815,8 @@ async function ProcesodePruebas(periodo) {
     } catch (err) {
 
         console.error(err);
+
+        
         return 'ERROR';
     }
 }
@@ -848,8 +865,9 @@ async function ProcesodeVerificarRetirosMatriculadoNivelacion(periodo, nivel) {
         return ListadoEstudiantes;
 
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -895,8 +913,9 @@ async function ProcesodeCalcularPerdidaPeriodoCupo(numeroPeriodo, estadoperdida)
         console.log("***********PROCESO FINALIZADO CALCULO PERDIDA POR PERIODO**********")
         return ListadoEstudiantes;
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -936,8 +955,9 @@ async function ProcesodeActivarCupodeRetiros(estadoperdida) {
         return ListadoEstudiantes;
 
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -1053,8 +1073,9 @@ async function ProcesoImpedimentoAcademicoNivelacionn(periodo) {
         }
         return ListadoEstudiantes;
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -1134,8 +1155,9 @@ async function ProcesoMatriculadosDefinitivasPeriodosss(periodo) {
         console.log("******************PROCESO FINALIZADO******************")
         return ListadoEstudiantes;
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -1213,8 +1235,9 @@ async function ProcesoMatriculadosDefinitivasPeriodosssNivelacion(periodo) {
         console.log("******************PROCESO FINALIZADO******************")
         return ListadoEstudiantes;
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -1287,8 +1310,9 @@ async function ProcesoAprobacionNivelacionPasoCarrera(periodo, nivel) {
         return null;
 
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -1346,8 +1370,9 @@ async function ProcesoRevisionAdmisionesCuposNoRegistrado(periodo) {
             return Informacion;
         }
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -1381,8 +1406,9 @@ async function ProcesoEstudiantesPerdidaCupoAdmisiones(periodo) {
         }
         return Informacion;
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -1416,6 +1442,8 @@ async function ProcesoEstudiantesListadoCuposPorEstados(periodo,idEstado,cedula)
     } catch (err) {
        
         console.error(err);
+       
+        
         return 'ERROR';
     } 
 }
@@ -1448,6 +1476,8 @@ async function ProcesoExcelEstudiantesListadoCuposPorEstados(periodo,idEstado,ce
     } catch (err) {
        
         console.error(err);
+       
+        
         return 'ERROR';
     } 
 }

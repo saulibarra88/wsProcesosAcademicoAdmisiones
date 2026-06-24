@@ -1,15 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require('fs');
 const axios = require('axios');
 const https = require('https');
-const puppeteer = require('puppeteer');
 const tools = require('./tools');
-const pdf = require('html-pdf');
 const procesoAcadeicoNotas = require('../rutas/ProcesoNotasAcademico');
 const procesoCupo = require('../modelo/procesocupos');
-const procesoscriptcarrera = require('../modelo/modeloscriptcarreras');
+
 const procesoCarrera = require('../modelo/procesocarrera');
 const procesoReportesCarrera = require('./reportesCarreras');
 const procesonotasacademicos = require('../modelo/procesonotasacademicos');
@@ -31,7 +29,8 @@ module.exports.DocumentosMatriculasPeriosdos = async function (carrera, periodo)
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -43,7 +42,8 @@ module.exports.ProcesoActualizacionNotasRecuperacion = async function (carrera, 
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -54,7 +54,8 @@ module.exports.ProcesoEliminacionMatriculasPendientes = async function (periodo)
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -66,7 +67,8 @@ module.exports.ProcesoVerificacionMatriculaAsignaturas = async function (carrera
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -91,7 +93,8 @@ module.exports.ReporteExcelActasNoGenradas = async function (carrera, periodo) {
 
         return ListadoDocumentos
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -113,7 +116,8 @@ module.exports.ListadoActasCalificacionesActasNoGenradas = async function (carre
 
         return ListadoDocumentos
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -123,7 +127,8 @@ async function FuncionActivacionBotonCrearPeriodo(periodo) {
         return { resultado }
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: "Error :" + error }
 
     }
@@ -152,6 +157,8 @@ async function FuncionCalifacionesRecuperacion() {
     } catch (err) {
 
         console.error(err);
+
+        
         return 'ERROR';
     }
 }
@@ -242,8 +249,9 @@ var matriculaEstudiantesCarrera = await procesonotasacademicos.ListadoEstudiante
         }
 
     } catch (err) {
-        await transaction.rollback();
         console.error(err);
+        await transaction.rollback();
+        
         return 'ERROR';
     } finally {
         await transaction.commit();
@@ -289,6 +297,8 @@ async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
     } catch (err) {
       
         console.error(err);
+      
+        
         return 'ERROR';
     }
 }

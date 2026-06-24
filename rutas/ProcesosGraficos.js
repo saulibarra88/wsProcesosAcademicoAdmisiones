@@ -1,19 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require('fs');
 const axios = require('axios');
 const https = require('https');
-const puppeteer = require('puppeteer');
 const tools = require('./tools');
-const pdf = require('html-pdf');
 const procesoAcadeicoNotas = require('../rutas/ProcesoNotasAcademico');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const procesoCupo = require('../modelo/procesocupos');
-const Chart = require('chart.js');
+const { Chart } = require('chart.js');
 const ChartDataLabels = require('chartjs-plugin-datalabels');
 const crypto = require("crypto");
-const { iniciarDinamicoPool, iniciarDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const reportespdfmaker = require("./../reportesmake/reportescarrerasmake");
 const sqlmodeloformato = require("./../modeloformato/generalesmodelo.js");
 Chart.register(ChartDataLabels);
@@ -35,7 +32,8 @@ module.exports.Graficopdf1 = async function (carrera, periodo, nivel, paralelo, 
 
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.Graficopdf2 = async function (carrera, periodo, nivel, paralelo, codMateria, cedula, idreglamento, nombres, asignatura) {
@@ -46,7 +44,8 @@ module.exports.Graficopdf2 = async function (carrera, periodo, nivel, paralelo, 
 
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.GraficopdfR = async function (carrera, periodo, nivel, paralelo, codMateria, cedula, idreglamento, nombres, asignatura) {
@@ -57,7 +56,8 @@ module.exports.GraficopdfR = async function (carrera, periodo, nivel, paralelo, 
 
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.ReporteNoMatriculado = async function (carrera, periodo1, periodo2, cedula) {
@@ -69,7 +69,8 @@ module.exports.ReporteNoMatriculado = async function (carrera, periodo1, periodo
 
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 }
 module.exports.pdfEvaluacionesRecuperacionCarrera = async function (carrera, periodo, cedula) {
@@ -79,7 +80,8 @@ module.exports.pdfEvaluacionesRecuperacionCarrera = async function (carrera, per
     var base64 = await reportespdfmaker.pdfmakegenerarReporteEvaluacionesRecuperacionCarrera(listadoInformacion.datos.data, carrera, periodo, cedula)
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
     return 'ERROR' + error;
   }
 }
@@ -102,7 +104,8 @@ module.exports.pdfListadoAsignaturasCarreraMovilidad = async function (carrera, 
     var base64 = await reportespdfmaker.pdfmakegenerarAsignaturasTipoMovilidad(listadoNuevo, carrera, periodo, cedula)
     return base64
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
     return 'ERROR' + error;
   }
 }
@@ -123,7 +126,8 @@ module.exports.pdfPromediosGeneralesAsignaturasCarreras = async function (carrer
     return base64
     //  return listadoInformacion
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
     return 'ERROR' + error;
   }
 }
@@ -176,7 +180,8 @@ async function ProcesoGraficosParciales1(carrera, periodo, nivel, paralelo, CodM
     }
     return listado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 
 }
@@ -228,7 +233,8 @@ async function ProcesoGraficosParciales2(carrera, periodo, nivel, paralelo, CodM
     }
     return listado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 
 }
@@ -279,7 +285,8 @@ async function ProcesoGraficosParcialesR(carrera, periodo, nivel, paralelo, CodM
     }
     return listado
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    
   }
 
 }
@@ -319,8 +326,9 @@ async function ProcesoReporteNoMatriculado(carrera, periodo1, periodo2) {
     }
     return listado
   } catch (err) {
-    await transaction.rollback();
     console.error(err);
+    await transaction.rollback();
+    
     return 'ERROR';
   } finally {
     await transaction.commit();
@@ -366,7 +374,7 @@ async function generatePieChart(listado) {
     plugins: [drawLabelsPlugin]
   };
 
-  const image = await chartJSNodeCanvas.renderToBuffer(chartConfig);
+  const image = chartJSNodeCanvas.renderToBufferSync(chartConfig);
   return image;
 }
 
@@ -375,120 +383,95 @@ async function generatePieChart(listado) {
 async function generarReporteNoMatriculados(listado, listadoperiodo, carrera, cedula) {
   var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
   var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
-  var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
-  var Cedula = ObtenerPersona.data.listado[0].pid_valor
-  var cabeceralistado = "";
-  var bodylistado = "";
-  var contadot = 0;
-  for (let periodo of listadoperiodo) {
-    cabeceralistado += `
-        <th style="font-size: 10px;text-align: center;">${periodo}</th>
-`
-  }
-  var cabecera = ` <tr>
-    <th colspan="12" style="text-align: center; font-size: 10px"> INFORMACIÓN ESTUDIANTES MATRICULADOS. </th>
-    </tr>
-    <tr>
-    <th  style="text-align: center; font-size: 9px"> # </th>
-    <th  style="text-align: center; font-size: 9px"> CÓDIGO</th>
-    <th  style="text-align: center; font-size: 9px">ESTUDIANTES </th>
-    <th  style="text-align: center; font-size: 9px">CÉDULA </th>
-    ${cabeceralistado}
-    </tr>`
-  cabecera = "<thead>" + cabecera + "</thead>"
-  for (let estudiantes of listado) {
-    periodolistado = "";
-    contadot = contadot + 1;
-    for (let perrio of estudiantes.Periodos) {
-      periodolistado += `<td style="font-size: 8px; text-align: center"> <strong>MATRICULA:</strong> ${perrio.matricula == true ? 'SI' : 'NO'} </br><strong>PERIODO:</strong> ${perrio.periodo} </br><strong>PAO:</strong> ${perrio.Nivel} </br> </td>`
-    }
-    bodylistado += `<tr >
-        <td style="font-size: 8px; text-align: center;color:black"> ${contadot} </td>
-        <td style="font-size: 8px; text-align: center;color:black"> ${estudiantes.strCodigo} </td>
-        <td style="font-size: 8px; text-align: left;color:black"> ${estudiantes.strApellidos}  ${estudiantes.strNombres}</td>
-        <td style="font-size: 8px; text-align: center;color:black"> ${estudiantes.strCedula} </td>
-        ${periodolistado}
-        </tr>`
-  }
+  var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
+  var Cedula = ObtenerPersona.data.listado[0].pid_valor;
 
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-   
-     <style> table { border-collapse: collapse; width: 100%; } th, td { padding: 6px; text-align: left; } .nombre { margin-top: 7em; text-align: center; width: 100%; } hr{ width: 60%; } </style>
-    </head>
-    <body>
-   
-      <table border=2>
-    ${cabecera}
-      <tbody>
-         ${bodylistado}
-        </tbody>
-      </table>
-      <br/><br/>
-      <div style="font-size: 9px; text-align: center">
-</div>
-<br/>
-      <p style="text-align: center;"> <strong>--------------------------------</strong></p>
-      <p style="text-align: center;font-size: 11px;">${strNombres}</p>
-    </body>
-    </html>
-    `;
+  // Construir columnas de la tabla
+  const headerColumns = [
+    { text: '#', style: 'tableHeader' },
+    { text: 'CÓDIGO', style: 'tableHeader' },
+    { text: 'ESTUDIANTES', style: 'tableHeader' },
+    { text: 'CÉDULA', style: 'tableHeader' },
+    ...listadoperiodo.map(periodo => ({ text: periodo, style: 'tableHeader' }))
+  ];
 
-  const options = {
-    format: 'A4',
-    orientation: 'landscape',
-    timeout: 60000,
-    border: {
-      top: '1.0cm', // Margen superior
-      right: '1.5cm', // Margen derecho
-      bottom: '2.0cm', // Margen inferior
-      left: '1.5cm' // Margen izquierdo
+  // Construir filas
+  const tableBody = [];
+  
+  // Fila del título superior
+  tableBody.push([
+    { 
+      text: 'INFORMACIÓN ESTUDIANTES MATRICULADOS.', 
+      colSpan: 4 + listadoperiodo.length, 
+      style: 'tableHeader', 
+      alignment: 'center' 
     },
-    header: {
-      height: '60px',
-      contents: tools.headerHtmlCarreras(datosCarrera.data[0])
-    },
-    footer: {
-      height: '30px',
-      contents: tools.footerHtml()
-    },
+    ...Array(3 + listadoperiodo.length).fill({})
+  ]);
+  
+  // Fila de encabezados
+  tableBody.push(headerColumns);
 
-  };
-  var htmlCompleto = tools.headerOcultoHtmlCarreras(datosCarrera.data[0]) + htmlContent + tools.footerOcultoHtml();
-  var base64 = await FunciongenerarPDF(htmlCompleto, options)
-  return base64
-
-}
-function FunciongenerarPDF(htmlCompleto, options) {
-  return new Promise((resolve, reject) => {
-    pdf.create(htmlCompleto, options).toFile("ReporteNoGenerado.pdf", function (err, res) {
-      if (err) {
-        reject(err);
-      } else {
-        fs.readFile(res.filename, (err, data) => {
-          if (err) {
-            reject(err);
-          } else {
-            const base64Data = Buffer.from(data).toString('base64');
-            // Eliminar el archivo PDF generado (opcional)
-            fs.unlink(res.filename, (err) => {
-              if (err) {
-                console.error('Error al eliminar el archivo PDF:', err);
-              } else {
-                console.log('Archivo PDF eliminado.');
-              }
-            });
-
-            // Resolver la promesa con base64Data
-            resolve(base64Data);
-          }
-        });
-      }
+  // Filas de estudiantes
+  listado.forEach((estudiante, index) => {
+    const periodosCeldas = estudiante.Periodos.map(perrio => {
+      const matriculaText = perrio.matricula == true ? 'SI' : 'NO';
+      return { 
+        text: [
+          { text: 'MATRICULA: ', bold: true }, matriculaText, '\n',
+          { text: 'PERIODO: ', bold: true }, perrio.periodo, '\n',
+          { text: 'PAO: ', bold: true }, perrio.Nivel, '\n'
+        ],
+        style: 'cellData' 
+      };
     });
+
+    tableBody.push([
+      { text: (index + 1).toString(), style: 'cellData' },
+      { text: estudiante.strCodigo, style: 'cellData' },
+      { text: estudiante.strApellidos + ' ' + estudiante.strNombres, style: 'cellData', alignment: 'left' },
+      { text: estudiante.strCedula, style: 'cellData' },
+      ...periodosCeldas
+    ]);
   });
+
+  const baseLayout = createBaseLayout({
+    title: '',
+    pageOrientation: 'landscape'
+  });
+
+  const docDefinition = {
+    ...baseLayout,
+    content: [
+      {
+        table: {
+          headerRows: 2,
+          widths: ['auto', 'auto', '*', 'auto', ...listadoperiodo.map(() => 'auto')],
+          body: tableBody
+        }
+      },
+      { text: '\n\n--------------------------------\n', alignment: 'center', margin: [0, 20, 0, 0] },
+      { text: strNombres, alignment: 'center', fontSize: 11 }
+    ],
+    styles: {
+      ...baseLayout.styles,
+      tableHeader: { bold: true, fontSize: 9, alignment: 'center', fillColor: '#eeeeee', margin: [2, 4] },
+      cellData: { fontSize: 8, alignment: 'center', margin: [2, 4] }
+    }
+  };
+
+  const fonts = {
+    Roboto: {
+      normal: 'Helvetica',
+      bold: 'Helvetica-Bold',
+      italics: 'Helvetica-Oblique',
+      bolditalics: 'Helvetica-BoldOblique'
+    }
+  };
+
+  return await funcionesgenerales.pdfMakeDocumento(docDefinition, fonts);
 }
+
 function calcularValoresIntermedios(rangoInicio, rangoFin) {
   // Extraer la parte numérica de los rangos
   const numeroInicio = parseInt(rangoInicio.slice(1));
@@ -741,7 +724,8 @@ async function generatePDF1(listado, carrera, nombres, asignatura, nivel, parale
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -957,7 +941,8 @@ async function generatePDF2(listado, carrera, nombres, asignatura, nivel, parale
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -1172,7 +1157,8 @@ async function generatePDFR(listado, carrera, nombres, asignatura, nivel, parale
     return base64PDF;
 
   } catch (error) {
-    console.error('Error generando el reporte:', error);
+    console.error(error);
+    
     throw error;
   }
 }
@@ -1209,7 +1195,7 @@ async function generatePieChart(listado) {
     plugins: [drawLabelsPlugin]
   };
 
-  const image = await chartJSNodeCanvas.renderToBuffer(chartConfig);
+  const image = chartJSNodeCanvas.renderToBufferSync(chartConfig);
   return image;
 }
 const drawLabelsPlugin = {

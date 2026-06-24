@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require("fs");
-const pdf = require('html-pdf');
+
 const pathimage = require('path');
 const axios = require('axios');
 const https = require('https');
@@ -32,6 +32,7 @@ module.exports.ProcesoGeneracionCurriculumEstuidanteConsultor = async function (
         return resultado
     } catch (error) {
         console.error(error);
+        
     }
 }
 
@@ -73,7 +74,8 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
         return pdfBase64;
         
     } catch (error) {
-        console.error('Error en FuncionCurriculumEstudiantilConsultor:', error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: `Error: ${error.message}` };
     }
 }
@@ -119,7 +121,8 @@ async function procesarConHomologacion(recordAcademicoNivel, carrera, datosEstud
         return await procesarAsignaturasNoNecesitaAprobar(carrera, datosEstudiante.strCodigo, listadoAsignaturaProcesada, nivelesMalla.data);
         
     } catch (error) {
-        console.error('Error en procesarConHomologacion:', error);
+        console.error(error);
+        
         throw error;
     }
 }
@@ -188,7 +191,8 @@ async function procesarSinHomologacion(recordAcademicoNivel, carrera, datosEstud
         return await procesarAsignaturasNoNecesitaAprobar(carrera, datosEstudiante.strCodigo, listadoAsignaturaProcesada, nivelesMalla.data);
         
     } catch (error) {
-        console.error('Error en procesarSinHomologacion:', error);
+        console.error(error);
+        
         throw error;
     }
 }
@@ -313,7 +317,8 @@ async function procesarAsignaturasNoNecesitaAprobar(carrera, codigoEstudiante, l
         }));
         
     } catch (error) {
-        console.error('Error al procesar asignaturas no necesarias:', error);
+        console.error(error);
+        
         throw new Error('No se pudo obtener el listado de asignaturas por nivel');
     }
 }

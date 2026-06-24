@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require("fs");
-const pdf = require('html-pdf');
+
 const pathimage = require('path');
 const axios = require('axios');
 const https = require('https');
@@ -32,6 +32,7 @@ module.exports.ProcesoGeneracionCurriculumEstuidanteCarrera = async function (ca
         return resultado
     } catch (error) {
         console.error(error);
+        
     }
 }
 
@@ -74,12 +75,12 @@ async function FuncionCurriculumEstudiantilCarrera(carrera, cedula) {
         // Procesar currículo mostrando la malla con asignaturas aprobadas
         const curriculumProcesado = await procesarCurriculumConMallaCompleta(mallaFiltrada, recordAcademicoNivel, carrera, datosEstudianteUltima.data[0], cedula, titulacion);
         // Generar PDF
-        console.log(curriculumProcesado[0].asignaturas[0])
         const pdfBase64 = await reportepdfmakecurriculuestudiante.PdfCurriculumEstuidantilCarrera(cedula, personaResponse.value.data.listado[0], datosCarrera.data[0], curriculumProcesado, foto, titulacion, listadoBecas, datosEstudianteUltima.data[0].strCodigo);
 
         return pdfBase64;
     } catch (error) {
-        console.error('Error en FuncionCurriculumEstudiantilConsultor:', error);
+        console.error(error);
+        
         return { blProceso: false, mensaje: `Error: ${error.message}` };
     }
 }
@@ -102,7 +103,8 @@ async function procesarCurriculumConMallaCompleta(mallaFiltrada, recordAcademico
         const nivelesMalla = agruparMallaPorNiveles(listadoCompleto);
         return nivelesMalla
     } catch (error) {
-        console.error('Error en procesarCurriculumConMallaCompleta:', error);
+        console.error(error);
+        
         throw error;
     }
 }
@@ -426,7 +428,8 @@ async function procesarAsignaturasNoNecesitaAprobarV2(carrera, codigoEstudiante,
         return listadoActualizado;
 
     } catch (error) {
-        console.error('Error al procesar asignaturas no necesarias:', error);
+        console.error(error);
+        
         // Retornar el listado original en caso de error
         return ListadoAsignaturasTodasMallasAprobadasNoParobadas;
     }

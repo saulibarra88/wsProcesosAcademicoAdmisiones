@@ -2,29 +2,37 @@
 const CONFIGPAGOS = require('./databasepagos');
 const sql = require('mssql');
 const { Connection, Request } = require('mssql');
-const execPagos = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
-  var conex = CONFIGPAGOS;
-  conex.database = carrera;
-  let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
-  try {
-    if (!pool) {
-      pool = await new sql.ConnectionPool(conex).connect();
+const poolsPagosCache = new Map();
+const getPoolPagos = async (carrera) => {
+    if (poolsPagosCache.has(carrera)) {
+        return poolsPagosCache.get(carrera);
     }
-    // Obtener una conexión del grupo de conexiones
-    const conn = pool.request();
-    // Ejecutar la consulta
-    const result = await conn.query(SQL);
-    return buildResponse(result, OK, msgVacio, msgError);
-  } catch (err) {
-    console.log("Error conexion Base Pagos:" + err);
-    return handleDatabaseError(err, msgError);
-  } finally {
-    if (pool) {
-      await pool.close();
-    }
-  }
+    const configClonada = { ...CONFIGPAGOS, database: carrera };
+    const pool = new sql.ConnectionPool(configClonada);
+    const connectPromise = pool.connect().catch(err => {
+        poolsPagosCache.delete(carrera);
+        throw err;
+    });
+    
+    poolsPagosCache.set(carrera, connectPromise);
+    return connectPromise;
+};
 
- 
+const execPagos = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
+    let pool;
+    try {
+        pool = await getPoolPagos(carrera);
+        const conn = pool.request();
+        const result = await conn.query(SQL);
+        return buildResponse(result, OK, msgVacio, msgError);
+    } catch (err) {
+        console.error(`Error conexion Base Pagos (Carrera: ${carrera}):`, err);
+        if (err && (err.code === 'ECONNCLOSED' || err.code === 'ETIMEOUT' || err.code === 'ESOCKET')) {
+            if (pool) pool.close().catch(() => {});
+            poolsPagosCache.delete(carrera);
+        }
+        return handleDatabaseError(err, msgError);
+    } 
 };
   const execPagosTransaccion = async (transaction,carrera, SQL, OK = "", msgVacio = "", msgError = null) => {
     
@@ -35,33 +43,7 @@ const execPagos = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) 
       } catch (error) {
         await transaction.rollback();
         return handleDatabaseError(error, msgError);
-        throw error;
-    
-    }
-    let pool; // Utilizaremos un grupo de conexiones en lugar de una conexión única
-    //let conn;
-  
-    try {
-  
-      if (!pool) {
-        pool = await new sql.ConnectionPool(conex).connect();
       }
-      // Obtener una conexión del grupo de conexiones
-      const conn = pool.request();
-  
-      // Ejecutar la consulta
-      const result = await conn.query(SQL);
-      return buildResponse(result, OK, msgVacio, msgError);
-    } catch (err) {
-      console.log("Error conexion Base Pagos:" + err);
-      return handleDatabaseError(err, msgError);
-    } finally {
-      if (pool) {
-        await pool.close();
-      }
-    }
-  
-  
   };
   const buildResponse = (res, OK, msgVacio, msgError) => {
     const count = res.recordset==undefined?0:res.recordset.length;
@@ -89,23 +71,18 @@ const execPagos = async (carrera, SQL, OK = "", msgVacio = "", msgError = null) 
    // Función para iniciar una transacción
    const iniciarPagosTransaccion = async  (poolejcucion) =>{
     try {
-        const sql = require("mssql");
         const transaction = new sql.Transaction(poolejcucion);
         return transaction;
-  
     } catch (error) {
         throw error;
     }
   }
 
-    // Función para iniciar una transacción
+    // Función para iniciar un pool de pagos
     const iniciarPagosPool = async  (carrera) =>{
       try {
-        const sql = require("mssql");
-        var conex = CONFIGPAGOS;
-        var resultado = false;
-        conex.database = carrera;
-        const pool = new sql.ConnectionPool(conex);
+        const configClonada = { ...CONFIGPAGOS, database: carrera };
+        const pool = new sql.ConnectionPool(configClonada);
         return pool;
       } catch (error) {
           throw error;

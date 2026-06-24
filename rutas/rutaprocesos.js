@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 
 const procesoMigracion = require('../rutas/ProcesosMigracionNivelacion');
 const procesoCupo = require('../modelo/procesocupos');
@@ -24,7 +24,8 @@ router.get('/ProcesoConfirmacionCupoInscripcion/:periodo/:cedula/',async (req, r
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -45,7 +46,8 @@ router.get('/ProcesoMatriculacionAceptacionCupo/:periodo/:cedula/',async (req, r
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -65,7 +67,8 @@ router.get('/ProcesoRetirosParciales/:periodo/:cedula/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -86,7 +89,8 @@ router.get('/ProcesoImpedimentoAcademicoNivelacion/:periodo/:cedula/',async (req
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -106,7 +110,8 @@ router.get('/ProcesoMatriculadosDefinitivasPeriodos/:periodo/:cedula/',async (re
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -129,7 +134,8 @@ router.get('/ProcesoConfirmadoCasoEspecialRuben/:periodo/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -150,7 +156,8 @@ router.get('/ProcesoActivarCupoRetiro/:periodo/:cedula/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -170,7 +177,8 @@ router.get('/ProcesoPerdidaPeriodoAcumulado/:periodo/:cedula/',async (req, res) 
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -190,7 +198,8 @@ router.get('/ProcesoAprobacionNivelacionpasoCarrera/:periodo/',async (req, res) 
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -210,7 +219,8 @@ router.get('/ProcesoAdmisionesVerificacionRegistroCupo/:periodo/',async (req, re
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -230,7 +240,8 @@ router.get('/ListadoEstudiantesNoRegistradoADmisionesPeridaCupo/:periodo/',async
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -252,7 +263,8 @@ router.get('/ListadoEstudianntesCupoPorEstado/:periodo/:idEstado/:cedula',async 
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -273,7 +285,8 @@ router.get('/ExcelListadoEstudianntesCupoPorEstado/:periodo/:idEstado/:cedula',a
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -293,7 +306,8 @@ router.get('/ListadoEstadoCupo/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -314,7 +328,8 @@ router.get('/VerificarRegistroIncripcionEstudiantesAdmisiones/:periodo/:cedula/'
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -332,7 +347,8 @@ router.get('/ListadoProcesoPeriodo/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -350,7 +366,8 @@ router.get('/PeriodoVigenteMaster/',async (req, res) => {
             informacion:PeriodoActual.data[0]
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -368,7 +385,8 @@ router.get('/ListadoPeriodoVigenteMaster/',async (req, res) => {
             informacion:PeriodoActual.data
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -389,7 +407,8 @@ router.get('/IngresarInscripcionEstuidanteCasoEspeciales/:periodo/:cedula',async
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -409,7 +428,8 @@ router.get('/ListadoMatriculasProcesosValidacion/',async (req, res) => {
             informacion:respuesta.Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -432,7 +452,8 @@ router.get('/ListadoEstudianteMatriculadoDadoNivel/:periodo/:nivel',async (req, 
             Base:respuesta2
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -454,7 +475,8 @@ router.get('/ListadoEstudianteMatriculadoDadoNivelCupos/:periodo/:nivel',async (
             Base:respuesta2
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -473,7 +495,8 @@ router.get('/ListadoHomologacionCarreraAdminisiones/',async (req, res) => {
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -494,7 +517,8 @@ router.get('/DocumentosMatriculasPeriodos/:BaseCarrera/:periodo',async (req, res
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -513,7 +537,8 @@ router.get('/RevisionDoumentosNoGeneradosMatriculasCarreras/:periodo',async (req
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -533,7 +558,8 @@ router.get('/PDFListadoDocumentosCarreras/:periodo/:cedula',async (req, res) => 
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -556,7 +582,8 @@ router.get('/PDFListadoEstudianteMatriculasTerceraSegunda/:carrera/:periodo/:tip
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -578,7 +605,8 @@ router.get('/PDFPerdidasAsignaturasEstudiantes/:carrera/:periodo/:cedula',async 
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -599,7 +627,8 @@ router.get('/PDFPerdidasAsignaturasEstudiantesNivelParalelos/:carrera/:periodo/:
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -621,7 +650,8 @@ router.get('/PDFMatriculasEstadosNivelParalelos/:carrera/:periodo/:cedula',async
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -641,7 +671,8 @@ router.get('/ProcesosPruebas/:periodo/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -662,7 +693,8 @@ router.get('/PDFEvaluacionesRecuperacionCarrera/:carrera/:periodo/:cedula',async
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -683,7 +715,8 @@ router.get('/PDFAsignaturasPaoTipoCarrera/:carrera/:periodo/:cedula',async (req,
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -704,7 +737,8 @@ router.get('/PDFEPromediosGeneralesAsignaturas/:carrera/:periodo/:cedula',async 
             Informacion
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -723,7 +757,8 @@ router.post('/PdfReporteHomologacionesCarrera', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,
@@ -743,7 +778,8 @@ router.post('/ActualizacionCentralizadaDatos', async (req, res) => {
             Informacion
         });
     } catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
             {
                 success: false,

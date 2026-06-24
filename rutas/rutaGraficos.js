@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 
 const procesografico = require('../rutas/ProcesosGraficos');
 
@@ -21,7 +21,8 @@ router.post('/GraficoParciales1/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -48,7 +49,8 @@ router.post('/GraficoParciales2/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -76,7 +78,8 @@ router.post('/GraficoParcialesR/',async (req, res) => {
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -98,7 +101,8 @@ router.get('/ReporteNoMatriculado/:carrera/:periodo1/:periodo2/:cedula',async (r
             informacion:respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,

@@ -1,7 +1,6 @@
 const axios = require('axios');
 const cron = require('node-cron');
 const pathimage = require('path');
-const nomenclatura = require('../config/nomenclatura');
 const modeloprocesoCupo = require('../modelo/procesocupos');
 const modeloprocesocarreras = require('../modelo/procesocarrera');
 const procesoadministrativo = require('../modelo/procesoadministrativo');
@@ -16,7 +15,7 @@ const tools = require('./tools');
 const fs = require("fs");
 const https = require('https');
 const crypto = require("crypto");
-const { console } = require('inspector');
+
 
 const agent = new https.Agent({
     rejectUnauthorized: false,
@@ -49,7 +48,8 @@ module.exports.RevisionDocumentosInvenientesCarreras = async function (periodo) 
         return ListadoDocumentos;
 
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -82,7 +82,8 @@ module.exports.pdfCarerasDocumentosMatriculas = async function (periodo, cedula)
         return base64;
 
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -94,12 +95,12 @@ module.exports.pdfListadoEstudianteTerceraSegundaMatricula = async function (car
         var ListadoEstudiantesProceso = [];
         if (tipo == 3) {
             var ListadoDocumentos = await modeloprocesocarreras.ListadoEstudianteTerceraMatriculas(carrera, periodo);
-            var base64 = await modeloprocesocarreras.PdfListadoEstudianteMatriculasTerceraySegunda(ListadoDocumentos.data, carrera, cedula, periodo, tipo)
+            var base64 = await reportescarreras.PdfListadoEstudianteMatriculasTerceraySegunda(ListadoDocumentos.data, carrera, cedula, periodo, tipo)
             return base64;
         }
         if (tipo == 2) {
             var ListadoDocumentos = await modeloprocesocarreras.ListadoEstudianteSegundaMatriculas(carrera, periodo);
-            var base64 = await modeloprocesocarreras.PdfListadoEstudianteMatriculasTerceraySegunda(ListadoDocumentos.data, carrera, cedula, periodo, tipo)
+            var base64 = await reportescarreras.PdfListadoEstudianteMatriculasTerceraySegunda(ListadoDocumentos.data, carrera, cedula, periodo, tipo)
             return base64;
         }
         if (tipo == 4) {
@@ -138,7 +139,8 @@ module.exports.pdfListadoEstudianteTerceraSegundaMatricula = async function (car
 
 
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -183,7 +185,8 @@ var Repitencia=0;
         return base64
 
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -201,7 +204,8 @@ module.exports.ProcesoListadoPensumCarreras = async function (carrera) {
 
         return ListadoDocumentos
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -218,7 +222,8 @@ module.exports.ProcesoListadoPensumCarreras = async function (carrera) {
 
         return ListadoDocumentos
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -235,7 +240,8 @@ module.exports.ProcesoListadoPeriodosCarreras = async function (carrera) {
 
         return ListadoDocumentos
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -246,7 +252,8 @@ module.exports.ProcesoPeriodosVigenteCarreras = async function (carrera) {
 
         return ListadoPensum.data[0]
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -263,7 +270,8 @@ module.exports.ProcesoListadoPensumMateriasarreras = async function (carrera, pe
 
         return ListadoDocumentos
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -280,7 +288,8 @@ module.exports.ProcesoListadoEstuidantesApellidosMaters = async function (apelli
 
         return ListadoDocumentos
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -298,7 +307,8 @@ module.exports.ListadoActasFinCicloNoGenerada = async function (carrera, periodo
 
         return ListadoDocumentos
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -310,7 +320,8 @@ module.exports.ProcesoActivacionBotonCreacionPerioodo = async function (carrera,
 
         return resultado
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -321,7 +332,8 @@ module.exports.ProcesoListadoMatriculasFirmadasPorNivel = async function (carrer
 
         return resultado.data
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }
@@ -333,7 +345,8 @@ module.exports.ProcesoListadoEstuidantesMatriculados = async function (carrera, 
 
         return ListadoDocumentos.data
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        
         return 'ERROR';
     }
 }

@@ -1,4 +1,3 @@
-const { connectionAcademico } = require('../config/PollConexionesAcademico'); // Importa el pool de conexiones
 const { execDinamico, execDinamicoTransaccion } = require("../config/execSQLDinamico.helper");
 const { execMaster, execMasterTransaccion } = require("../config/execSQLMaster.helper");
 const CONFIGMASTER = require('../config/baseMaster');
@@ -254,7 +253,6 @@ module.exports.ActualizarDatosHomologacionesCarrera = async function (carrera, o
 module.exports.ObtenerAsignaturaMovilidadCarrera = async function (carrera,dbcarrera, objDatos) {
   var sentencia = "";
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Materias_Asignadas_Movilidad] WHERE [mam_bdorigen]='" + dbcarrera + "' AND  [mam_periodo]='" + objDatos.strCodPeriodo + "' AND [mam_nivelorigen]='" + objDatos.strCodNivel + "' AND [mam_paraleloorigen]='" + objDatos.strCodParalelo + "' AND [mam_codmateriaorigen]='" + objDatos.strCodMateria + "' AND [mam_estado]=1"
- //  console.log(sentencia)
   try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
@@ -263,7 +261,104 @@ module.exports.ObtenerAsignaturaMovilidadCarrera = async function (carrera,dbcar
       return sendResponseModelo(false, [], 'VACIO SQL')
     }
   } catch (error) {
-    logger.error('Error ActualizarDatosHomologacionesCarrera', { message: error.message, stack: error.stack });
+    logger.error('Error ObtenerAsignaturaMovilidadCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ObtenerMejorEstudianteDosCalificacionesAsignaturaCarrera = async function (carrera,periodo, codasignatura) {
+  var sentencia = "";
+  sentencia = "SELECT TOP 1 M.sintCodigo AS sintCodMatricula, M.strCodPeriodo, P.strDescripcion, E.*, CAST(NP.dcParcial1 AS DECIMAL(10,2)) AS dcParcial1, CAST(NP.dcParcial2 AS DECIMAL(10,2)) AS dcParcial2, CAST((NP.dcParcial1 + NP.dcParcial2)/2 AS DECIMAL(10,2)) AS CalificacionTotal, NP.strCodEquiv, NP.strObservaciones AS NotaObservacion, MA.strObservaciones AS MatAsignadaObservacion FROM [" + carrera + "].[dbo].[Matriculas] AS M INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS MA ON MA.sintCodMatricula = M.sintCodigo AND MA.strCodPeriodo = M.strCodPeriodo INNER JOIN [dbo].[Notas_Parciales] AS NP ON NP.sintCodMatricula = M.sintCodigo AND NP.strCodPeriodo = M.strCodPeriodo AND NP.strCodMateria = MA.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo = M.strCodEstud INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=M.strCodPeriodo WHERE MA.strCodMateria = '" + codasignatura + "' AND MA.strCodPeriodo = '" + periodo + "' AND MA.strObservaciones NOT LIKE '%RETIRA%' AND MA.strObservaciones NOT LIKE '%VALIDA%' AND MA.bytNumMat = 1 AND NP.strCodTipoExamen = 'PAR' ORDER BY (NP.dcParcial1 + NP.dcParcial2)/2 DESC;"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ObtenerMejorEstudianteDosCalificacionesAsignaturaCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ObtenerMejorEstudianteTresCalificacionesAsignaturaCarrera = async function (carrera,periodo, codasignatura) {
+  var sentencia = "";
+  sentencia = "SELECT TOP 1 M.sintCodigo AS sintCodMatricula, M.strCodPeriodo, P.strDescripcion, E.strCodigo, E.strNombres, E.strApellidos, CAST(NX.bytAcumulado AS DECIMAL(10,2)) AS acumulado, CAST(NX.bytNota AS DECIMAL(10,2)) AS nota, CAST((NX.bytAcumulado + NX.bytNota) AS DECIMAL(10,2)) AS CalificacionTotal, NX.strCodEquiv, NX.strObservaciones AS NotaObservacion, NX.strObservaciones AS MatAsignadaObservacion FROM [" + carrera + "].[dbo].[Matriculas] AS M INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS MA ON MA.sintCodMatricula = M.sintCodigo AND MA.strCodPeriodo = M.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Notas_Examenes] AS NX ON NX.sintCodMatricula = M.sintCodigo AND NX.strCodPeriodo = M.strCodPeriodo AND NX.strCodMateria = MA.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo = M.strCodEstud INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=M.strCodPeriodo WHERE MA.strCodMateria = '" + codasignatura + "' AND MA.strCodPeriodo = '" + periodo + "' AND MA.strObservaciones NOT LIKE '%RETIRA%' AND MA.strObservaciones NOT LIKE '%VALIDA%' AND MA.bytNumMat = 1 AND NX.strCodTipoExamen = 'PRI' ORDER BY (NX.bytAcumulado + NX.bytNota) DESC;"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ObtenerMejorEstudianteTresCalificacionesAsignaturaCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ObtenerDosCalificacionesAsignarutasEstudiantePeriodo = async function (carrera,periodo, cedula) {
+  var sentencia = "";
+  sentencia = "WITH NotasFinales AS ( SELECT NP.sintCodMatricula, NP.strCodPeriodo, NP.strCodMateria, NP.strCodTipoExamen, ISNULL(NP.dcParcial1, 0) AS dcParcial1,   ISNULL(NP.dcParcial2, 0) AS dcParcial2, NP.strCodEquiv, NP.strObservaciones, ROW_NUMBER() OVER ( PARTITION BY NP.sintCodMatricula, NP.strCodPeriodo, NP.strCodMateria ORDER BY CASE WHEN NP.strCodTipoExamen = 'REC' THEN 1 ELSE 2 END ) AS rn FROM [" + carrera + "].[dbo].[Notas_Parciales] AS NP ) SELECT MA.strCodNivel,MA.strCodParalelo,MA.bytNumMat ,M.sintCodigo AS sintCodMatricula, M.strCodPeriodo, P.strDescripcion, E.strCodigo, E.strNombres, E.strApellidos, MA.strCodMateria, MAT.strNombre, CAST(NF.dcParcial1 AS DECIMAL(10,2)) AS dcParcial1, CAST(NF.dcParcial2 AS DECIMAL(10,2)) AS dcParcial2, CAST((NF.dcParcial1 + NF.dcParcial2)/2 AS DECIMAL(10,2)) AS CalificacionTotal, NF.strCodEquiv, NF.strObservaciones AS NotaObservacion, MA.strObservaciones AS MatAsignadaObservacion, NF.strCodTipoExamen AS TipoExamen FROM [" + carrera + "].[dbo].[Matriculas] AS M INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS MA ON MA.sintCodMatricula = M.sintCodigo AND MA.strCodPeriodo = M.strCodPeriodo INNER JOIN NotasFinales AS NF ON NF.sintCodMatricula = M.sintCodigo AND NF.strCodPeriodo = M.strCodPeriodo AND NF.strCodMateria = MA.strCodMateria AND NF.rn = 1 INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo = M.strCodEstud INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo = M.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias] AS MAT ON MAT.strCodigo = MA.strCodMateria WHERE E.strCedula = '" + cedula + "' AND MA.strCodPeriodo = '" + periodo + "' AND MA.strObservaciones NOT LIKE '%RETIRA%' AND MA.strObservaciones NOT LIKE '%VALIDA%' AND MA.bytNumMat = 1 ;"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ObtenerDosCalificacionesAsignarutasEstudiantePeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ObtenerMallaAcademicaCarrera = async function (carrera,periodo) {
+  var sentencia = "";
+  sentencia = "WITH MateriasPensum AS ( SELECT MP.*, P.strCodigo AS strPeriodo, M.strNombre AS strNombreMateria, M.strCodigo AS strCodMateriaPensum FROM [" + carrera + "].[dbo].[Materias_Pensum] AS MP INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodPensum = MP.strCodPensum INNER JOIN [" + carrera + "].[dbo].[Materias] AS M ON M.strCodigo = MP.strCodMateria WHERE P.strCodigo = '" + periodo + "' AND (MP.strcodPadreIti IS NULL OR MP.strcodPadreIti = 'ITI') ), PrerrequisitosMateria AS ( SELECT MP.strCodMateriaPensum, MP.strNombreMateria, MP.strPeriodo, MP.strCodPensum, MP.strCodPadreIti, MP.strCodNivel, MP.bytHorasAut, MP.bytHorasPrac, MP.bytHorasSeman, MP.bytHorasTeo, MP.fltCreditos, MP.strCodArea, MP.strCodFormaDict, STUFF(( SELECT '; ' + PR.strCodMatPre FROM [" + carrera + "].[dbo].[Prerrequisitos] PR WHERE PR.strCodMateria = MP.strCodMateriaPensum AND PR.strCodTipo = 'PRE' FOR XML PATH('') ), 1, 2, '') AS strPrerrequisitosCodigos, STUFF(( SELECT '; ' + M2.strNombre FROM [" + carrera + "].[dbo].[Prerrequisitos] PR INNER JOIN [" + carrera + "].[dbo].[Materias] M2 ON M2.strCodigo = PR.strCodMatPre WHERE PR.strCodMateria = MP.strCodMateriaPensum AND PR.strCodTipo = 'PRE' FOR XML PATH('') ), 1, 2, '') AS strPrerrequisitosNombres FROM MateriasPensum MP ) SELECT * FROM PrerrequisitosMateria ORDER BY strCodNivel, strCodMateriaPensum;"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ObtenerMallaAcademicaCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ObtenerMallaAcademicaCarreraPesum = async function (carrera,pesum) {
+  var sentencia = "";
+  sentencia = "WITH MateriasPensum AS ( SELECT MP.*, P.strCodigo AS strPeriodo, M.strNombre AS strNombreMateria, M.strCodigo AS strCodMateriaPensum FROM [" + carrera + "].[dbo].[Materias_Pensum] AS MP INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodPensum = MP.strCodPensum INNER JOIN [" + carrera + "].[dbo].[Materias] AS M ON M.strCodigo = MP.strCodMateria WHERE MP.strCodPensum = '" + pesum + "' AND (MP.strcodPadreIti IS NULL OR MP.strcodPadreIti = 'ITI') ), PrerrequisitosMateria AS ( SELECT MP.strCodMateriaPensum, MP.strNombreMateria, MP.strPeriodo, MP.strCodPensum, MP.strCodPadreIti, MP.strCodNivel, MP.bytHorasAut, MP.bytHorasPrac, MP.bytHorasSeman, MP.bytHorasTeo, MP.fltCreditos, MP.strCodArea, MP.strCodFormaDict, STUFF(( SELECT '; ' + PR.strCodMatPre FROM [" + carrera + "].[dbo].[Prerrequisitos] PR WHERE PR.strCodMateria = MP.strCodMateriaPensum AND PR.strCodTipo = 'PRE' FOR XML PATH('') ), 1, 2, '') AS strPrerrequisitosCodigos, STUFF(( SELECT '; ' + M2.strNombre FROM [" + carrera + "].[dbo].[Prerrequisitos] PR INNER JOIN [" + carrera + "].[dbo].[Materias] M2 ON M2.strCodigo = PR.strCodMatPre WHERE PR.strCodMateria = MP.strCodMateriaPensum AND PR.strCodTipo = 'PRE' FOR XML PATH('') ), 1, 2, '') AS strPrerrequisitosNombres FROM MateriasPensum MP ) SELECT * FROM PrerrequisitosMateria ORDER BY strCodNivel, strCodMateriaPensum;"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ObtenerMallaAcademicaCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ListadoApellidosDocentesCarrera = async function (carrera,apellido) {
+  var sentencia = "";
+  sentencia ="SELECT * FROM [" + carrera + "].[dbo].[Docentes] WHERE [strApellidos] LIKE '%" + apellido + "%'"
+  console.log(sentencia)
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ListadoApellidosDocentesCarrera', { message: error.message, stack: error.stack });
     return sendResponseModelo(false, [], error.message)
   }
 }

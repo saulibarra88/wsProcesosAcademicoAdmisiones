@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 
 const procesoMigracion = require('../rutas/ProcesosMigracionNivelacion');
 const procesoCupo = require('../modelo/procesocupos');
@@ -22,7 +22,8 @@ router.get('/ListadoPensumCarrera/:carrera/',async (req, res) => {
             listado:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -42,7 +43,8 @@ router.get('/ListadoPensumMateriasCarreras/:carrera/:pensum',async (req, res) =>
             listado:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -61,7 +63,8 @@ router.get('/ListadoEstudiantesApellidos/:apellidos/',async (req, res) => {
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -82,7 +85,8 @@ router.get('/ListadoActasFinCicloNoGeneradas/:carrera/:periodo',async (req, res)
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -102,7 +106,8 @@ router.get('/ReporteExcelActasNoGeneradas/:carrera/:periodo',async (req, res) =>
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -123,7 +128,8 @@ router.get('/ListadoActasCalificacionesActasNoGeneradas/:carrera/:periodo',async
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -144,7 +150,8 @@ router.get('/ActivacionBotonCreacionPeriodo/:carrera/:periodo/:pemsun',async (re
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -166,7 +173,8 @@ router.get('/ListadoMatriculasFirmadasPorNivel/:carrera/:periodo/:nivel',async (
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -190,7 +198,8 @@ router.get('/ReporteExcelUltimoNivelCarrerasTodasInstitucional/:periodo/:estado'
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -201,26 +210,7 @@ router.get('/ReporteExcelUltimoNivelCarrerasTodasInstitucional/:periodo/:estado'
  
 });
 
-router.get('/ReporteExcelMatriculasAdmisionesInstitucional/:periodo',async (req, res) => {
-    const periodo = req.params.periodo;
-    try {
-      
-        var Informacion= await pruebasInformacion.ProcesoReporteExcelMatriculasAdmisionesnstitucional(periodo);
-        res.json({
-            success: true,
-            Informacion:Informacion,
-        });
-    }catch (err) {
-        console.log('Error: ' + err);
-        return res.json(
-             {
-                success: false,
-                mensaje:'Error en el registro' + err
-            }
-        );
-    }
- 
-});
+
 
 router.get('/ListadoPeriodosCarreras/:carrera/',async (req, res) => {
     const carrera = req.params.carrera;
@@ -231,7 +221,8 @@ router.get('/ListadoPeriodosCarreras/:carrera/',async (req, res) => {
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -250,7 +241,8 @@ router.get('/ObtenerPeriodosVigenteCarreras/:carrera/',async (req, res) => {
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -270,7 +262,8 @@ router.get('/ListadoEstuidantesMatriculadosPeriodos/:carrera/:periodo',async (re
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -290,7 +283,8 @@ router.get('/ListadoCarrerasDadoFacultad/:facultad',async (req, res) => {
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,

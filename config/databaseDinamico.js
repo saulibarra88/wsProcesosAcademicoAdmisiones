@@ -5,10 +5,10 @@ module.exports = {
    password:process.env.DB_PASSWORDSISTEMAACADEMICO,
   server:process.env.DB_SERVERSISTEMAACADEMICO, 
   database:process.env.DB_NAMESISTEMAACADEMICO,
-  portNumber:process.env.DB_PORTSISTEMAACADEMICO,
+  port: parseInt(process.env.DB_PORTSISTEMAACADEMICO, 10),
   pool: {
-   max: 300000,
-    min: 10,
+    max: 100,
+    min: 0,
     idleTimeoutMillis: 30000 // Reducir el tiempo de espera en milisegundos
   },
   options: {

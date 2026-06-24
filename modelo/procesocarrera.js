@@ -1,7 +1,5 @@
-const { connectionAcademico } = require('./../config/PollConexionesAcademico'); // Importa el pool de conexiones
 const { execDinamico, execDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { execMaster, execMasterTransaccion } = require("./../config/execSQLMaster.helper");
-const { execMasterMejorado} = require("./../config/execSQLMasterMejorado.helper");
 const CONFIGACADEMICO = require('./../config/databaseDinamico');
 const sql = require("mssql");
 var os = require('os');
@@ -52,21 +50,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
       return { data: "Error: " + error }
     }
   }
-  module.exports.ObtenerDatosMatriculasActas = async function ( carrera, periodo,idbandeja) {
-    var sentencia = "";
-    sentencia = "select * from [" + carrera + "].[dbo].bandejadocumentos as b inner join [" + carrera + "].[dbo].Matriculas as m on m.sintCodigo=b.matricula inner join [" + carrera + "].[dbo].Estudiantes as e on e.strCodigo=m.strCodEstud where b.periodo='" + periodo + "' and m.strCodPeriodo='" + periodo + "'and  b.idbandeja=" + idbandeja + ""
-    try {
-      if (sentencia != "") {
-        const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
-        return (sqlconsulta)
-      } else {
-        return { data: "vacio sql" }
-      }
-    } catch (error) {
-      return { data: "Error: " + error }
-    }
-  }
-  module.exports.MatriculasCarrerasPeriodo = async function (carrera,periodo) {
+    module.exports.MatriculasCarrerasPeriodo = async function (carrera,periodo) {
     var sentencia="";
     sentencia="SELECT top (1) * FROM [" + carrera + "].[dbo].[Matriculas] as m  WHERE  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF'"
       try {
@@ -96,21 +80,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
 
   }
-  module.exports.ListadoEstudianteTerceraMatriculasAsignatura = async function ( carrera, periodo) {
-    var sentencia = "";
-    sentencia = "select m.sintCodigo as intmatricula,m.strCodNivel,m.strCodEstado , m.strCodEstud as codigoestudiante,m.strCodPeriodo as periodo,e.strCedula,e.strApellidos,e.strNombres,  COUNT(DISTINCT ma.strCodMateria) AS CantidadMaterias from [" + carrera + "].[dbo].[Matriculas]  as m inner join [" + carrera + "].[dbo].[Materias_Asignadas]  as ma on ma.sintCodMatricula=m.sintCodigo inner join [" + carrera + "].[dbo].[Estudiantes]  as e on e.strCodigo=m.strCodEstud where m.strCodPeriodo='" + periodo + "' and ma.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' and ma.bytNumMat=3 GROUP BY  m.sintCodigo,m.strCodNivel,m.strCodEstado, m.strCodEstud,m.strCodPeriodo,e.strCedula,e.strApellidos,e.strNombres ORDER BY  e.strApellidos"
-        try {
-      if (sentencia != "") {
-        const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
-        return (sqlconsulta)
-      } else {
-        return { data: "vacio sql" }
-      }
-    } catch (error) {
-      return { data: "Error: " + error }
-    }
-  }
-
+  
   module.exports.ListadoEstudianteTerceraMatriculas = async function ( carrera, periodo) {
     var sentencia = "";
     sentencia = "select m.sintCodigo as intmatricula,m.strCodNivel,m.strCodEstado , m.strCodEstud as codigoestudiante,m.strCodPeriodo as periodo,e.strCedula,e.strApellidos,e.strNombres,  COUNT(DISTINCT ma.strCodMateria) AS CantidadMaterias from [" + carrera + "].[dbo].[Matriculas]  as m inner join [" + carrera + "].[dbo].[Materias_Asignadas]  as ma on ma.sintCodMatricula=m.sintCodigo inner join [" + carrera + "].[dbo].[Estudiantes]  as e on e.strCodigo=m.strCodEstud where m.strCodPeriodo='" + periodo + "' and ma.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' and ma.bytNumMat=3 GROUP BY  m.sintCodigo,m.strCodNivel,m.strCodEstado, m.strCodEstud,m.strCodPeriodo,e.strCedula,e.strApellidos,e.strNombres ORDER BY  e.strApellidos"
@@ -139,21 +109,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
       return { data: "Error: " + error }
     }
   }
-  module.exports.ListadoEstudiantePrimeraMatriculas = async function ( carrera, periodo) {
-    var sentencia = "";
-    sentencia = "select m.sintCodigo as intmatricula,m.strCodNivel,m.strCodEstado , m.strCodEstud as codigoestudiante,m.strCodPeriodo as periodo,e.strCedula,e.strApellidos,e.strNombres,  COUNT(DISTINCT ma.strCodMateria) AS CantidadMaterias from [" + carrera + "].[dbo].[Matriculas]  as m inner join [" + carrera + "].[dbo].[Materias_Asignadas]  as ma on ma.sintCodMatricula=m.sintCodigo inner join [" + carrera + "].[dbo].[Estudiantes]  as e on e.strCodigo=m.strCodEstud where m.strCodPeriodo='" + periodo + "' and ma.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' and ma.bytNumMat=1 GROUP BY  m.sintCodigo,m.strCodNivel,m.strCodEstado, m.strCodEstud,m.strCodPeriodo,e.strCedula,e.strApellidos,e.strNombres ORDER BY  e.strApellidos"
-        try {
-      if (sentencia != "") {
-        const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
-        return (sqlconsulta)
-      } else {
-        return { data: "vacio sql" }
-      }
-    } catch (error) {
-      return { data: "Error: " + error }
-    }
-  }
-  module.exports.TotalNumerosMatriculasPorEstudiantes = async function ( carrera, periodo,intMatricula) {
+    module.exports.TotalNumerosMatriculasPorEstudiantes = async function ( carrera, periodo,intMatricula) {
     var sentencia = "";
     sentencia = "SELECT e.strApellidos,e.strCedula,e.strNombres,SUM(CASE WHEN ma.bytNumMat = 1 THEN 1 ELSE 0 END) AS MateriasPrimeraMatricula,SUM(CASE WHEN ma.bytNumMat = 2 THEN 1 ELSE 0 END) AS MateriasSegundaMatricula,SUM(CASE WHEN ma.bytNumMat = 3 THEN 1 ELSE 0 END) AS MateriasTerceraMatricula,COUNT( ma.bytNumMat) AS MateriasTotalMatricula FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN  [" + carrera + "].[dbo].[Materias_Asignadas]  AS ma ON ma.sintCodMatricula = m.sintCodigo INNER JOIN  [" + carrera + "].[dbo].[Estudiantes]  AS e ON e.strCodigo = m.strCodEstud WHERE  m.strCodPeriodo = '" + periodo + "' and m.sintCodigo=" + intMatricula + " and ma.strCodPeriodo = '" + periodo + "' GROUP BY m.strCodEstud,e.strApellidos,e.strCedula,e.strNombres ORDER BY  m.strCodEstud;"
             try {
@@ -233,22 +189,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
       return { data: "Error: " + error }
     }
   }
-  module.exports.ListadoCarreraTodasMater = async function (carrera) {
-    var sentencia="";
-    sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + carrera + "].[dbo].Facultades AS F INNER JOIN [OAS_Master].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [OAS_Master].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo "
-   
-    try {
-    if (sentencia != "") {
-      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
-  }
-  module.exports.ListadoCarreraNivelacion = async function (carrera,strCodfigoFacultad) {
+    module.exports.ListadoCarreraNivelacion = async function (carrera,strCodfigoFacultad) {
     var sentencia="";
     sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + carrera + "].[dbo].Facultades AS F INNER JOIN [OAS_Master].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [OAS_Master].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo  WHERE F.strCodigo='" + strCodfigoFacultad + "' "
    
@@ -585,37 +526,9 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   }
 
-  module.exports.VerificacionPeriodoActivo = async function (carrera,periodo) {
-    var sentencia="";
-    sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Periodos] WHERE [strCodigo]='" + periodo + "' and blnVigente=0";
-    try {
-    if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
-  }
+  
 
-
-  module.exports.VerificacionPensumActivo = async function (carrera,pemsun) {
-    var sentencia="";
-    sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Pensums] WHERE [strCodigo]='" + pemsun + "' and  [blnActivo]=1";
-    try {
-    if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
-  }
-
+  
   module.exports.SentenciaNotas1 = async function (carrera) {
     var sentencia="";
     sentencia = "SELECT * FROM   [" + carrera + "].[seguridad].[auditoria] WHERE  (autfecha >= '2025-02-19') AND (autdescripcionproceso LIKE '%P0042%') AND (autdescripcionproceso LIKE '%nota de REC %') ORDER BY 3,4";
@@ -703,35 +616,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     return {data:"Error: "+ error}
   }
   }
-  module.exports.ListadoMatriculasCarrerasPeriodosNivelTransaccion = async function (transaction,carrera,periodo,estado,nivel) {
-    var sentencia="";
-    sentencia = "select *,fi.strDescripcion as descripcioninscripcion,n.strDescripcion as descripcionnivel,em.strDescripcion as descripcionestado from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud inner join [" + carrera + "].[dbo].[Sexos] as sex on sex.strCodigo=e.strCodSexo inner join [" + carrera + "].[dbo].[Formas de Inscripcion] as fi on fi.strCodigo=e.strFormaIns inner join [" + carrera + "].[dbo].[Niveles] as n on n.strCodigo=m.strCodNivel inner join [" + carrera + "].[dbo].[Estados_Matriculas] as em on em.strCodigo=m.strCodEstado where m.[strCodPeriodo]='" + periodo + "' and m.strCodEstado='" + estado + "' and m.strCodNivel='" + nivel + "' order by n.strCodigo desc ,e.strApellidos asc";
-    try {
-    if (sentencia != "") {
-      const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
-  }
-  module.exports.ListadoMatriculasCarrerasPeriodosTransaccionDefinitiva = async function (transaction,carrera,periodo) {
-    var sentencia="";
-    sentencia = "select *,fi.strDescripcion as descripcioninscripcion,n.strDescripcion as descripcionnivel,em.strDescripcion as descripcionestado from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud inner join [" + carrera + "].[dbo].[Sexos] as sex on sex.strCodigo=e.strCodSexo inner join [" + carrera + "].[dbo].[Formas de Inscripcion] as fi on fi.strCodigo=e.strFormaIns inner join [" + carrera + "].[dbo].[Niveles] as n on n.strCodigo=m.strCodNivel inner join [" + carrera + "].[dbo].[Estados_Matriculas] as em on em.strCodigo=m.strCodEstado where m.[strCodPeriodo]='" + periodo + "' and m.strCodEstado='DEF' order by n.strCodigo desc ,e.strApellidos asc";
-    try {
-    if (sentencia != "") {
-      const sqlConsulta = await execDinamicoTransaccion(transaction,carrera,sentencia, "OK","OK");
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
-  }
-  module.exports.ObtenerPagoMatriculaEstudiante = async function (carrera,periodo,cedula) {
+      module.exports.ObtenerPagoMatriculaEstudiante = async function (carrera,periodo,cedula) {
     var sentencia="";
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[PagosFacturaElectronico] WHERE strCodPeriodo='" + periodo + "' AND strCedula='" + cedula + "' AND strEstado='PAG'"
    
@@ -1041,22 +926,7 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   }
   
   }
-  module.exports.EncontrarUltimoNivelCarreraTransaccion = async function (transaccion,carrera) {
-    var sentencia="";
-    sentencia="select  strCodPensum,max([strCodNivel]) as ultimo from [" + carrera + "].[dbo].[Materias_Pensum] where [strCodPensum]=(select [strCodigo] from [" + carrera + "].[dbo].[Pensums] where [blnActivo]=1) group by strCodPensum"
-  try {
-    if (sentencia != "") {
-      const sqlConsulta = await execDinamicoTransaccion(transaccion,carrera,sentencia, "OK","OK");
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
   
-  }
-
 
     module.exports.EncontrarUltimoPesumCarrera = async function (carrera) {
     var sentencia="";

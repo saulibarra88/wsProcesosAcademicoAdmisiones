@@ -1,7 +1,6 @@
 const axios = require('axios');
 const cron = require('node-cron');
 const pathimage = require('path');
-const nomenclatura = require('../config/nomenclatura');
 const modeloprocesocarreras = require('../modelo/procesocarrera');
 const sqlmodeloformato = require('../modeloformato/generalesmodelo');
 const reportescarreras = require('../rutas/reportesCarreras');
@@ -73,7 +72,8 @@ module.exports.pdfPerdidaAsignaturasEstudiantesporParalelos = async function (ca
         return base64
 
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR' + error;
     }
 }
@@ -123,7 +123,8 @@ module.exports.pdfMatriculasEstadosEstudiantesporParalelos = async function (car
         return base64
 
     } catch (err) {
-        console.log(error);
+        console.error(err);
+        
         return 'ERROR' + error;
     }
 }

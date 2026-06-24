@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Request = require("request");
+
 const fs = require("fs");
-const pdf = require("html-pdf");
+
 const pathimage = require("path");
 const axios = require("axios");
 const https = require("https");
@@ -42,6 +42,7 @@ module.exports.ProcesoInsertarAsignaturaMovilidad = async function( datos ) {
     }
   } catch (error) {
     console.error(error);
+    
     return "ERROR" + error;
   }
 };
@@ -52,6 +53,7 @@ module.exports.ProcesoObtenerAsignaturaMovilidadDocente = async function( datos 
     return datos.data;
   } catch (error) {
     console.error(error);
+    
     return "ERROR" + error;
   }
 };
@@ -62,6 +64,7 @@ module.exports.ProcesoObtenerAsignaturaMovilidadNivelParalelo = async function( 
     return datos.data;
   } catch (error) {
     console.error(error);
+    
     return "ERROR" + error;
   }
 };
@@ -71,6 +74,7 @@ module.exports.ProcesoEliminarAsignaturaMovilidadDocente = async function( carre
     return datos;
   } catch (error) {
     console.error(error);
+    
     return "ERROR" + error;
   }
 };
@@ -81,6 +85,7 @@ module.exports.ProcesoDesactivarAsignaturaMovilidadDocente = async function( dat
     return datos;
   } catch (error) {
     console.error(error);
+    
     return "ERROR" + error;
   }
 };
@@ -91,6 +96,7 @@ module.exports.ProcesoObtenerAsignaturasCarreraDocente = async function( carrera
     return datos.data;
   } catch (error) {
     console.error(error);
+    
     return "ERROR" + error;
   }
 };

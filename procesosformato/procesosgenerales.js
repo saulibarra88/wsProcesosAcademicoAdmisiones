@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require("fs");
-const pdf = require('html-pdf');
+
 const pathimage = require('path');
 const axios = require('axios');
 const https = require('https');
@@ -14,7 +14,9 @@ const sqlmodelomovilidad = require('../modelo/modelomovilidad');
 const { sendResponseProcesos } = require('../herramientas/responseservice');
 const logger = require('./../herramientas/logger');
 const funcionesmodelomovilidadconfiguraciones = require('../modelo/modelomovilidadconfiguraciones');
-
+const funcionesreportesmake = require('../reportesmake/reportescarrerasmake');
+const sqlprocesoCupo = require('../modelo/procesocupos');
+const console = require('console');
 
 const agent = new https.Agent({
     rejectUnauthorized: false,
@@ -37,7 +39,7 @@ module.exports.ProcesoListadoCarrerasDadoFacultad = async function (codigofacult
         return sendResponseProcesos(false, [], error.message)
     }
 }
-module.exports.ProcesoDocenteDictadoAsignatura = async function (carrera,cedula) {
+module.exports.ProcesoDocenteDictadoAsignatura = async function (carrera, cedula) {
     try {
 
         var Informacion = await sqlmodelogenerales.DocenteDictadoAsignaturas(carrera, funcionesgenerales.CedulaConGuion(cedula));
@@ -51,7 +53,7 @@ module.exports.ProcesoDocenteDictadoAsignatura = async function (carrera,cedula)
         return sendResponseProcesos(false, [], error.message)
     }
 }
-module.exports.ProcesoDictadoAsignaturaPeriodo = async function (carrera,periodo) {
+module.exports.ProcesoDictadoAsignaturaPeriodo = async function (carrera, periodo) {
     try {
 
         var Informacion = await sqlmodelogenerales.DictadoAsignaturasPeriodo(carrera, periodo);
@@ -104,34 +106,31 @@ module.exports.ProcesoEstadisticasMatriculasPeriodo = async function (carrera, p
 module.exports.ProcesoTotalDefinitivaCarrera = async function (periodo) {
     try {
         var ListadoCarreras = await funcionesmodelomovilidadconfiguraciones.ListadosTodasCarrerasAcademica('OAS_Master');
-        contadortotalNivelacion=0
-        contadortotalGeneral=0
-        contadortotalNivel=0
+        contadortotalNivelacion = 0
+        contadortotalGeneral = 0
+        contadortotalNivel = 0
         if (ListadoCarreras.count > 0) {
             for (var carreras of ListadoCarreras.data) {
                 let contiene = carreras.strBaseDatos.includes("OAS_Niv");
                 var InformacionGeneral = await sqlmodelogenerales.TotalMatriculaDefinitvaCarrera(carreras.strBaseDatos, periodo);
-                contadortotalGeneral=contadortotalGeneral+InformacionGeneral.datos.data[0].TotalDEF
-
-                console.log(carreras.strBaseDatos)
-                if(contiene==true){
-                var Informacion = await sqlmodelogenerales.TotalMatriculaDefinitvaCarrera(carreras.strBaseDatos, periodo);
-                contadortotalNivelacion=contadortotalNivelacion+Informacion.datos.data[0].TotalDEF
-                }else{
-                var Informacion = await sqlmodelogenerales.TotalMatriculaDefinitvaCarrera(carreras.strBaseDatos, periodo);
-                contadortotalNivel=contadortotalNivel+Informacion.datos.data[0].TotalDEF_Nivel1
+                contadortotalGeneral = contadortotalGeneral + InformacionGeneral.datos.data[0].TotalDEF
+                if (contiene == true) {
+                    var Informacion = await sqlmodelogenerales.TotalMatriculaDefinitvaCarrera(carreras.strBaseDatos, periodo);
+                    contadortotalNivelacion = contadortotalNivelacion + Informacion.datos.data[0].TotalDEF
+                } else {
+                    var Informacion = await sqlmodelogenerales.TotalMatriculaDefinitvaCarrera(carreras.strBaseDatos, periodo);
+                    contadortotalNivel = contadortotalNivel + Informacion.datos.data[0].TotalDEF_Nivel1
 
                 }
             }
         }
-        var resultado={
-            contadortotalGeneral:contadortotalGeneral,
-            contadortotalNivelacion:contadortotalNivelacion,
-            contadortotalNivel:contadortotalNivel,
+        var resultado = {
+            contadortotalGeneral: contadortotalGeneral,
+            contadortotalNivelacion: contadortotalNivelacion,
+            contadortotalNivel: contadortotalNivel,
         }
-        console.log(resultado)
-          return sendResponseProcesos(true, resultado, 'OK')
-      
+        return sendResponseProcesos(true, resultado, 'OK')
+
     } catch (error) {
         logger.error('Error ProcesoTotalDefinitivaCarrera', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
@@ -167,10 +166,10 @@ module.exports.ProcesoListadoCarrerasHomologacionesPeriodo = async function (per
         return sendResponseProcesos(false, [], error.message)
     }
 }
-module.exports.ProcesoClonacionCarreraMovilidadPeriodo = async function (periodonuevo,periodoanterior) {
+module.exports.ProcesoClonacionCarreraMovilidadPeriodo = async function (periodonuevo, periodoanterior) {
     try {
 
-        var Informacion = await sqlmodelogenerales.ClonarCarrerasMoviliadPeriodo('OAS_Master', periodonuevo,periodoanterior);
+        var Informacion = await sqlmodelogenerales.ClonarCarrerasMoviliadPeriodo('OAS_Master', periodonuevo, periodoanterior);
         if (Informacion.modelo) {
             return sendResponseProcesos(true, Informacion.datos, 'OK')
         } else {
@@ -181,10 +180,10 @@ module.exports.ProcesoClonacionCarreraMovilidadPeriodo = async function (periodo
         return sendResponseProcesos(false, [], error.message)
     }
 }
-module.exports.ProcesoClonacionCarreraHomologacionGeneralPeriodo = async function (periodonuevo,periodoanterior) {
+module.exports.ProcesoClonacionCarreraHomologacionGeneralPeriodo = async function (periodonuevo, periodoanterior) {
     try {
 
-        var Informacion = await sqlmodelogenerales.ClonarCarrerasHomologacionGeneralPeriodo('OAS_Master', periodonuevo,periodoanterior);
+        var Informacion = await sqlmodelogenerales.ClonarCarrerasHomologacionGeneralPeriodo('OAS_Master', periodonuevo, periodoanterior);
         if (Informacion.modelo) {
             return sendResponseProcesos(true, Informacion.datos, 'OK')
         } else {
@@ -196,24 +195,22 @@ module.exports.ProcesoClonacionCarreraHomologacionGeneralPeriodo = async functio
     }
 }
 module.exports.ProcesoIngresoCarrerasMovilidad = async function (listado) {
-    console.log(listado)
     try {
-         for (var carreras of listado) {
-        var VerificacionDatos = await sqlmodelogenerales.ObtenerModilidadCarreraPeriodoBase('OAS_Master', carreras.msca_periodo,carreras.msca_dbcarreraactual,carreras.msca_dbcarreramovilidad,carreras.msca_tipo);
-         console.log(VerificacionDatos)
-        if(VerificacionDatos.datos.count==0){
+        for (var carreras of listado) {
+            var VerificacionDatos = await sqlmodelogenerales.ObtenerModilidadCarreraPeriodoBase('OAS_Master', carreras.msca_periodo, carreras.msca_dbcarreraactual, carreras.msca_dbcarreramovilidad, carreras.msca_tipo);
+            if (VerificacionDatos.datos.count == 0) {
                 var IngresoDatos = await sqlmodelogenerales.IngresarMoviliadCarrera('OAS_Master', carreras);
             }
-         }
-      
-          return sendResponseProcesos(true, [], 'OK')
+        }
+
+        return sendResponseProcesos(true, [], 'OK')
     } catch (error) {
         logger.error('Error ProcesoIngresoCarrerasMovilidad', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
     }
-    }
+}
 
-    module.exports.ProcesoActualizacionDatosHomologacionesCarreras = async function (objDatos) {
+module.exports.ProcesoActualizacionDatosHomologacionesCarreras = async function (objDatos) {
     try {
 
         var Informacion = await sqlmodelogenerales.ActualizarDatosHomologacionesCarrera('OAS_Master', objDatos);
@@ -227,3 +224,169 @@ module.exports.ProcesoIngresoCarrerasMovilidad = async function (listado) {
         return sendResponseProcesos(false, [], error.message)
     }
 }
+module.exports.ProcesoListadoDocentesApellidosCarrera = async function (carrera,apellido) {
+    try {
+
+        var Informacion = await sqlmodelogenerales.ListadoApellidosDocentesCarrera(carrera, apellido);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoActualizacionDatosHomologacionesCarreras', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+module.exports.ProcesoCertificadoMejorEstudianteAsignatura = async function (dbcarrera, periodo, asignatura) {
+    try {
+        if (funcionesgenerales.compararPeriodos(periodo, 'P0041')) {
+            console.log('Dos Calificaciones')
+            var Informacion = await sqlmodelogenerales.ObtenerMejorEstudianteDosCalificacionesAsignaturaCarrera(dbcarrera, periodo, asignatura);
+        } else {
+            console.log('tres Calificaciones')
+
+            var Informacion = await sqlmodelogenerales.ObtenerMejorEstudianteTresCalificacionesAsignaturaCarrera(dbcarrera, periodo, asignatura);
+        }
+        console.log(Informacion)
+        if(Informacion.datos.count>0){
+   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+        const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
+        const datosAsignatura = await sqlprocesoCupo.AsignaturasDatos(dbcarrera, asignatura);
+        var datos = {
+            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+            estudianteNombres: Informacion.datos.data[0].strNombres + ' ' + Informacion.datos.data[0].strApellidos,
+            estudianteCedula: Informacion.datos.data[0].strCedula,
+            programaNombre: datosCarrera.data[0].strNombreCarrera,
+            periodoAcademico: datosPeriodo.data[0].strDescripcion,
+            asignaturaNombre: datosAsignatura.data[0].strNombre,
+            docenteNombre: "ING. CARLOS DOCENTE",
+            calificacion: Informacion.datos.data[0].CalificacionTotal,
+            tipocalificacion: await funcionesgenerales.compararPeriodos(periodo, 'P0041')==true?' / 10':' / 40'
+        }
+        var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoasignatura(datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, base64, 'OK')
+        } else {
+            return sendResponseProcesos(false, base64, Informacion.message)
+        }
+        }else{
+                return sendResponseProcesos(false, base64, '')
+        }
+     
+    } catch (error) {
+        logger.error('Error ProcesoCertificadoMejorEstudianteAsignatura', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+
+
+module.exports.ProcesoCertificadoCalificacionesEstudiantePeriodoCarrera = async function (dbcarrera, periodo, cedulaestudiante) {
+    try {
+        if (funcionesgenerales.compararPeriodos(periodo, 'P0041')) {
+            var Informacion = await sqlmodelogenerales.ObtenerDosCalificacionesAsignarutasEstudiantePeriodo(dbcarrera, periodo, cedulaestudiante);
+        } else {
+
+            var Informacion = await sqlmodelogenerales.ObtenerMejorEstudianteTresCalificacionesAsignaturaCarrera(dbcarrera, periodo, asignatura);
+        }
+        if(Informacion.datos.count>0){
+   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+        const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
+        var listado=[]
+        for (let datos of Informacion.datos.data) {
+            var elementos={
+                nombre:datos.strNombre,
+                codigo:datos.strCodMateria,
+                calificacion:datos.CalificacionTotal,
+                numeromatricula:datos.bytNumMat,
+                nivel:datos.strCodNivel,
+                paralelo:datos.strCodParalelo,
+            }
+            listado.push(elementos)
+        }
+        var datos = {
+            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+            estudianteNombres: Informacion.datos.data[0].strNombres + ' ' + Informacion.datos.data[0].strApellidos,
+            estudianteCedula: cedulaestudiante,
+            programaNombre: datosCarrera.data[0].strNombreCarrera,
+            periodoAcademico: datosPeriodo.data[0].strDescripcion,
+            docenteNombre: "ING. CARLOS DOCENTE",
+            calificacion: Informacion.datos.data[0].CalificacionTotal,
+              tipocalificacion: await funcionesgenerales.compararPeriodos(periodo, 'P0041')==true?' sobre/10':' sobre/40',
+             asignaturas: listado,
+        }
+        var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoCalificacionesperiodo(datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, base64, 'OK')
+        } else {
+            return sendResponseProcesos(false, base64, Informacion.message)
+        }
+        }else{
+                return sendResponseProcesos(false, base64, '')
+        }
+     
+    } catch (error) {
+        logger.error('Error ProcesoCertificadoMejorEstudianteAsignatura', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+module.exports.ProcesoReporteMallaAcademicaCarrera = async function (dbcarrera, periodo) {
+    try {
+     var Informacion = await sqlmodelogenerales.ObtenerMallaAcademicaCarrera(dbcarrera, periodo);
+        if(Informacion.datos.count>0){
+   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+        const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
+   
+      var datos = {
+            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+            programaNombre: datosCarrera.data[0].strNombreCarrera,
+            periodoAcademico: datosPeriodo.data[0].strDescripcion,
+          listado:Informacion.datos.data
+        }
+        
+        var base64 = await funcionesreportesmake.pdfmakegenerarMallaCarrera (datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, base64, 'OK')
+        } else {
+            return sendResponseProcesos(false, base64, Informacion.message)
+        }
+        }else{
+                return sendResponseProcesos(false, base64, '')
+        }
+     
+    } catch (error) {
+        logger.error('Error ProcesoReporteMallaAcademicaCarrera', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+module.exports.ProcesoReporteMallaAcademicaCarreraPesum = async function (dbcarrera, pesum) {
+    try {
+     var Informacion = await sqlmodelogenerales.ObtenerMallaAcademicaCarreraPesum(dbcarrera, pesum);
+        if(Informacion.datos.count>0){
+   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+        const datosPensum = await sqlprocesoCupo.ObtenerPensumCarrera(dbcarrera, pesum);
+   
+      var datos = {
+            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+            programaNombre: datosCarrera.data[0].strNombreCarrera,
+            periodoAcademico: datosPensum.data[0].strNombre,
+          listado:Informacion.datos.data
+        }
+        
+        var base64 = await funcionesreportesmake.pdfmakegenerarMallaCarreraPesum (datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, base64, 'OK')
+        } else {
+            return sendResponseProcesos(false, base64, Informacion.message)
+        }
+        }else{
+                return sendResponseProcesos(false, base64, '')
+        }
+     
+    } catch (error) {
+        logger.error('Error ProcesoReporteMallaAcademicaCarrera', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+

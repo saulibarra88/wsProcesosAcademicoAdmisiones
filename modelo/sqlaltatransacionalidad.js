@@ -1,9 +1,6 @@
- const { connectionAcademico } = require('./../config/PollConexionesAcademico'); // Importa el pool de conexiones
 const { execDinamico, execDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { execMaster, execMasterTransaccion } = require("./../config/execSQLMaster.helper");
-const { execMasterMejorado} = require("./../config/execSQLMasterMejorado.helper");
 const { execPagos,execPagosTransaccion} = require("./../config/execSQLPagos.helper");
-const { execPagosMejorado} = require("./../config/execSQLPagosMejorado.helper");
 const CONFIGACADEMICO = require('./../config/databaseDinamico');
 const sql = require("mssql");
 var os = require('os');
@@ -82,23 +79,7 @@ const path = require('path');
   }
   }
 
-    module.exports.execMasterMejorado = async function (carrera,periodo,cedula) {
-    var sentencia="";
-    sentencia="SELECT * FROM [" + carrera + "].[dbo].[PagosFacturaElectronico] WHERE strCodPeriodo='" + periodo + "' AND strCedula='" + cedula + "' AND strEstado='PAG'"
-   
-    try {
-    if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
     
-     return (sqlConsulta)
-    } else {
-      return {data:"vacio sql"}
-    }
-  } catch (error) {
-    return {data:"Error: "+ error}
-  }
-  }
-
    module.exports.AsignaturasMatriculadaEstudiantePeriodoCantidad = async function (carrera,periodo,intmatricula) {
     var sentencia="";
     sentencia="SELECT SUM(CASE WHEN bytNumMat = 1 THEN 1 ELSE 0 END) AS Primera, SUM(CASE WHEN bytNumMat = 2 THEN 1 ELSE 0 END) AS Segunda, SUM(CASE WHEN bytNumMat = 3 THEN 1 ELSE 0 END) AS Tercera FROM [" + carrera + "].[dbo].[Materias_Asignadas] WHERE sintCodMatricula = '" + intmatricula + "' AND strCodPeriodo ='" + periodo + "' AND (strObservaciones IS NULL OR (strObservaciones NOT LIKE '%VALIDADA%' AND strObservaciones NOT LIKE '%RETIRADO%'));"
@@ -294,7 +275,7 @@ try {
     sentencia="SELECT * FROM [" + carrera + "].[cupos].[tb_cupos] AS C INNER JOIN [" + carrera + "].[cupos].[tb_detalle_cupo] AS DC ON DC.dc_idcupo=C.c_id WHERE C.c_periodo='" + periodo + "' AND DC.dc_idestado=1 AND DC.dc_periodo='" + periodo + "'"
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -309,7 +290,7 @@ try {
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] as m  INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo WHERE e.strCedula='" + cedula + "' and  m.strCodPeriodo='" + periodo + "' and m.strCodEstado='DEF' "
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -322,11 +303,11 @@ try {
 
   module.exports.ListadoEstudiantePeriodoMatricula = async function ( carrera,periodo,estado) {
   var sentencia = "";
-  sentencia = " select * from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo where m.strCodPeriodo='" + periodo + "' and m.strCodEstado='" + estado + "' order by m.strCodNivel"
+  sentencia = " select * from [" + carrera + "].[dbo].[Matriculas] as m inner join [" + carrera + "].[dbo].[Estudiantes] as e on m.strCodEstud=e.strCodigo where m.strCodPeriodo='" + periodo + "' and m.strCodEstado='" + estado + "' order by m.strCodNivel,m.strCodEstud"
 
   try {
     if (sentencia != "") {
-      const sqlconsulta = await execMasterMejorado( carrera, sentencia, "OK", "OK");
+      const sqlconsulta = await execMaster( carrera, sentencia, "OK", "OK");
       return (sqlconsulta)
     } else {
       return { data: "vacio sql" }
@@ -341,7 +322,7 @@ module.exports.ListadoAsignaturasEstudiante = async function ( carrera,periodo,i
   sentencia = " select * from [" + carrera + "].[dbo].[Materias_Asignadas] as ma inner join [" + carrera + "].[dbo].[Materias] as m on ma.strCodMateria=m.strCodigo where  ma.strCodPeriodo='" + periodo + "' and ma.sintCodMatricula='" + intMatricula + "'"
   try {
     if (sentencia != "") {
-      const sqlconsulta = await execMasterMejorado( carrera, sentencia, "OK", "OK");
+      const sqlconsulta = await execMaster( carrera, sentencia, "OK", "OK");
       return (sqlconsulta)
     } else {
       return { data: "vacio sql" }
@@ -356,7 +337,7 @@ module.exports.ObtenerConvalidacionesEstudiante = async function ( carrera, peri
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Convalidaciones] WHERE sintCodMatricula=" + idmatricula + " and  strCodPeriodo='" + periodo + "' and  strCodMateria='" + CodMateria + "'"
   try {
     if (sentencia != "") {
-      const sqlconsulta = await execMasterMejorado( carrera, sentencia, "OK", "OK");
+      const sqlconsulta = await execMaster( carrera, sentencia, "OK", "OK");
       return (sqlconsulta)
     } else {
       return { data: "vacio sql" }
@@ -371,7 +352,7 @@ module.exports.ObtenerRetirosEstudiante = async function ( carrera, periodo, idm
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Retiros] WHERE sintCodMatricula=" + idmatricula + " and  strCodPeriodo='" + periodo + "' and  strCodMateria='" + CodMateria + "'"
   try {
     if (sentencia != "") {
-      const sqlconsulta = await execMasterMejorado( carrera, sentencia, "OK", "OK");
+      const sqlconsulta = await execMaster( carrera, sentencia, "OK", "OK");
       return (sqlconsulta)
     } else {
       return { data: "vacio sql" }
@@ -386,7 +367,7 @@ module.exports.ObtenerMateriaNoAprobarEstudiante = async function (carrera, CodM
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Materias_Sin_Tener_Aprobar] WHERE strCodEstud=" + codEstudiante + " and  strCodMat='" + CodMateria + "'"
   try {
     if (sentencia != "") {
-      const sqlconsulta = await execMasterMejorado( carrera, sentencia, "OK", "OK");
+      const sqlconsulta = await execMaster( carrera, sentencia, "OK", "OK");
       return (sqlconsulta)
     } else {
       return { data: "vacio sql" }
@@ -401,7 +382,7 @@ module.exports.ObtenerNotaPacialAsignatura = async function (carrera, idMatricul
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Notas_Parciales] AS np WHERE np.strCodPeriodo= '" + periodo + "' and np.sintCodMatricula= " + idMatricula + " and np.strCodMateria= '" + asignatura + "';"
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera, sentencia, "OK", "OK");
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
       return (sqlConsulta)
     } else {
       return { data: "vacio sql" }
@@ -417,7 +398,7 @@ module.exports.ObtenerParametroCalificacionPorCodEquivalencia = async function (
   sentencia = "SELECT * FROM [" + carrera + "].[dbo].[equivalenciarendimiento] AS eqv WHERE eqv.eqrencualitativa= '" + codEquivalencia + "' and eqv.eqrenregid= " + idreglemanto + ";"
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera, sentencia, "OK", "OK");
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
       return (sqlConsulta)
     } else {
       return { data: "vacio sql" }
@@ -431,7 +412,7 @@ module.exports.PeriodoDatosCarrera = async function (carrera,periodo) {
   sentencia=" SELECT * FROM [" + carrera + "].dbo.Periodos WHERE strCodigo='" + periodo + "' "
     try {
   if (sentencia != "") {
-    const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+    const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
    return (sqlConsulta)
   } else {
     return {data:"vacio sql"}
@@ -448,7 +429,7 @@ module.exports.PeriodoDatosCarrera = async function (carrera,periodo) {
    
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -464,7 +445,7 @@ module.exports.PeriodoDatosCarrera = async function (carrera,periodo) {
    
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}
@@ -480,7 +461,7 @@ module.exports.PeriodoDatosCarrera = async function (carrera,periodo) {
    
     try {
     if (sentencia != "") {
-      const sqlConsulta = await execMasterMejorado(carrera,sentencia, "OK","OK");
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
      return (sqlConsulta)
     } else {
       return {data:"vacio sql"}

@@ -1,4 +1,3 @@
-const { connectionAcademico } = require('./../config/PollConexionesAcademico'); // Importa el pool de conexiones
 const { execDinamico, execDinamicoTransaccion } = require("./../config/execSQLDinamico.helper");
 const { execMaster, execMasterTransaccion } = require("./../config/execSQLMaster.helper");
 const CONFIGACADEMICO = require('./../config/databaseDinamico');
@@ -65,21 +64,7 @@ module.exports.ListarConfigHomologacionesFecha = async function ( carrera, perio
     }
   }
 
-  module.exports.ObtenerHomologacionFechaDadoBaseCarrera = async function ( carrera,bdCarrera, periodo) {
-    var sentencia = "";
-    sentencia = "select * from  [" + carrera + "].[seguridad].[confighomologacionesfechas]  where chf_bdcarrera= '" + bdCarrera+ "' and chf_periodo= '" + periodo+ "' "
-    try {
-      if (sentencia != "") {
-        const sqlconsulta = await execDinamico( carrera, sentencia, "OK", "OK");
-        return (sqlconsulta)
-      } else {
-        return { data: "vacio sql" }
-      }
-    } catch (error) {
-      return { data: "Error: " + error }
-    }
-  }
-
+  
   module.exports.ObtenerCarreraHomologacionVigente = async function ( carrera,bdCarrera, periodo) {
     var sentencia = "";
     sentencia = "select * from  [" + carrera + "].[seguridad].[confighomologacionesfechas]  where chf_bdcarrera= '" + bdCarrera+ "' and chf_periodo= '" + periodo+ "' and chf_estado=1"

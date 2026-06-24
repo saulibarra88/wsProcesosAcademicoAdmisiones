@@ -1,7 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const procesosfuncionesgenerales = require('../procesosformato/procesosgenerales');
 const { sendResponseServicios } = require('../herramientas/responseservice'); 
 
@@ -151,6 +151,78 @@ router.post('/ActualizacionDatosHomologacionesCarreras/', async (req, res) => {
            return sendResponseServicios(res, true, [],'OK');
     }catch (error) {
        logger.error('Error ActualizacionDatosHomologacionesCarreras', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+
+router.get('/CertificadoMejorEstudianteAsignaturaCarrera/:dbcarrera/:periodo/:asignatura',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const periodo = req.params.periodo;
+    const asignatura = req.params.asignatura;
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoCertificadoMejorEstudianteAsignatura(dbcarrera,periodo,asignatura);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoCarrerasHomologacionPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.get('/CertificadoCalificacionesEstudiantePeriodo/:dbcarrera/:periodo/:cedula',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const periodo = req.params.periodo;
+    const cedula = req.params.cedula;
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoCertificadoCalificacionesEstudiantePeriodoCarrera(dbcarrera,periodo,cedula);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoCarrerasHomologacionPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+
+router.get('/ReporteMAllaAcademicaCarrera/:dbcarrera/:periodo/',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const periodo = req.params.periodo;
+
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoReporteMallaAcademicaCarrera(dbcarrera,periodo);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ReporteMAllaAcademicaCarrera', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.get('/ReporteMAllaAcademicaCarreraPensum/:dbcarrera/:pensum/',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const pensum = req.params.pensum;
+
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoReporteMallaAcademicaCarreraPesum(dbcarrera,pensum);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ReporteMAllaAcademicaCarreraPensum', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+router.get('/ListadoDocentesApellidoCarrera/:dbcarrera/:apellido/',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const apellido = req.params.apellido;
+
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoListadoDocentesApellidosCarrera(dbcarrera,apellido);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoDocentesApellidoCarrera', { message: error.message, stack: error.stack});
         return sendResponseServicios(res, false, [],err.message);
     }
 

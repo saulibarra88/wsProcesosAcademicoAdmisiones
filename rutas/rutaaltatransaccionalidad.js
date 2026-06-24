@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 
 const pruebasInformacion = require('../rutas/procesoaltatransacionalidad');
 
@@ -16,7 +16,8 @@ router.get('/ReporteExcelMatriculasCarrerasIndividual/:carrera/:periodo/:estado'
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -39,7 +40,8 @@ router.get('/ReporteExcelMatriculasCarrerasTodasInstitucional/:periodo/:estado',
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -61,7 +63,8 @@ router.get('/ReporteExcelMatriculasNivelacionTodasInstitucional/:periodo/:estado
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -82,7 +85,8 @@ router.get('/ReporteExcelMatriculasAdmisionesInstitucional/:periodo',async (req,
             Informacion:Informacion,
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -104,7 +108,8 @@ router.get('/ListadoEstudiantesPeriodo/:carrera/:periodo',async (req, res) => {
             Informacion:  respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -125,7 +130,8 @@ router.get('/FotosNivelacionMatriculas/:periodo',async (req, res) => {
             Informacion:  respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -145,7 +151,8 @@ router.get('/FinancieroProcesoDatos/',async (req, res) => {
             Informacion:  respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,
@@ -164,7 +171,8 @@ router.get('/InformacionUsuarioSistemas/',async (req, res) => {
             Informacion:  respuesta
         });
     }catch (err) {
-        console.log('Error: ' + err);
+        console.error(err);
+        
         return res.json(
              {
                 success: false,

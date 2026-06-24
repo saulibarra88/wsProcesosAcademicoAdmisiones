@@ -27,7 +27,8 @@ module.exports.PdfCurriculumEstuidantilCarrera = async function (cedula, persona
         var resultado = await ProcesoPdfCurriculumEstudiantilCarrera(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo);
         return resultado;
     } catch (error) {
-        console.error('Error en PdfCurriculumEstuidantilConsultor:', error);
+        console.error(error);
+        
         throw error;
     }
 }
@@ -85,7 +86,8 @@ async function ProcesoPdfCurriculumEstudiantilCarrera(cedula, persona, carrera, 
         };
         return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
     } catch (error) {
-        console.error('Error generando el reporte:', error);
+        console.error(error);
+        
         throw error;
     }
 }

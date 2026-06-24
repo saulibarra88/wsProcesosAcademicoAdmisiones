@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Request = require("request");
+
 const fs = require("fs");
-const pdf = require('html-pdf');
+
 const pathimage = require('path');
 const axios = require('axios');
 const https = require('https');
@@ -30,6 +30,7 @@ module.exports.ProcesoActualizacionDatosPersonaCentral = async function (datos) 
         return resultado
     } catch (error) {
         console.error(error);
+        
             return 'ERROR';
     }
 }
