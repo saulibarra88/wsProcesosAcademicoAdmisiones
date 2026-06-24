@@ -213,4 +213,18 @@ router.get('/ReporteMAllaAcademicaCarreraPensum/:dbcarrera/:pensum/',async (req,
     }
 
 });
+router.get('/ListadoDocentesApellidoCarrera/:dbcarrera/:apellido/',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const apellido = req.params.apellido;
+
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoListadoDocentesApellidosCarrera(dbcarrera,apellido);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoDocentesApellidoCarrera', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
 module.exports = router;

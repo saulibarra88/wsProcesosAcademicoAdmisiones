@@ -29,3 +29,15 @@
 [error] [2026-06-22 17:07:16]  : Error ProcesoCertificadoMejorEstudianteAsignatura datosAsignatura is not defined
 [error] [2026-06-23 08:31:38]  : Error ProcesoReporteMallaAcademicaCarrera base64 is not defined
 [error] [2026-06-23 08:32:03]  : Error ProcesoReporteMallaAcademicaCarrera base64 is not defined
+[error] [2026-06-24 09:21:12]  : Error ProcesoEncontrarSolicitudesMovilidadesTodas dbcarrera is not defined
+[error] [2026-06-24 09:21:41]  : Error ProcesoEncontrarSolicitudesMovilidadesTodas dbcarrera is not defined
+[error] [2026-06-24 09:22:25]  : Error ProcesoEncontrarSolicitudesMovilidadesTodas dbcarrera is not defined
+[error] [2026-06-24 09:22:25]  : Error LisatdoDictadoAsignaturaCarrera sendResponseProcesos is not defined
+[error] [2026-06-24 09:23:11]  : Error ProcesoModleMigracionDatosDictadoCarrera sendResponseProcesos is not defined
+[error] [2026-06-24 09:23:11]  : Error LisatdoDictadoAsignaturaCarrera sendResponseProcesos is not defined
+[error] [2026-06-24 09:23:49]  : Error ProcesoModleMigracionDatosDictadoCarrera sendResponseProcesos is not defined
+[error] [2026-06-24 09:23:49]  : Error LisatdoDictadoAsignaturaCarrera sendResponseProcesos is not defined
+[error] [2026-06-24 09:24:08]  : Error ProcesoModleMigracionDatosDictadoCarrera sendResponseProcesos is not defined
+[error] [2026-06-24 09:24:08]  : Error LisatdoDictadoAsignaturaCarrera sendResponseProcesos is not defined
+[error] [2026-06-24 09:25:23]  : Error ProcesoModleMigracionDatosDictadoCarrera sendResponseProcesos is not defined
+[error] [2026-06-24 09:25:23]  : Error LisatdoDictadoAsignaturaCarrera sendResponseProcesos is not defined

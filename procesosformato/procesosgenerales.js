@@ -224,7 +224,20 @@ module.exports.ProcesoActualizacionDatosHomologacionesCarreras = async function 
         return sendResponseProcesos(false, [], error.message)
     }
 }
+module.exports.ProcesoListadoDocentesApellidosCarrera = async function (carrera,apellido) {
+    try {
 
+        var Informacion = await sqlmodelogenerales.ListadoApellidosDocentesCarrera(carrera, apellido);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoActualizacionDatosHomologacionesCarreras', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
 module.exports.ProcesoCertificadoMejorEstudianteAsignatura = async function (dbcarrera, periodo, asignatura) {
     try {
         if (funcionesgenerales.compararPeriodos(periodo, 'P0041')) {

@@ -25,6 +25,7 @@ const rutamovilidadconfiguraciones = require('./rutas/rutamovilidadconfiguracion
 const rutamovilidadAsignatura = require('./rutas/rutamovilidadasignatura');
 const rutageneral = require('./rutasformato/rutageneral');
 const rutarecord = require('./rutasformato/rutarecord');
+const rutamoodle = require('./rutasformato/rutamoodle');
 const rutaportafolio = require('./rutasformato/rutaportafolio');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger/swaggerConfig');
@@ -74,6 +75,7 @@ app.use(url+'/rutamovilidadAsignatura',rutamovilidadAsignatura);
 app.use(url+'/rutageneral',rutageneral);
 app.use(url+'/rutarecord',rutarecord);
 app.use(url+'/rutaportafolio',rutaportafolio);
+app.use(url+'/rutamoodle',rutamoodle);
 
 
 //Index Router

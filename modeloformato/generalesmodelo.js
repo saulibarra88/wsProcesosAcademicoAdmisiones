@@ -345,3 +345,20 @@ module.exports.ObtenerMallaAcademicaCarreraPesum = async function (carrera,pesum
     return sendResponseModelo(false, [], error.message)
   }
 }
+
+module.exports.ListadoApellidosDocentesCarrera = async function (carrera,apellido) {
+  var sentencia = "";
+  sentencia ="SELECT * FROM [" + carrera + "].[dbo].[Docentes] WHERE [strApellidos] LIKE '%" + apellido + "%'"
+  console.log(sentencia)
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ListadoApellidosDocentesCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
