@@ -56,3 +56,19 @@ module.exports.ObternDatosCarreraFacultad = async function (carrera,dbcarrera) {
     return sendResponseModelo(false, [], error.message)
   }
 }
+
+module.exports.ObnterCarreraHomologacion = async function (carrera,dbcarrera,periodo) {
+  var sentencia = "";
+  sentencia ="SELECT h.*,C.strCodigo AS codigonivelacion, C.strNombre as nombrenivelacion ,CA.strNombre as nombrecarrera,CA.strCodigo codigocarrera FROM [" + carrera + "].[dbo].[homologacioncarreras] AS H INNER JOIN [" + carrera + "].[dbo].[Carreras] AS C ON C.strBaseDatos=H.hmbdbaseniv INNER JOIN [" + carrera + "].[dbo].[Carreras] AS CA ON CA.strBaseDatos=H.hmbdbasecar WHERE [periodo]='" + periodo + "' AND [hmbdbasecar]='" + dbcarrera + "'"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ListadoApellidosDocentesCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
