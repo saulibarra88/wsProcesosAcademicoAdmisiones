@@ -46,7 +46,7 @@ async function FuncionProcesoDictadoAsignaturaCarrera(dbcarrera, periodo) {
         if (informacion.datos.count > 0) {
             for (var info of informacion.datos.data) {
 
-                var ListadoEstudiante = await sqlmoodle.ListadoEstudianteAsignatura(dbcarrera, periodo, info.strCodNivel, info.strCodParalelo);
+                var ListadoEstudiante = await sqlmoodle.ListadoEstudianteAsignatura(dbcarrera, periodo, info.strCodNivel, info.strCodParalelo,info.strCodMateria);
                 if (ListadoEstudiante.datos.count > 0) {
                     info.lstEstudiantes = ListadoEstudiante.datos.data
                 } else {

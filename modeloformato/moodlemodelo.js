@@ -26,9 +26,9 @@ module.exports.ListadoDictadoAsignaturaCarrera = async function (carrera,periodo
   }
 }
 
-module.exports.ListadoEstudianteAsignatura = async function (carrera,periodo,nivel,paralelo) {
+module.exports.ListadoEstudianteAsignatura = async function (carrera,periodo,nivel,paralelo,asignatura) {
   var sentencia = "";
-  sentencia ="SELECT E.*,MA.* FROM [" + carrera + "].[dbo].[Matriculas] AS M INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS MA ON MA.sintCodMatricula=M.sintCodigo AND M.strCodPeriodo=MA.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=M.strCodEstud WHERE M.strCodEstado='DEF' AND MA.strCodNivel='" + nivel + "' AND MA.strCodParalelo='" + paralelo + "' AND M.strCodPeriodo='" + periodo + "' AND MA.strCodPeriodo='" + periodo + "'"
+  sentencia ="SELECT E.*,MA.* FROM [" + carrera + "].[dbo].[Matriculas] AS M INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS MA ON MA.sintCodMatricula=M.sintCodigo AND M.strCodPeriodo=MA.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=M.strCodEstud WHERE M.strCodEstado='DEF' AND MA.strCodNivel='" + nivel + "' AND MA.strCodParalelo='" + paralelo + "' AND M.strCodPeriodo='" + periodo + "' AND MA.strCodPeriodo='" + periodo + "' AND MA.strCodMateria='" + asignatura + "'"
   try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
