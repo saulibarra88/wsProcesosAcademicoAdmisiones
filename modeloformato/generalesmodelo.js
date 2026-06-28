@@ -362,3 +362,146 @@ module.exports.ListadoApellidosDocentesCarrera = async function (carrera,apellid
     return sendResponseModelo(false, [], error.message)
   }
 }
+
+module.exports.ListadoParentescos = async function (carrera) {
+  var sentencias = "SELECT par_id, par_nombre, par_estado, par_creado_en FROM [" + carrera + "].[dbo].[tb_parentesco] WHERE par_estado = 1 ORDER BY par_nombre";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ListadoParentescos', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.ListadoDireccionesEstudiante = async function (carrera, est_identificacion) {
+  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE est_identificacion = '" + est_identificacion + "' AND dir_estado = 1";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ListadoDireccionesEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.ObtenerDireccionEstudiantePorTipo = async function (carrera, est_identificacion, dir_tipo_id) {
+  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE est_identificacion = '" + est_identificacion + "' AND dir_tipo_id = " + dir_tipo_id + " AND dir_estado = 1";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ObtenerDireccionEstudiantePorTipo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.IngresarDireccionEstudiante = async function (carrera, datos) {
+  var sentencias = "INSERT INTO [" + carrera + "].[dbo].[tb_estudiante_direccion] (est_identificacion, dir_tipo_id, pai_id_central, pai_nombre, pro_id_central, pro_nombre, ciu_id_central, ciu_nombre, prq_id_central, prq_nombre, dir_calle, dir_codigo_postal, dir_referencias) VALUES ('" + datos.est_identificacion + "', " + datos.dir_tipo_id + ", '" + datos.pai_id_central + "', '" + datos.pai_nombre + "', '" + datos.pro_id_central + "', '" + datos.pro_nombre + "', '" + datos.ciu_id_central + "', '" + datos.ciu_nombre + "', '" + (datos.prq_id_central || '') + "', '" + datos.prq_nombre + "', '" + datos.dir_calle + "', '" + datos.dir_codigo_postal + "', '" + (datos.dir_referencias || '') + "')";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error IngresarDireccionEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.ActualizarDireccionEstudiante = async function (carrera, datos) {
+  var sentencias = "UPDATE [" + carrera + "].[dbo].[tb_estudiante_direccion] SET dir_tipo_id = " + datos.dir_tipo_id + ", pai_id_central = '" + datos.pai_id_central + "', pai_nombre = '" + datos.pai_nombre + "', pro_id_central = '" + datos.pro_id_central + "', pro_nombre = '" + datos.pro_nombre + "', ciu_id_central = '" + datos.ciu_id_central + "', ciu_nombre = '" + datos.ciu_nombre + "', prq_id_central = '" + (datos.prq_id_central || '') + "', prq_nombre = '" + datos.prq_nombre + "', dir_calle = '" + datos.dir_calle + "', dir_codigo_postal = '" + datos.dir_codigo_postal + "', dir_referencias = '" + (datos.dir_referencias || '') + "', dir_estado = " + datos.dir_estado + " WHERE dir_id = " + datos.dir_id;
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ActualizarDireccionEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.EliminarDireccionEstudiante = async function (carrera, dir_id) {
+  var sentencias = "UPDATE [" + carrera + "].[dbo].[tb_estudiante_direccion] SET dir_estado = 0 WHERE dir_id = " + dir_id;
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error EliminarDireccionEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.EliminarDireccionEstudianteFisico = async function (carrera, est_identificacion, dir_tipo_id) {
+  var sentencias = "DELETE FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE est_identificacion = '" + est_identificacion + "' AND dir_tipo_id = " + dir_tipo_id;
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error EliminarDireccionEstudianteFisico', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.ListadoFamiliaresEstudiante = async function (carrera, est_identificacion) {
+  var sentencias = "SELECT f.*, p.par_nombre FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] f INNER JOIN [" + carrera + "].[dbo].[tb_parentesco] p ON f.fam_parentesco_id = p.par_id WHERE f.est_identificacion = '" + est_identificacion + "' AND f.fam_estado = 1";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ListadoFamiliaresEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.ObtenerFamiliarEstudiantePorParentesco = async function (carrera, est_identificacion, fam_parentesco_id) {
+  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] WHERE est_identificacion = '" + est_identificacion + "' AND fam_parentesco_id = " + fam_parentesco_id + " AND fam_estado = 1";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ObtenerFamiliarEstudiantePorParentesco', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.IngresarFamiliarEstudiante = async function (carrera, datos) {
+  var sentencias = "INSERT INTO [" + carrera + "].[dbo].[tb_estudiante_familiar] (est_identificacion, fam_cedula_familiar, fam_parentesco_id, fam_nombre_completo, fam_telefono, fam_ocupacion, fam_email) VALUES ('" + datos.est_identificacion + "', '" + datos.fam_cedula_familiar + "', " + datos.fam_parentesco_id + ", '" + datos.fam_nombre_completo + "', '" + datos.fam_telefono + "', '" + (datos.fam_ocupacion || '') + "', '" + (datos.fam_email || '') + "')";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error IngresarFamiliarEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.ActualizarFamiliarEstudiante = async function (carrera, datos) {
+  var sentencias = "UPDATE [" + carrera + "].[dbo].[tb_estudiante_familiar] SET fam_cedula_familiar = '" + datos.fam_cedula_familiar + "', fam_parentesco_id = " + datos.fam_parentesco_id + ", fam_nombre_completo = '" + datos.fam_nombre_completo + "', fam_telefono = '" + datos.fam_telefono + "', fam_ocupacion = '" + (datos.fam_ocupacion || '') + "', fam_email = '" + (datos.fam_email || '') + "', fam_estado = " + datos.fam_estado + " WHERE fam_id = " + datos.fam_id;
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ActualizarFamiliarEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.EliminarFamiliarEstudiante = async function (carrera, fam_id) {
+  var sentencias = "UPDATE [" + carrera + "].[dbo].[tb_estudiante_familiar] SET fam_estado = 0 WHERE fam_id = " + fam_id;
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error EliminarFamiliarEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}
+
+module.exports.EliminarFamiliarEstudianteFisico = async function (carrera, est_identificacion, fam_parentesco_id) {
+  var sentencias = "DELETE FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] WHERE est_identificacion = '" + est_identificacion + "' AND fam_parentesco_id = " + fam_parentesco_id;
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error EliminarFamiliarEstudianteFisico', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+}

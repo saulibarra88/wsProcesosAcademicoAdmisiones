@@ -41,4 +41,20 @@ router.get('/ObtenerCarreraHomologacion/:dbcarrera/:periodo',async (req, res) =>
  
 });
 
+router.post('/RetirosEstudianteCarreras', async (req, res) => {
+    const { listado } = req.body;
+    try {
+        var Informacion=await  procesosmoodlefunciones.ProcesoRetirosEstudiantesCarrera(listado);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos,'OK');
+        }
+        else {
+            return sendResponseServicios(res, false, [],Informacion.message);
+        }
+    }catch (error) {
+        logger.error('Error RetirosEstudianteCarreras', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],error.message);
+    }
+ 
+});
 module.exports = router;

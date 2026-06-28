@@ -71,6 +71,62 @@ module.exports.obtenerdocumento = async function (cedula) {
   
   }
 
+  module.exports.ObtenerPaises = async function () {
+    var sentencia = `SELECT pai_id, pai_nombre FROM central.pais ORDER BY pai_nombre`;
+    try {
+      if (sentencia != "") {
+        const resp = await execCentralizadaMejorada(sentencia, "OK", "OK");
+        return resp;
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }
+
+  module.exports.ObtenerProvinciasPorPais = async function (pai_id) {
+    var sentencia = `SELECT pro_id, pro_nombre, pai_id, pro_codinec FROM central.provincia WHERE pai_id = ${pai_id} ORDER BY pro_nombre`;
+    try {
+      if (sentencia != "") {
+        const resp = await execCentralizadaMejorada(sentencia, "OK", "OK");
+        return resp;
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }
+
+  module.exports.ObtenerCiudadesPorProvincia = async function (pro_id) {
+    var sentencia = `SELECT ciu_id, ciu_nombre, pro_id, ciu_codinec FROM central.ciudad WHERE pro_id = ${pro_id} ORDER BY ciu_nombre`;
+    try {
+      if (sentencia != "") {
+        const resp = await execCentralizadaMejorada(sentencia, "OK", "OK");
+        return resp;
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }
+
+  module.exports.ObtenerParroquiasPorCiudad = async function (ciu_id) {
+    var sentencia = `SELECT prq_id, prq_nombre, ciu_id, "prq_esUrbana", prq_codinec FROM central.parroquia WHERE ciu_id = ${ciu_id} ORDER BY prq_nombre`;
+    try {
+      if (sentencia != "") {
+        const resp = await execCentralizadaMejorada(sentencia, "OK", "OK");
+        return resp;
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }
+
 
 
 

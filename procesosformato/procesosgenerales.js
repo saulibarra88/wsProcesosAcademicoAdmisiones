@@ -362,30 +362,180 @@ module.exports.ProcesoReporteMallaAcademicaCarrera = async function (dbcarrera, 
 }
 module.exports.ProcesoReporteMallaAcademicaCarreraPesum = async function (dbcarrera, pesum) {
     try {
-     var Informacion = await sqlmodelogenerales.ObtenerMallaAcademicaCarreraPesum(dbcarrera, pesum);
-        if(Informacion.datos.count>0){
-   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
-        const datosPensum = await sqlprocesoCupo.ObtenerPensumCarrera(dbcarrera, pesum);
-   
-      var datos = {
-            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
-            programaNombre: datosCarrera.data[0].strNombreCarrera,
-            periodoAcademico: datosPensum.data[0].strNombre,
-          listado:Informacion.datos.data
-        }
-        
-        var base64 = await funcionesreportesmake.pdfmakegenerarMallaCarreraPesum (datos);
-        if (Informacion.modelo) {
-            return sendResponseProcesos(true, base64, 'OK')
-        } else {
-            return sendResponseProcesos(false, base64, Informacion.message)
-        }
-        }else{
-                return sendResponseProcesos(false, base64, '')
-        }
-     
+      var Informacion = await sqlmodelogenerales.ObtenerMallaAcademicaCarreraPesum(dbcarrera, pesum);
+         if(Informacion.datos.count>0){
+    const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+         const datosPensum = await sqlprocesoCupo.ObtenerPensumCarrera(dbcarrera, pesum);
+    
+       var datos = {
+             institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+             programaNombre: datosCarrera.data[0].strNombreCarrera,
+             periodoAcademico: datosPensum.data[0].strNombre,
+           listado:Informacion.datos.data
+         }
+         
+         var base64 = await funcionesreportesmake.pdfmakegenerarMallaCarreraPesum (datos);
+         if (Informacion.modelo) {
+             return sendResponseProcesos(true, base64, 'OK')
+         } else {
+             return sendResponseProcesos(false, base64, Informacion.message)
+         }
+         }else{
+                 return sendResponseProcesos(false, base64, '')
+         }
+      
     } catch (error) {
         logger.error('Error ProcesoReporteMallaAcademicaCarrera', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoListadoParentescos = async function (carrera) {
+    try {
+        var Informacion = await sqlmodelogenerales.ListadoParentescos(carrera);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoListadoParentescos', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoListadoDireccionesEstudiante = async function (carrera, est_identificacion) {
+    try {
+        var Informacion = await sqlmodelogenerales.ListadoDireccionesEstudiante(carrera, est_identificacion);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoListadoDireccionesEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoObtenerDireccionEstudiantePorTipo = async function (carrera, est_identificacion, dir_tipo_id) {
+    try {
+        var Informacion = await sqlmodelogenerales.ObtenerDireccionEstudiantePorTipo(carrera, est_identificacion, dir_tipo_id);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoObtenerDireccionEstudiantePorTipo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoIngresarDireccionEstudiante = async function (carrera, datos) {
+    try {
+        var existePrevia = await sqlmodelogenerales.ObtenerDireccionEstudiantePorTipo(carrera, datos.est_identificacion, datos.dir_tipo_id);
+        if (existePrevia.modelo && existePrevia.datos && existePrevia.datos.count > 0) {
+            await sqlmodelogenerales.EliminarDireccionEstudianteFisico(carrera, datos.est_identificacion, datos.dir_tipo_id);
+        }
+
+        var Informacion = await sqlmodelogenerales.IngresarDireccionEstudiante(carrera, datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoIngresarDireccionEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoActualizarDireccionEstudiante = async function (carrera, datos) {
+    try {
+        var Informacion = await sqlmodelogenerales.ActualizarDireccionEstudiante(carrera, datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoActualizarDireccionEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoEliminarDireccionEstudiante = async function (carrera, dir_id) {
+    try {
+        var Informacion = await sqlmodelogenerales.EliminarDireccionEstudiante(carrera, dir_id);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoEliminarDireccionEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoListadoFamiliaresEstudiante = async function (carrera, est_identificacion) {
+    try {
+        var Informacion = await sqlmodelogenerales.ListadoFamiliaresEstudiante(carrera, est_identificacion);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoListadoFamiliaresEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoIngresarFamiliarEstudiante = async function (carrera, datos) {
+    try {
+        var existePrevia = await sqlmodelogenerales.ObtenerFamiliarEstudiantePorParentesco(carrera, datos.est_identificacion, datos.fam_parentesco_id);
+        if (existePrevia.modelo && existePrevia.datos && existePrevia.datos.count > 0) {
+            await sqlmodelogenerales.EliminarFamiliarEstudianteFisico(carrera, datos.est_identificacion, datos.fam_parentesco_id);
+        }
+
+        var Informacion = await sqlmodelogenerales.IngresarFamiliarEstudiante(carrera, datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoIngresarFamiliarEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoActualizarFamiliarEstudiante = async function (carrera, datos) {
+    try {
+        var Informacion = await sqlmodelogenerales.ActualizarFamiliarEstudiante(carrera, datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoActualizarFamiliarEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+module.exports.ProcesoEliminarFamiliarEstudiante = async function (carrera, fam_id) {
+    try {
+        var Informacion = await sqlmodelogenerales.EliminarFamiliarEstudiante(carrera, fam_id);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK')
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message)
+        }
+    } catch (error) {
+        logger.error('Error ProcesoEliminarFamiliarEstudiante', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
     }
 }

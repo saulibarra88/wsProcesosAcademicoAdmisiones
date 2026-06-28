@@ -789,4 +789,72 @@ router.post('/ActualizacionCentralizadaDatos', async (req, res) => {
 
     }
 });
+
+router.get('/ObtenerPaises', async (req, res) => {
+    try {
+        var respuesta = await procesoscentralidadas.ProcesoObtenerPaises();
+        res.json({
+            success: true,
+            informacion: respuesta
+        });
+    } catch (err) {
+        console.error(err);
+        return res.json({
+            success: false,
+            mensaje: 'Error al obtener países: ' + err
+        });
+    }
+});
+
+router.get('/ObtenerProvinciasPorPais/:pai_id', async (req, res) => {
+    const pai_id = req.params.pai_id;
+    try {
+        var respuesta = await procesoscentralidadas.ProcesoObtenerProvinciasPorPais(pai_id);
+        res.json({
+            success: true,
+            informacion: respuesta
+        });
+    } catch (err) {
+        console.error(err);
+        return res.json({
+            success: false,
+            mensaje: 'Error al obtener provincias: ' + err
+        });
+    }
+});
+
+router.get('/ObtenerCiudadesPorProvincia/:pro_id', async (req, res) => {
+    const pro_id = req.params.pro_id;
+    try {
+        var respuesta = await procesoscentralidadas.ProcesoObtenerCiudadesPorProvincia(pro_id);
+        res.json({
+            success: true,
+            informacion: respuesta
+        });
+    } catch (err) {
+        console.error(err);
+        return res.json({
+            success: false,
+            mensaje: 'Error al obtener ciudades: ' + err
+        });
+    }
+});
+
+router.get('/ObtenerParroquiasPorCiudad/:ciu_id', async (req, res) => {
+    const ciu_id = req.params.ciu_id;
+    try {
+        var respuesta = await procesoscentralidadas.ProcesoObtenerParroquiasPorCiudad(ciu_id);
+        res.json({
+            success: true,
+            informacion: respuesta
+        });
+    } catch (err) {
+        console.error(err);
+        return res.json({
+            success: false,
+            mensaje: 'Error al obtener parroquias: ' + err
+        });
+    }
+});
+
 module.exports = router;

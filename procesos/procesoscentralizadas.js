@@ -34,3 +34,43 @@ module.exports.ProcesoActualizacionDatosPersonaCentral = async function (datos) 
             return 'ERROR';
     }
 }
+
+module.exports.ProcesoObtenerPaises = async function () {
+    try {
+        var resultado = await sqlmodelocentralizada.ObtenerPaises();
+        return resultado
+    } catch (error) {
+        console.error(error);
+        return 'ERROR ' + error;
+    }
+}
+
+module.exports.ProcesoObtenerProvinciasPorPais = async function (pai_id) {
+    try {
+        var resultado = await sqlmodelocentralizada.ObtenerProvinciasPorPais(pai_id);
+        return resultado
+    } catch (error) {
+        console.error(error);
+        return 'ERROR ' + error;
+    }
+}
+
+module.exports.ProcesoObtenerCiudadesPorProvincia = async function (pro_id) {
+    try {
+        var resultado = await sqlmodelocentralizada.ObtenerCiudadesPorProvincia(pro_id);
+        return resultado
+    } catch (error) {
+        console.error(error);
+        return 'ERROR ' + error;
+    }
+}
+
+module.exports.ProcesoObtenerParroquiasPorCiudad = async function (ciu_id) {
+    try {
+        var resultado = await sqlmodelocentralizada.ObtenerParroquiasPorCiudad(ciu_id);
+        return resultado
+    } catch (error) {
+        console.error(error);
+        return 'ERROR ' + error;
+    }
+}

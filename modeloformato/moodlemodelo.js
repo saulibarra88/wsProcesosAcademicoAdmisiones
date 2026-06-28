@@ -46,7 +46,7 @@ module.exports.ObternDatosCarreraFacultad = async function (carrera,dbcarrera) {
   sentencia ="SELECT F.*,C.*,F.strNombre as nombrefacultad,C.strNombre as nombrecarrera,F.strCodigo as codigofacultad,C.strCodigo as codigocarrera FROM [" + carrera + "].[dbo].[Facultades] AS F INNER JOIN [" + carrera + "].[dbo].[Escuelas] AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [" + carrera + "].[dbo].[Carreras] AS C ON C.strCodEscuela=E.strCodigo WHERE C.strBaseDatos='" + dbcarrera + "'"
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
       return sendResponseModelo(true, sqlConsulta, 'OK')
     } else {
       return sendResponseModelo(false, [], 'VACIO SQL')
@@ -62,13 +62,45 @@ module.exports.ObnterCarreraHomologacion = async function (carrera,dbcarrera,per
   sentencia ="SELECT h.*,C.strCodigo AS codigonivelacion, C.strNombre as nombrenivelacion ,CA.strNombre as nombrecarrera,CA.strCodigo codigocarrera FROM [" + carrera + "].[dbo].[homologacioncarreras] AS H INNER JOIN [" + carrera + "].[dbo].[Carreras] AS C ON C.strBaseDatos=H.hmbdbaseniv INNER JOIN [" + carrera + "].[dbo].[Carreras] AS CA ON CA.strBaseDatos=H.hmbdbasecar WHERE [periodo]='" + periodo + "' AND [hmbdbasecar]='" + dbcarrera + "'"
   try {
     if (sentencia != "") {
-      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
       return sendResponseModelo(true, sqlConsulta, 'OK')
     } else {
       return sendResponseModelo(false, [], 'VACIO SQL')
     }
   } catch (error) {
     logger.error('Error ListadoApellidosDocentesCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.RetiroEstudiantePeriodoCarrera = async function (carrera,periodo,cedula) {
+  var sentencia = "";
+  sentencia ="SELECT asig.strNombre,asig.strCodigo,r.strResolucion FROM [" + carrera + "].[dbo].[Matriculas] AS M INNER JOIN [" + carrera + "].[dbo].[Retiros] AS R ON R.sintCodMatricula=M.sintCodigo AND R.strCodPeriodo=M.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias] AS ASIG ON ASIG.strCodigo=R.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=M.strCodEstud WHERE E.strCedula='" + cedula + "' AND M.strCodPeriodo='" + periodo + "' AND M.strCodEstado='DEF' AND R.strCodPeriodo='" + periodo + "'"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error RetiroEstudiantePeriodoCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ObtenerDatosEstudianteCarrera = async function (carrera,cedula) {
+  var sentencia = "";
+  sentencia ="SELECT E.strNombres,E.strApellidos FROM [" + carrera + "].[dbo].[Estudiantes] AS E WHERE [strCedula]='" + cedula + "'"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error RetiroEstudiantePeriodoCarrera', { message: error.message, stack: error.stack });
     return sendResponseModelo(false, [], error.message)
   }
 }
