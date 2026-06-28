@@ -51,12 +51,14 @@ module.exports.pdfmakeProcesoPdfListadosAspiranteAdmisiones = async function (li
                 { 
                     stack: [
                         { text: [{ text: 'SEDE : ', bold: true }, estudiantes.Sede.sedNombre] },
-                        { text: [{ text: 'DETALLE : ', bold: true }, estudiantes.Sede.sedDescripcion] }
+                        { text: [{ text: 'DETALLE : ', bold: true }, estudiantes.Sede.sedDescripcion] },
+                        { text: [{ text: 'AREA : ', bold: true }, estudiantes.camCodigo] },
+                        { text: [{ text: 'AREA CONOCIMIENTO : ', bold: true }, estudiantes.camNombre.toUpperCase()] },
                     ], style: 'tableCellLeft'
                 },
                 { 
                     stack: [
-                        { text: [{ text: 'INSCRIPCIÓN : ', bold: true }, estudiantes.aspFechaInscripcion || ''] }
+                        { text: [{ text: 'INSCRIPCIÓN : ', bold: true }, estudiantes.aspFechaInscripcion.substring(0, 10) || ''] }
                     ], style: 'tableCellLeft'
                 }
             ];
@@ -67,11 +69,11 @@ module.exports.pdfmakeProcesoPdfListadosAspiranteAdmisiones = async function (li
             { text: 'DATOS', style: 'tableHeader' },
             { text: 'APELLIDOS Y NOMBRES', style: 'tableHeader' },
             { text: 'PERIODO', style: 'tableHeader' },
-            { text: 'SEDE', style: 'tableHeader' },
-            { text: 'ASIGNACIÓN CUPO', style: 'tableHeader' }
+            { text: 'SEDE_INSTITUCION', style: 'tableHeader' },
+            { text: 'FECHA_REG', style: 'tableHeader' }
         ];
 
-        const tableWidths = ['auto', '*', '*', '*', '*', '*'];
+        const tableWidths = ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'];
 
         const content = [
             {

@@ -26,7 +26,7 @@ const agent = new https.Agent({
 module.exports.ProcesoModleCarreraHomologacion = async function (dbcarrera, periodo) {
     try {
 
-        var informacion = await sqlmoodle.ObnterCarreraHomologacion('OAS_Master',dbcarrera, periodo);
+        var informacion = await sqlmoodle.ObnterCarreraHomologacion('OAS_Master', dbcarrera, periodo);
         return sendResponseProcesos(true, informacion.datos.data, 'OK')
     } catch (error) {
         logger.error('Error ProcesoModleMigracionDatosDictadoCarrera', { message: error.message, stack: error.stack });
@@ -45,7 +45,16 @@ module.exports.ProcesoModleMigracionDatosDictadoCarrera = async function (carrer
     }
 }
 
+module.exports.ProcesoRetirosEstudiantesCarrera = async function (listado) {
+    try {
 
+        var resultado = await FuncionProcesoRetirosEstudianteCarrera(listado);
+        return sendResponseProcesos(true, resultado, 'OK')
+    } catch (error) {
+        logger.error('Error FuncionProcesoRetirosEstudianteCarrera', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
 async function FuncionProcesoDictadoAsignaturaCarrera(dbcarrera, periodo) {
     try {
         var lstResultado = []
@@ -55,7 +64,7 @@ async function FuncionProcesoDictadoAsignaturaCarrera(dbcarrera, periodo) {
         if (informacion.datos.count > 0) {
             for (var info of informacion.datos.data) {
 
-                var ListadoEstudiante = await sqlmoodle.ListadoEstudianteAsignatura(dbcarrera, periodo, info.strCodNivel, info.strCodParalelo,info.strCodMateria);
+                var ListadoEstudiante = await sqlmoodle.ListadoEstudianteAsignatura(dbcarrera, periodo, info.strCodNivel, info.strCodParalelo, info.strCodMateria);
                 if (ListadoEstudiante.datos.count > 0) {
                     info.lstEstudiantes = ListadoEstudiante.datos.data
                 } else {
@@ -64,9 +73,44 @@ async function FuncionProcesoDictadoAsignaturaCarrera(dbcarrera, periodo) {
                 lstResultado.push(info)
             }
         }
-lstResultadoGeneral.lstResultado=lstResultado
-lstResultadoGeneral.Carrera=DatosCarrera.datos.data[0]
+        lstResultadoGeneral.lstResultado = lstResultado
+        lstResultadoGeneral.Carrera = DatosCarrera.datos.data[0]
         return lstResultadoGeneral
+    } catch (error) {
+        console.error(error);
+
+    }
+
+}
+
+async function FuncionProcesoRetirosEstudianteCarrera(listado) {
+    try {
+        var lstResultado = []
+        var lstResultadoGeneral = {}
+
+        for (var info of listado) {
+            var DatosCarrera = await sqlmoodle.ObternDatosCarreraFacultad('OAS_Master', info.dbcarrera);
+            var DatosEstudiantes = await sqlmoodle.ObtenerDatosEstudianteCarrera(info.dbcarrera, info.cedula);
+
+            var ListadoEstudianteRetiro = await sqlmoodle.RetiroEstudiantePeriodoCarrera(info.dbcarrera, info.periodo, info.cedula);
+            if (ListadoEstudianteRetiro.datos.count > 0) {
+                var asignaturas1 = ''
+                for (var asignatura of ListadoEstudianteRetiro.datos.data) {
+                    asignaturas1 = asignaturas1 + asignatura.strNombre + '(' + asignatura.strCodigo + ')' + '/'
+                }
+                info.RetiroAsignaturaDescripcion = asignaturas1
+                info.RetiroAsignatura = true
+            } else {
+                info.RetiroAsignaturaDescripcion = '',
+                    info.RetiroAsignatura = false
+
+            }
+            info.Carrera = DatosCarrera.datos.data[0].nombrecarrera
+            info.Estudiante = DatosEstudiantes.datos.data[0].strNombres + ' ' + DatosEstudiantes.datos.data[0].strApellidos
+            lstResultado.push(info)
+        }
+
+        return lstResultado
     } catch (error) {
         console.error(error);
 

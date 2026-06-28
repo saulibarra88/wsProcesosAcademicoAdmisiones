@@ -560,6 +560,21 @@ module.exports.ListadoCiudadMaster = async function (carrera, codProvincia) {
     return { data: "Error: " + error }
   }
 }
+module.exports.ListadoParroquiaMaster = async function (carrera, codciudad) {
+
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[parroquia] WHERE ciu_id='" + codciudad + "' ORDER BY strNombre"
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
+      return (sqlConsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}
 module.exports.ListadoInstitucionesMaster = async function (carrera, codciudad) {
 
   var sentencia = "";

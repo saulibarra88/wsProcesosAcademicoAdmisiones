@@ -24,7 +24,6 @@ module.exports.ListadoEstudiantes = async function (strBaseCarrera, periodo, ide
             var ofertaAcademica = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo/" + percodigoadmision, { httpsAgent: agent });
             var objCarreraOferta = '';
             var cupCusId = '';
-            console.log("ofertaAcademica", ofertaAcademica.data);
             if (ofertaAcademica.data.length > 0) {
                 const ofertaEncontrada = ofertaAcademica.data.find(oferta => strBaseCarrera === oferta.cupDbNivelacion);
                 if (ofertaEncontrada) {
@@ -120,36 +119,105 @@ module.exports.ListadoAspiranteAdmisiones = async function (strBaseCarrera, peri
         try {
             var ListadoEstados = [];
             var DatosBaseCarrera = await procesoCupo.ObtenerDatosBase(strBaseCarrera);
-            if (DatosBaseCarrera.data[0].strSede == 'NORTE') {
-                DatosBaseCarrera.data[0].strSede = 'ORELLANA'
-            }
-            if (DatosBaseCarrera.count > 0) {
-                var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/aspirante_sede/list_periodo/" + periodoAdmisiones, { httpsAgent: agent });
-                if (informacion.data.length > 0) {
+            if (DatosBaseCarrera && DatosBaseCarrera.data && DatosBaseCarrera.data.length > 0) {
+                if (DatosBaseCarrera.data[0].strSede == 'NORTE') {
+                    DatosBaseCarrera.data[0].strSede = 'ORELLANA';
+                }
+                if (DatosBaseCarrera.count > 0) {
+                    var informacion = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/aspirante_sede/list_periodo/" + periodoAdmisiones, { httpsAgent: agent });
+                    if (informacion.data && informacion.data.length > 0) {
 
-                    var DatosPeriodoAcademico = await procesoCupo.ObtenerPeriodoDadoCodigo(informacion.data[0].Periodo.perNomenclatura);
+                        var DatosPeriodoAcademico = await procesoCupo.ObtenerPeriodoDadoCodigo(informacion.data[0].Periodo.perNomenclatura);
+                        var PeriodoAcademico;
 
-                    if (DatosPeriodoAcademico.count > 0) {
-                        var PeriodoAcademico = DatosPeriodoAcademico.data[0]
-                    } else {
-                        let datos = {
-                            strCodigo: "NINGUNO",
-                            strDescripcion: "NINGUNO",
-                            dtFechaInic: "NINGUNO",
-                            dtFechaFin: "NINGUNO",
-                            dtFechaTopeMatOrd: "NINGUNO",
-                            dtFechaTopeMatExt: "NINGUNO",
-                            dtFechaTopeMatPro: "NINGUNO",
-                            dtFechaTopeRetMat: "NINGUNO",
-                            strCodReglamento: "NINGUNO",
+                        if (DatosPeriodoAcademico && DatosPeriodoAcademico.count > 0 && DatosPeriodoAcademico.data && DatosPeriodoAcademico.data.length > 0) {
+                            PeriodoAcademico = DatosPeriodoAcademico.data[0];
+                        } else {
+                            var datos = {
+                                strCodigo: "NINGUNO",
+                                strDescripcion: "NINGUNO",
+                                dtFechaInic: "NINGUNO",
+                                dtFechaFin: "NINGUNO",
+                                dtFechaTopeMatOrd: "NINGUNO",
+                                dtFechaTopeMatExt: "NINGUNO",
+                                dtFechaTopeMatPro: "NINGUNO",
+                                dtFechaTopeRetMat: "NINGUNO",
+                                strCodReglamento: "NINGUNO",
+                            };
+                            PeriodoAcademico = datos;
                         }
-                        PeriodoAcademico = datos;
-                    }
-                    for (var objAspirante of informacion.data) {
-                        var verificarsede = tools.palabraIncluidaEnFrase(objAspirante.Sede.sedDescripcion, DatosBaseCarrera.data[0].strSede);
-                        if (verificarsede) {
-                            objAspirante.PeriodoAcademico = PeriodoAcademico
-                            ListadoEstados.push(objAspirante)
+
+                        // 1. Filtrar los aspirantes por sede primero para evitar llamadas HTTP innecesarias
+                        var sedeBuscada = DatosBaseCarrera.data[0].strSede;
+                        var aspirantesFiltrados = informacion.data.filter(function (objAspirante) {
+                            return objAspirante.Sede && 
+                                   objAspirante.Sede.sedDescripcion && 
+                                   tools.palabraIncluidaEnFrase(objAspirante.Sede.sedDescripcion, sedeBuscada);
+                        });
+
+                        // 2. Si periodoAdmisiones >= 12, resolver campos de conocimiento de forma eficiente y secuencial
+                        if (periodoAdmisiones >= 12) {
+                            // Obtener combinaciones únicas de pccId y ccoId para no duplicar peticiones
+                            var mapaClavesUnicas = new Map();
+                            for (var objAspirante of aspirantesFiltrados) {
+                                if (objAspirante.PeriodoCconocimiento && objAspirante.PeriodoCconocimiento.CampoConocimiento) {
+                                    var pccId = objAspirante.PeriodoCconocimiento.pccCampoId;
+                                    var ccoId = objAspirante.PeriodoCconocimiento.CampoConocimiento.ccoId;
+                                    var clave = `${pccId}_${ccoId}`;
+                                    mapaClavesUnicas.set(clave, { pccId: pccId, ccoId: ccoId });
+                                }
+                            }
+
+                            // Consultar secuencialmente con reintento (máximo 3 intentos por clave única)
+                            var cacheCampos = new Map();
+                            for (var [clave, ids] of mapaClavesUnicas.entries()) {
+                                var responseData = null;
+                                var maxRetries = 3;
+                                for (var i = 0; i < maxRetries; i++) {
+                                    try {
+                                        var response = await axios.get("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_configuracion/campo_conocimiento/campo_xidytipo/" + ids.pccId + '/' + ids.ccoId, { httpsAgent: agent });
+                                        if (response && response.data) {
+                                            responseData = response.data;
+                                            break; // Romper bucle de reintentos en caso de éxito
+                                        }
+                                    } catch (err) {
+                                        console.error(`Intento ${i + 1} falló al obtener campo de conocimiento (${ids.pccId}/${ids.ccoId}):`, err.message);
+                                        if (i < maxRetries - 1) {
+                                            // Pequeña espera de 200ms antes de reintentar
+                                            await new Promise(function (resolve) { setTimeout(resolve, 200); });
+                                        }
+                                    }
+                                }
+                                cacheCampos.set(clave, responseData);
+                            }
+
+                            // Asignar los campos correspondientes a los aspirantes filtrados
+                            for (var objAspirante of aspirantesFiltrados) {
+                                objAspirante.PeriodoAcademico = PeriodoAcademico;
+                                if (objAspirante.PeriodoCconocimiento && objAspirante.PeriodoCconocimiento.CampoConocimiento) {
+                                    var clave = `${objAspirante.PeriodoCconocimiento.pccCampoId}_${objAspirante.PeriodoCconocimiento.CampoConocimiento.ccoId}`;
+                                    var datosCampo = cacheCampos.get(clave);
+                                    if (datosCampo) {
+                                        objAspirante.camCodigo = datosCampo.camCodigo;
+                                        objAspirante.camNombre = datosCampo.camNombre;
+                                    } else {
+                                        objAspirante.camCodigo = '';
+                                        objAspirante.camNombre = '';
+                                    }
+                                } else {
+                                    objAspirante.camCodigo = '';
+                                    objAspirante.camNombre = '';
+                                }
+                                ListadoEstados.push(objAspirante);
+                            }
+                        } else {
+                            // Si periodoAdmisiones < 12, se asigna el periodo y se limpian camCodigo / camNombre
+                            for (var objAspirante of aspirantesFiltrados) {
+                                objAspirante.PeriodoAcademico = PeriodoAcademico;
+                                objAspirante.camCodigo = '';
+                                objAspirante.camNombre = '';
+                                ListadoEstados.push(objAspirante);
+                            }
                         }
                     }
                 }
@@ -157,12 +225,10 @@ module.exports.ListadoAspiranteAdmisiones = async function (strBaseCarrera, peri
             return ListadoEstados;
         } catch (error) {
             console.error(error);
-            
             return 'ERROR';
         }
     } catch (err) {
         console.error(err);
-        
         return 'ERROR';
     }
 }

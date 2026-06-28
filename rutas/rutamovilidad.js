@@ -5,6 +5,7 @@ const router = express.Router();
 const funcionesprocesosmovilidad = require('../procesos/procesosmovilidad');
 const funcionesprocesosrecordmallaestuidante = require('../procesos/procesorecordmallaestuidante');
 const funcionesprocesomallaestuidante = require('../procesos/procesorecordmallaestudiantecarrera');
+const { execCentralizadaMejorada } = require('../config/execSQLCentralizadaMejorada.helper');
 
 
 
@@ -507,6 +508,7 @@ router.get('/ListadoCiudadMaster/:codProvincia/', async (req, res) => {
     }
 
 });
+
 router.get('/ListadoInstitucionesMaster/:codciudad/', async (req, res) => {
     const codciudad = req.params.codciudad;
     try {

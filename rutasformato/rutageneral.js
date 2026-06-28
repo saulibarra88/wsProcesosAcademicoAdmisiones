@@ -220,11 +220,156 @@ router.get('/ListadoDocentesApellidoCarrera/:dbcarrera/:apellido/',async (req, r
 
     try {
         var Informacion=await  procesosfuncionesgenerales.ProcesoListadoDocentesApellidosCarrera(dbcarrera,apellido);
-           return sendResponseServicios(res, true, Informacion.datos,'OK');
+            return sendResponseServicios(res, true, Informacion.datos,'OK');
     }catch (error) {
        logger.error('Error ListadoDocentesApellidoCarrera', { message: error.message, stack: error.stack});
-        return sendResponseServicios(res, false, [],err.message);
+        return sendResponseServicios(res, false, [],error.message);
     }
 
 });
+
+router.get('/ListadoParentescos/:dbcarrera', async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoListadoParentescos(dbcarrera);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.get('/ListadoDireccionesEstudiante/:dbcarrera/:est_identificacion', async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const est_identificacion = req.params.est_identificacion;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoListadoDireccionesEstudiante(dbcarrera, est_identificacion);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.get('/ObtenerDireccionEstudiantePorTipo/:dbcarrera/:est_identificacion/:dir_tipo_id', async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const est_identificacion = req.params.est_identificacion;
+    const dir_tipo_id = req.params.dir_tipo_id;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoObtenerDireccionEstudiantePorTipo(dbcarrera, est_identificacion, dir_tipo_id);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.post('/IngresarDireccionEstudiante', async (req, res) => {
+    const { dbcarrera, datos } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoIngresarDireccionEstudiante(dbcarrera, datos);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.post('/ActualizarDireccionEstudiante', async (req, res) => {
+    const { dbcarrera, datos } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoActualizarDireccionEstudiante(dbcarrera, datos);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.post('/EliminarDireccionEstudiante', async (req, res) => {
+    const { dbcarrera, dir_id } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoEliminarDireccionEstudiante(dbcarrera, dir_id);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.get('/ListadoFamiliaresEstudiante/:dbcarrera/:est_identificacion', async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const est_identificacion = req.params.est_identificacion;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoListadoFamiliaresEstudiante(dbcarrera, est_identificacion);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.post('/IngresarFamiliarEstudiante', async (req, res) => {
+    const { dbcarrera, datos } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoIngresarFamiliarEstudiante(dbcarrera, datos);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.post('/ActualizarFamiliarEstudiante', async (req, res) => {
+    const { dbcarrera, datos } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoActualizarFamiliarEstudiante(dbcarrera, datos);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.post('/EliminarFamiliarEstudiante', async (req, res) => {
+    const { dbcarrera, fam_id } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoEliminarFamiliarEstudiante(dbcarrera, fam_id);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
 module.exports = router;
