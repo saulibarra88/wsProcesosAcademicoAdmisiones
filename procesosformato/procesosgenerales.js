@@ -434,9 +434,9 @@ module.exports.ProcesoObtenerDireccionEstudiantePorTipo = async function (carrer
 
 module.exports.ProcesoIngresarDireccionEstudiante = async function (carrera, datos) {
     try {
-        var existePrevia = await sqlmodelogenerales.ObtenerDireccionEstudiantePorTipo(carrera, datos.est_identificacion, datos.dir_tipo_id);
+        var existePrevia = await sqlmodelogenerales.ObtenerDireccionEstudiantePorTipo(carrera, datos.dir_strCedula, datos.dir_tipo_id);
         if (existePrevia.modelo && existePrevia.datos && existePrevia.datos.count > 0) {
-            await sqlmodelogenerales.EliminarDireccionEstudianteFisico(carrera, datos.est_identificacion, datos.dir_tipo_id);
+            await sqlmodelogenerales.EliminarDireccionEstudianteFisico(carrera, datos.dir_strCedula, datos.dir_tipo_id);
         }
 
         var Informacion = await sqlmodelogenerales.IngresarDireccionEstudiante(carrera, datos);
@@ -495,9 +495,9 @@ module.exports.ProcesoListadoFamiliaresEstudiante = async function (carrera, est
 
 module.exports.ProcesoIngresarFamiliarEstudiante = async function (carrera, datos) {
     try {
-        var existePrevia = await sqlmodelogenerales.ObtenerFamiliarEstudiantePorParentesco(carrera, datos.est_identificacion, datos.fam_parentesco_id);
+        var existePrevia = await sqlmodelogenerales.ObtenerFamiliarEstudiantePorParentesco(carrera, datos.fam_strCedula, datos.fam_parentesco_id);
         if (existePrevia.modelo && existePrevia.datos && existePrevia.datos.count > 0) {
-            await sqlmodelogenerales.EliminarFamiliarEstudianteFisico(carrera, datos.est_identificacion, datos.fam_parentesco_id);
+            await sqlmodelogenerales.EliminarFamiliarEstudianteFisico(carrera, datos.fam_strCedula, datos.fam_parentesco_id);
         }
 
         var Informacion = await sqlmodelogenerales.IngresarFamiliarEstudiante(carrera, datos);
