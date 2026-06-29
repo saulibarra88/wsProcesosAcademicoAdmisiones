@@ -59,7 +59,7 @@ module.exports.ObternDatosCarreraFacultad = async function (carrera,dbcarrera) {
 
 module.exports.ObnterCarreraHomologacion = async function (carrera,dbcarrera,periodo) {
   var sentencia = "";
-  sentencia ="SELECT h.*,C.strCodigo AS codigonivelacion, C.strNombre as nombrenivelacion ,CA.strNombre as nombrecarrera,CA.strCodigo codigocarrera FROM [" + carrera + "].[dbo].[homologacioncarreras] AS H INNER JOIN [" + carrera + "].[dbo].[Carreras] AS C ON C.strBaseDatos=H.hmbdbaseniv INNER JOIN [" + carrera + "].[dbo].[Carreras] AS CA ON CA.strBaseDatos=H.hmbdbasecar WHERE [periodo]='" + periodo + "' AND [hmbdbasecar]='" + dbcarrera + "'"
+  sentencia ="SELECT h.*,C.strCodigo AS codigonivelacion, C.strNombre as nombrenivelacion ,CA.strNombre as nombrecarrera,CA.strCodigo codigocarrera,FCA.strCodigo AS codigofacultad,FCA.strNombre as nombrefacultad FROM [" + carrera + "].[dbo].[homologacioncarreras] AS H INNER JOIN [" + carrera + "].[dbo].[Carreras] AS C ON C.strBaseDatos=H.hmbdbaseniv INNER JOIN [" + carrera + "].[dbo].[Carreras] AS CA ON CA.strBaseDatos=H.hmbdbasecar INNER JOIN [" + carrera + "].[dbo].[Escuelas] AS ECA ON ECA.strCodigo=CA.strCodEscuela INNER JOIN [" + carrera + "].[dbo].[Facultades] AS FCA ON FCA.strCodigo=ECA.strCodFacultad WHERE [periodo]='" + periodo + "' AND ([hmbdbasecar]='" + dbcarrera + "' OR [hmbdbaseniv]='" + dbcarrera + "')"
   try {
     if (sentencia != "") {
       const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");

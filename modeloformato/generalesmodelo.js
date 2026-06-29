@@ -374,8 +374,8 @@ module.exports.ListadoParentescos = async function (carrera) {
   }
 }
 
-module.exports.ListadoDireccionesEstudiante = async function (carrera, est_identificacion) {
-  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE est_identificacion = '" + est_identificacion + "' AND dir_estado = 1";
+module.exports.ListadoDireccionesEstudiante = async function (carrera, dir_strCedula) {
+  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE dir_strCedula = '" + dir_strCedula + "' AND dir_estado = 1";
   try {
     const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
@@ -385,8 +385,8 @@ module.exports.ListadoDireccionesEstudiante = async function (carrera, est_ident
   }
 }
 
-module.exports.ObtenerDireccionEstudiantePorTipo = async function (carrera, est_identificacion, dir_tipo_id) {
-  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE est_identificacion = '" + est_identificacion + "' AND dir_tipo_id = " + dir_tipo_id + " AND dir_estado = 1";
+module.exports.ObtenerDireccionEstudiantePorTipo = async function (carrera, dir_strCedula, dir_tipo_id) {
+  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE dir_strCedula = '" + dir_strCedula + "' AND dir_tipo_id = " + dir_tipo_id + " AND dir_estado = 1";
   try {
     const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
@@ -397,7 +397,7 @@ module.exports.ObtenerDireccionEstudiantePorTipo = async function (carrera, est_
 }
 
 module.exports.IngresarDireccionEstudiante = async function (carrera, datos) {
-  var sentencias = "INSERT INTO [" + carrera + "].[dbo].[tb_estudiante_direccion] (est_identificacion, dir_tipo_id, pai_id_central, pai_nombre, pro_id_central, pro_nombre, ciu_id_central, ciu_nombre, prq_id_central, prq_nombre, dir_calle, dir_codigo_postal, dir_referencias) VALUES ('" + datos.est_identificacion + "', " + datos.dir_tipo_id + ", '" + datos.pai_id_central + "', '" + datos.pai_nombre + "', '" + datos.pro_id_central + "', '" + datos.pro_nombre + "', '" + datos.ciu_id_central + "', '" + datos.ciu_nombre + "', '" + (datos.prq_id_central || '') + "', '" + datos.prq_nombre + "', '" + datos.dir_calle + "', '" + datos.dir_codigo_postal + "', '" + (datos.dir_referencias || '') + "')";
+  var sentencias = "INSERT INTO [" + carrera + "].[dbo].[tb_estudiante_direccion] (dir_strCedula, dir_tipo_id, pai_id_central, pai_nombre, pro_id_central, pro_nombre, ciu_id_central, ciu_nombre, prq_id_central, prq_nombre, dir_calle, dir_codigo_postal, dir_referencias) VALUES ('" + datos.dir_strCedula + "', " + datos.dir_tipo_id + ", '" + datos.pai_id_central + "', '" + datos.pai_nombre + "', '" + datos.pro_id_central + "', '" + datos.pro_nombre + "', '" + datos.ciu_id_central + "', '" + datos.ciu_nombre + "', '" + (datos.prq_id_central || '') + "', '" + datos.prq_nombre + "', '" + datos.dir_calle + "', '" + datos.dir_codigo_postal + "', '" + (datos.dir_referencias || '') + "')";
   try {
     const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
@@ -429,8 +429,8 @@ module.exports.EliminarDireccionEstudiante = async function (carrera, dir_id) {
   }
 }
 
-module.exports.EliminarDireccionEstudianteFisico = async function (carrera, est_identificacion, dir_tipo_id) {
-  var sentencias = "DELETE FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE est_identificacion = '" + est_identificacion + "' AND dir_tipo_id = " + dir_tipo_id;
+module.exports.EliminarDireccionEstudianteFisico = async function (carrera, dir_strCedula, dir_tipo_id) {
+  var sentencias = "DELETE FROM [" + carrera + "].[dbo].[tb_estudiante_direccion] WHERE dir_strCedula = '" + dir_strCedula + "' AND dir_tipo_id = " + dir_tipo_id;
   try {
     const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
@@ -440,8 +440,8 @@ module.exports.EliminarDireccionEstudianteFisico = async function (carrera, est_
   }
 }
 
-module.exports.ListadoFamiliaresEstudiante = async function (carrera, est_identificacion) {
-  var sentencias = "SELECT f.*, p.par_nombre FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] f INNER JOIN [" + carrera + "].[dbo].[tb_parentesco] p ON f.fam_parentesco_id = p.par_id WHERE f.est_identificacion = '" + est_identificacion + "' AND f.fam_estado = 1";
+module.exports.ListadoFamiliaresEstudiante = async function (carrera, fam_strCedula) {
+  var sentencias = "SELECT f.*, p.par_nombre FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] f INNER JOIN [" + carrera + "].[dbo].[tb_parentesco] p ON f.fam_parentesco_id = p.par_id WHERE f.fam_strCedula = '" + fam_strCedula + "' AND f.fam_estado = 1";
   try {
     const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
@@ -451,8 +451,8 @@ module.exports.ListadoFamiliaresEstudiante = async function (carrera, est_identi
   }
 }
 
-module.exports.ObtenerFamiliarEstudiantePorParentesco = async function (carrera, est_identificacion, fam_parentesco_id) {
-  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] WHERE est_identificacion = '" + est_identificacion + "' AND fam_parentesco_id = " + fam_parentesco_id + " AND fam_estado = 1";
+module.exports.ObtenerFamiliarEstudiantePorParentesco = async function (carrera, fam_strCedula, fam_parentesco_id) {
+  var sentencias = "SELECT * FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] WHERE fam_strCedula = '" + fam_strCedula + "' AND fam_parentesco_id = " + fam_parentesco_id + " AND fam_estado = 1";
   try {
     const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
@@ -463,7 +463,7 @@ module.exports.ObtenerFamiliarEstudiantePorParentesco = async function (carrera,
 }
 
 module.exports.IngresarFamiliarEstudiante = async function (carrera, datos) {
-  var sentencias = "INSERT INTO [" + carrera + "].[dbo].[tb_estudiante_familiar] (est_identificacion, fam_cedula_familiar, fam_parentesco_id, fam_nombre_completo, fam_telefono, fam_ocupacion, fam_email) VALUES ('" + datos.est_identificacion + "', '" + datos.fam_cedula_familiar + "', " + datos.fam_parentesco_id + ", '" + datos.fam_nombre_completo + "', '" + datos.fam_telefono + "', '" + (datos.fam_ocupacion || '') + "', '" + (datos.fam_email || '') + "')";
+  var sentencias = "INSERT INTO [" + carrera + "].[dbo].[tb_estudiante_familiar] (fam_strCedula, fam_cedula_familiar, fam_parentesco_id, fam_nombre_completo, fam_telefono, fam_ocupacion, fam_email) VALUES ('" + datos.fam_strCedula + "', '" + datos.fam_cedula_familiar + "', " + datos.fam_parentesco_id + ", '" + datos.fam_nombre_completo + "', '" + datos.fam_telefono + "', '" + (datos.fam_ocupacion || '') + "', '" + (datos.fam_email || '') + "')";
   try {
     const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
@@ -495,8 +495,8 @@ module.exports.EliminarFamiliarEstudiante = async function (carrera, fam_id) {
   }
 }
 
-module.exports.EliminarFamiliarEstudianteFisico = async function (carrera, est_identificacion, fam_parentesco_id) {
-  var sentencias = "DELETE FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] WHERE est_identificacion = '" + est_identificacion + "' AND fam_parentesco_id = " + fam_parentesco_id;
+module.exports.EliminarFamiliarEstudianteFisico = async function (carrera, fam_strCedula, fam_parentesco_id) {
+  var sentencias = "DELETE FROM [" + carrera + "].[dbo].[tb_estudiante_familiar] WHERE fam_strCedula = '" + fam_strCedula + "' AND fam_parentesco_id = " + fam_parentesco_id;
   try {
     const sqlConsulta = await execDinamico(carrera, sentencias, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
