@@ -372,4 +372,79 @@ router.post('/EliminarFamiliarEstudiante', async (req, res) => {
     }
 });
 
+router.post('/GuardarOActualizarRegistroDireccionPeriodo', async (req, res) => {
+
+    const { dbcarrera, datos } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoGuardarOActualizarRegistroDireccionPeriodo(dbcarrera, datos);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.get('/ObtenerRegistroDireccionPeriodo/:dbcarrera/:cedula/:periodo', async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const cedula = req.params.cedula;
+    const periodo = req.params.periodo;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoObtenerRegistroDireccionPeriodo(dbcarrera, cedula, periodo);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.get('/ListarRegistrosDireccionPeriodoPorEstudiante/:dbcarrera/:cedula', async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const cedula = req.params.cedula;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoListarRegistrosDireccionPeriodoPorEstudiante(dbcarrera, cedula);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.post('/EliminarRegistroDireccionPeriodo', async (req, res) => {
+    const { dbcarrera, reg_id } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoEliminarRegistroDireccionPeriodo(dbcarrera, reg_id);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
+router.post('/RegistrarInformacionCompletaEstudiante', async (req, res) => {
+    const { dbcarrera, datos } = req.body;
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoRegistrarInformacionCompletaEstudiante(dbcarrera, datos);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
 module.exports = router;
+

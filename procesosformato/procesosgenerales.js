@@ -540,3 +540,75 @@ module.exports.ProcesoEliminarFamiliarEstudiante = async function (carrera, fam_
     }
 }
 
+module.exports.ProcesoGuardarOActualizarRegistroDireccionPeriodo = async function (carrera, datos) {
+    try {
+        var Informacion = await sqlmodelogenerales.GuardarOActualizarRegistroDireccionPeriodo(carrera, datos);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message);
+        }
+    } catch (error) {
+        logger.error('Error ProcesoGuardarOActualizarRegistroDireccionPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message);
+    }
+};
+
+module.exports.ProcesoObtenerRegistroDireccionPeriodo = async function (carrera, cedula, periodo) {
+    try {
+        var Informacion = await sqlmodelogenerales.ObtenerRegistroDireccionPeriodo(carrera, cedula, periodo);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message);
+        }
+    } catch (error) {
+        logger.error('Error ProcesoObtenerRegistroDireccionPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message);
+    }
+};
+
+module.exports.ProcesoListarRegistrosDireccionPeriodoPorEstudiante = async function (carrera, cedula) {
+    try {
+        var Informacion = await sqlmodelogenerales.ListarRegistrosDireccionPeriodoPorEstudiante(carrera, cedula);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message);
+        }
+    } catch (error) {
+        logger.error('Error ProcesoListarRegistrosDireccionPeriodoPorEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message);
+    }
+};
+
+module.exports.ProcesoEliminarRegistroDireccionPeriodo = async function (carrera, reg_id) {
+    try {
+        var Informacion = await sqlmodelogenerales.EliminarRegistroDireccionPeriodo(carrera, reg_id);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message);
+        }
+    } catch (error) {
+        logger.error('Error ProcesoEliminarRegistroDireccionPeriodo', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message);
+    }
+};
+
+module.exports.ProcesoRegistrarInformacionCompletaEstudiante = async function (carrera, datosCompleto) {
+    try {
+        var Informacion = await sqlmodelogenerales.RegistrarInformacionCompletaEstudiante(carrera, datosCompleto);
+        if (Informacion.modelo) {
+            return sendResponseProcesos(true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseProcesos(false, Informacion.datos, Informacion.message);
+        }
+    } catch (error) {
+        logger.error('Error ProcesoRegistrarInformacionCompletaEstudiante', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message);
+    }
+};
+
+
+
