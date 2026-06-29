@@ -505,3 +505,118 @@ module.exports.EliminarFamiliarEstudianteFisico = async function (carrera, fam_s
     return sendResponseModelo(false, [], error.message);
   }
 }
+
+module.exports.GuardarOActualizarRegistroDireccionPeriodo = async function (carrera, datos) {
+  var sentencia = `
+    IF EXISTS (SELECT 1 FROM [${carrera}].[dbo].[tb_registro__direccion_periodo] WHERE reg_strCedula = '${datos.reg_strCedula}' AND reg_cod_periodo = '${datos.reg_cod_periodo}')
+    BEGIN
+      UPDATE [${carrera}].[dbo].[tb_registro__direccion_periodo]
+      SET reg_periodo_academico = '${datos.reg_periodo_academico}',
+          reg_estado = ${datos.reg_estado !== undefined ? datos.reg_estado : 1},
+          reg_fecha_registro = GETDATE()
+      WHERE reg_strCedula = '${datos.reg_strCedula}' AND reg_cod_periodo = '${datos.reg_cod_periodo}';
+    END
+    ELSE
+    BEGIN
+      INSERT INTO [${carrera}].[dbo].[tb_registro__direccion_periodo] (reg_strCedula, reg_cod_periodo, reg_periodo_academico, reg_estado, reg_fecha_registro)
+      VALUES ('${datos.reg_strCedula}', '${datos.reg_cod_periodo}', '${datos.reg_periodo_academico}', ${datos.reg_estado !== undefined ? datos.reg_estado : 1}, GETDATE());
+    END
+  `;
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error GuardarOActualizarRegistroDireccionPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+
+module.exports.ObtenerRegistroDireccionPeriodo = async function (carrera, cedula, periodo) {
+  var sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_registro__direccion_periodo] WHERE reg_strCedula = '" + cedula + "' AND reg_cod_periodo = '" + periodo + "'";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ObtenerRegistroDireccionPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+
+module.exports.ListarRegistrosDireccionPeriodoPorEstudiante = async function (carrera, cedula) {
+  var sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_registro__direccion_periodo] WHERE reg_strCedula = '" + cedula + "' ORDER BY reg_fecha_registro DESC";
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ListarRegistrosDireccionPeriodoPorEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+
+module.exports.EliminarRegistroDireccionPeriodo = async function (carrera, reg_id) {
+  var sentencia = "DELETE FROM [" + carrera + "].[dbo].[tb_registro__direccion_periodo] WHERE reg_id = " + reg_id;
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error EliminarRegistroDireccionPeriodo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+
+module.exports.RegistrarInformacionCompletaEstudiante = async function (carrera, datosCompleto) {
+  try {
+    const { cedulaEstudiante, periodo, direcciones, familiares } = datosCompleto;
+    let sqlBatch = "BEGIN TRANSACTION;\n";
+
+    if (direcciones && Array.isArray(direcciones)) {
+      for (const dir of direcciones) {
+        sqlBatch += `
+          DELETE FROM [${carrera}].[dbo].[tb_estudiante_direccion] WHERE dir_strCedula = '${dir.dir_strCedula}' AND dir_tipo_id = ${dir.dir_tipo_id};
+          INSERT INTO [${carrera}].[dbo].[tb_estudiante_direccion] 
+          (dir_strCedula, dir_tipo_id, pai_id_central, pai_nombre, pro_id_central, pro_nombre, ciu_id_central, ciu_nombre, prq_id_central, prq_nombre, dir_calle, dir_codigo_postal, dir_referencias) 
+          VALUES ('${dir.dir_strCedula}', ${dir.dir_tipo_id}, '${dir.pai_id_central}', '${dir.pai_nombre}', '${dir.pro_id_central}', '${dir.pro_nombre}', '${dir.ciu_id_central}', '${dir.ciu_nombre}', '${dir.prq_id_central || ''}', '${dir.prq_nombre}', '${dir.dir_calle}', '${dir.dir_codigo_postal}', '${dir.dir_referencias || ''}');
+        `;
+      }
+    }
+
+    if (familiares && Array.isArray(familiares) && familiares.length > 0) {
+      sqlBatch += `\nDELETE FROM [${carrera}].[dbo].[tb_estudiante_familiar] WHERE fam_strCedula = '${cedulaEstudiante}';\n`;
+      for (const fam of familiares) {
+        sqlBatch += `
+          INSERT INTO [${carrera}].[dbo].[tb_estudiante_familiar] 
+          (fam_strCedula, fam_cedula_familiar, fam_parentesco_id, fam_nombre_completo, fam_telefono, fam_ocupacion, fam_email) 
+          VALUES ('${fam.fam_strCedula}', '${fam.fam_cedula_familiar}', ${fam.fam_parentesco_id}, '${fam.fam_nombre_completo}', '${fam.fam_telefono}', '${fam.fam_ocupacion || ''}', '${fam.fam_email || ''}');
+        `;
+      }
+    }
+
+
+    if (periodo) {
+      sqlBatch += `
+        IF EXISTS (SELECT 1 FROM [${carrera}].[dbo].[tb_registro__direccion_periodo] WHERE reg_strCedula = '${cedulaEstudiante}' AND reg_cod_periodo = '${periodo.reg_cod_periodo}')
+        BEGIN
+          UPDATE [${carrera}].[dbo].[tb_registro__direccion_periodo]
+          SET reg_periodo_academico = '${periodo.reg_periodo_academico}',
+              reg_estado = ${periodo.reg_estado !== undefined ? periodo.reg_estado : 1},
+              reg_fecha_registro = GETDATE()
+          WHERE reg_strCedula = '${cedulaEstudiante}' AND reg_cod_periodo = '${periodo.reg_cod_periodo}';
+        END
+        ELSE
+        BEGIN
+          INSERT INTO [${carrera}].[dbo].[tb_registro__direccion_periodo] (reg_strCedula, reg_cod_periodo, reg_periodo_academico, reg_estado, reg_fecha_registro)
+          VALUES ('${cedulaEstudiante}', '${periodo.reg_cod_periodo}', '${periodo.reg_periodo_academico}', ${periodo.reg_estado !== undefined ? periodo.reg_estado : 1}, GETDATE());
+        END
+      `;
+    }
+
+    sqlBatch += "\nCOMMIT TRANSACTION;";
+
+    const sqlConsulta = await execDinamico(carrera, sqlBatch, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error RegistrarInformacionCompletaEstudiante', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+
