@@ -247,6 +247,11 @@ module.exports.ordenarPorApellidos=function (arr) {
       return 0;
   });
 }
+module.exports.htmlToBase64=function (html) {
+ // Convertir el HTML a Buffer y luego a Base64
+    const buffer = Buffer.from(html, 'utf-8');
+    return buffer.toString('base64');
+}
   module.exports.palabraIncluidaEnFrase=function(frase, palabra) {
     // Convertimos ambas la frase y la palabra a minúsculas para hacer la comparación sin distinguir mayúsculas de minúsculas
     const fraseMinusculas = frase.toUpperCase();

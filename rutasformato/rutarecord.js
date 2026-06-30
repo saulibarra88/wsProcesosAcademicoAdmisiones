@@ -61,4 +61,17 @@ router.get('/EliminarSolicitudRecord/:carrera/:periodo/:cedula/:idsolicitud',asy
     }
  
 });
+router.post('/EnvioCorreoSolicitudRecord', async (req, res) => {
+    const { objDatos } = req.body;
+    try {
+        var Informacion=await  procesosfuncionesrecord.ProcesoEnvioCorreoSolicitudrecord(objDatos);
+        
+            return sendResponseServicios(res, true, Informacion,'OK');
+       
+    }catch (error) {
+        logger.error('Error EnvioCorreoSolicitudRecord', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],error.message);
+    }
+ 
+});
 module.exports = router;
