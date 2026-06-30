@@ -41,3 +41,5 @@
 [error] [2026-06-24 09:24:08]  : Error LisatdoDictadoAsignaturaCarrera sendResponseProcesos is not defined
 [error] [2026-06-24 09:25:23]  : Error ProcesoModleMigracionDatosDictadoCarrera sendResponseProcesos is not defined
 [error] [2026-06-24 09:25:23]  : Error LisatdoDictadoAsignaturaCarrera sendResponseProcesos is not defined
+[error] [2026-06-30 16:27:23]  : Error EnvioCorreoSolicitudRecord Cannot read properties of undefined (reading 'proceso')
+[error] [2026-06-30 16:28:12]  : Error EnvioCorreoSolicitudRecord Cannot read properties of undefined (reading 'proceso')
