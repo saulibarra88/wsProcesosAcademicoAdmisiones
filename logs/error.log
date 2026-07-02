@@ -38,3 +38,8 @@
 [error] [2026-06-24 09:25:23]  : Error LisatdoDictadoAsignaturaCarrera sendResponseProcesos is not defined
 [error] [2026-06-30 16:27:23]  : Error EnvioCorreoSolicitudRecord Cannot read properties of undefined (reading 'proceso')
 [error] [2026-06-30 16:28:12]  : Error EnvioCorreoSolicitudRecord Cannot read properties of undefined (reading 'proceso')
+[error] [2026-07-01 17:33:54]  : Error ProcesoCertificadoMejorEstudianteAsignatura Cannot read properties of undefined (reading '0')
+[error] [2026-07-01 17:34:57]  : Error ProcesoCertificadoEstudianteRegularCarrera Cannot read properties of undefined (reading '0')
+[error] [2026-07-01 17:35:24]  : Error ProcesoCertificadoEstudianteRegularCarrera Cannot read properties of undefined (reading '0')
+[error] [2026-07-01 17:35:43]  : Error ProcesoCertificadoEstudianteRegularCarrera Cannot read properties of undefined (reading '0')
+[error] [2026-07-01 17:36:58]  : Error ProcesoCertificadoEstudianteRegularCarrera Cannot read properties of undefined (reading '0')

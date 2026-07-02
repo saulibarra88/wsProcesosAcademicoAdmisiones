@@ -157,6 +157,12 @@ module.exports.pdfmakegenerarcertificadoasignatura = async function(datos) {
   } catch (error) { console.error(error); }
 }
 
+module.exports.pdfmakegenerarcertificadoaestudianteRegular = async function(datos) {
+  try {
+    var resultado = await generarCertificadoEstudianteRegular(datos);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
 module.exports.pdfmakegenerarcertificadoCalificacionesperiodo = async function(datos) {
   try {
     var resultado = await generarCertificadoCalificacionesPeriodo(datos);
@@ -2777,7 +2783,230 @@ async function ProcesoPdfListadoEstudiantesCuposEstados(listado, cedula, periodo
     return 'ERROR';
   }
 }
+async function generarCertificadoEstudianteRegular(datos) {
+  try {
+    const defaultFonts = {
+      Roboto: {
+        normal: 'Helvetica',
+        bold: 'Helvetica-Bold',
+        italics: 'Helvetica-Oblique',
+        bolditalics: 'Helvetica-BoldOblique',
+      },
+    };
 
+    const layoutOptions = {
+      title: '',
+      subtitle: '',
+      pageMargins: [60, 80, 60, 80],
+      pageOrientation: 'landscape',
+      background: function (currentPage, pageSize) {
+        return {
+          canvas: [
+            {
+              type: 'rect',
+              x: 20,
+              y: 20,
+              w: pageSize.width - 40,
+              h: pageSize.height - 40,
+              lineWidth: 4,
+              lineColor: '#c0392b'
+            },
+            {
+              type: 'rect',
+              x: 25,
+              y: 25,
+              w: pageSize.width - 50,
+              h: pageSize.height - 50,
+              lineWidth: 1,
+              lineColor: '#c0392b'
+            },
+            {
+              type: 'rect',
+              x: 35,
+              y: 15,
+              w: 100,
+              h: 15,
+              color: 'white'
+            }
+          ]
+        };
+      }
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+
+    const docDefinition = {
+      ...baseLayout,
+      content: [
+        {
+          text: 'Certificado Académico',
+          style: 'titulo'
+        },
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 210, y1: 0,
+              x2: 510, y2: 0,
+              lineWidth: 2,
+              lineColor: '#c0392b'
+            }
+          ],
+          alignment: 'center',
+          margin: [0, 0, 0, 20]
+        },
+        {
+          text: 'Por su desempeño académico en el presente período.',
+          style: 'subtitulo'
+        },
+        {
+          text: [
+            'La ',
+            { text: datos.institucion || '[NOMBRE DE LA INSTITUCIÓN]', bold: true, color: '#000000' },
+            ' hace constar que el/la estudiante ',
+            { text: datos.estudianteNombres || '[NOMBRES Y APELLIDOS]', bold: true, color: '#000000' },
+            ', con identificación ',
+            { text: datos.estudianteCedula || '[N° CÉDULA/PASAPORTE]', bold: true, color: '#000000' },
+            ', de la carrera  ',
+            { text: datos.programaNombre || '[NOMBRE DEL PROGRAMA]', bold: true, color: '#000000' },
+            ', durante el período académico ',
+            { text: datos.periodoAcademico || '[PERÍODO ACADÉMICO]', bold: true, color: '#000000' },
+            ', es :',
+          ],
+          style: 'cuerpo'
+        },
+        {
+          table: {
+            widths: ['*'],
+            body: [
+              [
+                {
+                  text: [
+                    'ESTUDIANTE POLITÉCNICO : ',
+                        { 
+                      text: datos.tipocalificacion,
+                      color: '#000000' 
+                    }
+                  ],
+                  style: 'destacado',
+                  margin: [0, 8, 0, 8]
+                }
+              ]
+            ]
+          },
+          layout: {
+            defaultBorder: false,
+            hLineWidth: function (i, node) { return 1; },
+            vLineWidth: function (i, node) { return 1; },
+            hLineColor: function (i, node) { return '#000000'; },
+            vLineColor: function (i, node) { return '#000000'; },
+            hLineStyle: function (i, node) { return {dash: {length: 4, space: 4}}; },
+            vLineStyle: function (i, node) { return {dash: {length: 4, space: 4}}; },
+            fillColor: function (i, node) { return '#fdf0e0'; }
+          },
+          margin: [40, 15, 40, 15]
+        },
+        {
+          text: [
+            'Por su desempeño académico es,',
+             { text: datos.tipocalificacionDescripcion },
+            ' en el período académico señalado.'
+          ],
+          style: 'cuerpo',
+          margin: [0, 10, 0, 25]
+        },
+        {
+          columns: [
+            { width: '*', text: '' },
+            {
+              width: 250,
+              stack: [
+                {
+                  canvas: [
+                    {
+                      type: 'line',
+                      x1: 0, y1: 0,
+                      x2: 250, y2: 0,
+                      lineWidth: 1,
+                      lineColor: '#2c3e50'
+                    }
+                  ],
+                  margin: [0, 0, 0, 5]
+                },
+                { text: 'Firma del Coordinador/a Carrera', alignment: 'center', fontSize: 13 }
+              ]
+            },
+            { width: '*', text: '' }
+          ],
+          margin: [0, 25, 0, 15]
+        },
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 0, y1: 0,
+              x2: 720, y2: 0,
+              lineWidth: 1,
+              lineColor: '#cccccc'
+            }
+          ],
+          alignment: 'center',
+          margin: [0, 10, 0, 10]
+        },
+        {
+          text: '* Documento válido para fines académicos y de presentación personal.',
+          style: 'nota'
+        }
+      ],
+      styles: {
+        ...baseLayout.styles,
+        titulo: {
+          fontSize: 28,
+          bold: true,
+          alignment: 'center',
+          color: '#1a1a2e',
+          characterSpacing: 3,
+          margin: [0, 0, 0, 10]
+        },
+        subtitulo: {
+          fontSize: 16,
+          alignment: 'center',
+          color: '#2c3e50',
+          margin: [0, 0, 0, 20]
+        },
+        cuerpo: {
+          fontSize: 17,
+          lineHeight: 1.5,
+          alignment: 'justify',
+          margin: [0, 10, 0, 10]
+        },
+        destacado: {
+          fontSize: 20,
+          bold: true,
+          alignment: 'center',
+          color: '#1a1a2e',
+        },
+        pie: {
+          fontSize: 13,
+          alignment: 'center',
+          color: '#555555',
+          margin: [0, 0, 0, 5]
+        },
+        nota: {
+          fontSize: 11,
+          alignment: 'center',
+          color: '#888888',
+          italics: true
+        }
+      }
+    };
+
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
 async function generarCertificadoAsignatura(datos) {
   try {
     const defaultFonts = {

@@ -619,4 +619,43 @@ module.exports.RegistrarInformacionCompletaEstudiante = async function (carrera,
     return sendResponseModelo(false, [], error.message);
   }
 };
-
+
+
+module.exports.CalculoEstudiantesRegulares60PorCiento = async function (carrera, periodo, intmatricula) {
+var sentencia="";
+    sentencia=" SELECT CreditosMalla.strCodPeriodo, CreditosMalla.strCodNivel, CreditosMalla.strCodPensum, CreditosMalla.TotalCreditoMalla, CreditosMalla.Credito60PorCiento, CreditosMatriculados.TotalCreditoMatriculada, CASE WHEN CreditosMatriculados.TotalCreditoMatriculada >= CreditosMalla.Credito60PorCiento THEN 'REGULAR' ELSE 'NO REGULAR' END AS Estudiante FROM ( SELECT m.strCodPeriodo, m.strCodNivel, p.strCodPensum, SUM(mp.fltCreditos) AS TotalCreditoMalla, SUM(mp.fltCreditos) * 0.6 AS Credito60PorCiento FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN [" + carrera + "].[dbo].[Periodos] AS p ON p.strCodigo = m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias_Pensum] AS mp ON mp.strCodPensum = p.strCodPensum AND mp.strCodNivel = m.strCodNivel WHERE m.strCodPeriodo = '" + periodo + "' AND m.sintCodigo = '" + intmatricula + "' GROUP BY m.strCodPeriodo, m.strCodNivel, p.strCodPensum ) AS CreditosMalla CROSS JOIN ( SELECT SUM(mp.fltCreditos) AS TotalCreditoMatriculada FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS ma ON ma.sintCodMatricula = m.sintCodigo AND ma.strCodPeriodo = m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Periodos] AS p ON p.strCodigo = m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias_Pensum] AS mp ON mp.strCodPensum = p.strCodPensum AND mp.strCodMateria = ma.strCodMateria WHERE m.strCodPeriodo = '" + periodo + "' AND m.sintCodigo = '" + intmatricula + "' AND (ma.strObservaciones NOT LIKE '%VALIDADA%' AND ma.strObservaciones NOT LIKE '%RETIRADO%') ) AS CreditosMatriculados;"
+
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error CalculoEstudiantesRegulares60PorCiento', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+module.exports.ObtenerEstudianteMatriculaperiodo = async function (carrera, periodo, cedula) {
+var sentencia="";
+    sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matriculas] AS M INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=M.strCodEstud INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodigo=M.strCodPeriodo WHERE M.strCodPeriodo='" + periodo + "' AND M.strCodEstado='DEF' AND E.strCedula='" + cedula + "';"
+console.log(sentencia)
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error CalculoEstudiantesRegulares60PorCiento', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+
+module.exports.ObtenerMateriasRetiradasEstuidanteCarrera = async function (carrera, periodo, cedula) {
+var sentencia="";
+    sentencia="select * from [" + carrera + "].[dbo].[Retiros] as r inner join  [" + carrera + "].[dbo].[Materias] as m on m.strCodigo=r.strCodMateria inner join [" + carrera + "].[dbo].[Matriculas] as mat on mat.sintCodigo=r.sintCodMatricula inner join [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=mat.strCodEstud inner join [" + carrera + "].[dbo].[Periodos] as p on p.strCodigo=mat.strCodPeriodo where r.strCodPeriodo='" + periodo + "' and mat.strCodPeriodo='" + periodo + "' and e.strCedula='" + cedula + "' and mat.strCodEstado='DEF'"
+console.log(sentencia)
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error CalculoEstudiantesRegulares60PorCiento', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+

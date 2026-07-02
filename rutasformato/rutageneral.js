@@ -170,6 +170,36 @@ router.get('/CertificadoMejorEstudianteAsignaturaCarrera/:dbcarrera/:periodo/:as
     }
 
 });
+
+router.get('/CertificadoEstudianteRegularCarrera/:dbcarrera/:periodo/:cedulaestudiante',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const periodo = req.params.periodo;
+    const cedulaestudiante = req.params.cedulaestudiante;
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoCertificadoEstudianteRegularCarrera(dbcarrera,periodo,cedulaestudiante);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoCarrerasHomologacionPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
+
+router.get('/CertificadoEstudianteRetiroAsignaturaCarrera/:dbcarrera/:periodo/:cedulaestudiante',async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const periodo = req.params.periodo;
+    const cedulaestudiante = req.params.cedulaestudiante;
+
+    try {
+        var Informacion=await  procesosfuncionesgenerales.ProcesoCertificadoEstudianteRetiroasignaturaCarrera(dbcarrera,periodo,cedulaestudiante);
+           return sendResponseServicios(res, true, Informacion.datos,'OK');
+    }catch (error) {
+       logger.error('Error ListadoCarrerasHomologacionPeriodo', { message: error.message, stack: error.stack});
+        return sendResponseServicios(res, false, [],err.message);
+    }
+
+});
 router.get('/CertificadoCalificacionesEstudiantePeriodo/:dbcarrera/:periodo/:cedula',async (req, res) => {
     const dbcarrera = req.params.dbcarrera;
     const periodo = req.params.periodo;
@@ -447,4 +477,4 @@ router.post('/RegistrarInformacionCompletaEstudiante', async (req, res) => {
 });
 
 module.exports = router;
-
+
