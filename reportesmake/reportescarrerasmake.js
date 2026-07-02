@@ -3533,9 +3533,10 @@ async function generarMallaCarrera(datos) {
       });
 
       niveles = Object.values(nivelesMap).sort((a, b) => parseInt(a.nivel) - parseInt(b.nivel));
+      let contadorGlobal = 1;
       niveles.forEach(n => {
-        n.asignaturas.forEach((asig, index) => {
-          asig.num = index + 1;
+        n.asignaturas.forEach(asig => {
+          asig.num = contadorGlobal++;
         });
       });
     }
@@ -3627,7 +3628,7 @@ async function generarMallaCarrera(datos) {
         
         if (nivel.totales) {
           tableBody.push([
-            { text: 'TOTAL', colSpan: 3, style: 'tableHeaderMallaLeft' },
+            { text: `TOTAL (${nivel.asignaturas ? nivel.asignaturas.length : 0} ASIGNATURAS)`, colSpan: 3, style: 'tableHeaderMallaLeft' },
             {},
             {},
             { text: nivel.totales.contactoDocente || '', style: 'tableHeaderMallaCenter' },
@@ -3827,9 +3828,10 @@ async function generarMallaCarreraPesum(datos) {
       });
 
       niveles = Object.values(nivelesMap).sort((a, b) => parseInt(a.nivel) - parseInt(b.nivel));
+      let contadorGlobal = 1;
       niveles.forEach(n => {
-        n.asignaturas.forEach((asig, index) => {
-          asig.num = index + 1;
+        n.asignaturas.forEach(asig => {
+          asig.num = contadorGlobal++;
         });
       });
     }
@@ -3921,7 +3923,7 @@ async function generarMallaCarreraPesum(datos) {
         
         if (nivel.totales) {
           tableBody.push([
-            { text: 'TOTAL', colSpan: 3, style: 'tableHeaderMallaLeft' },
+            { text: `TOTAL (${nivel.asignaturas ? nivel.asignaturas.length : 0} ASIGNATURAS)`, colSpan: 3, style: 'tableHeaderMallaLeft' },
             {},
             {},
             { text: nivel.totales.contactoDocente || '', style: 'tableHeaderMallaCenter' },
