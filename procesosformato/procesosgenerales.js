@@ -311,6 +311,7 @@ module.exports.ProcesoCertificadoEstudianteRetiroasignaturaCarrera = async funct
          var DatosRetiros = await sqlmodelogenerales.ObtenerMateriasRetiradasEstuidanteCarrera(dbcarrera, periodo, cedulaestudiante)
            if(DatosRetiros.datos.count>0){
    const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+   var listado=[];
      for (let datos of DatosRetiros.datos.data) {
             var elementos={
                 nombre:datos.strNombre,
@@ -318,6 +319,7 @@ module.exports.ProcesoCertificadoEstudianteRetiroasignaturaCarrera = async funct
                 numeromatricula:datos.bytNumMat,
                 nivel:datos.strCodNivel,
                 paralelo:datos.strCodParalelo,
+                resolucion:datos.strResolucion,
             }
             listado.push(elementos)
         }
@@ -329,14 +331,14 @@ module.exports.ProcesoCertificadoEstudianteRetiroasignaturaCarrera = async funct
             periodoAcademico: DatosRetiros.datos.data[0].strDescripcion,
          asignaturas: listado,
         }
-        var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoCalificacionesperiodo(datos);
+        var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoRetiroAsignaturaCarrera(datos);
        return sendResponseProcesos(true, base64, 'OK')
         }else{
                 return sendResponseProcesos(false, base64, '')
         }
      
     } catch (error) {
-        logger.error('Error ProcesoCertificadoEstudianteRegularCarrera', { message: error.message, stack: error.stack });
+        logger.error('Error ProcesoCertificadoEstudianteRetiroasignaturaCarrera', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
     }
 }

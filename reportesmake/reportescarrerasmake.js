@@ -169,7 +169,12 @@ module.exports.pdfmakegenerarcertificadoCalificacionesperiodo = async function(d
     return resultado;
   } catch (error) { console.error(error); }
 }
-
+module.exports.pdfmakegenerarcertificadoRetiroAsignaturaCarrera = async function(datos) {
+  try {
+    var resultado = await generarCertificadoRetiroAsignaturaCarrera(datos);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
 module.exports.pdfmakegenerarMallaCarrera = async function(datos) {
   try {
     var resultado = await generarMallaCarrera(datos);
@@ -3479,6 +3484,242 @@ async function generarCertificadoCalificacionesPeriodo(datos) {
     return 'ERROR';
   }
 }
+async function generarCertificadoRetiroAsignaturaCarrera(datos) {
+  try {
+    const defaultFonts = {
+      Roboto: {
+        normal: 'Helvetica',
+        bold: 'Helvetica-Bold',
+        italics: 'Helvetica-Oblique',
+        bolditalics: 'Helvetica-BoldOblique',
+      },
+    };
+
+    const layoutOptions = {
+      title: '',
+      subtitle: '',
+      pageMargins: [60, 80, 60, 80],
+      pageOrientation: 'portrait',
+      background: function (currentPage, pageSize) {
+        return {
+          canvas: [
+            {
+              type: 'rect',
+              x: 20,
+              y: 20,
+              w: pageSize.width - 40,
+              h: pageSize.height - 40,
+              lineWidth: 4,
+              lineColor: '#c0392b'
+            },
+            {
+              type: 'rect',
+              x: 25,
+              y: 25,
+              w: pageSize.width - 50,
+              h: pageSize.height - 50,
+              lineWidth: 1,
+              lineColor: '#c0392b'
+            },
+            {
+              type: 'rect',
+              x: 35,
+              y: 15,
+              w: 100,
+              h: 15,
+              color: 'white'
+            }
+          ]
+        };
+      }
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+
+    const docDefinition = {
+      ...baseLayout,
+      content: [
+        {
+          text: 'Certificado de Retiro',
+          style: 'titulo',
+          margin: [0, 60, 0, 10]
+        },
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 210, y1: 0,
+              x2: 510, y2: 0,
+              lineWidth: 2,
+              lineColor: '#c0392b'
+            }
+          ],
+          alignment: 'center',
+          margin: [0, 0, 0, 20]
+        },
+        {
+          text: 'Correspondiente a las asignaturas matrículadas.',
+          style: 'subtitulo'
+        },
+        {
+          text: [
+            'La ',
+            { text: datos.institucion || 'ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO', bold: true, color: '#000000' },
+            ' hace constar que el/ la estudiante ',
+            { text: datos.estudianteNombres || '[NOMBRES Y APELLIDOS]', bold: true, color: '#000000' },
+            ', con identificación ',
+            { text: datos.estudianteCedula || '[N° CÉDULA/PASAPORTE]', bold: true, color: '#000000' },
+            ', de la carrera ',
+            { text: datos.programaNombre || '[NOMBRE DEL PROGRAMA]', bold: true, color: '#000000' },
+            ', durante el período académico ',
+            { text: datos.periodoAcademico || '[PERÍODO ACADÉMICO]', bold: true, color: '#000000' },
+            ', se retiró en las siguientes asignaturas : ',
+          ],
+          style: 'cuerpo',
+          margin: [0, 20, 0, 15]
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['auto', 'auto', '*','auto','auto'],
+            body: [
+              [
+                { text: 'N°', style: 'tableHeaderList' },
+                { text: 'CÓDIGO', style: 'tableHeaderList' },
+                { text: 'ASIGNATURA', style: 'tableHeaderList' },
+                { text: 'PAO', style: 'tableHeaderList' },
+                { text: 'RESOLUCIÓN', style: 'tableHeaderList' },
+            
+              ],
+              ...(datos.asignaturas || []).map((asig, index) => [
+                { text: (index + 1).toString(), style: 'tableCellCenterList' },
+                { text: asig.codigo || '', style: 'tableCellCenterList' },
+                { text: asig.nombre || '', style: 'tableCellLeftList' },
+                { text: asig.nivel || '', style: 'tableCellCenterList' },
+                { text: asig.resolucion || '', style: 'tableCellCenterList' },
+              
+              ])
+            ]
+          },
+          layout: {
+            hLineWidth: function (i, node) { return 1; },
+            vLineWidth: function (i, node) { return 1; },
+            hLineColor: function (i, node) { return '#e0e0e0'; },
+            vLineColor: function (i, node) { return '#e0e0e0'; }
+          },
+          margin: [40, 5, 40, 20]
+        },
+        {
+          text: 'Se expide el presente certificado a petición de la parte interesada para los fines que estime convenientes.',
+          style: 'cuerpo',
+          margin: [0, 20, 0, 25]
+        },
+        {
+          columns: [
+            { width: '*', text: '' },
+            {
+              width: 250,
+              stack: [
+                {
+                  canvas: [
+                    {
+                      type: 'line',
+                      x1: 0, y1: 0,
+                      x2: 250, y2: 0,
+                      lineWidth: 1,
+                      lineColor: '#2c3e50'
+                    }
+                  ],
+                  margin: [0, 0, 0, 5]
+                },
+                  { text: 'Firma del Coordinador/a de Carrera', alignment: 'center', fontSize: 13, bold: true },
+                { text: 'Escuela Superior Politécnica de Chimborazo', alignment: 'center', fontSize: 11 },
+           
+              ]
+            },
+            { width: '*', text: '' }
+          ],
+          margin: [0, 60, 0, 15]
+        },
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 0, y1: 0,
+              x2: 520, y2: 0,
+              lineWidth: 1,
+              lineColor: '#cccccc'
+            }
+          ],
+          alignment: 'center',
+          margin: [0, 30, 0, 10]
+        },
+        {
+          text: '* Documento válido para fines académicos y de presentación personal.',
+          style: 'nota', 
+        }
+      ],
+      styles: {
+        ...baseLayout.styles,
+        titulo: {
+          fontSize: 20,
+          bold: true,
+          alignment: 'center',
+          color: '#1a1a2e',
+          characterSpacing: 3,
+          margin: [0, 0, 0, 10]
+        },
+        subtitulo: {
+          fontSize: 14,
+          alignment: 'center',
+          color: '#2c3e50',
+          margin: [0, 0, 0, 20]
+        },
+        cuerpo: {
+          fontSize: 12,
+          lineHeight: 1.5,
+          alignment: 'justify',
+          margin: [0, 10, 0, 10]
+        },
+        tableHeaderList: {
+          bold: true,
+          fontSize: 11,
+          alignment: 'center',
+          color: '#ffffff',
+          fillColor: '#a09f9f',
+          margin: [0, 5, 0, 5]
+        },
+        tableCellCenterList: {
+          fontSize: 9,
+          alignment: 'center',
+          margin: [0, 3, 0, 3]
+        },
+        tableCellLeftList: {
+          fontSize: 9,
+          alignment: 'left',
+          margin: [0, 3, 0, 3]
+        },
+        pie: {
+          fontSize: 12,
+          alignment: 'center',
+          color: '#555555',
+          margin: [0, 0, 0, 5]
+        },
+        nota: {
+          fontSize: 10,
+          alignment: 'center',
+          color: '#888888',
+          italics: true
+        }
+      }
+    };
+
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
 
 async function generarMallaCarrera(datos) {
   try {
@@ -3515,11 +3756,11 @@ async function generarMallaCarrera(datos) {
         nivelesMap[nivelStr].asignaturas.push({
           codigo: item.strCodMateriaPensum || '',
           asignatura: item.strNombreMateria || '',
-          contactoDocente: hTeo || '',
-          practicoExp: hPrac || '',
-          autonomo: hAut || '',
-          totalHoras: tHoras || '',
-          requisitos: item.strPrerrequisitosCodigos || '',
+          contactoDocente: hTeo,
+          practicoExp: hPrac,
+          autonomo: hAut,
+          totalHoras: tHoras,
+          requisitos: nivelStr === '1' ? (item.strPrerrequisitosCodigos || 'NIVELACION') : (item.strPrerrequisitosCodigos || ''),
           creditos: cred,
           horasClase: hSem || ''
         });
@@ -3615,10 +3856,10 @@ async function generarMallaCarrera(datos) {
               { text: asig.num || '', style: 'tableCellCenterMalla' },
               { text: asig.codigo || '', style: 'tableCellCenterMalla' },
               { text: asig.asignatura || '', style: 'tableCellLeftMalla' },
-              { text: asig.contactoDocente || '', style: 'tableCellCenterMalla' },
-              { text: asig.practicoExp || '', style: 'tableCellCenterMalla' },
-              { text: asig.autonomo || '', style: 'tableCellCenterMalla' },
-              { text: asig.totalHoras || '', style: 'tableCellCenterMalla' },
+              { text: (asig.contactoDocente != null && asig.contactoDocente !== '') ? asig.contactoDocente : 0, style: 'tableCellCenterMalla' },
+              { text: (asig.practicoExp != null && asig.practicoExp !== '') ? asig.practicoExp : 0, style: 'tableCellCenterMalla' },
+              { text: (asig.autonomo != null && asig.autonomo !== '') ? asig.autonomo : 0, style: 'tableCellCenterMalla' },
+              { text: (asig.totalHoras != null && asig.totalHoras !== '') ? asig.totalHoras : 0, style: 'tableCellCenterMalla' },
               { text: asig.requisitos || '', style: 'tableCellCenterMalla' },
               { text: asig.creditos != null ? parseFloat(asig.creditos).toFixed(2) : '', style: 'tableCellCenterMalla' },
               { text: asig.horasClase || '', style: 'tableCellCenterMalla' }
@@ -3810,11 +4051,11 @@ async function generarMallaCarreraPesum(datos) {
         nivelesMap[nivelStr].asignaturas.push({
           codigo: item.strCodMateriaPensum || '',
           asignatura: item.strNombreMateria || '',
-          contactoDocente: hTeo || '',
-          practicoExp: hPrac || '',
-          autonomo: hAut || '',
-          totalHoras: tHoras || '',
-          requisitos: item.strPrerrequisitosCodigos || '',
+          contactoDocente: hTeo,
+          practicoExp: hPrac,
+          autonomo: hAut,
+          totalHoras: tHoras,
+          requisitos: nivelStr === '1' ? (item.strPrerrequisitosCodigos || 'NIVELACION') : (item.strPrerrequisitosCodigos || ''),
           creditos: cred,
           horasClase: hSem || ''
         });
@@ -3910,10 +4151,10 @@ async function generarMallaCarreraPesum(datos) {
               { text: asig.num || '', style: 'tableCellCenterMalla' },
               { text: asig.codigo || '', style: 'tableCellCenterMalla' },
               { text: asig.asignatura || '', style: 'tableCellLeftMalla' },
-              { text: asig.contactoDocente || '', style: 'tableCellCenterMalla' },
-              { text: asig.practicoExp || '', style: 'tableCellCenterMalla' },
-              { text: asig.autonomo || '', style: 'tableCellCenterMalla' },
-              { text: asig.totalHoras || '', style: 'tableCellCenterMalla' },
+              { text: (asig.contactoDocente != null && asig.contactoDocente !== '') ? asig.contactoDocente : 0, style: 'tableCellCenterMalla' },
+              { text: (asig.practicoExp != null && asig.practicoExp !== '') ? asig.practicoExp : 0, style: 'tableCellCenterMalla' },
+              { text: (asig.autonomo != null && asig.autonomo !== '') ? asig.autonomo : 0, style: 'tableCellCenterMalla' },
+              { text: (asig.totalHoras != null && asig.totalHoras !== '') ? asig.totalHoras : 0, style: 'tableCellCenterMalla' },
               { text: asig.requisitos || '', style: 'tableCellCenterMalla' },
               { text: asig.creditos != null ? parseFloat(asig.creditos).toFixed(2) : '', style: 'tableCellCenterMalla' },
               { text: asig.horasClase || '', style: 'tableCellCenterMalla' }
