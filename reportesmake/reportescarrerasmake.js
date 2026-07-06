@@ -3756,6 +3756,7 @@ async function generarMallaCarrera(datos) {
         nivelesMap[nivelStr].asignaturas.push({
           codigo: item.strCodMateriaPensum || '',
           asignatura: item.strNombreMateria || '',
+          area: item.strNombreArea || '',
           contactoDocente: hTeo,
           practicoExp: hPrac,
           autonomo: hAut,
@@ -3805,6 +3806,7 @@ async function generarMallaCarrera(datos) {
         { text: 'NUM.', rowSpan: 3, style: 'tableHeaderMalla' },
         { text: 'CÓDIGO', rowSpan: 3, style: 'tableHeaderMalla' },
         { text: 'ASIGNATURA', rowSpan: 3, style: 'tableHeaderMalla' },
+        { text: 'ÁREA', rowSpan: 3, style: 'tableHeaderMalla' },
         { text: 'COMPONENTES DE APRENDIZAJE (HORAS/PAO)', colSpan: 3, style: 'tableHeaderMalla' },
         {},
         {},
@@ -3814,6 +3816,7 @@ async function generarMallaCarrera(datos) {
         { text: 'HORAS CLASE / SEMANA', rowSpan: 3, style: 'tableHeaderMalla' }
       ],
       [
+        {},
         {},
         {},
         {},
@@ -3829,6 +3832,7 @@ async function generarMallaCarrera(datos) {
         {},
         {},
         {},
+        {},
         { text: 'APRENDIZAJE EN CONTACTO CON EL DOCENTE', style: 'tableHeaderMalla' },
         { text: 'APRENDIZAJE PRÁCTICO EXPERIMENTAL', style: 'tableHeaderMalla' },
         {},
@@ -3838,16 +3842,16 @@ async function generarMallaCarrera(datos) {
         {}
       ],
       [
-        { text: datos.programaNombre || 'NOMBRE DE LA CARRERA', colSpan: 10, style: 'tableHeaderMallaLight' },
-        {},{},{},{},{},{},{},{},{}
+        { text: datos.programaNombre || 'NOMBRE DE LA CARRERA', colSpan: 11, style: 'tableHeaderMallaLight' },
+        {},{},{},{},{},{},{},{},{},{}
       ]
     ];
 
     if (niveles && niveles.length > 0) {
       niveles.forEach(nivel => {
         tableBody.push([
-          { text: nivel.nivelNombre || `PAO ${nivel.nivel}`, colSpan: 10, style: 'tableHeaderMallaLight' },
-          {},{},{},{},{},{},{},{},{}
+          { text: nivel.nivelNombre || `PAO ${nivel.nivel}`, colSpan: 11, style: 'tableHeaderMallaLight' },
+          {},{},{},{},{},{},{},{},{},{}
         ]);
         
         if (nivel.asignaturas) {
@@ -3856,6 +3860,7 @@ async function generarMallaCarrera(datos) {
               { text: asig.num || '', style: 'tableCellCenterMalla' },
               { text: asig.codigo || '', style: 'tableCellCenterMalla' },
               { text: asig.asignatura || '', style: 'tableCellLeftMalla' },
+              { text: asig.area || '', style: 'tableCellLeftMalla' },
               { text: (asig.contactoDocente != null && asig.contactoDocente !== '') ? asig.contactoDocente : 0, style: 'tableCellCenterMalla' },
               { text: (asig.practicoExp != null && asig.practicoExp !== '') ? asig.practicoExp : 0, style: 'tableCellCenterMalla' },
               { text: (asig.autonomo != null && asig.autonomo !== '') ? asig.autonomo : 0, style: 'tableCellCenterMalla' },
@@ -3869,7 +3874,8 @@ async function generarMallaCarrera(datos) {
         
         if (nivel.totales) {
           tableBody.push([
-            { text: `TOTAL (${nivel.asignaturas ? nivel.asignaturas.length : 0} ASIGNATURAS)`, colSpan: 3, style: 'tableHeaderMallaLeft' },
+            { text: `TOTAL (${nivel.asignaturas ? nivel.asignaturas.length : 0} ASIGNATURAS)`, colSpan: 4, style: 'tableHeaderMallaLeft' },
+            {},
             {},
             {},
             { text: nivel.totales.contactoDocente || '', style: 'tableHeaderMallaCenter' },
@@ -3910,7 +3916,7 @@ async function generarMallaCarrera(datos) {
         {
           table: {
             headerRows: 4,
-            widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', '*', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: tableBody
           },
           layout: {
@@ -4051,6 +4057,7 @@ async function generarMallaCarreraPesum(datos) {
         nivelesMap[nivelStr].asignaturas.push({
           codigo: item.strCodMateriaPensum || '',
           asignatura: item.strNombreMateria || '',
+          area: item.strNombreArea || '',
           contactoDocente: hTeo,
           practicoExp: hPrac,
           autonomo: hAut,
@@ -4100,6 +4107,7 @@ async function generarMallaCarreraPesum(datos) {
         { text: 'NUM.', rowSpan: 3, style: 'tableHeaderMalla' },
         { text: 'CÓDIGO', rowSpan: 3, style: 'tableHeaderMalla' },
         { text: 'ASIGNATURA', rowSpan: 3, style: 'tableHeaderMalla' },
+        { text: 'ÁREA', rowSpan: 3, style: 'tableHeaderMalla' },
         { text: 'COMPONENTES DE APRENDIZAJE (HORAS/PAO)', colSpan: 3, style: 'tableHeaderMalla' },
         {},
         {},
@@ -4109,6 +4117,7 @@ async function generarMallaCarreraPesum(datos) {
         { text: 'HORAS CLASE / SEMANA', rowSpan: 3, style: 'tableHeaderMalla' }
       ],
       [
+        {},
         {},
         {},
         {},
@@ -4124,6 +4133,7 @@ async function generarMallaCarreraPesum(datos) {
         {},
         {},
         {},
+        {},
         { text: 'APRENDIZAJE EN CONTACTO CON EL DOCENTE', style: 'tableHeaderMalla' },
         { text: 'APRENDIZAJE PRÁCTICO EXPERIMENTAL', style: 'tableHeaderMalla' },
         {},
@@ -4133,16 +4143,16 @@ async function generarMallaCarreraPesum(datos) {
         {}
       ],
       [
-        { text: datos.programaNombre || 'NOMBRE DE LA CARRERA', colSpan: 10, style: 'tableHeaderMallaLight' },
-        {},{},{},{},{},{},{},{},{}
+        { text: datos.programaNombre || 'NOMBRE DE LA CARRERA', colSpan: 11, style: 'tableHeaderMallaLight' },
+        {},{},{},{},{},{},{},{},{},{}
       ]
     ];
 
     if (niveles && niveles.length > 0) {
       niveles.forEach(nivel => {
         tableBody.push([
-          { text: nivel.nivelNombre || `PAO ${nivel.nivel}`, colSpan: 10, style: 'tableHeaderMallaLight' },
-          {},{},{},{},{},{},{},{},{}
+          { text: nivel.nivelNombre || `PAO ${nivel.nivel}`, colSpan: 11, style: 'tableHeaderMallaLight' },
+          {},{},{},{},{},{},{},{},{},{}
         ]);
         
         if (nivel.asignaturas) {
@@ -4151,6 +4161,7 @@ async function generarMallaCarreraPesum(datos) {
               { text: asig.num || '', style: 'tableCellCenterMalla' },
               { text: asig.codigo || '', style: 'tableCellCenterMalla' },
               { text: asig.asignatura || '', style: 'tableCellLeftMalla' },
+              { text: asig.area || '', style: 'tableCellLeftMalla' },
               { text: (asig.contactoDocente != null && asig.contactoDocente !== '') ? asig.contactoDocente : 0, style: 'tableCellCenterMalla' },
               { text: (asig.practicoExp != null && asig.practicoExp !== '') ? asig.practicoExp : 0, style: 'tableCellCenterMalla' },
               { text: (asig.autonomo != null && asig.autonomo !== '') ? asig.autonomo : 0, style: 'tableCellCenterMalla' },
@@ -4164,7 +4175,8 @@ async function generarMallaCarreraPesum(datos) {
         
         if (nivel.totales) {
           tableBody.push([
-            { text: `TOTAL (${nivel.asignaturas ? nivel.asignaturas.length : 0} ASIGNATURAS)`, colSpan: 3, style: 'tableHeaderMallaLeft' },
+            { text: `TOTAL (${nivel.asignaturas ? nivel.asignaturas.length : 0} ASIGNATURAS)`, colSpan: 4, style: 'tableHeaderMallaLeft' },
+            {},
             {},
             {},
             { text: nivel.totales.contactoDocente || '', style: 'tableHeaderMallaCenter' },
@@ -4200,7 +4212,7 @@ async function generarMallaCarreraPesum(datos) {
         {
           table: {
             headerRows: 4,
-            widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', '*', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: tableBody
           },
           layout: {
