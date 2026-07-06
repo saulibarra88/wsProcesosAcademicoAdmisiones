@@ -650,7 +650,6 @@ console.log(sentencia)
 module.exports.ObtenerMateriasRetiradasEstuidanteCarrera = async function (carrera, periodo, cedula) {
 var sentencia="";
     sentencia="select * from [" + carrera + "].[dbo].[Retiros] as r inner join  [" + carrera + "].[dbo].[Materias] as m on m.strCodigo=r.strCodMateria inner join [" + carrera + "].[dbo].[Matriculas] as mat on mat.sintCodigo=r.sintCodMatricula inner join [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=mat.strCodEstud inner join [" + carrera + "].[dbo].[Periodos] as p on p.strCodigo=mat.strCodPeriodo where r.strCodPeriodo='" + periodo + "' and mat.strCodPeriodo='" + periodo + "' and e.strCedula='" + cedula + "' and mat.strCodEstado='DEF'"
-console.log(sentencia)
   try {
     const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
