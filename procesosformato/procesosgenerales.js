@@ -224,7 +224,7 @@ module.exports.ProcesoActualizacionDatosHomologacionesCarreras = async function 
         return sendResponseProcesos(false, [], error.message)
     }
 }
-module.exports.ProcesoListadoDocentesApellidosCarrera = async function (carrera,apellido) {
+module.exports.ProcesoListadoDocentesApellidosCarrera = async function (carrera, apellido) {
     try {
 
         var Informacion = await sqlmodelogenerales.ListadoApellidosDocentesCarrera(carrera, apellido);
@@ -249,31 +249,31 @@ module.exports.ProcesoCertificadoMejorEstudianteAsignatura = async function (dbc
             var Informacion = await sqlmodelogenerales.ObtenerMejorEstudianteTresCalificacionesAsignaturaCarrera(dbcarrera, periodo, asignatura);
         }
         console.log(Informacion)
-        if(Informacion.datos.count>0){
-   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
-        const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
-        const datosAsignatura = await sqlprocesoCupo.AsignaturasDatos(dbcarrera, asignatura);
-        var datos = {
-            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
-            estudianteNombres: Informacion.datos.data[0].strNombres + ' ' + Informacion.datos.data[0].strApellidos,
-            estudianteCedula: Informacion.datos.data[0].strCedula,
-            programaNombre: datosCarrera.data[0].strNombreCarrera,
-            periodoAcademico: datosPeriodo.data[0].strDescripcion,
-            asignaturaNombre: datosAsignatura.data[0].strNombre,
-            docenteNombre: "ING. CARLOS DOCENTE",
-            calificacion: Informacion.datos.data[0].CalificacionTotal,
-            tipocalificacion: await funcionesgenerales.compararPeriodos(periodo, 'P0041')==true?' / 10':' / 40'
-        }
-        var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoasignatura(datos);
-        if (Informacion.modelo) {
-            return sendResponseProcesos(true, base64, 'OK')
+        if (Informacion.datos.count > 0) {
+            const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+            const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
+            const datosAsignatura = await sqlprocesoCupo.AsignaturasDatos(dbcarrera, asignatura);
+            var datos = {
+                institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+                estudianteNombres: Informacion.datos.data[0].strNombres + ' ' + Informacion.datos.data[0].strApellidos,
+                estudianteCedula: Informacion.datos.data[0].strCedula,
+                programaNombre: datosCarrera.data[0].strNombreCarrera,
+                periodoAcademico: datosPeriodo.data[0].strDescripcion,
+                asignaturaNombre: datosAsignatura.data[0].strNombre,
+                docenteNombre: "ING. CARLOS DOCENTE",
+                calificacion: Informacion.datos.data[0].CalificacionTotal,
+                tipocalificacion: await funcionesgenerales.compararPeriodos(periodo, 'P0041') == true ? ' / 10' : ' / 40'
+            }
+            var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoasignatura(datos);
+            if (Informacion.modelo) {
+                return sendResponseProcesos(true, base64, 'OK')
+            } else {
+                return sendResponseProcesos(false, base64, Informacion.message)
+            }
         } else {
-            return sendResponseProcesos(false, base64, Informacion.message)
+            return sendResponseProcesos(false, base64, '')
         }
-        }else{
-                return sendResponseProcesos(false, base64, '')
-        }
-     
+
     } catch (error) {
         logger.error('Error ProcesoCertificadoMejorEstudianteAsignatura', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
@@ -282,25 +282,39 @@ module.exports.ProcesoCertificadoMejorEstudianteAsignatura = async function (dbc
 
 module.exports.ProcesoCertificadoEstudianteRegularCarrera = async function (dbcarrera, periodo, cedulaestudiante) {
     try {
-         var datosMatricula = await sqlmodelogenerales.ObtenerEstudianteMatriculaperiodo(dbcarrera, periodo, cedulaestudiante)
-         var regulares = await sqlmodelogenerales.CalculoEstudiantesRegulares60PorCiento(dbcarrera, periodo, datosMatricula.datos.data[0].sintCodigo)
-           if(regulares.datos.count>0){
-   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
-        var datos = {
-            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
-            estudianteNombres: datosMatricula.datos.data[0].strNombres + ' ' + datosMatricula.datos.data[0].strApellidos,
-            estudianteCedula: cedulaestudiante,
-            programaNombre: datosCarrera.data[0].strNombreCarrera,
-            periodoAcademico: datosMatricula.datos.data[0].strDescripcion,
-            tipocalificacion: regulares.datos.data[0].Estudiante,
-            tipocalificacionDescripcion: regulares.datos.data[0].Estudiante=='REGULAR' ?' considerado/a un/a estudiante regular, cumpliendo con los requisitos académicos establecidos por la institución ':' considerado/a un/a estudiante no regular, incumpliendo con los requisitos académicos establecidos por la institución '
+        var datosMatricula = await sqlmodelogenerales.ObtenerEstudianteMatriculaperiodo(dbcarrera, periodo, cedulaestudiante)
+        var datosNivel = await sqlmodelogenerales.ObtenerNivelMasAltoCarreraPensum(dbcarrera, datosMatricula.datos.data[0].strCodPensum)
+        var regulares = await sqlmodelogenerales.CalculoEstudiantesRegulares60PorCientoAsignaturasActual(dbcarrera, periodo, cedulaestudiante)
+        if (regulares.datos.count > 0) {
+            const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+            if (datosMatricula.datos.data[0].strCodNivel == datosNivel.datos.data[0].MayorNivel) {
+                var datos = {
+                    institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+                    estudianteNombres: datosMatricula.datos.data[0].strNombres + ' ' + datosMatricula.datos.data[0].strApellidos,
+                    estudianteCedula: cedulaestudiante,
+                    programaNombre: datosCarrera.data[0].strNombreCarrera,
+                    periodoAcademico: datosMatricula.datos.data[0].strDescripcion,
+                    tipocalificacion: 'REGULAR',
+                    tipocalificacionDescripcion: 'considerado/a un/a estudiante regular, cumpliendo con los requisitos académicos establecidos por la institución '
+                }
+            } else {
+                var datos = {
+                    institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+                    estudianteNombres: datosMatricula.datos.data[0].strNombres + ' ' + datosMatricula.datos.data[0].strApellidos,
+                    estudianteCedula: cedulaestudiante,
+                    programaNombre: datosCarrera.data[0].strNombreCarrera,
+                    periodoAcademico: datosMatricula.datos.data[0].strDescripcion,
+                    tipocalificacion: regulares.datos.data[0].Estado,
+                    tipocalificacionDescripcion: regulares.datos.data[0].Estado == 'REGULAR' ? ' considerado/a un/a estudiante regular, cumpliendo con los requisitos académicos establecidos por la institución ' : ' considerado/a un/a estudiante no regular, incumpliendo con los requisitos académicos establecidos por la institución '
+                }
+            }
+
+            var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoaestudianteRegular(datos);
+            return sendResponseProcesos(true, base64, 'OK')
+        } else {
+            return sendResponseProcesos(false, base64, '')
         }
-        var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoaestudianteRegular(datos);
-       return sendResponseProcesos(true, base64, 'OK')
-        }else{
-                return sendResponseProcesos(false, base64, '')
-        }
-     
+
     } catch (error) {
         logger.error('Error ProcesoCertificadoEstudianteRegularCarrera', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
@@ -308,35 +322,35 @@ module.exports.ProcesoCertificadoEstudianteRegularCarrera = async function (dbca
 }
 module.exports.ProcesoCertificadoEstudianteRetiroasignaturaCarrera = async function (dbcarrera, periodo, cedulaestudiante) {
     try {
-         var DatosRetiros = await sqlmodelogenerales.ObtenerMateriasRetiradasEstuidanteCarrera(dbcarrera, periodo, cedulaestudiante)
-           if(DatosRetiros.datos.count>0){
-   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
-   var listado=[];
-     for (let datos of DatosRetiros.datos.data) {
-            var elementos={
-                nombre:datos.strNombre,
-                codigo:datos.strCodMateria,
-                numeromatricula:datos.bytNumMat,
-                nivel:datos.strCodNivel,
-                paralelo:datos.strCodParalelo,
-                resolucion:datos.strResolucion,
+        var DatosRetiros = await sqlmodelogenerales.ObtenerMateriasRetiradasEstuidanteCarrera(dbcarrera, periodo, cedulaestudiante)
+        if (DatosRetiros.datos.count > 0) {
+            const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+            var listado = [];
+            for (let datos of DatosRetiros.datos.data) {
+                var elementos = {
+                    nombre: datos.strNombre,
+                    codigo: datos.strCodMateria,
+                    numeromatricula: datos.bytNumMat,
+                    nivel: datos.strCodNivel,
+                    paralelo: datos.strCodParalelo,
+                    resolucion: datos.strResolucion,
+                }
+                listado.push(elementos)
             }
-            listado.push(elementos)
+            var datos = {
+                institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+                estudianteNombres: DatosRetiros.datos.data[0].strNombres + ' ' + DatosRetiros.datos.data[0].strApellidos,
+                estudianteCedula: cedulaestudiante,
+                programaNombre: datosCarrera.data[0].strNombreCarrera,
+                periodoAcademico: DatosRetiros.datos.data[0].strDescripcion,
+                asignaturas: listado,
+            }
+            var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoRetiroAsignaturaCarrera(datos);
+            return sendResponseProcesos(true, base64, 'OK')
+        } else {
+            return sendResponseProcesos(false, base64, '')
         }
-        var datos = {
-            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
-            estudianteNombres: DatosRetiros.datos.data[0].strNombres + ' ' + DatosRetiros.datos.data[0].strApellidos,
-            estudianteCedula: cedulaestudiante,
-            programaNombre: datosCarrera.data[0].strNombreCarrera,
-            periodoAcademico: DatosRetiros.datos.data[0].strDescripcion,
-         asignaturas: listado,
-        }
-        var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoRetiroAsignaturaCarrera(datos);
-       return sendResponseProcesos(true, base64, 'OK')
-        }else{
-                return sendResponseProcesos(false, base64, '')
-        }
-     
+
     } catch (error) {
         logger.error('Error ProcesoCertificadoEstudianteRetiroasignaturaCarrera', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
@@ -350,42 +364,42 @@ module.exports.ProcesoCertificadoCalificacionesEstudiantePeriodoCarrera = async 
 
             var Informacion = await sqlmodelogenerales.ObtenerMejorEstudianteTresCalificacionesAsignaturaCarrera(dbcarrera, periodo, asignatura);
         }
-        if(Informacion.datos.count>0){
-   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
-        const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
-        var listado=[]
-        for (let datos of Informacion.datos.data) {
-            var elementos={
-                nombre:datos.strNombre,
-                codigo:datos.strCodMateria,
-                calificacion:datos.CalificacionTotal,
-                numeromatricula:datos.bytNumMat,
-                nivel:datos.strCodNivel,
-                paralelo:datos.strCodParalelo,
+        if (Informacion.datos.count > 0) {
+            const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+            const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
+            var listado = []
+            for (let datos of Informacion.datos.data) {
+                var elementos = {
+                    nombre: datos.strNombre,
+                    codigo: datos.strCodMateria,
+                    calificacion: datos.CalificacionTotal,
+                    numeromatricula: datos.bytNumMat,
+                    nivel: datos.strCodNivel,
+                    paralelo: datos.strCodParalelo,
+                }
+                listado.push(elementos)
             }
-            listado.push(elementos)
-        }
-        var datos = {
-            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
-            estudianteNombres: Informacion.datos.data[0].strNombres + ' ' + Informacion.datos.data[0].strApellidos,
-            estudianteCedula: cedulaestudiante,
-            programaNombre: datosCarrera.data[0].strNombreCarrera,
-            periodoAcademico: datosPeriodo.data[0].strDescripcion,
-            docenteNombre: "ING. CARLOS DOCENTE",
-            calificacion: Informacion.datos.data[0].CalificacionTotal,
-              tipocalificacion: await funcionesgenerales.compararPeriodos(periodo, 'P0041')==true?' sobre/10':' sobre/40',
-             asignaturas: listado,
-        }
-        var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoCalificacionesperiodo(datos);
-        if (Informacion.modelo) {
-            return sendResponseProcesos(true, base64, 'OK')
+            var datos = {
+                institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+                estudianteNombres: Informacion.datos.data[0].strNombres + ' ' + Informacion.datos.data[0].strApellidos,
+                estudianteCedula: cedulaestudiante,
+                programaNombre: datosCarrera.data[0].strNombreCarrera,
+                periodoAcademico: datosPeriodo.data[0].strDescripcion,
+                docenteNombre: "ING. CARLOS DOCENTE",
+                calificacion: Informacion.datos.data[0].CalificacionTotal,
+                tipocalificacion: await funcionesgenerales.compararPeriodos(periodo, 'P0041') == true ? ' sobre/10' : ' sobre/40',
+                asignaturas: listado,
+            }
+            var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoCalificacionesperiodo(datos);
+            if (Informacion.modelo) {
+                return sendResponseProcesos(true, base64, 'OK')
+            } else {
+                return sendResponseProcesos(false, base64, Informacion.message)
+            }
         } else {
-            return sendResponseProcesos(false, base64, Informacion.message)
+            return sendResponseProcesos(false, base64, '')
         }
-        }else{
-                return sendResponseProcesos(false, base64, '')
-        }
-     
+
     } catch (error) {
         logger.error('Error ProcesoCertificadoMejorEstudianteAsignatura', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
@@ -393,28 +407,28 @@ module.exports.ProcesoCertificadoCalificacionesEstudiantePeriodoCarrera = async 
 }
 module.exports.ProcesoReporteMallaAcademicaCarrera = async function (dbcarrera, periodo) {
     try {
-     var Informacion = await sqlmodelogenerales.ObtenerMallaAcademicaCarrera(dbcarrera, periodo);
-        if(Informacion.datos.count>0){
-   const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
-        const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
-   
-      var datos = {
-            institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
-            programaNombre: datosCarrera.data[0].strNombreCarrera,
-            periodoAcademico: datosPeriodo.data[0].strDescripcion,
-          listado:Informacion.datos.data
-        }
-        
-        var base64 = await funcionesreportesmake.pdfmakegenerarMallaCarrera (datos);
-        if (Informacion.modelo) {
-            return sendResponseProcesos(true, base64, 'OK')
+        var Informacion = await sqlmodelogenerales.ObtenerMallaAcademicaCarrera(dbcarrera, periodo);
+        if (Informacion.datos.count > 0) {
+            const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+            const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
+
+            var datos = {
+                institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+                programaNombre: datosCarrera.data[0].strNombreCarrera,
+                periodoAcademico: datosPeriodo.data[0].strDescripcion,
+                listado: Informacion.datos.data
+            }
+
+            var base64 = await funcionesreportesmake.pdfmakegenerarMallaCarrera(datos);
+            if (Informacion.modelo) {
+                return sendResponseProcesos(true, base64, 'OK')
+            } else {
+                return sendResponseProcesos(false, base64, Informacion.message)
+            }
         } else {
-            return sendResponseProcesos(false, base64, Informacion.message)
+            return sendResponseProcesos(false, base64, '')
         }
-        }else{
-                return sendResponseProcesos(false, base64, '')
-        }
-     
+
     } catch (error) {
         logger.error('Error ProcesoReporteMallaAcademicaCarrera', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
@@ -422,28 +436,28 @@ module.exports.ProcesoReporteMallaAcademicaCarrera = async function (dbcarrera, 
 }
 module.exports.ProcesoReporteMallaAcademicaCarreraPesum = async function (dbcarrera, pesum) {
     try {
-      var Informacion = await sqlmodelogenerales.ObtenerMallaAcademicaCarreraPesum(dbcarrera, pesum);
-         if(Informacion.datos.count>0){
-    const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
-         const datosPensum = await sqlprocesoCupo.ObtenerPensumCarrera(dbcarrera, pesum);
-    
-       var datos = {
-             institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
-             programaNombre: datosCarrera.data[0].strNombreCarrera,
-             periodoAcademico: datosPensum.data[0].strNombre,
-           listado:Informacion.datos.data
-         }
-         
-         var base64 = await funcionesreportesmake.pdfmakegenerarMallaCarreraPesum (datos);
-         if (Informacion.modelo) {
-             return sendResponseProcesos(true, base64, 'OK')
-         } else {
-             return sendResponseProcesos(false, base64, Informacion.message)
-         }
-         }else{
-                 return sendResponseProcesos(false, base64, '')
-         }
-      
+        var Informacion = await sqlmodelogenerales.ObtenerMallaAcademicaCarreraPesum(dbcarrera, pesum);
+        if (Informacion.datos.count > 0) {
+            const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+            const datosPensum = await sqlprocesoCupo.ObtenerPensumCarrera(dbcarrera, pesum);
+
+            var datos = {
+                institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+                programaNombre: datosCarrera.data[0].strNombreCarrera,
+                periodoAcademico: datosPensum.data[0].strNombre,
+                listado: Informacion.datos.data
+            }
+
+            var base64 = await funcionesreportesmake.pdfmakegenerarMallaCarreraPesum(datos);
+            if (Informacion.modelo) {
+                return sendResponseProcesos(true, base64, 'OK')
+            } else {
+                return sendResponseProcesos(false, base64, Informacion.message)
+            }
+        } else {
+            return sendResponseProcesos(false, base64, '')
+        }
+
     } catch (error) {
         logger.error('Error ProcesoReporteMallaAcademicaCarrera', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
