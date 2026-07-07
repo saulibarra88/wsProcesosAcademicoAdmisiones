@@ -2858,7 +2858,7 @@ async function generarCertificadoEstudianteRegular(datos) {
             }
           ],
           alignment: 'center',
-          margin: [0, 0, 0, 20]
+          margin: [0, 0, 0, 10]
         },
         {
           text: 'Por su desempeño académico en el presente período.',
@@ -2909,7 +2909,7 @@ async function generarCertificadoEstudianteRegular(datos) {
             vLineStyle: function (i, node) { return {dash: {length: 4, space: 4}}; },
             fillColor: function (i, node) { return '#fdf0e0'; }
           },
-          margin: [40, 15, 40, 15]
+          margin: [40, 10, 40, 15]
         },
         {
           text: [
@@ -2956,7 +2956,7 @@ async function generarCertificadoEstudianteRegular(datos) {
             }
           ],
           alignment: 'center',
-          margin: [0, 10, 0, 10]
+          margin: [0, 5, 0, 5]
         },
         {
           text: '* Documento válido para fines académicos y de presentación personal.',
