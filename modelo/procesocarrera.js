@@ -268,7 +268,6 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
   module.exports.TiposRetirosEstudiantesCarrerasListadoTransaccion = async function (transaccion,carrera,periodo,cedula) {
     var sentencia="";
     sentencia="SELECT * FROM [" + carrera + "].[dbo].[Matricula_Retiros] as r INNER JOIN [" + carrera + "].[dbo].[Tipo_Retiros] AS tr on tr.tipcodigo=r.tipcodigo INNER JOIN [" + carrera + "].[dbo].[Matriculas] AS m on m.sintCodigo=r.sintCodigo INNER JOIN [" + carrera + "].[dbo].[Estudiantes] as e on e.strCodigo=m.strCodEstud WHERE r.strCodPeriodo='" + periodo + "' and m.strCodPeriodo='" + periodo + "' and e.strCedula='" + cedula + "'"
-      console.log("sentencia: "+sentencia)
     try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamicoTransaccion(transaccion,carrera,sentencia, "OK","OK");

@@ -196,7 +196,8 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
                             matriculas.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
                         }
                         if (CalulosEstuidantesRegulares.count > 0) {
-                            matriculas.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                           // matriculas.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                            matriculas.regular = ''
                         }
                         if (PagoMatriculaestudiante.count > 0) {
                             matriculas.gratuidad = 'NO'
@@ -339,7 +340,8 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, e
                         matriculas.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
                     }
                     if (CalulosEstuidantesRegulares.count > 0) {
-                        matriculas.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                       // matriculas.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                        matriculas.regular = ''
                     }
                     if (PagoMatriculaestudiante.count > 0) {
                         matriculas.gratuidad = 'NO'
@@ -495,7 +497,8 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
                             matriculas.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
                         }
                         if (CalulosEstuidantesRegulares.count > 0) {
-                            matriculas.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                            // matriculas.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                            matriculas.regular = ''
                         }
                         if (PagoMatriculaestudiante.count > 0) {
                             matriculas.gratuidad = 'NO'
@@ -792,7 +795,8 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                             matriculas.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
                         }
                         if (CalulosEstuidantesRegulares.count > 0) {
-                            matriculas.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                            // matriculas.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                            matriculas.regular = ''
                         }
                         if (PagoMatriculaestudiante.count > 0) {
                             matriculas.gratuidad = 'NO'
@@ -868,7 +872,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinal(periodo) {
                 estudiante.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
             }
             if (CalulosEstuidantesRegulares.count > 0) {
-                estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+               // estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                estudiante.regular = ''
             }
             if (PagoMatriculaestudiante.count > 0) {
                 estudiante.gratuidad = 'NO'
@@ -972,7 +977,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinal(periodo) {
                     estudiante.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
                 }
                 if (CalulosEstuidantesRegulares.count > 0) {
-                    estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                    // estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                    estudiante.regular = ''
                 }
                 if (PagoMatriculaestudiante.count > 0) {
                     estudiante.gratuidad = 'NO'
@@ -1176,7 +1182,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
                 estudiante.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
             }
             if (CalulosEstuidantesRegulares.count > 0) {
-                estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                // estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                estudiante.regular = ''
             }
             if (PagoMatriculaestudiante.count > 0) {
                 estudiante.gratuidad = 'NO'
@@ -1279,7 +1286,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
                     estudiante.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera
                 }
                 if (CalulosEstuidantesRegulares.count > 0) {
-                    estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                    // estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante
+                    estudiante.regular = ''
                 }
                 if (PagoMatriculaestudiante.count > 0) {
                     estudiante.gratuidad = 'NO'

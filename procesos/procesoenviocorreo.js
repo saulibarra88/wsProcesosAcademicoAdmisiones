@@ -40,7 +40,6 @@ async function FuncionEnvioCorreo(objEnvioCorreo, lstReceptores) {
             lstReceptores: lstReceptores
         }
         var datosenvio = await axios.post(process.env.DNS_SERVICIOS_ENVIO_CORREO, content, { httpsAgent: agent });
-       console.log(datosenvio.data)
         return { blProceso: true, mensaje: "OK", datosenvio: datosenvio.data }
 
     } catch (error) {

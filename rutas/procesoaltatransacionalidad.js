@@ -175,7 +175,8 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
                     matricula.repetidor = data.Tercera > 0 || data.Segunda > 0 ? 'SI' : 'NO';
                 }
                 if (regulares.count > 0) {
-                    matricula.regular = regulares.data[0].Estudiante;
+                   // matricula.regular = regulares.data[0].Estudiante;
+                    matricula.regular = '';
                 }
                 if (pago.count > 0) {
                     matricula.gratuidad = 'NO';
@@ -274,7 +275,8 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
                         matricula.repetidor = data.Tercera > 0 || data.Segunda > 0 ? 'SI' : 'NO';
                     }
                     if (regulares.count > 0) {
-                        matricula.regular = regulares.data[0].Estudiante;
+                      //  matricula.regular = regulares.data[0].Estudiante;
+                        matricula.regular = '';
                     }
                     if (pago.count > 0) {
                         matricula.gratuidad = 'NO';
@@ -372,7 +374,8 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                             matricula.repetidor = data.Tercera > 0 || data.Segunda > 0 ? 'SI' : 'NO';
                         }
                         if (regulares.count > 0) {
-                            matricula.regular = regulares.data[0].Estudiante;
+                           // matricula.regular = regulares.data[0].Estudiante;
+                            matricula.regular = '';
                         }
                         if (pago.count > 0) {
                             matricula.gratuidad = 'NO';
@@ -453,7 +456,8 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                             matricula.repetidor = data.Tercera > 0 || data.Segunda > 0 ? 'SI' : 'NO';
                         }
                         if (regulares.count > 0) {
-                            matricula.regular = regulares.data[0].Estudiante;
+                            // matricula.regular = regulares.data[0].Estudiante;
+                            matricula.regular = '';
                         }
                         if (pago.count > 0) {
                             matricula.gratuidad = 'NO';
@@ -543,7 +547,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
                                     estudiante.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera;
                                 }
                                 if (CalulosEstuidantesRegulares.count > 0) {
-                                    estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante;
+                                  //  estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante;
+                                    estudiante.regular = '';
                                 }
                                 if (PagoMatriculaestudiante.count > 0) {
                                     estudiante.gratuidad = 'NO';
@@ -647,7 +652,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
                                     estudiante.cantidadtercera = AsignaturasMatriculadas.data[0].Tercera;
                                 }
                                 if (CalulosEstuidantesRegulares.count > 0) {
-                                    estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante;
+                                   // estudiante.regular = CalulosEstuidantesRegulares.data[0].Estudiante;
+                                    estudiante.regular = '';
                                 }
                                 if (PagoMatriculaestudiante.count > 0) {
                                     estudiante.gratuidad = 'NO';
