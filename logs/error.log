@@ -49,3 +49,4 @@
 [error] [2026-07-07 09:49:31]  : Error ProcesoCertificadoEstudianteRegularCarrera Cannot read properties of undefined (reading '0')
 [error] [2026-07-09 11:01:58]  : Error ListadoSolicitudesRecord procesosfuncionespagosmatriculas.ProcesoListadoPagosMatriculasCedula is not a function
 [error] [2026-07-09 11:16:04]  : Error ProcesoModleMigracionDatosDictadoCarrera Cannot read properties of undefined (reading 'strBaseDatos')
+[error] [2026-07-09 15:01:20]  : Error ProcesoModleMigracionDatosDictadoCarrera codigo is not defined
