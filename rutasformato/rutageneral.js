@@ -200,6 +200,22 @@ router.get('/CertificadoEstudianteRetiroAsignaturaCarrera/:dbcarrera/:periodo/:c
     }
 
 });
+router.get('/CertificadoEstudianteRetiroCarrera/:dbcarrera/:cedulaestudiante', async (req, res) => {
+    const dbcarrera = req.params.dbcarrera;
+    const cedulaestudiante = req.params.cedulaestudiante;
+
+    try {
+        var Informacion = await procesosfuncionesgenerales.ProcesoCertificadoEstudianteRetiroCarrera(dbcarrera, cedulaestudiante);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        } else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        logger.error('Error CertificadoEstudianteRetiroCarrera', { message: error.message, stack: error.stack });
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
 router.get('/CertificadoCalificacionesEstudiantePeriodo/:dbcarrera/:periodo/:cedula',async (req, res) => {
     const dbcarrera = req.params.dbcarrera;
     const periodo = req.params.periodo;

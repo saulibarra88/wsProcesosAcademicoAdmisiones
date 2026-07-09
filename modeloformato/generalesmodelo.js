@@ -317,7 +317,6 @@ module.exports.ObtenerDosCalificacionesAsignarutasEstudiantePeriodo = async func
 module.exports.ObtenerMallaAcademicaCarrera = async function (carrera,periodo) {
   var sentencia = "";
   sentencia = "WITH MateriasPensum AS ( SELECT MP.*, P.strCodigo AS strPeriodo, M.strNombre AS strNombreMateria, A.strNombre AS strNombreArea, REPLACE(ISNULL(MPH.strCodMateria, M.strCodigo), '.', '') AS strCodMateriaPensum, ISNULL(MPH.strCodMateria, MP.strCodMateria) AS strCodMateriaLookup, ROW_NUMBER() OVER ( PARTITION BY REPLACE(ISNULL(MPH.strCodMateria, M.strCodigo), '.', ''), MP.strCodNivel ORDER BY MP.strCodMateria ) AS rn FROM [" + carrera + "].[dbo].[Materias_Pensum] AS MP INNER JOIN [" + carrera + "].[dbo].[Periodos] AS P ON P.strCodPensum = MP.strCodPensum INNER JOIN [" + carrera + "].[dbo].[Materias] AS M ON M.strCodigo = MP.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Areas] AS A ON A.strCodigo = MP.strCodArea LEFT JOIN [" + carrera + "].[dbo].[Materias_Pensum] AS MPH ON MPH.strCodPensum = MP.strCodPensum AND MPH.strcodPadreIti = MP.strCodMateria AND MPH.strCodTipo = 'ITI' WHERE P.strCodigo = '" + periodo + "' AND (MP.strcodPadreIti IS NULL OR MP.strcodPadreIti = 'ITI') ), PrerrequisitosMateria AS ( SELECT MP.strCodMateriaPensum, MP.strNombreMateria, MP.strNombreArea, MP.strPeriodo, MP.strCodPensum, MP.strCodPadreIti, MP.strCodNivel, MP.bytHorasAut, MP.bytHorasPrac, MP.bytHorasSeman, MP.bytHorasTeo, MP.fltCreditos, MP.strCodArea, MP.strCodFormaDict, STUFF(( SELECT '; ' + REPLACE(PR.strCodMatPre, '.', '') FROM [" + carrera + "].[dbo].[Prerrequisitos] PR WHERE PR.strCodMateria = MP.strCodMateriaLookup AND PR.strCodTipo = 'PRE' FOR XML PATH('') ), 1, 2, '') AS strPrerrequisitosCodigos, STUFF(( SELECT '; ' + M2.strNombre FROM [" + carrera + "].[dbo].[Prerrequisitos] PR INNER JOIN [" + carrera + "].[dbo].[Materias] M2 ON M2.strCodigo = PR.strCodMatPre WHERE PR.strCodMateria = MP.strCodMateriaLookup AND PR.strCodTipo = 'PRE' FOR XML PATH('') ), 1, 2, '') AS strPrerrequisitosNombres FROM MateriasPensum MP WHERE MP.rn = 1 ) SELECT * FROM PrerrequisitosMateria ORDER BY strCodNivel, strCodMateriaPensum;"
-console.log(sentencia)
   try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
@@ -352,7 +351,6 @@ sentencia="WITH MateriasPensum AS ( SELECT MP.*, M.strNombre AS strNombreMateria
 module.exports.ListadoApellidosDocentesCarrera = async function (carrera,apellido) {
   var sentencia = "";
   sentencia ="SELECT * FROM [" + carrera + "].[dbo].[Docentes] WHERE [strApellidos] LIKE '%" + apellido + "%'"
-  console.log(sentencia)
   try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
@@ -627,8 +625,7 @@ module.exports.RegistrarInformacionCompletaEstudiante = async function (carrera,
 module.exports.CalculoEstudiantesRegulares60PorCiento = async function (carrera, periodo, intmatricula) {
 var sentencia="";
     sentencia=" SELECT CreditosMalla.strCodPeriodo, CreditosMalla.strCodNivel, CreditosMalla.strCodPensum, CreditosMalla.TotalCreditoMalla, CreditosMalla.Credito60PorCiento, CreditosMatriculados.TotalCreditoMatriculada, CASE WHEN CreditosMatriculados.TotalCreditoMatriculada >= CreditosMalla.Credito60PorCiento THEN 'REGULAR' ELSE 'NO REGULAR' END AS Estudiante FROM ( SELECT m.strCodPeriodo, m.strCodNivel, p.strCodPensum, SUM(mp.fltCreditos) AS TotalCreditoMalla, SUM(mp.fltCreditos) * 0.6 AS Credito60PorCiento FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN [" + carrera + "].[dbo].[Periodos] AS p ON p.strCodigo = m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias_Pensum] AS mp ON mp.strCodPensum = p.strCodPensum AND mp.strCodNivel = m.strCodNivel WHERE m.strCodPeriodo = '" + periodo + "' AND m.sintCodigo = '" + intmatricula + "' GROUP BY m.strCodPeriodo, m.strCodNivel, p.strCodPensum ) AS CreditosMalla CROSS JOIN ( SELECT SUM(mp.fltCreditos) AS TotalCreditoMatriculada FROM [" + carrera + "].[dbo].[Matriculas] AS m INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS ma ON ma.sintCodMatricula = m.sintCodigo AND ma.strCodPeriodo = m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Periodos] AS p ON p.strCodigo = m.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias_Pensum] AS mp ON mp.strCodPensum = p.strCodPensum AND mp.strCodMateria = ma.strCodMateria WHERE m.strCodPeriodo = '" + periodo + "' AND m.sintCodigo = '" + intmatricula + "' AND (ma.strObservaciones NOT LIKE '%VALIDADA%' AND ma.strObservaciones NOT LIKE '%RETIRADO%') ) AS CreditosMatriculados;"
-console.log(sentencia)
-  try {
+    try {
     const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
   } catch (error) {
@@ -643,7 +640,7 @@ var sentencia="";
     const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
   } catch (error) {
-    logger.error('Error CalculoEstudiantesRegulares60PorCiento', { message: error.message, stack: error.stack });
+    logger.error('Error CalculoEstudiantesRegulares60PorCientoAsignaturasActual', { message: error.message, stack: error.stack });
     return sendResponseModelo(false, [], error.message);
   }
 };
@@ -654,7 +651,7 @@ var sentencia="";
     const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
   } catch (error) {
-    logger.error('Error CalculoEstudiantesRegulares60PorCiento', { message: error.message, stack: error.stack });
+    logger.error('Error ObtenerEstudianteMatriculaperiodo', { message: error.message, stack: error.stack });
     return sendResponseModelo(false, [], error.message);
   }
 };
@@ -665,7 +662,7 @@ var sentencia="";
     const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
   } catch (error) {
-    logger.error('Error CalculoEstudiantesRegulares60PorCiento', { message: error.message, stack: error.stack });
+    logger.error('Error ObtenerNivelMasAltoCarreraPensum', { message: error.message, stack: error.stack });
     return sendResponseModelo(false, [], error.message);
   }
 };
@@ -676,7 +673,19 @@ var sentencia="";
     const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
     return sendResponseModelo(true, sqlConsulta, 'OK');
   } catch (error) {
-    logger.error('Error CalculoEstudiantesRegulares60PorCiento', { message: error.message, stack: error.stack });
+    logger.error('Error ObtenerMateriasRetiradasEstuidanteCarrera', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message);
+  }
+};
+
+module.exports.ObtenerPeriodoIniciFinMatriculaEstudianteCarrera = async function (carrera, cedula) {
+var sentencia=""; 
+sentencia="SELECT E.strCedula, E.strCodigo AS CodigoEstudiante, E.strNombres, E.strApellidos, PrimerPeriodo.strCodigo AS PrimerPeriodoCodigo, PrimerPeriodo.strDescripcion AS PrimerPeriodoNombre, PrimerPeriodo.dtFechaInic AS PrimerPeriodoInicio, UltimoPeriodo.strCodigo AS UltimoPeriodoCodigo, UltimoPeriodo.strDescripcion AS UltimoPeriodoNombre, UltimoPeriodo.dtFechaInic AS UltimoPeriodoInicio FROM [" + carrera + "].[dbo].[Estudiantes] E OUTER APPLY ( SELECT TOP 1 P.strCodigo, P.strDescripcion, P.dtFechaInic FROM [" + carrera + "].[dbo].[Matriculas] M INNER JOIN [" + carrera + "].[dbo].[Periodos] P ON P.strCodigo = M.strCodPeriodo WHERE M.strCodEstud = E.strCodigo ORDER BY P.dtFechaInic ASC, P.strCodigo ASC ) PrimerPeriodo OUTER APPLY ( SELECT TOP 1 P.strCodigo, P.strDescripcion, P.dtFechaInic FROM [" + carrera + "].[dbo].[Matriculas] M INNER JOIN [" + carrera + "].[dbo].[Periodos] P ON P.strCodigo = M.strCodPeriodo WHERE M.strCodEstud = E.strCodigo ORDER BY P.dtFechaInic DESC, P.strCodigo DESC ) UltimoPeriodo WHERE E.strCedula = '" + cedula + "';"
+  try {
+    const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+    return sendResponseModelo(true, sqlConsulta, 'OK');
+  } catch (error) {
+    logger.error('Error ObtenerMateriasRetiradasEstuidanteCarrera', { message: error.message, stack: error.stack });
     return sendResponseModelo(false, [], error.message);
   }
 };

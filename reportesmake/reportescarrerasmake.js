@@ -175,6 +175,12 @@ module.exports.pdfmakegenerarcertificadoRetiroAsignaturaCarrera = async function
     return resultado;
   } catch (error) { console.error(error); }
 }
+module.exports.pdfmakegenerarcertificadoRetiroCarrera = async function(datos) {
+  try {
+    var resultado = await generarCertificadoRetiroCarrera(datos);
+    return resultado;
+  } catch (error) { console.error(error); }
+}
 module.exports.pdfmakegenerarMallaCarrera = async function(datos) {
   try {
     var resultado = await generarMallaCarrera(datos);
@@ -2959,7 +2965,7 @@ async function generarCertificadoEstudianteRegular(datos) {
           margin: [0, 5, 0, 5]
         },
         {
-          text: '* Documento válido para fines académicos y de presentación personal.',
+          text: '* Documento válido (30 días) para fines académicos y de presentación personal.',
           style: 'nota'
         }
       ],
@@ -4307,6 +4313,192 @@ async function generarMallaCarreraPesum(datos) {
           alignment: 'left',
           color: '#000000',
           margin: [0, 2, 0, 2]
+        }
+      }
+    };
+
+    return await funcionesgenerales.pdfMakeDocumento(docDefinition, defaultFonts);
+  } catch (error) {
+    console.error(error);
+    return 'ERROR';
+  }
+}
+
+async function generarCertificadoRetiroCarrera(datos) {
+  try {
+    const defaultFonts = {
+      Roboto: {
+        normal: 'Helvetica',
+        bold: 'Helvetica-Bold',
+        italics: 'Helvetica-Oblique',
+        bolditalics: 'Helvetica-BoldOblique',
+      },
+    };
+
+    const layoutOptions = {
+      title: '',
+      subtitle: '',
+      pageMargins: [60, 80, 60, 80],
+      pageOrientation: 'landscape',
+      background: function (currentPage, pageSize) {
+        return {
+          canvas: [
+            {
+              type: 'rect',
+              x: 20,
+              y: 20,
+              w: pageSize.width - 40,
+              h: pageSize.height - 40,
+              lineWidth: 4,
+              lineColor: '#c0392b'
+            },
+            {
+              type: 'rect',
+              x: 25,
+              y: 25,
+              w: pageSize.width - 50,
+              h: pageSize.height - 50,
+              lineWidth: 1,
+              lineColor: '#c0392b'
+            },
+            {
+              type: 'rect',
+              x: 35,
+              y: 15,
+              w: 100,
+              h: 15,
+              color: 'white'
+            }
+          ]
+        };
+      }
+    };
+
+    const baseLayout = createBaseLayout(layoutOptions);
+
+    const docDefinition = {
+      ...baseLayout,
+      content: [
+        {
+          text: 'Certificado de Retiro de Carrera',
+          style: 'titulo',
+          margin: [0, 30, 0, 10]
+        },
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 210, y1: 0,
+              x2: 510, y2: 0,
+              lineWidth: 2,
+              lineColor: '#c0392b'
+            }
+          ],
+          alignment: 'center',
+          margin: [0, 0, 0, 20]
+        },
+        {
+          text: 'Correspondiente al retiro definitivo de la carrera.',
+          style: 'subtitulo'
+        },
+        {
+          text: [
+            'La ',
+            { text: datos.institucion || 'ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO', bold: true, color: '#000000' },
+            ' hace constar que el/ la estudiante ',
+            { text: datos.estudianteNombres || '[NOMBRES Y APELLIDOS]', bold: true, color: '#000000' },
+            ', con identificación ',
+            { text: datos.estudianteCedula || '[N° CÉDULA/PASAPORTE]', bold: true, color: '#000000' },
+            ', de la carrera ',
+            { text: datos.programaNombre || '[NOMBRE DEL PROGRAMA]', bold: true, color: '#000000' },
+            ', solicitó y obtuvo la aprobación de su ',
+            { text: datos.tipoRetiro || 'RETIRO DEFINITIVO ', bold: true, color: '#000000' },
+            ' de la carrera.',
+            ' El/ La estudiante inició sus estudios en el período académico ',
+            { text: datos.fechaInicio || '[FECHA INICIO]', bold: true, color: '#000000' },
+            ' y concluyó su permanencia en el período académico ',
+            { text: datos.fechaFin || '[FECHA FIN]', bold: true, color: '#000000' },
+            '.',
+          ],
+          style: 'cuerpo',
+          margin: [0, 20, 0, 15]
+        },
+        {
+          text: 'Se expide el presente certificado a petición de la parte interesada para los fines que estime convenientes.',
+          style: 'cuerpo',
+          margin: [0, 20, 0, 25]
+        },
+        {
+          columns: [
+            { width: '*', text: '' },
+            {
+              width: 250,
+              stack: [
+                {
+                  canvas: [
+                    {
+                      type: 'line',
+                      x1: 0, y1: 0,
+                      x2: 250, y2: 0,
+                      lineWidth: 1,
+                      lineColor: '#2c3e50'
+                    }
+                  ],
+                  margin: [0, 0, 0, 5]
+                },
+                { text: 'Firma del Coordinador/a de Carrera', alignment: 'center', fontSize: 13, bold: true },
+                { text: 'Escuela Superior Politécnica de Chimborazo', alignment: 'center', fontSize: 11 },
+              ]
+            },
+            { width: '*', text: '' }
+          ],
+          margin: [0, 60, 0, 15]
+        },
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 0, y1: 0,
+              x2: 520, y2: 0,
+              lineWidth: 1,
+              lineColor: '#cccccc'
+            }
+          ],
+          alignment: 'center',
+          margin: [0, 30, 0, 10]
+        },
+        {
+          text: '* Documento válido para fines académicos y de presentación personal.',
+          style: 'nota',
+        }
+      ],
+      styles: {
+        ...baseLayout.styles,
+        titulo: {
+          fontSize: 20,
+          bold: true,
+          alignment: 'center',
+          color: '#1a1a2e',
+          characterSpacing: 3,
+          margin: [0, 0, 0, 10]
+        },
+        subtitulo: {
+          fontSize: 14,
+          alignment: 'center',
+          color: '#2c3e50',
+          margin: [0, 0, 0, 20]
+        },
+        cuerpo: {
+          fontSize: 12,
+          lineHeight: 1.5,
+          alignment: 'justify',
+          margin: [0, 10, 0, 10]
+        },
+        nota: {
+          fontSize: 10,
+          alignment: 'center',
+          color: '#888888',
+          italics: true
         }
       }
     };

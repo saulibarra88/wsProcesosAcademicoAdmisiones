@@ -285,6 +285,7 @@ module.exports.ProcesoCertificadoEstudianteRegularCarrera = async function (dbca
         var datosMatricula = await sqlmodelogenerales.ObtenerEstudianteMatriculaperiodo(dbcarrera, periodo, cedulaestudiante)
         var datosNivel = await sqlmodelogenerales.ObtenerNivelMasAltoCarreraPensum(dbcarrera, datosMatricula.datos.data[0].strCodPensum)
         var regulares = await sqlmodelogenerales.CalculoEstudiantesRegulares60PorCientoAsignaturasActual(dbcarrera, periodo, cedulaestudiante)
+      //  var regulares = await sqlmodelogenerales.CalculoEstudiantesRegulares60PorCiento(dbcarrera, periodo, cedulaestudiante)
         if (regulares.datos.count > 0) {
             const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
             if (datosMatricula.datos.data[0].strCodNivel == datosNivel.datos.data[0].MayorNivel) {
@@ -354,6 +355,34 @@ module.exports.ProcesoCertificadoEstudianteRetiroasignaturaCarrera = async funct
     } catch (error) {
         logger.error('Error ProcesoCertificadoEstudianteRetiroasignaturaCarrera', { message: error.message, stack: error.stack });
         return sendResponseProcesos(false, [], error.message)
+    }
+}
+module.exports.ProcesoCertificadoEstudianteRetiroCarrera = async function (dbcarrera, cedulaestudiante) {
+    try {
+        var DatosRetiro = await sqlmodelogenerales.ObtenerPeriodoIniciFinMatriculaEstudianteCarrera(dbcarrera, cedulaestudiante);
+        console.log(DatosRetiro.datos.data[0])
+        if (DatosRetiro.datos && DatosRetiro.datos.count > 0) {
+            const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
+            var retiroInfo = DatosRetiro.datos.data[0];
+            var datos = {
+                institucion: "ESCUELA SUPERIOR POLITÉCNICA DE CHIMBORAZO",
+                estudianteNombres: retiroInfo.strNombres + ' ' + retiroInfo.strApellidos,
+                estudianteCedula: cedulaestudiante,
+                programaNombre: datosCarrera.data[0].strNombreCarrera,
+                tipoRetiro: retiroInfo.tipnombre,
+                periodoAcademico: retiroInfo.strDescripcion,
+                fechaInicio:retiroInfo. PrimerPeriodoNombre ,
+                fechaFin:retiroInfo. UltimoPeriodoNombre ,
+                resolucion: retiroInfo.strResolucion
+            };
+            var base64 = await funcionesreportesmake.pdfmakegenerarcertificadoRetiroCarrera(datos);
+            return sendResponseProcesos(true, base64, 'OK');
+        } else {
+            return sendResponseProcesos(false, '', 'No se encontraron datos de retiro de carrera para el estudiante.');
+        }
+    } catch (error) {
+        logger.error('Error ProcesoCertificadoEstudianteRetiroCarrera', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message);
     }
 }
 module.exports.ProcesoCertificadoCalificacionesEstudiantePeriodoCarrera = async function (dbcarrera, periodo, cedulaestudiante) {
