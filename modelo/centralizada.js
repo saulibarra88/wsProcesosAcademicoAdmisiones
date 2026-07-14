@@ -24,6 +24,22 @@ module.exports.obtenerdocumento = async function (cedula) {
     }
   
   }
+  module.exports.obtenerdocumentoCentralizada = async function (cedula) {
+    var sentencia;
+    sentencia = "SELECT p.per_id, p.per_nombres, p.\"per_primerApellido\", p.\"per_segundoApellido\", p.per_email, p.\"per_emailAlternativo\", p.\"per_telefonoOficina\", p.\"per_telefonoCelular\", \"per_fechaNacimiento\", \"per_afiliacionIESS\", tsa_id, etn_id,  p.eci_id, gen_id, p.\"per_creadoPor\", p.\"per_fechaCreacion\", p.\"per_modificadoPor\",   p.\"per_fechaModificacion\", p.\"per_telefonoCasa\", p.lugarprocedencia_id,     p.sex_id, p.per_procedencia FROM central.persona p INNER JOIN central.\"documentoPersonal\" d ON p.per_id=d.per_id WHERE d.pid_valor= '" + cedula + "'  "
+    try {
+  
+      if (sentencia != "") {
+        const resp = await execCentralizadaMejorada(sentencia, "OK", "OK");
+        return (resp)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  
+  }
   module.exports.ActualizarDatosPersonaCentral = async function (objpersona) {
     var sentencia;
     sentencia = `update central.persona set per_nombres='${objpersona.per_nombres}',"per_primerApellido"='${objpersona.per_primerApellido}',"per_segundoApellido"='${objpersona.per_segundoApellido}',per_email='${objpersona.per_email}',"per_emailAlternativo"='${objpersona.per_emailAlternativo}',"per_telefonoCelular"='${objpersona.per_telefonoCelular}',"per_telefonoOficina"='${objpersona.per_telefonoOficina}' where per_id=${objpersona.per_id}`

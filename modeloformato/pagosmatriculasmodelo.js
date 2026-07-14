@@ -29,6 +29,38 @@ module.exports.ObtenerDatosEstuidante60CreditoAsignaturasMatricula = async funct
 module.exports.ObtenerMasterDatosCarreraCodigo = async function (carrera,codigo) {
   var sentencia = "";
     sentencia="SELECT F.strNombre as strNombreFacultad, C.strNombre as strNombreCarrera, * FROM [" + carrera + "].[dbo].Facultades AS F INNER JOIN [" + carrera + "].[dbo].Escuelas AS E ON E.strCodFacultad=F.strCodigo INNER JOIN [" + carrera + "].[dbo].Carreras AS C ON C.strCodEscuela=E.strCodigo  WHERE C.strCodigo='" + codigo + "' "
+ 
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ObtenerMasterDatosCarreraCodigo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+
+module.exports.ObtenerDatosMatriculaEstudiantePago = async function (carrera,periodo,cedula) {
+  var sentencia = "";
+    sentencia="SELECT M.*,MA.*,MAT.strNombre,MP.*,E.strCodigo,E.strCedula,E.strApellidos,E.strNombres FROM [" + carrera + "].[dbo].[Matriculas] AS M INNER JOIN [" + carrera + "].[dbo].[Materias_Asignadas] AS MA ON MA.sintCodMatricula=M.sintCodigo AND MA.strCodPeriodo=M.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].Periodos AS P ON P.strCodigo=M.strCodPeriodo INNER JOIN [" + carrera + "].[dbo].[Materias_Pensum] AS MP ON MP.strCodPensum=P.strCodPensum AND MP.strCodMateria=MA.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Materias] AS MAT ON MAT.strCodigo=MA.strCodMateria INNER JOIN [" + carrera + "].[dbo].[Estudiantes] AS E ON E.strCodigo=M.strCodEstud WHERE E.strCedula='" + cedula + "' AND M.strCodPeriodo='" + periodo + "' AND M.strCodEstado='PEN' AND M.strCodEstado='VCPEN' AND MA.strObservaciones NOT LIKE '%VALIDA%'"
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");
+      return sendResponseModelo(true, sqlConsulta, 'OK')
+    } else {
+      return sendResponseModelo(false, [], 'VACIO SQL')
+    }
+  } catch (error) {
+    logger.error('Error ObtenerMasterDatosCarreraCodigo', { message: error.message, stack: error.stack });
+    return sendResponseModelo(false, [], error.message)
+  }
+}
+module.exports.ObtenerDatosColegioEstudiante = async function (carrera,cedula) {
+  var sentencia = "";
+   sentencia = "SELECT *,i. [strNombre] as nombrecolegio,t.strNombre as nombretitulo,gr.strCodTit as codigotitulo,gr.strCodInt as codigoinstitucion,ti.strDescripcion as nombretipoinstitucion, c.strNombre as nombreciudad FROM  [" + carrera + "].[dbo].[Grados] AS gr INNER JOIN [" + carrera + "].[dbo].[Titulos_Validos] AS tv on tv.strCodTit = gr.strCodTit and tv.strCodInt=gr.strCodInt INNER JOIN [" + carrera + "].[dbo].[Titulos] AS t on t.[strCodigo]=tv.[strCodTit] INNER JOIN [" + carrera + "].[dbo].[Instituciones] AS i on i.[strCodigo] =tv.[strCodInt] INNER JOIN [" + carrera + "].[dbo].[Tipos_Instituciones] AS ti ON ti.strCodigo=i.strCodTipo INNER JOIN [" + carrera + "].[dbo].[Ciudades] AS c ON c.strCodigo=i.strCodCiudad WHERE gr.[strCedEstud]='" + cedula + "'"
   try {
     if (sentencia != "") {
       const sqlConsulta = await execDinamico(carrera, sentencia, "OK", "OK");

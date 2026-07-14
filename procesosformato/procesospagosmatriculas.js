@@ -42,6 +42,39 @@ module.exports.ProcesosEstudiante60AsignaturasMatricula = async function (codigo
     }
 }
 
+module.exports.ProcesosDatosMatriculaPago = async function (codigo, periodo, cedula) {
+    try {
+        const Proceso = await FuncionProcesoDatosMatriculaPago(codigo, periodo, cedula);
+      return sendResponseProcesos(true, Proceso.datos, 'OK')
+
+    } catch (error) {
+        logger.error('Error ProcesosDatosMatriculaPago', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
+
+async function FuncionProcesoDatosMatriculaPago(codigo, periodo, cedula) {
+    try {
+        var InformacionMatricula = []
+        var lstResultadoGeneral = {}
+         const datosCarrera = await sqlpagosmatriculas.ObtenerMasterDatosCarreraCodigo('OAS_Master', codigo);
+          if (datosCarrera.datos.count > 0) {
+            var informacionMatricula = await sqlpagosmatriculas.ObtenerDatosMatriculaEstudiantePago(datosCarrera.datos.data[0].strBaseDatos, periodo, cedula);
+            var informacionColegio = await sqlpagosmatriculas.ObtenerDatosColegioEstudiante('OAS_Master',cedula);
+            InformacionMatricula.push(informacionMatricula.datos.data)
+            InformacionMatricula.push(informacionColegio.datos.data[0])
+             return sendResponseProcesos(true, InformacionMatricula, 'OK')
+        } else {
+            return sendResponseProcesos(false, [], 'Carrera no encontrada')
+        }
+        return lstResultadoGeneral
+    } catch (error) {
+        console.error(error);
+
+    }
+
+}
+
 
 
 
