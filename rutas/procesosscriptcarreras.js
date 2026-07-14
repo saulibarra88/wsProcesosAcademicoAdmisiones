@@ -276,7 +276,9 @@ async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
                             }
                         }
                         if(!blverificaracta){
-                            var elemento ={
+                         var VerficacionActaRecuperacion = await procesoCarrera.VerificarActarecuperacionAsignatura( carrera, periodo,materia.strCodNivel,materia.strCodParalelo,materia.strCodMateria);
+                            if(VerficacionActaRecuperacion.count==0){
+                             var elemento ={
                                 "strdescripcionacta": "ACTA DE RECUPERACION",
                                 "strCedula": materia.strCedula,
                                 "strApellidos": materia.strApellidos,
@@ -288,6 +290,8 @@ async function ObtenerListadoActasRecuperacionNoGeneradas(carrera,periodo) {
                                 "strCodPeriodo":periodo
                             }
                             listadoNomina.push(elemento)
+                            }
+                          
                         }
                  
                 }

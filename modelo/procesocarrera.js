@@ -476,7 +476,20 @@ module.exports.ObtenerDocumentosMatriculas = async function ( carrera, periodo) 
     return {data:"Error: "+ error}
   }
   }
-
+  module.exports.VerificarActarecuperacionAsignatura = async function (carrera,periodo,nivel,paralelo,materia) {
+    var sentencia="";
+    sentencia = "SELECT * FROM [" + carrera + "].[dbo].[Acta] WHERE [strCodPeriodo]='" + periodo + "' AND [strCodParalelo]='" + paralelo + "' AND [strCodNivel]='" + nivel + "' AND [strCodMateria]='" + materia + "' AND [tipcodigo]=3 AND [actestado]=1";
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
   module.exports.ListadoDictadoMateriasCarrera = async function (carrera,periodo) {
     var sentencia="";
     sentencia = "select * from [" + carrera + "].[dbo].[Dictado_Materias]  as dm inner join [" + carrera + "].[dbo].[Docentes]  as d on d.strCodigo=dm.strCodDocente inner join [" + carrera + "].[dbo].[Materias] as m on m.strCodigo=dm.strCodMateria where dm.strCodPeriodo='" + periodo + "'";
