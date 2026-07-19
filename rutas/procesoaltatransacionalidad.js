@@ -18,6 +18,13 @@ const agent = new https.Agent({
     // other options if needed
     secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+const agentCentralizada = {
+    httpsAgent: agent,
+    headers: {
+        Referer: CENTRALIZADA_REFERER,
+    }
+};
 
 module.exports.ProcesoReporteExcelMatriculasCarrerasIndividual = async function (carrera, periodo, estado) {
     try {
@@ -132,7 +139,7 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucional(carr
             await transaction.begin();
             try {
                 const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-                var personaResponse = await limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
+                var personaResponse = await limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, agentCentralizada));
                 var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
                 var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
                 var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera, periodo, matricula.sintCodigo)
@@ -230,7 +237,7 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
                 await transaction.begin();
                 try {
                     const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-                    var personaResponse = await limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
+                    var personaResponse = await limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, agentCentralizada));
                     var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
                     var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
                     var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbasecar, periodo, matricula.sintCodigo)
@@ -330,7 +337,7 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                     await transaction.begin();
                     try {
                         const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-                        var personaResponse = await limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
+                        var personaResponse = await limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, agentCentralizada));
                         var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
                         var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
                         var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.hmbdbaseniv, periodo, matricula.sintCodigo)
@@ -412,7 +419,7 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                     await transaction.begin();
                     try {
                         const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-                        var personaResponse = await limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, { httpsAgent: agent }));
+                        var personaResponse = await limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${cedulaSinGuion}`, agentCentralizada));
                         var pago = await modeloprocesocarreras.ObtenerPagoMatriculaEstudianteTransaccion(transaction, "pagosonline_db", periodo, cedulaSinGuion)
                         var asignaturas = await modeloprocesocarreras.AsignaturasMatriculadaEstudiantePeriodoCantidadTransaccion(transaction, carrera.strBaseDatos, periodo, matricula.sintCodigo)
                         var regulares = await modeloprocesocarreras.CalculoEstudiantesRegulares60PorCientoTransaccion(transaction, carrera.strBaseDatos, periodo, matricula.sintCodigo)
@@ -498,7 +505,7 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
     try {
         var listadoNomina = [];
         const content1 = { perNomenclatura: periodo };
-        var ListadoEstudiantes = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/aceptados_periodo_cusofa", content1, { httpsAgent: agent });
+        var ListadoEstudiantes = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/asignacion_cupo/aceptados_periodo_cusofa", content1, agentCentralizada);
 
         if (ListadoEstudiantes.data.length > 0) {
             const limitProcess = pLimit(10);
@@ -514,10 +521,10 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
                     if (DatosEstudianteCupo.count > 0) {
                         var estudiante = DatosEstudianteCupo.data[0];
                         var content = { "perNomenclatura": periodo, "cusId": estudiante.c_cus_id };
-                        var DatosCarreraNivelacion = await limitHTTP(() => axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", content, { httpsAgent: agent }));
+                        var DatosCarreraNivelacion = await limitHTTP(() => axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", content, agentCentralizada));
 
                         if (Object.keys(DatosCarreraNivelacion.data).length > 0) {
-                            var DatosEstudiantes = await limitHTTP(() => axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), { httpsAgent: agent }));
+                            var DatosEstudiantes = await limitHTTP(() => axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), agentCentralizada));
                             var ObjEstudianteMatriculadoNivelacion = await sqlprocesocarreras.EncontrarEstudianteMatriculadoTransaccion(transaction, estudiante.c_dbnivelacion, estudiante.c_periodo, estudiante.c_identificacion);
                             var ObjEstudianteMatriculadoCarrera = await sqlprocesocarreras.EncontrarEstudianteMatriculadoTransaccion(transaction, estudiante.c_dbcarrera, estudiante.c_periodo, estudiante.c_identificacion);
 
@@ -995,7 +1002,7 @@ async function FuncionFotoMatriculasNivelacionTodasInstitucionalTransaccion(peri
             await Promise.all(datosMatriculas.data.map((matricula, j) =>
                 limitSQL(async () => {
                     const cedulaSinGuion = tools.CedulaSinGuion(matricula.strCedula);
-                    const personaFoto = limitHTTP(() => axios.get(`https://apigestioncupos.espoch.edu.ec/wsservicioscupos/procesosdinardap/ObtenerFotoPersona/${cedulaSinGuion}`, { httpsAgent: agent }));
+                    const personaFoto = limitHTTP(() => axios.get(`https://apigestioncupos.espoch.edu.ec/wsservicioscupos/procesosdinardap/ObtenerFotoPersona/${cedulaSinGuion}`, agentCentralizada));
                 })
             ));
 
@@ -1016,7 +1023,7 @@ async function FuncionFinancieroDatos() {
         const limitSQL = pLimit(10);
         await Promise.all(ListadoCarrera.data.map(async (info, i) => {
 
-            const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.stridentificacioncomprador}`, { httpsAgent: agent }));
+            const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.stridentificacioncomprador}`, agentCentralizada));
             const [personaResponse] = await Promise.all([personaPromise.catch(() => null),]);
 
             const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;
@@ -1050,8 +1057,8 @@ async function FuncionuUsuariosDatos() {
         const limitSQL = pLimit(10);
         await Promise.all(ListadoCarrera.data.map(async (info, i) => {
 
-            // const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.usu_strCedula}`, { httpsAgent: agent }));
-            const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objetopersonalizadodadoid/${info.lngusr_id}`, { httpsAgent: agent }));
+            // const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/${info.usu_strCedula}`, agentCentralizada));
+            const personaPromise = limitHTTP(() => axios.get(`https://centralizada2.espoch.edu.ec/rutaCentral/objetopersonalizadodadoid/${info.lngusr_id}`, agentCentralizada));
             const [personaResponse] = await Promise.all([personaPromise.catch(() => null),]);
 
             const persona = personaResponse?.data?.success ? personaResponse.data.listado[0] : null;

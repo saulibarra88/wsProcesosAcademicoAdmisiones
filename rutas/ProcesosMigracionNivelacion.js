@@ -16,6 +16,13 @@ const agent = new https.Agent({
     rejectUnauthorized: false,
     secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+const agentCentralizada = {
+    httpsAgent: agent,
+    headers: {
+        Referer: CENTRALIZADA_REFERER,
+    }
+};
 
 
 module.exports.ProcesoVerificarRegistroIncripcionesEstudiantesAdmisiones = async function (periodo, cedula) {
@@ -1461,7 +1468,7 @@ async function ProcesoExcelEstudiantesListadoCuposPorEstados(periodo,idEstado,ce
         for (var informacion of ListadoEstudiantes.data) {
             var InformacionCarrera = await procesoCupo.ObtenerDatosBase(informacion.carrera);    
             var cedula=tools.CedulaSinGuion(informacion.identificacion)
-            var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+            var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
 
             var InformacionEstudainte = await procesoCupo.ObtenerDatosEstudianteMaster(informacion.identificacion);    
             informacion.Carrera=InformacionCarrera.data[0]

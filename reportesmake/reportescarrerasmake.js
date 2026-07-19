@@ -7,12 +7,18 @@ const funcionesgenerales = require('../rutas/tools.js');
 const https = require('https');
 const crypto = require("crypto");
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
-// Configuración del agente HTTPS
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+// Configuración del agente HTTPS y cabeceras para Centralizada
 const agent = new https.Agent({
   rejectUnauthorized: false,
-      secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
-
+  secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const agentCentralizada = {
+  httpsAgent: agent,
+  headers: {
+    Referer: CENTRALIZADA_REFERER,
+  }
+};
 const defaultFonts = {
    Roboto: {
       normal: 'Helvetica',
@@ -200,7 +206,7 @@ async function generarReporteNotasCalificaciones( listado, carrera, periodo, niv
     const datosAsignatura = await procesoCupo.AsignaturasDatos(carrera, CodMateria);
     const datosDocentes = await procesoCupo.DocentesDatos(carrera, cedula);
     const datosPeriodo = await procesoCupo.PeriodoDatos(carrera, periodo);
-    const ObtenerPersona = await axios.get( `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent } );
+    const ObtenerPersona = await axios.get( `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, agentCentralizada );
     const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
     // Función auxiliar para valores nulos
     const getValor = (valor, defaultValue = 'SIN REGISTRO') => {
@@ -425,7 +431,7 @@ async function generarReporteNotasCalificacionesTres(listado, carrera, periodo,n
     const datosPeriodo = await procesoCupo.PeriodoDatos(carrera, periodo);
     const ObtenerPersona = await axios.get(
       `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`,
-      { httpsAgent: agent }
+      agentCentralizada
     );
     const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
 
@@ -718,7 +724,7 @@ async function generarReporteNotasCalificacionesTres(listado, carrera, periodo,n
 async function ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera, cedula, periodo) {
   try {
     // Obtener datos necesarios
-    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedula}`, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedula}`, agentCentralizada);
     const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
     const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
     
@@ -875,7 +881,7 @@ async function ProcesoPdfEstudianteAsignaturaAprueban(listado, carrera, cedula, 
 async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carrera, cedula, periodo) {
   try {
     // Obtener datos necesarios
-    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedula}`, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedula}`, agentCentralizada);
     const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
     const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
     
@@ -1071,7 +1077,7 @@ async function ProcesoPdfEstudianteAsignaturaApruebanNivelParalelo(listado, carr
 async function generarReporteEvaluacionesRecuperacionCarrera( listado, carrera, periodo, cedulaUsuario ) {
   try {
     // 1. Obtener datos necesarios en paralelo para mejorar rendimiento
-    const [ datosCarrera, datosPeriodo, ObtenerPersona ] = await Promise.all([ procesoCupo.ObtenerDatosBase(carrera) , procesoCupo.PeriodoDatos(carrera, periodo), axios.get( `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent } ) ]);
+    const [ datosCarrera, datosPeriodo, ObtenerPersona ] = await Promise.all([ procesoCupo.ObtenerDatosBase(carrera) , procesoCupo.PeriodoDatos(carrera, periodo), axios.get( `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, agentCentralizada ) ]);
 
     // 2. Extraer y formatear datos básicos
     const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
@@ -1152,7 +1158,7 @@ const formatearFecha = (fecha) => {
 async function generarReporteAsignaturasTipoMovilidadCarrera( listado, carrera, periodo, cedulaUsuario ) {
   try {
     // 1. Obtener datos necesarios en paralelo para mejorar rendimiento
-    const [ datosCarrera, datosPeriodo, ObtenerPersona ] = await Promise.all([ procesoCupo.ObtenerDatosBase(carrera) , procesoCupo.PeriodoDatos(carrera, periodo), axios.get( `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent } ) ]);
+    const [ datosCarrera, datosPeriodo, ObtenerPersona ] = await Promise.all([ procesoCupo.ObtenerDatosBase(carrera) , procesoCupo.PeriodoDatos(carrera, periodo), axios.get( `https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, agentCentralizada ) ]);
 
     // 2. Extraer y formatear datos básicos
     const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
@@ -1234,7 +1240,7 @@ async function generarReporteHomologacionCarrera(listado, carrera, cedulaUsuario
     // 1. Obtener datos necesarios en paralelo para mejorar rendimiento
     const [datosCarrera, obtenerPersona] = await Promise.all([
       procesoCupo.ObtenerDatosBase(carrera),
-      axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent })
+      axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, agentCentralizada)
     ]);
 
     // 2. Extraer y formatear datos básicos
@@ -1411,7 +1417,7 @@ async function generarReporteNoMatriculados(listado, listadoperiodo,carrera,cedu
   try {
     // Obtener datos necesarios
     const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
-    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedula}`, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedula}`, agentCentralizada);
     
     const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
     const Cedula = ObtenerPersona.data.listado[0].pid_valor;
@@ -1890,7 +1896,7 @@ async function generarReportePromediosGeneralesAsignaturas(listado, carrera, per
     const [datosCarrera, datosPeriodo, persona] = await Promise.all([
       procesoCupo.ObtenerDatosBase(carrera),
       procesoCupo.PeriodoDatos(carrera, periodo),
-      axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent })
+      axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, agentCentralizada)
     ]);
 
     // 2. Extraer información básica
@@ -2179,7 +2185,7 @@ async function generarReporteRetiros(listado, carrera, periodo, cedulaUsuario) {
   try {
     const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
     const datosPeriodo = await procesoCupo.PeriodoDatos(carrera, periodo);
-    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get(`https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/${cedulaUsuario}`, agentCentralizada);
     const strNombres = `${ObtenerPersona.data.listado[0].per_nombres} ${ObtenerPersona.data.listado[0].per_primerApellido} ${ObtenerPersona.data.listado[0].per_segundoApellido}`;
     
     const getValor = (valor, defaultValue = 'SIN REGISTRO') => {
@@ -2320,7 +2326,7 @@ async function generarReporteRetiros(listado, carrera, periodo, cedulaUsuario) {
 
 async function ProcesoPdfListadoDocumentosCarreras(listado, cedula, periodo) {
   try {
-    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
     const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
     const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
 
@@ -2406,7 +2412,7 @@ async function ProcesoPdfListadoDocumentosCarreras(listado, cedula, periodo) {
 
 async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera, cedula, periodo, tipo) {
   try {
-    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
     const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
     const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
     const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
@@ -2498,7 +2504,7 @@ async function ProcesoPdfTerceraSegundaMatriculaCarrera(listado, carrera, cedula
 
 async function ProcesoPdfTerceraSegundaMatriculaCarreraGeneral(listado, carrera, cedula, periodo) {
   try {
-    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
     const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
     const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
     const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
@@ -2592,7 +2598,7 @@ async function ProcesoPdfTerceraSegundaMatriculaCarreraGeneral(listado, carrera,
 
 async function ProcesoPdfMatriculasEstadosNivelParalelo(listado, carrera, cedula, periodo) {
   try {
-    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
     const datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
     const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
     const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
@@ -2706,7 +2712,7 @@ async function ProcesoPdfMatriculasEstadosNivelParalelo(listado, carrera, cedula
 
 async function ProcesoPdfListadoEstudiantesCuposEstados(listado, cedula, periodo, estado) {
   try {
-    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+    const ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
     const strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
     const periodoinfo = await procesoCupo.ObtenerPeriodoDadoCodigo(periodo);
 

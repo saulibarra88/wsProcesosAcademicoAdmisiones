@@ -72,13 +72,20 @@ const agent = new https.Agent({
     // other options if needed
     secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+const agentCentralizada = {
+    httpsAgent: agent,
+    headers: {
+        Referer: CENTRALIZADA_REFERER,
+    }
+};
 
 
 async function ProcesoExcelListadosEstudiantesAdmisiones(listado, strBaseCarrera, cedula) {
     try {
         try {
             var datosCarrera = await procesoCupo.ObtenerDatosBase(strBaseCarrera);
-            var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+            var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
             var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
             var Cedula = ObtenerPersona.data.listado[0].pid_valor
             var bodylistado = "";
@@ -282,7 +289,7 @@ async function ProcesoExcelListadosAspiranteAdmisiones(listado, strBaseCarrera, 
   try {
       try {
         var datosCarrera = await procesoCupo.ObtenerDatosBase(strBaseCarrera);
-        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
         var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
         var Cedula = ObtenerPersona.data.listado[0].pid_valor
         var bodylistado = "";

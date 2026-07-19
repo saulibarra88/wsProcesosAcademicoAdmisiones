@@ -23,6 +23,13 @@ const agent = new https.Agent({
   // other options if needed
   secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+const agentCentralizada = {
+  httpsAgent: agent,
+  headers: {
+    Referer: CENTRALIZADA_REFERER,
+  }
+};
 module.exports.Graficopdf1 = async function (carrera, periodo, nivel, paralelo, codMateria, cedula, idreglamento, nombres, asignatura) {
   try {
     var listado = await ProcesoGraficosParciales1(carrera, periodo, nivel, paralelo, codMateria, cedula, idreglamento);
@@ -382,7 +389,7 @@ async function generatePieChart(listado) {
 
 async function generarReporteNoMatriculados(listado, listadoperiodo, carrera, cedula) {
   var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
-  var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+  var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
   var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
   var Cedula = ObtenerPersona.data.listado[0].pid_valor;
 

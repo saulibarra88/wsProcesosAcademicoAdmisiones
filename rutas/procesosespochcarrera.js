@@ -18,6 +18,13 @@ const agent = new https.Agent({
     // other options if needed
     secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+const agentCentralizada = {
+    httpsAgent: agent,
+    headers: {
+        Referer: CENTRALIZADA_REFERER,
+    }
+};
 
 
 module.exports.ProcesoReporteExcelMatriculasCarrerasIndividual = async function (carrera, periodo, estado) {
@@ -91,7 +98,7 @@ async function FuncionReporteExcelMatriculasCarrerasIndividualInstitucionalTrans
                     for (var matriculas of datosMatriculas.data) {
                         j = j + 1
         
-                        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
+                        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), agentCentralizada);
                 
                         if (ObtenerPersona.data.success) {
                             if (ObtenerPersona.data.listado.length > 0) {
@@ -241,7 +248,7 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucinal(periodo, e
                 for (var matriculas of datosMatriculas.data) {
                     j = j + 1
                     console.log("Carrera " + carrera.hmbdbasecar + "#  " + i + " Matricula " + matriculas.strCedula + " " + j);
-                    var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
+                    var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), agentCentralizada);
                     if (ObtenerPersona.data.success) {
                         if (ObtenerPersona.data.listado.length > 0) {
                             matriculas.per_nombres = ObtenerPersona.data.listado[0].per_nombres
@@ -393,7 +400,7 @@ async function FuncionReporteExcelMatriculasCarrerasTodasInstitucionalTransaccio
                         j = j + 1
                      
                  
-                        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
+                        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), agentCentralizada);
                 
                         if (ObtenerPersona.data.success) {
                             if (ObtenerPersona.data.listado.length > 0) {
@@ -550,7 +557,7 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucional(periodo
                 for (var matriculas of datosMatriculas.data) {
                     j = j + 1
            
-                    var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
+                    var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), agentCentralizada);
                     if (ObtenerPersona.data.success) {
                         if (ObtenerPersona.data.listado.length > 0) {
                             matriculas.per_nombres = ObtenerPersona.data.listado[0].per_nombres
@@ -693,7 +700,7 @@ async function FuncionReporteExcelMatriculasNivelacionTodasInstitucionalTransacc
                     for (var matriculas of datosMatriculas.data) {
                         j = j + 1
                  
-                        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), { httpsAgent: agent });
+                        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(matriculas.strCedula), agentCentralizada);
                 
                         if (ObtenerPersona.data.success) {
                             if (ObtenerPersona.data.listado.length > 0) {
@@ -837,8 +844,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinal(periodo) {
         for (var estudiante of ListadoEstudiantes.data) {
             
             var content ={ "perNomenclatura": periodo, "cusId": estudiante.c_cus_id }
-         var DatosCarreraNivelacion = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", content, { httpsAgent: agent });
-        var DatosEstudiantes = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), { httpsAgent: agent });
+         var DatosCarreraNivelacion = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", content, agentCentralizada);
+        var DatosEstudiantes = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), agentCentralizada);
         var ObjEstudianteMatriculadoNivelacion = await modeloprocesocarreras.EncontrarEstudianteMatriculado( estudiante.c_dbnivelacion, estudiante.c_periodo, estudiante.c_identificacion);
            i = i + 1
           
@@ -1148,8 +1155,8 @@ async function FuncionReporteExcelMatriculasAdmisionesInstitucinalTransaccion(pe
         for (var estudiante of ListadoEstudiantes.data) {
            
             var content ={ "perNomenclatura": periodo, "cusId": estudiante.c_cus_id }
-         var DatosCarreraNivelacion = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", content, { httpsAgent: agent });
-        var DatosEstudiantes = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), { httpsAgent: agent });
+         var DatosCarreraNivelacion = await axios.post("https://apinivelacionplanificacion.espoch.edu.ec/api_m4/m_admision/cupo_carrera/periodo_cusid", content, agentCentralizada);
+        var DatosEstudiantes = await axios.get("https://centralizada2.espoch.edu.ec/rutaCentral/objpersonalizado/" + tools.CedulaSinGuion(estudiante.c_identificacion), agentCentralizada);
         var ObjEstudianteMatriculadoNivelacion = await modeloprocesocarreras.EncontrarEstudianteMatriculadoTransaccion(transaction, estudiante.c_dbnivelacion, estudiante.c_periodo, estudiante.c_identificacion);
            i = i + 1
 

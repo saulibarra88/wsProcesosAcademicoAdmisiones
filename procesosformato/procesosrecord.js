@@ -22,6 +22,13 @@ const agent = new https.Agent({
     // other options if needed
     secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+const agentCentralizada = {
+    httpsAgent: agent,
+    headers: {
+        Referer: CENTRALIZADA_REFERER,
+    }
+};
 
 
 module.exports.ProcesoListadoRecordEstadoPeriodo = async function (carrera, periodo, estado) {
@@ -57,7 +64,7 @@ module.exports.ProcesoListadoRecordCedula = async function (carrera, cedula) {
         if (Informacion.modelo) {
             for (let datos of Informacion.datos.data) {
                 var PeriodoVigenteDatos = await sqlmodelocupos.ObtenerPeriodoDadoCodigo(datos.strCodPeriodo)
-                var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + tools.CedulaSinGuion(datos.strCedulaEstudiante), { httpsAgent: agent });
+                var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + tools.CedulaSinGuion(datos.strCedulaEstudiante), agentCentralizada);
                 var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
                 datos.per_email = ObtenerPersona.data.listado[0].per_email;
                 datos.per_emailAlternativo = ObtenerPersona.data.listado[0].per_emailAlternativo
