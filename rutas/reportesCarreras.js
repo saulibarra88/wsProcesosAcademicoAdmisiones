@@ -18,6 +18,13 @@ const agent = new https.Agent({
   // other options if needed
   secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+const agentCentralizada = {
+  httpsAgent: agent,
+  headers: {
+    Referer: CENTRALIZADA_REFERER,
+  }
+};
 module.exports.PdfListadoEstudiantesEstadoCupo = async function (listado, cedulaUsuario, periodo, estado) {
   try {
     var resultado = await ProcesoPdfListadoEstudiantesCuposEstados(listado, cedulaUsuario, periodo, estado);
@@ -163,7 +170,7 @@ module.exports.ExcelInconsistenciaMatriculas = async function (listado) {
 
   async function ProcesoExcelListadoEstudiantesAginaturaDocente(carrera, periodo, nivel, paralelo, CodMateria, cedula) {
     try {
-      var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + tools.CedulaSinGuion(cedula), { httpsAgent: agent });
+      var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + tools.CedulaSinGuion(cedula), agentCentralizada);
       var datosCarrera = await procesoCupo.ObtenerDatosBase(carrera);
       var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido
       var DatosAsignaturas = await procesoCupo.AsignaturasDatos(carrera, CodMateria)

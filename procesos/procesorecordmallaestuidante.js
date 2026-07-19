@@ -11,6 +11,7 @@ const funcionesmodelomovilidad = require('../modelo/modelomovilidad');
 const funcionestools = require('../rutas/tools');
 const funcionesmodelocarrera = require('../modelo/procesocarrera');
 const funcionesmodelocupos = require('../modelo/procesocupos');
+const sqlreconomiento = require('../modelo/modeloreconocimiento');
 const reportepdfmakecurriculuestudiante = require('../reportesmake/reportecurriculuestuidante');
 const funcionesmodelonotasacademicas = require('../modelo/procesonotasacademicos');
 const funcionesreportemovilidad = require('../rutas/reportesMovilidad');
@@ -51,7 +52,7 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
             return { blProceso: false, mensaje: "No se pudo obtener los datos del estudiante" };
         }
         const [datosCarrera, datosEstudianteUltima] = await Promise.all([ funcionesmodelocupos.ObtenerDatosBase(carrera), funcionesmodelomovilidad.ObtenerUltimoPeriodMatriculaEstuidante(carrera, cedula) ]);
-
+        var datosreconocimiento=await sqlreconomiento.ListarReconocimientosEstudiante(cedula)
         // Procesar datos
         const foto = await processStudentPhoto(fotoResponse.status === 'fulfilled' ? fotoResponse.value : null);
         const titulacion = processGraduationData(titulacionResponse.status === 'fulfilled' ? titulacionResponse.value : null);

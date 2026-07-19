@@ -9,6 +9,13 @@ const agent = new https.Agent({
   rejectUnauthorized: false,
   secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
+const CENTRALIZADA_REFERER = process.env.CENTRALIZADA_REFERER || 'https://yankayadmin.espoch.edu.ec/';
+const agentCentralizada = {
+  httpsAgent: agent,
+  headers: {
+    Referer: CENTRALIZADA_REFERER,
+  }
+};
 
 const defaultFonts = {
    Roboto: {
@@ -22,7 +29,7 @@ const defaultFonts = {
 module.exports.pdfmakeProcesoPdfListadosAspiranteAdmisiones = async function (listado, strBaseCarrera, cedula) {
     try {
         var datosCarrera = await procesoCupo.ObtenerDatosBase(strBaseCarrera);
-        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
         var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
         
         const tableBody = listado.map((estudiantes, index) => {
@@ -144,7 +151,7 @@ module.exports.pdfmakeProcesoPdfListadosAspiranteAdmisiones = async function (li
 module.exports.pdfmakeProcesoPdfListadosEstudiantesAdmisiones = async function (listado, strBaseCarrera, cedula) {
     try {
         var datosCarrera = await procesoCupo.ObtenerDatosBase(strBaseCarrera);
-        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, { httpsAgent: agent });
+        var ObtenerPersona = await axios.get("https://centralizada2.espoch.edu.ec/rutadinardap/obtenerpersona/" + cedula, agentCentralizada);
         var strNombres = ObtenerPersona.data.listado[0].per_nombres + " " + ObtenerPersona.data.listado[0].per_primerApellido + " " + ObtenerPersona.data.listado[0].per_segundoApellido;
         
         const tableBody = listado.map((estudiantes, index) => {
