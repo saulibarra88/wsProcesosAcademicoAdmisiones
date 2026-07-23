@@ -318,8 +318,8 @@ async function generarTablaBecas(listadoBecas) {
     
     return [
       { text: contador.toString(), style: 'tableCellCenter' },
-      { text: Utils.getValor(beca.nombFacultad || beca.facultad), style: 'tableCellLeft' },
       { text: Utils.getValor(beca.nombCarrera || beca.carrera), style: 'tableCellLeft' },
+      { text: Utils.getValor(beca.nombFacultad || beca.facultad), style: 'tableCellLeft' },
       { text: Utils.getValor(beca.strNombre || beca.nombreBeca), style: 'tableCellCenter' },
       { text: Utils.getValor(beca.periodoDetalle || beca.periodo), style: 'tableCellCenter' },
       { 
@@ -346,10 +346,10 @@ async function generarTablaReconocimientos(listadoReconocimientos) {
     { text: 'TIPO', style: 'tableHeader' },
     { text: 'NOMBRE DEL RECONOCIMIENTO', style: 'tableHeader' },
     { text: 'INSTITUCIÓN', style: 'tableHeader' },
-    { text: 'FECHA', style: 'tableHeader' }
+    { text: 'FECHA_OTORGAMIENTO', style: 'tableHeader' }
   ];
 
-  const tableWidths = ['auto', 'auto', '*', '*', 'auto'];
+  const tableWidths = ['auto', 'auto', 'auto', '*', 'auto'];
 
   const tableBody = listadoReconocimientos.map((rec, index) => {
     const contador = index + 1;
