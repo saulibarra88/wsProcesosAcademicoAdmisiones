@@ -22,9 +22,9 @@ const defaultFonts = {
       bolditalics: 'Helvetica-BoldOblique',
    },
 };
-module.exports.PdfCurriculumEstuidantilConsultor = async function (cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo) {
+module.exports.PdfCurriculumEstuidantilConsultor = async function (cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo, listadoReconocimientos) {
   try {
-    var resultado = await ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo);
+    var resultado = await ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo, listadoReconocimientos);
     return resultado;
   } catch (error) {
     console.error(error);
@@ -48,7 +48,7 @@ const Utils = {
   },
 };
 
-async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo) {
+async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera, listado, foto, objTitulacion, listadoBecas, codigo, listadoReconocimientos) {
 
   try {
     // 1. Extraer información básica
@@ -62,6 +62,7 @@ async function ProcesoPdfCurriculumEstudiantilConsultor(cedula, persona, carrera
     const content = await generarContenidoPDFDatosEstudiante({
       materiasPorNivel,
       listadoBecas,
+      listadoReconocimientos,
       objTitulacion,
       carrera,
       cedula,
@@ -172,7 +173,7 @@ function crearInfoEstudiante(fotoBase64, persona, cedula, carrera) {
 }
 
 
-async function generarContenidoPDFDatosEstudiante({ materiasPorNivel, listadoBecas, objTitulacion, carrera, cedula, strNombres, foto,persona }) {
+async function generarContenidoPDFDatosEstudiante({ materiasPorNivel, listadoBecas, listadoReconocimientos, objTitulacion, carrera, cedula, strNombres, foto,persona }) {
   const content = [];
 
   content.push(crearInfoEstudiante(foto, persona, cedula, carrera));
@@ -192,7 +193,7 @@ async function generarContenidoPDFDatosEstudiante({ materiasPorNivel, listadoBec
     content.push({
       text: `PAO: ${grupo.strDescripcion}`,
       style: 'nivelTitle',
-       fontSize: 10,
+      fontSize: 10,
       margin: [0, 10, 0, 5]
     });
 
@@ -222,6 +223,26 @@ async function generarContenidoPDFDatosEstudiante({ materiasPorNivel, listadoBec
       color: '#999'
     });
   }
+
+  content.push({
+    text: 'RECONOCIMIENTOS ESTUDIANTILES',
+    style: 'nivelTitle',
+    margin: [0, 20, 0, 10]
+  });
+
+  if (listadoReconocimientos && listadoReconocimientos.length > 0) {
+    const tablaReconocimientos = await generarTablaReconocimientos(listadoReconocimientos);
+    content.push(tablaReconocimientos);
+  } else {
+    content.push({
+      text: 'El estudiante no registra información en reconocimientos',
+      style: 'tableCellLeft',
+      margin: [0, 5, 0, 10],
+      italics: true,
+      color: '#999'
+    });
+  }
+
   content.push({
     text: 'PROYECTO TITULACIÓN',
     style: 'nivelTitle',
@@ -306,6 +327,55 @@ async function generarTablaBecas(listadoBecas) {
         style: 'tableCellCenter',
         color: esActivo ? '#28a745' : '#6c757d'
       }
+    ];
+  });
+
+  return {
+    layout: 'lightHorizontalLines',
+    table: {
+      headerRows: 1,
+      widths: tableWidths,
+      body: [tableColumns, ...tableBody]
+    },
+  };
+}
+
+async function generarTablaReconocimientos(listadoReconocimientos) {
+  const tableColumns = [
+    { text: '#', style: 'tableHeader' },
+    { text: 'TIPO', style: 'tableHeader' },
+    { text: 'NOMBRE DEL RECONOCIMIENTO', style: 'tableHeader' },
+    { text: 'INSTITUCIÓN', style: 'tableHeader' },
+    { text: 'FECHA', style: 'tableHeader' }
+  ];
+
+  const tableWidths = ['auto', 'auto', '*', '*', 'auto'];
+
+  const tableBody = listadoReconocimientos.map((rec, index) => {
+    const contador = index + 1;
+    let fechaStr = 'SIN FECHA';
+    if (rec.tr_fecha_otorgamiento) {
+      try {
+        const d = new Date(rec.tr_fecha_otorgamiento);
+        if (!isNaN(d.getTime())) {
+          const day = String(d.getUTCDate()).padStart(2, '0');
+          const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+          const year = d.getUTCFullYear();
+          fechaStr = `${day}/${month}/${year}`;
+        } else {
+          fechaStr = String(rec.tr_fecha_otorgamiento);
+        }
+      } catch (e) {
+        fechaStr = String(rec.tr_fecha_otorgamiento);
+      }
+    }
+
+    return [
+      { text: contador.toString(), style: 'tableCellCenter' },
+      { text: Utils.getValor(rec.tt_nombre), style: 'tableCellCenter' },
+      { text: Utils.getValor(rec.tr_nombre), style: 'tableCellLeft' },
+      { text: Utils.getValor(rec.tr_institucion), style: 'tableCellLeft' },
+      { text: fechaStr, style: 'tableCellCenter' }
     ];
   });
 

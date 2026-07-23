@@ -124,7 +124,26 @@ module.exports.ListarReconocimientosEstudiante = async function (carrera, cedula
     return { data: [], message: "Error: " + error, count: -1 };
   }
 };
-
+module.exports.ListarReconocimientosEstudianteCurriculum = async function (carrera, cedula) {
+  const sentencia = `
+    SELECT r.*, t.tt_nombre, n.tn_nombre 
+    FROM [${carrera}].[dbo].[tb_reconocimiento_estudiante] r
+    INNER JOIN [${carrera}].[dbo].[tb_reconocimiento_tipo] t ON r.tr_idtipo = t.tt_idtipo
+    INNER JOIN [${carrera}].[dbo].[tb_reconocimiento_nivel] n ON r.tr_idnivel = n.tn_idnivel
+    WHERE r.tr_cedula = '${cedula}' AND r.tr_estado = 1
+    ORDER BY r.tr_fecha_otorgamiento DESC;
+  `;
+  try {
+    if (carrera && carrera !== "") {
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
+      return sqlConsulta;
+    } else {
+      return { data: [], message: "Falta parámetro carrera", count: 0 };
+    }
+  } catch (error) {
+    return { data: [], message: "Error: " + error, count: -1 };
+  }
+};
 /**
  * Actualizar un reconocimiento existente de estudiante
  * @param {string} carrera Base de datos de la carrera

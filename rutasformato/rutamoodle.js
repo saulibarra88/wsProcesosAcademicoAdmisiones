@@ -55,6 +55,22 @@ router.post('/RetirosEstudianteCarreras', async (req, res) => {
         logger.error('Error RetirosEstudianteCarreras', { message: error.message, stack: error.stack});
         return sendResponseServicios(res, false, [],error.message);
     }
- 
 });
+
+router.post('/MigrarReconocimientosExcel', async (req, res) => {
+    const { iduser } = req.body;
+    try {
+        var Informacion = await procesosmoodlefunciones.ProcesoMigrarReconocimientosExcel(iduser || 0);
+        if (Informacion.proceso) {
+            return sendResponseServicios(res, true, Informacion.datos, 'OK');
+        }
+        else {
+            return sendResponseServicios(res, false, [], Informacion.message);
+        }
+    } catch (error) {
+        logger.error('Error MigrarReconocimientosExcel', { message: error.message, stack: error.stack });
+        return sendResponseServicios(res, false, [], error.message);
+    }
+});
+
 module.exports = router;
