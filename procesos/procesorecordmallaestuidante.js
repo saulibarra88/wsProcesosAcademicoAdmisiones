@@ -52,7 +52,9 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
             return { blProceso: false, mensaje: "No se pudo obtener los datos del estudiante" };
         }
         const [datosCarrera, datosEstudianteUltima] = await Promise.all([ funcionesmodelocupos.ObtenerDatosBase(carrera), funcionesmodelomovilidad.ObtenerUltimoPeriodMatriculaEstuidante(carrera, cedula) ]);
-        var datosreconocimiento=await sqlreconomiento.ListarReconocimientosEstudiante(cedula)
+      console.log(cedula)
+        var datosreconocimiento=await sqlreconomiento.ListarReconocimientosEstudianteCurriculum('OAS_Master',cedula)
+        console.log(datosreconocimiento)
         // Procesar datos
         const foto = await processStudentPhoto(fotoResponse.status === 'fulfilled' ? fotoResponse.value : null);
         const titulacion = processGraduationData(titulacionResponse.status === 'fulfilled' ? titulacionResponse.value : null);
@@ -71,7 +73,7 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
         // Generar PDF
      // const pdfBase64 = await funcionesreportemovilidad.PdfCurriculumEstuidantilConsultor( cedula, personaResponse.value.data.listado[0], datosCarrera.data[0], informacionListado, foto, titulacion, listadoBecas, datosEstudianteUltima.data[0].strCodigo );
        const ListadoFiltrados = filtrarItinerarioPorNiveles(informacionListado);
-     const pdfBase64 = await reportepdfmakecurriculuestudiante.PdfCurriculumEstuidantilConsultor( cedula, personaResponse.value.data.listado[0], datosCarrera.data[0], ListadoFiltrados, foto, titulacion, listadoBecas, datosEstudianteUltima.data[0].strCodigo );
+     const pdfBase64 = await reportepdfmakecurriculuestudiante.PdfCurriculumEstuidantilConsultor( cedula, personaResponse.value.data.listado[0], datosCarrera.data[0], ListadoFiltrados, foto, titulacion, listadoBecas, datosEstudianteUltima.data[0].strCodigo, datosreconocimiento?.data || [] );
         return pdfBase64;
         
     } catch (error) {
@@ -108,7 +110,8 @@ async function procesarConHomologacion(recordAcademicoNivel, carrera, datosEstud
                         asignaturasProcesadas.homologadas,
                         asignaturasAprobadas,
                         cedula,
-                        datosEstudiante
+                        datosEstudiante,
+                        carrera
                     );
                     
                     if (asignaturaProcesada) {
@@ -246,7 +249,7 @@ async function procesarAsignaturasAprobadasSinHomologar(asignaturasProcesadas) {
     return { asignaturasAprobadas, asignaturasProcesadasLista };
 }
 
-async function procesarAsignaturaMalla(asignaturaMalla, nivel, homologadas, asignaturasAprobadas, cedula, datosEstudiante) {
+async function procesarAsignaturaMalla(asignaturaMalla, nivel, homologadas, asignaturasAprobadas, cedula, datosEstudiante, carrera) {
     const asignaturaBase = {
         Cedula: cedula,
         Tipo: 2,
@@ -262,10 +265,12 @@ async function procesarAsignaturaMalla(asignaturaMalla, nivel, homologadas, asig
         nombretipo: asignaturaMalla.nombretipo,
         CodigoMateriaNueva: '',
     };
+
+    const codMallaTrim = (asignaturaMalla.strCodMateria || '').trim();
     
-    // Buscar en homologaciones
+    // 1. Buscar en homologaciones (directo)
     const homologacion = homologadas.find(h => 
-        h.CodigoMateriaNueva === asignaturaMalla.strCodMateria
+        (h.CodigoMateriaNueva || '').trim() === codMallaTrim
     );
     
     if (homologacion && ['A', 'E', 'H', 'RC', 'AVC', 'C'].includes(homologacion.Equivalencia)) {
@@ -279,9 +284,9 @@ async function procesarAsignaturaMalla(asignaturaMalla, nivel, homologadas, asig
         };
     }
     
-    // Buscar en asignaturas aprobadas sin homologar
+    // 2. Buscar en asignaturas aprobadas sin homologar (directo)
     const asignaturaAprobada = asignaturasAprobadas.find(a => 
-        a.CodigoMateriaAnterior === asignaturaMalla.strCodMateria
+        (a.CodigoMateriaAnterior || '').trim() === codMallaTrim
     );
     
     if (asignaturaAprobada && ['A', 'E', 'H', 'RC', 'AVC', 'C'].includes(asignaturaAprobada.Equivalencia)) {
@@ -294,6 +299,47 @@ async function procesarAsignaturaMalla(asignaturaMalla, nivel, homologadas, asig
             CodigoMateriaNueva: ''
         };
     }
+
+    // 3. Buscar homologaciones recursivas sin homologar (múltiples / cadena)
+    const asignaturaRecSin = await buscarAsignaturaAprobadaSiHomologacionesRecursivaSinHomologacion(carrera, asignaturaMalla, asignaturasAprobadas);
+    if (asignaturaRecSin) {
+        return {
+            ...asignaturaBase,
+            estadoasignatura: 'APROBADA',
+            CodigoMateriaAnterior: asignaturaRecSin.asignaturafiltrada.codigos_concatenados,
+            NombreMateriaAnterior: asignaturaRecSin.asignaturafiltrada.nombres_concatenados,
+            nombrehomologacion: asignaturaRecSin.nombrehomologacion,
+            CodigoMateriaNueva: asignaturaMalla.strCodMateria
+        };
+    }
+
+    // 4. Buscar homologaciones recursivas con homologar (múltiples / cadena)
+    const asignaturaRecCon = await buscarAsignaturaAprobadaSiHomologacionesRecursivaHomologacion(carrera, asignaturaMalla, homologadas);
+    if (asignaturaRecCon) {
+        return {
+            ...asignaturaBase,
+            estadoasignatura: 'APROBADA',
+            CodigoMateriaAnterior: asignaturaRecCon.asignaturafiltrada.codigos_concatenados,
+            NombreMateriaAnterior: asignaturaRecCon.asignaturafiltrada.nombres_concatenados,
+            nombrehomologacion: asignaturaRecCon.nombrehomologacion,
+            CodigoMateriaNueva: asignaturaMalla.strCodMateria
+        };
+    }
+
+    // 5. Buscar homologación especial
+    const asignaturaEsp = buscarAsignaturaAprobadaHomologacionEspecial(asignaturaMalla, homologadas);
+    if (asignaturaEsp) {
+        return {
+            ...asignaturaBase,
+            estadoasignatura: 'APROBADA',
+            CodigoMateriaAnterior: asignaturaEsp.CodigoMateriaNueva,
+            NombreMateriaAnterior: asignaturaEsp.NombreMateriaNueva,
+            NombreMateriaActual: asignaturaEsp.NombreMateriaAnterior,
+            CodigoMateriaActual: asignaturaEsp.CodigoMateriaAnterior,
+            nombrehomologacion: asignaturaEsp.nombrehomologacion,
+            CodigoMateriaNueva: asignaturaEsp.CodigoMateriaAnterior
+        };
+    }
     
     // Por defecto, pendiente
     return {
@@ -303,13 +349,77 @@ async function procesarAsignaturaMalla(asignaturaMalla, nivel, homologadas, asig
     };
 }
 
+async function buscarAsignaturaAprobadaSiHomologacionesRecursivaSinHomologacion(carrera, asignaturaMalla, asignaturasAprobadas) {
+    const asignaturashomologacionesrecursiva = await funcionesmodelomovilidad.ObtenerHomologacionesUnoaUnoRecursiva('SistemaAcademico', carrera, asignaturaMalla.strCodMateria);
+    if (asignaturashomologacionesrecursiva && asignaturashomologacionesrecursiva.count > 0) {
+        const data = asignaturashomologacionesrecursiva.data;
+        for (const item of data) {
+            const match = asignaturasAprobadas.find(
+                a => (a.CodigoMateriaAnterior || '').trim() === (item.materia_actual || '').trim() ||
+                     (a.CodigoMateriaAnterior || '').trim() === (item.materia_anterior || '').trim()
+            );
+            if (match) {
+                return {
+                    ...match,
+                    asignaturafiltrada: item
+                };
+            }
+        }
+    }
+    return null;
+}
+
+async function buscarAsignaturaAprobadaSiHomologacionesRecursivaHomologacion(carrera, asignaturaMalla, homologadas) {
+    const asignaturashomologacionesrecursiva = await funcionesmodelomovilidad.ObtenerHomologacionesUnoaUnoRecursiva('SistemaAcademico', carrera, asignaturaMalla.strCodMateria);
+    if (asignaturashomologacionesrecursiva && asignaturashomologacionesrecursiva.count > 0) {
+        const data = asignaturashomologacionesrecursiva.data;
+        for (const item of data) {
+            const match = homologadas.find(
+                h => (h.CodigoMateriaAnterior || '').trim() === (item.materia_actual || '').trim() ||
+                     (h.CodigoMateriaAnterior || '').trim() === (item.materia_anterior || '').trim()
+            );
+            if (match) {
+                return {
+                    ...match,
+                    asignaturafiltrada: item
+                };
+            }
+        }
+    }
+    return null;
+}
+
+function buscarAsignaturaAprobadaHomologacionEspecial(asignaturaMalla, homologadas) {
+    const match = homologadas.find(
+        h => (h.CodigoMateriaAnterior || '').trim() === (asignaturaMalla.strCodMateria || '').trim()
+    );
+    return match || null;
+}
+
 async function procesarAsignaturasNoNecesitaAprobar(carrera, codigoEstudiante, listadoAsignaturaProcesada, nivelesMalla) {
     try {
         const asignaturasNoAprobar = await funcionesmodelomovilidad.ListadoASignaturasqNotieneqAprobar(carrera, codigoEstudiante);
         
-        const asignaturasFinales = asignaturasNoAprobar.count > 0
-            ? await funcionestools.QuitarASignaturasNoAprobar(listadoAsignaturaProcesada, asignaturasNoAprobar.data)
-            : listadoAsignaturaProcesada;
+        let asignaturasFinales = listadoAsignaturaProcesada;
+        if (asignaturasNoAprobar && asignaturasNoAprobar.count > 0) {
+            const codigosNoAprobar = new Set(
+                asignaturasNoAprobar.data
+                    .filter(item => item && item.strCodMat)
+                    .map(item => item.strCodMat.toString().trim().toUpperCase())
+            );
+            
+            asignaturasFinales = listadoAsignaturaProcesada.filter(item => {
+                if (!item || !item.CodigoMateriaAnterior) return false;
+                const codigoNormalizado = item.CodigoMateriaAnterior.toString().trim().toUpperCase();
+                
+                // Si la materia está en el listado de exclusión pero ya fue APROBADA, se conserva.
+                // Si está en el listado de exclusión y está POR APROBAR, se descarta.
+                if (codigosNoAprobar.has(codigoNormalizado)) {
+                    return item.estadoasignatura === 'APROBADA';
+                }
+                return true;
+            });
+        }
         
         // Agrupar por nivel
         return nivelesMalla.map(nivel => ({
