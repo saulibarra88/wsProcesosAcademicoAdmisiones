@@ -52,9 +52,7 @@ async function FuncionCurriculumEstudiantilConsultor(carrera, cedula) {
             return { blProceso: false, mensaje: "No se pudo obtener los datos del estudiante" };
         }
         const [datosCarrera, datosEstudianteUltima] = await Promise.all([ funcionesmodelocupos.ObtenerDatosBase(carrera), funcionesmodelomovilidad.ObtenerUltimoPeriodMatriculaEstuidante(carrera, cedula) ]);
-      console.log(cedula)
         var datosreconocimiento=await sqlreconomiento.ListarReconocimientosEstudianteCurriculum('OAS_Master',cedula)
-        console.log(datosreconocimiento)
         // Procesar datos
         const foto = await processStudentPhoto(fotoResponse.status === 'fulfilled' ? fotoResponse.value : null);
         const titulacion = processGraduationData(titulacionResponse.status === 'fulfilled' ? titulacionResponse.value : null);
@@ -140,10 +138,17 @@ async function procesarSinHomologacion(recordAcademicoNivel, carrera, datosEstud
         
         // Si el estudiante ha terminado, mostrar todo el récord académico
         if (titulacion.estado === 'TERMINADO') {
-            const nivelesAgrupados = agruparAsignaturasPorNivel(asignaturasAprobadas);
+            const asignaturasMap = asignaturasAprobadas.map(a => ({
+                ...a,
+                estadoasignatura: 'APROBADA',
+                nombretipo: a.nombretipo || 'OBLIGATORIA',
+                codNivel: a.codNivel || mapNivelACodigo(a.Nivel)
+            }));
+            
+            const nivelesAgrupados = agruparAsignaturasPorNivel(asignaturasMap);
             return nivelesAgrupados.map(nivel => ({
                 ...nivel,
-                listadoasignaturas: asignaturasAprobadas.filter(a => a.Nivel === nivel.strDescripcion)
+                listadoasignaturas: asignaturasMap.filter(a => a.Nivel === nivel.strDescripcion)
             }));
         }
         
@@ -396,6 +401,10 @@ function buscarAsignaturaAprobadaHomologacionEspecial(asignaturaMalla, homologad
     return match || null;
 }
 
+function normalizeCode(code) {
+    return (code || '').toString().trim().replace(/\.+$/, '').toUpperCase();
+}
+
 async function procesarAsignaturasNoNecesitaAprobar(carrera, codigoEstudiante, listadoAsignaturaProcesada, nivelesMalla) {
     try {
         const asignaturasNoAprobar = await funcionesmodelomovilidad.ListadoASignaturasqNotieneqAprobar(carrera, codigoEstudiante);
@@ -405,19 +414,21 @@ async function procesarAsignaturasNoNecesitaAprobar(carrera, codigoEstudiante, l
             const codigosNoAprobar = new Set(
                 asignaturasNoAprobar.data
                     .filter(item => item && item.strCodMat)
-                    .map(item => item.strCodMat.toString().trim().toUpperCase())
+                    .map(item => normalizeCode(item.strCodMat))
             );
             
-            asignaturasFinales = listadoAsignaturaProcesada.filter(item => {
-                if (!item || !item.CodigoMateriaAnterior) return false;
-                const codigoNormalizado = item.CodigoMateriaAnterior.toString().trim().toUpperCase();
+            asignaturasFinales = listadoAsignaturaProcesada.map(item => {
+                if (!item || !item.CodigoMateriaAnterior) return item;
+                const codigoNormalizado = normalizeCode(item.CodigoMateriaAnterior);
                 
-                // Si la materia está en el listado de exclusión pero ya fue APROBADA, se conserva.
-                // Si está en el listado de exclusión y está POR APROBAR, se descarta.
+                // Si la materia está en el listado de exclusión/resolución, automáticamente se marca como APROBADA
                 if (codigosNoAprobar.has(codigoNormalizado)) {
-                    return item.estadoasignatura === 'APROBADA';
+                    return {
+                        ...item,
+                        estadoasignatura: 'APROBADA'
+                    };
                 }
-                return true;
+                return item;
             });
         }
         
@@ -461,21 +472,45 @@ function processGraduationData(graduationData) {
     };
 }
 
+function mapNivelACodigo(nivelDesc) {
+    const norm = (nivelDesc || '').trim().toUpperCase();
+    switch (norm) {
+        case 'PRIMERO': return '1';
+        case 'SEGUNDO': return '2';
+        case 'TERCERO': return '3';
+        case 'CUARTO': return '4';
+        case 'QUINTO': return '5';
+        case 'SEXTO': return '6';
+        case 'SEPTIMO': return '7';
+        case 'OCTAVO': return '8';
+        case 'NOVENO': return '9';
+        case 'DECIMO': return '10';
+        default: return '999';
+    }
+}
+
 function agruparAsignaturasPorNivel(asignaturas) {
     const nivelesMap = new Map();
     
     for (const asignatura of asignaturas) {
-        if (!nivelesMap.has(asignatura.Nivel)) {
-            nivelesMap.set(asignatura.Nivel, {
-                strDescripcion: asignatura.Nivel,
-                strCodNivel: asignatura.codNivel || '',
+        const nivelNombre = asignatura.Nivel || 'Nivel Sin Especificar';
+        if (!nivelesMap.has(nivelNombre)) {
+            const codNivel = asignatura.codNivel || mapNivelACodigo(nivelNombre);
+            nivelesMap.set(nivelNombre, {
+                strDescripcion: nivelNombre,
+                strCodNivel: codNivel,
                 listadoasignaturas: []
             });
         }
-        nivelesMap.get(asignatura.Nivel).listadoasignaturas.push(asignatura);
+        nivelesMap.get(nivelNombre).listadoasignaturas.push(asignatura);
     }
     
-    return Array.from(nivelesMap.values());
+    // Ordenar niveles numéricamente por strCodNivel
+    return Array.from(nivelesMap.values()).sort((a, b) => {
+        const aNum = parseInt(a.strCodNivel) || 999;
+        const bNum = parseInt(b.strCodNivel) || 999;
+        return aNum - bNum;
+    });
 }
 
 function ordenarPorFecha(listado) {
