@@ -45,7 +45,16 @@ module.exports.ProcesoModleMigracionDatosDictadoCarrera = async function (carrer
         return sendResponseProcesos(false, [], error.message)
     }
 }
+module.exports.ProcesoModleMigracionDatosDictadoCarreraDocentes = async function (carrera, periodo) {
+    try {
 
+        var resultado = await FuncionProcesoDictadoAsignaturaCarreraDocentes(carrera, periodo);
+        return sendResponseProcesos(true, resultado, 'OK')
+    } catch (error) {
+        logger.error('Error ProcesoModleMigracionDatosDictadoCarrera', { message: error.message, stack: error.stack });
+        return sendResponseProcesos(false, [], error.message)
+    }
+}
 module.exports.ProcesoRetirosEstudiantesCarrera = async function (listado) {
     try {
 
@@ -83,7 +92,22 @@ async function FuncionProcesoDictadoAsignaturaCarrera(dbcarrera, periodo) {
     }
 
 }
+async function FuncionProcesoDictadoAsignaturaCarreraDocentes(dbcarrera, periodo) {
+    try {
+        var lstResultado = []
+        var lstResultadoGeneral = {}
+        var informacion = await sqlmoodle.ListadoDictadoAsignaturaCarrera(dbcarrera, periodo);
+        var DatosCarrera = await sqlmoodle.ObternDatosCarreraFacultad('OAS_Master', dbcarrera);
+    
+        lstResultadoGeneral.Carrera = DatosCarrera.datos.data[0]
+        lstResultadoGeneral.Docentes = informacion.datos.data
+        return lstResultadoGeneral
+    } catch (error) {
+        console.error(error);
 
+    }
+
+}
 async function FuncionProcesoRetirosEstudianteCarrera(listado) {
     try {
         var lstResultado = []
