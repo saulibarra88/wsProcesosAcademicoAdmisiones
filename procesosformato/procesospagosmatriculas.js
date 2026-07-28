@@ -28,7 +28,6 @@ const agent = new https.Agent({
 module.exports.ProcesosEstudiante60AsignaturasMatricula = async function (codigo, periodo, cedula) {
     try {
         const datosCarrera = await sqlpagosmatriculas.ObtenerMasterDatosCarreraCodigo('OAS_Master', codigo);
-        console.log(datosCarrera.datos.data[0].strBaseDatos)
         if (datosCarrera.datos.count > 0) {
             var informacion = await sqlpagosmatriculas.ObtenerDatosEstuidante60CreditoAsignaturasMatricula(datosCarrera.datos.data[0].strBaseDatos,codigo, periodo, cedula);
             return sendResponseProcesos(true, informacion.datos.data, 'OK')

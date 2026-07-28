@@ -248,7 +248,6 @@ module.exports.ProcesoCertificadoMejorEstudianteAsignatura = async function (dbc
 
             var Informacion = await sqlmodelogenerales.ObtenerMejorEstudianteTresCalificacionesAsignaturaCarrera(dbcarrera, periodo, asignatura);
         }
-        console.log(Informacion)
         if (Informacion.datos.count > 0) {
             const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
             const datosPeriodo = await sqlprocesoCupo.PeriodoDatos(dbcarrera, periodo);
@@ -360,7 +359,6 @@ module.exports.ProcesoCertificadoEstudianteRetiroasignaturaCarrera = async funct
 module.exports.ProcesoCertificadoEstudianteRetiroCarrera = async function (dbcarrera, cedulaestudiante) {
     try {
         var DatosRetiro = await sqlmodelogenerales.ObtenerPeriodoIniciFinMatriculaEstudianteCarrera(dbcarrera, cedulaestudiante);
-        console.log(DatosRetiro.datos.data[0])
         if (DatosRetiro.datos && DatosRetiro.datos.count > 0) {
             const datosCarrera = await sqlprocesoCupo.ObtenerDatosBase(dbcarrera);
             var retiroInfo = DatosRetiro.datos.data[0];
