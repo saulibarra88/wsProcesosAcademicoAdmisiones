@@ -55,6 +55,22 @@ module.exports.obtenerdocumento = async function (cedula) {
       return { data: "Error: " + error }
     }
   }
+
+    module.exports.ActualizarDatosPersonaCentralCorreosTelefono = async function (objpersona) {
+    var sentencia;
+    sentencia = `update central.persona set per_email='${objpersona.per_email}',"per_emailAlternativo"='${objpersona.per_emailAlternativo}',"per_telefonoCelular"='${objpersona.per_telefonoCelular}',"per_telefonoOficina"='${objpersona.per_telefonoOficina}' where per_id=${objpersona.per_id}`
+    try {
+  
+      if (sentencia != "") {
+        const resp = await execCentralizadaMejorada(sentencia, "OK", "OK");
+        return (resp)
+      } else {
+        return { data: "vacio sql" }
+      }
+    } catch (error) {
+      return { data: "Error: " + error }
+    }
+  }
   module.exports.ActualizarDatosPersonaCentralDireccion = async function (objpersona) {
     var sentencia;
     sentencia = `update central.direccion set "dir_callePrincipal"='${objpersona.dir_callePrincipal}' where per_id=${objpersona.per_id}`

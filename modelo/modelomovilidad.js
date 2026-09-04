@@ -1297,4 +1297,102 @@ module.exports.ActualizarEstadoSolicitud = async function (carrera, periodo, ced
   }
 }
 
+module.exports.ProcesoReversaMovilidadInternaEstudiante = async function (carreraorigen,carreramovilidad, cedulasinguion, cedulaconguion, periodo) {
+  var sentencia = "";
+  var sentencia2 = "";
+  var sentencia3 = "";
+  var sentencia4 = "";
+  var sentencia5 = "";
+  var sentencia6 = "";
+  var sentencia7 = "";
+  var sentencia8 = "";
+  sentencia = "DELETE EF FROM [" + carreramovilidad + "].[dbo].[Estudiantefoto] AS EF INNER JOIN [" + carreramovilidad + "].[dbo].[Estudiantes] AS E ON E.strCodigo=EF.strCodigo WHERE E.[strCedula]='" + cedulaconguion + "'"
+var sentencia2="DELETE FROM [" + carreramovilidad + "].[dbo].[Estudiantes] WHERE [strCedula]='" + cedulaconguion + "'"
+var sentencia3="DELETE FROM [OAS_Cupos_Institucionales].[cupos].[tb_detalle_cupo] WHERE [dc_idcupo]=(SELECT top (1) c_id FROM [OAS_Cupos_Institucionales].[cupos].[tb_cupos] WHERE [c_identificacion]='" + cedulaconguion + "'  ORDER BY c_fecha_registro DESC )"
+var sentencia4="DELETE FROM [OAS_Cupos_Institucionales].[cupos].[tb_cupos] WHERE [c_id]=(SELECT top (1) c_id FROM [OAS_Cupos_Institucionales].[cupos].[tb_cupos] WHERE [c_identificacion]='" + cedulaconguion + "'  ORDER BY c_fecha_registro DESC )"
+var sentencia5="UPDATE [OAS_Cupos_Institucionales].[cupos].[tb_cupos] SET [c_vigencia]=1,[c_observacion]='' WHERE [c_id]=(SELECT top (1) c_id FROM [OAS_Cupos_Institucionales].[cupos].[tb_cupos] WHERE [c_identificacion]='" + cedulaconguion + "' ORDER BY c_fecha_registro DESC )"
+var sentencia6="DELETE FROM [OAS_Master].[dbo].[Inscripciones] WHERE [intCodigo]=(SELECT top (1) intCodigo FROM [OAS_Master].[dbo].[Inscripciones] WHERE [strCedEstud]='" + cedulaconguion + "' and  [strCodPeriodo]='" + periodo + "'  ORDER BY intCodigo DESC )"
+var sentencia7="DELETE FROM [OAS_Cupos_Institucionales].[cupos].[tb_detalle_cupo] WHERE dc_id=(SELECT TOP (1) dc_id FROM [OAS_Cupos_Institucionales].[cupos].[tb_detalle_cupo] WHERE [dc_idcupo]=(SELECT top (1) c_id FROM [OAS_Cupos_Institucionales].[cupos].[tb_cupos] WHERE [c_identificacion]='" + cedulaconguion + "'  ORDER BY c_fecha_registro DESC ) ORDER BY dc_id DESC)"
+ var sentencia8="UPDATE [OAS_Master].[dbo].[tb_movilidad_solicitud] SET [cm_idtipo_estado]='RECH',cm_strobservacion='' WHERE [cm_periodo]='" + periodo + "' AND [cm_identificacion]='" + cedulasinguion + "' AND [cm_idtipo_estado]='APRO' AND [cm_dbcarrera_movilidad]='" + carreramovilidad + "'"
+console.log(sentencia)
+console.log(sentencia2)
+console.log(sentencia3)
+console.log(sentencia4)
+console.log(sentencia5)
+console.log(sentencia6)
+console.log(sentencia7)
+console.log(sentencia8)
+ try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carreramovilidad, sentencia, "OK", "OK");
+      const sqlConsulta2 = await execDinamico(carreramovilidad, sentencia2, "OK", "OK");
+      const sqlConsulta3= await execDinamico('OAS_Cupos_Institucionales', sentencia3, "OK", "OK");
+      const sqlConsulta4 = await execDinamico('OAS_Cupos_Institucionales', sentencia4, "OK", "OK");
+      const sqlConsulta5= await execDinamico('OAS_Cupos_Institucionales', sentencia5, "OK", "OK");
+      const sqlConsulta6= await execDinamico('OAS_Master', sentencia6, "OK", "OK");
+      const sqlConsulta7 = await execDinamico('OAS_Cupos_Institucionales', sentencia7, "OK", "OK");
+      const sqlConsulta8 = await execDinamico('OAS_Master', sentencia8, "OK", "OK");
 
+      return (sqlConsulta8)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+
+}
+
+module.exports.ProcesoReversaMovilidadExternaEstudiante = async function (carreraorigen,carreramovilidad, cedulasinguion, cedulaconguion, periodo) {
+  var sentencia = "";
+  var sentencia2 = "";
+  var sentencia3 = "";
+  var sentencia4 = "";
+  var sentencia5 = "";
+  var sentencia6 = "";
+  var sentencia7 = "";
+  var sentencia8 = "";
+  sentencia = "DELETE EF FROM [" + carreramovilidad + "].[dbo].[Estudiantefoto] AS EF INNER JOIN [" + carreramovilidad + "].[dbo].[Estudiantes] AS E ON E.strCodigo=EF.strCodigo WHERE E.[strCedula]='" + cedulaconguion + "'"
+var sentencia2="DELETE FROM [" + carreramovilidad + "].[dbo].[Estudiantes] WHERE [strCedula]='" + cedulaconguion + "'"
+var sentencia3="DELETE FROM [OAS_Cupos_Institucionales].[cupos].[tb_detalle_cupo] WHERE [dc_idcupo]=(SELECT top (1) c_id FROM [OAS_Cupos_Institucionales].[cupos].[tb_cupos] WHERE [c_identificacion]='" + cedulaconguion + "'  ORDER BY c_fecha_registro DESC )"
+var sentencia4="DELETE FROM [OAS_Cupos_Institucionales].[cupos].[tb_cupos] WHERE [c_id]=(SELECT top (1) c_id FROM [OAS_Cupos_Institucionales].[cupos].[tb_cupos] WHERE [c_identificacion]='" + cedulaconguion + "'  ORDER BY c_fecha_registro DESC )"
+var sentencia6="DELETE FROM [OAS_Master].[dbo].[Inscripciones] WHERE [intCodigo]=(SELECT top (1) intCodigo FROM [OAS_Master].[dbo].[Inscripciones] WHERE [strCedEstud]='" + cedulaconguion + "' and  [strCodPeriodo]='" + periodo + "'  ORDER BY intCodigo DESC )"
+ var sentencia5="DELETE FROM [OAS_Master].[dbo].[tb_movilidad_solicitud] WHERE [cm_periodo]='" + periodo + "' AND [cm_identificacion]='" + cedulasinguion + "' AND [cm_idtipo_estado]='APRO' AND [cm_dbcarrera_movilidad]='" + carreramovilidad + "'"
+console.log(sentencia)
+console.log(sentencia2)
+console.log(sentencia3)
+console.log(sentencia4)
+console.log(sentencia5)
+console.log(sentencia6)
+ try {
+    if (sentencia != "") {
+      const sqlConsulta = await execDinamico(carreramovilidad, sentencia, "OK", "OK");
+      const sqlConsulta2 = await execDinamico(carreramovilidad, sentencia2, "OK", "OK");
+      const sqlConsulta3= await execDinamico('OAS_Cupos_Institucionales', sentencia3, "OK", "OK");
+      const sqlConsulta4 = await execDinamico('OAS_Cupos_Institucionales', sentencia4, "OK", "OK");
+      const sqlConsulta5= await execDinamico('OAS_Cupos_Institucionales', sentencia5, "OK", "OK");
+      const sqlConsulta6= await execDinamico('OAS_Master', sentencia6, "OK", "OK");
+
+      return (sqlConsulta8)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}
+
+module.exports.ListadoCarrerasModilidadInternaAreaConocimiento = async function (carrera,dbcarrera, periodo) {
+  var sentencia = "";
+  sentencia = "SELECT * FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] WHERE [msca_campo] = ( SELECT [msca_campo] FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] WHERE [msca_dbcarreraactual] ='" + dbcarrera + "' AND [msca_tipo] = 'MOVINT' AND [msca_periodo] = '" + periodo + "' ) AND [msca_tipo] = 'MOVINT' AND [msca_periodo] = '" + periodo + "' AND [msca_dbcarreraactual] != '" + dbcarrera + "' AND [msca_dbcarreraactual] NOT IN ( SELECT [msca_dbcarreramovilidad] FROM [" + carrera + "].[dbo].[tb_movilidad_carreras] WHERE [msca_dbcarreraactual] = '" + dbcarrera + "' AND [msca_tipo] = 'MOVTRASP' AND [msca_periodo] = '" + periodo + "' AND [msca_dbcarreramovilidad] IS NOT NULL );";
+  try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera, sentencia, "OK", "OK");
+      return (sqlConsulta)
+    } else {
+      return { data: "vacio sql" }
+    }
+  } catch (error) {
+    return { data: "Error: " + error }
+  }
+}

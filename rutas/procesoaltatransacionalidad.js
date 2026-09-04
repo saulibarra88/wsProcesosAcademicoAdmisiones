@@ -75,7 +75,18 @@ module.exports.ProcesoFotoMatriculasNivelacionInstitucional = async function (pe
 
     }
 }
+module.exports.ProcesoRecorridoCarreraProceso = async function (periodo) {
+    try {
+        var resultado = await FuncionRecorridoCarreraProceso(periodo);
+        return { resultado }
 
+    } catch (error) {
+        console.error(error);
+        
+        return { blProceso: false, mensaje: "Error :" + error }
+
+    }
+}
 module.exports.ProcesoFinancieroDatos = async function () {
     try {
         var resultado = await FuncionFinancieroDatos();
@@ -983,7 +994,22 @@ async function FuncionEstudiantesRetirosPeriodoCarreraCedula(dbCarrera, periodo,
     }
 
 }
-
+async function FuncionRecorridoCarreraProceso(periodo) {
+    try {
+        const listadoNomina = [];
+  
+         var listadoCarreras = await modeloprocesocarreras.ListadoHomologacionesCarreraPeriodo('OAS_Master', periodo)
+              for (var carreras of listadoCarreras.data) {
+               //if(carreras.hmbdbasecar=='OAS_IngZootecniaMa')
+                  var DatosCarrera = await modeloprocesocarreras.ProcesoSqlActualizarDatos(carreras.hmbdbasecar,'P0046');
+                }
+        return 'OK';
+    } catch (err) {
+        console.error(err);
+        
+        return 'ERROR' + err;
+    } 
+}
 
 async function FuncionFotoMatriculasNivelacionTodasInstitucionalTransaccion(periodo) {
     try {

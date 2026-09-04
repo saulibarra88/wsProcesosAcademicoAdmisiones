@@ -470,3 +470,19 @@ module.exports.PeriodoDatosCarrera = async function (carrera,periodo) {
     return {data:"Error: "+ error}
   }
   }
+
+    module.exports.ProcesoSqlActualizarDatos = async function (carrera,periodo) {
+    var sentencia="";
+    sentencia="WITH RegistrosAProcesar AS ( SELECT idsolt FROM [" + carrera + "].[dbo].[solicitudtercera] WHERE soltperiodo = '" + periodo + "' AND soltestado = 'APR' ) DELETE b FROM [" + carrera + "].[dbo].[bandejasolicitud] b INNER JOIN RegistrosAProcesar r ON b.idsolicitud = r.idsolt; WITH RegistrosAProcesar2 AS ( SELECT idsolt FROM [" + carrera + "].[dbo].[solicitudtercera] WHERE soltperiodo = '" + periodo + "' AND soltestado = 'APR' ) UPDATE s SET soltaprobadopor = NULL, soltfechaprobacion = NULL, soltestado = 'GEN' FROM [" + carrera + "].[dbo].[solicitudtercera] s INNER JOIN RegistrosAProcesar2 r ON s.idsolt = r.idsolt;"
+   
+    try {
+    if (sentencia != "") {
+      const sqlConsulta = await execMaster(carrera,sentencia, "OK","OK");
+     return (sqlConsulta)
+    } else {
+      return {data:"vacio sql"}
+    }
+  } catch (error) {
+    return {data:"Error: "+ error}
+  }
+  }
