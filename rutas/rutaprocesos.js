@@ -790,6 +790,26 @@ router.post('/ActualizacionCentralizadaDatos', async (req, res) => {
     }
 });
 
+router.post('/ActualizacionCentralizadaDatosCorreosTelefono', async (req, res) => {
+    try {
+   const { objDatos } = req.body;
+        const Informacion = await procesoscentralidadas.ProcesoActualizacionDatosPersonaCentralCorreosTelefono(objDatos);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.error(err);
+        
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en la proceso' + err
+            }
+        );
+
+    }
+});
 router.get('/ObtenerPaises', async (req, res) => {
     try {
         var respuesta = await procesoscentralidadas.ProcesoObtenerPaises();

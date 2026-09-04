@@ -71,6 +71,7 @@ module.exports.ProcesoVerificarRutasMatriculasAlmacenamiento = async function (c
     try {
         var ListadoDocumentos = [];
         var ListadoDocumentosDatos = await sqlmodelogenerales.ListadoDocumentosfirmadosLegalizados(carrera, periodo);
+        console.log(ListadoDocumentosDatos)
         var DatosCarrera = await sqlmodelomovilidad.ObenterDatosCarrera('OAS_Master', carrera);
         if (ListadoDocumentosDatos.modelo) {
             for (var documentos of ListadoDocumentosDatos.datos.data) {

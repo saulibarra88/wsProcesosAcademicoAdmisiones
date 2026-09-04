@@ -182,4 +182,26 @@ router.get('/InformacionUsuarioSistemas/',async (req, res) => {
     }
  
 });
+
+router.get('/RecorridoCarreraFuncion/:periodo',async (req, res) => {
+    const periodo = req.params.periodo;
+    try {
+        var respuesta=await  pruebasInformacion.ProcesoRecorridoCarreraProceso(periodo);
+        
+        res.json({
+            success: true,
+            Informacion:  respuesta
+        });
+    }catch (err) {
+        console.error(err);
+        
+        return res.json(
+             {
+                success: false,
+                mensaje:'Error en el registro' + err
+            }
+        );
+    }
+ 
+});
 module.exports = router;

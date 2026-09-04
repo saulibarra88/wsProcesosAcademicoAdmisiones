@@ -1381,4 +1381,109 @@ router.get('/RetirosAsignaturasTodasEstudiantes/:carrera/:cedula/', async (req, 
         );
     }
 });
+
+router.get('/ObtenerEstuidanteAprobadaSolicitud/:carreraorigen/:cedula/:periodo', async (req, res) => {
+        const periodo = req.params.periodo;
+        const cedula = req.params.cedula;
+        const carreraorigen = req.params.carreraorigen;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoObtenerAprobacionMovilidadEstudiante(carreraorigen,cedula,periodo);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.error(err);
+        
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+
+router.post('/ReversaProcesoMovilidadInterna', async (req, res) => {
+    try {
+        const { carreramovilidad, carreraorigen, cedula, periodo} = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesoReversaMovilidadInternaEstudiante(carreraorigen,carreramovilidad, cedula, periodo);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.error(err);
+        
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
+router.post('/ReversaProcesoMovilidadExterna', async (req, res) => {
+    try {
+        const { carreramovilidad, carreraorigen, cedula, periodo} = req.body;
+        const Informacion = await funcionesprocesosmovilidad.ProcesoReversaMovilidadExternaEstudiante(carreraorigen,carreramovilidad, cedula, periodo);
+        res.json({
+            success: true,
+            Informacion
+        });
+    } catch (err) {
+        console.error(err);
+        
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+
+    }
+});
+router.get('/VerificarMatriculaCarrera/:carreraorigen/:cedula/:periodo', async (req, res) => {
+        const periodo = req.params.periodo;
+        const cedula = req.params.cedula;
+        const carreraorigen = req.params.carreraorigen;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoVerificarMatriculaCarrera(carreraorigen,cedula,periodo);
+        res.json({
+            success: true,
+            Informacion: respuesta
+        });
+    } catch (err) {
+        console.error(err);
+        
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
+
+router.get('/ListadoCarrerasMovilidadInternaAreaConocimiento/:carreraorigen/:periodo', async (req, res) => {
+        const periodo = req.params.periodo;
+        const carreraorigen = req.params.carreraorigen;
+    try {
+        var respuesta = await funcionesprocesosmovilidad.ProcesoListadoCarrerasModilidadInternaAreaConocimiento(carreraorigen,periodo);
+        res.json({
+            success: true,
+            Informacion: respuesta.data
+        });
+    } catch (err) {
+        console.error(err);
+        
+        return res.json(
+            {
+                success: false,
+                mensaje: 'Error en el registro' + err
+            }
+        );
+    }
+});
 module.exports = router;

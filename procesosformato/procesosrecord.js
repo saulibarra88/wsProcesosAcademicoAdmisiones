@@ -173,7 +173,7 @@ module.exports.ProcesoEnvioCorreoSolicitudrecord = async function (objDatos) {
 </html>`
 
         const base64String = tools.htmlToBase64(htmlContent);
-        const lstReceptores = [{ "email": "saul.ibarra@espoch.edu.ec" }, { "email": objDatos.correocoordinador }]
+        const lstReceptores = [{ "email": objDatos.correocoordinador }]
         const contenido = { strAsunto: 'RECORD ACADEMICO', strBody: base64String, lstReceptores: lstReceptores }
         var Informacion = await procesoenviocorreo.ProcesoEnvioCorreo(contenido, lstReceptores);
     } catch (error) {

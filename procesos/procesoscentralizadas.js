@@ -34,7 +34,16 @@ module.exports.ProcesoActualizacionDatosPersonaCentral = async function (datos) 
             return 'ERROR';
     }
 }
-
+module.exports.ProcesoActualizacionDatosPersonaCentralCorreosTelefono = async function (datos) {
+    try {
+        var resultado = await sqlmodelocentralizada.ActualizarDatosPersonaCentralCorreosTelefono(datos);
+        return resultado
+    } catch (error) {
+        console.error(error);
+        
+            return 'ERROR';
+    }
+}
 module.exports.ProcesoObtenerPaises = async function () {
     try {
         var resultado = await sqlmodelocentralizada.ObtenerPaises();
